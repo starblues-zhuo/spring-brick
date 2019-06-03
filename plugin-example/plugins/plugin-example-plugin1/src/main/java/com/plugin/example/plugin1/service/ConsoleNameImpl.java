@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
  * @see
  */
 @Component
+@ApplyMainBean
 public class ConsoleNameImpl implements ConsoleName {
 
     @Autowired(required = false)

@@ -301,7 +301,7 @@ public class DefaultPluginOperator implements PluginOperator {
         }
         try {
             String fileName = configFile.getOriginalFilename();
-            String configPath = integrationConfiguration.pluginConfigFileDir() +
+            String configPath = integrationConfiguration.pluginConfigFilePath() +
                     File.separator + fileName;
             Files.write(getExistFile(Paths.get(configPath)), configFile.getBytes());
             return true;
@@ -347,10 +347,10 @@ public class DefaultPluginOperator implements PluginOperator {
             RuntimeMode environment = integrationConfiguration.environment();
             Set<String> paths = new HashSet<>();
             if(environment == RuntimeMode.DEVELOPMENT){
-                paths.add(integrationConfiguration.pluginDir());
+                paths.add(integrationConfiguration.pluginPath());
                 return paths;
             }
-            List<File> files = FileUtils.getJars(Paths.get(integrationConfiguration.pluginDir()));
+            List<File> files = FileUtils.getJars(Paths.get(integrationConfiguration.pluginPath()));
             return files.stream()
                     .filter(file -> file != null)
                     .map(file -> file.getAbsolutePath())

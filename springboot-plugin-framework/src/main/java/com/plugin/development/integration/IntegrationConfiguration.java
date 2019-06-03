@@ -23,13 +23,13 @@ public interface IntegrationConfiguration {
      * 插件的路径
      * @return
      */
-    String pluginDir();
+    String pluginPath();
 
     /**
      * 插件文件的配置路径
      * @return
      */
-    String pluginConfigFileDir();
+    String pluginConfigFilePath();
 
     /**
      * 上传插件的临时保存路径。默认: temp, 替换默认请重写

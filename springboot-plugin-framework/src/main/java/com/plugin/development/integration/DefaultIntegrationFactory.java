@@ -49,7 +49,7 @@ public class DefaultIntegrationFactory implements IntegrationFactory {
 
 
     private String getDevPluginDir(IntegrationConfiguration configuration){
-        String pluginDir = configuration.pluginDir();
+        String pluginDir = configuration.pluginPath();
         if(Objects.equals("", pluginDir)){
             pluginDir = "./plugins/";
         }
@@ -58,7 +58,7 @@ public class DefaultIntegrationFactory implements IntegrationFactory {
 
 
     private String getProdPluginDir(IntegrationConfiguration configuration){
-        String pluginDir = configuration.pluginDir();
+        String pluginDir = configuration.pluginPath();
         if(Objects.equals("", pluginDir)){
             pluginDir = "plugins";
         }

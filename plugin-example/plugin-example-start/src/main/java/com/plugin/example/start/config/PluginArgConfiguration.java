@@ -30,14 +30,14 @@ public class PluginArgConfiguration implements IntegrationConfiguration {
     /**
      * 插件的路径
      */
-    @Value("${pluginDir:plugins}")
-    private String pluginDir;
+    @Value("${pluginPath:plugins}")
+    private String pluginPath;
 
     /**
      * 插件文件的路径
      */
-    @Value("${pluginConfigFileDir:}")
-    private String pluginConfigFileDir;
+    @Value("${pluginConfigFilePath:}")
+    private String pluginConfigFilePath;
 
 
     @Override
@@ -46,15 +46,32 @@ public class PluginArgConfiguration implements IntegrationConfiguration {
     }
 
     @Override
-    public String pluginDir() {
-        return pluginDir;
+    public String pluginPath() {
+        return pluginPath;
     }
 
     @Override
-    public String pluginConfigFileDir() {
-        return pluginConfigFileDir;
+    public String pluginConfigFilePath() {
+        return pluginConfigFilePath;
     }
 
+    /**
+     * 重写上传插件包的临时存储路径。只适用于生产环境
+     * @return
+     */
+    @Override
+    public String uploadTempPath() {
+        return "temp";
+    }
+
+    /**
+     * 重写插件备份路径。只适用于生产环境
+     * @return
+     */
+    @Override
+    public String backupPath() {
+        return "backupPlugin";
+    }
 
     public String getRunMode() {
         return runMode;
@@ -64,28 +81,29 @@ public class PluginArgConfiguration implements IntegrationConfiguration {
         this.runMode = runMode;
     }
 
-    public String getPluginDir() {
-        return pluginDir;
+
+    public String getPluginPath() {
+        return pluginPath;
     }
 
-    public void setPluginDir(String pluginDir) {
-        this.pluginDir = pluginDir;
+    public void setPluginPath(String pluginPath) {
+        this.pluginPath = pluginPath;
     }
 
-    public String getPluginConfigFileDir() {
-        return pluginConfigFileDir;
+    public String getPluginConfigFilePath() {
+        return pluginConfigFilePath;
     }
 
-    public void setPluginConfigFileDir(String pluginConfigFileDir) {
-        this.pluginConfigFileDir = pluginConfigFileDir;
+    public void setPluginConfigFilePath(String pluginConfigFilePath) {
+        this.pluginConfigFilePath = pluginConfigFilePath;
     }
 
     @Override
     public String toString() {
         return "PluginArgConfiguration{" +
                 "runMode='" + runMode + '\'' +
-                ", pluginDir='" + pluginDir + '\'' +
-                ", pluginConfigFileDir='" + pluginConfigFileDir + '\'' +
+                ", pluginPath='" + pluginPath + '\'' +
+                ", pluginConfigFilePath='" + pluginConfigFilePath + '\'' +
                 '}';
     }
 }

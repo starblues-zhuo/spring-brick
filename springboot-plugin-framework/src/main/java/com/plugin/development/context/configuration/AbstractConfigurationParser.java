@@ -77,11 +77,11 @@ public abstract class AbstractConfigurationParser implements ConfigurationParser
         if(configuration.environment() == RuntimeMode.DEVELOPMENT){
             // 开发环境下
             // 加载输入流
-            String path = configuration.pluginConfigFileDir() +  fileName;
+            String path = configuration.pluginConfigFilePath() +  fileName;
             resource = new ClassPathResource("/" + path, aClass.getClassLoader());
         } else {
             // 生产环境下
-            String path = configuration.pluginConfigFileDir() + File.separatorChar + fileName;
+            String path = configuration.pluginConfigFilePath() + File.separatorChar + fileName;
             resource = new FileUrlResource(path);
         }
         return resource;
