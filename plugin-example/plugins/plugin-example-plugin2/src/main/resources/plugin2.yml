@@ -1,0 +1,11 @@
+name: plugin2
+plugin: examplePlugin2
+setString:
+  - set1
+  - set2
+listInteger:
+  - 1
+  - 2
+  - 3
+sub2Config:
+  subName: subConfigName
