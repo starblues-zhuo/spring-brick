@@ -38,7 +38,6 @@ public class DefaultPluginOperator implements PluginOperator {
 
     private final Logger log = LoggerFactory.getLogger(DefaultPluginApplication.class);
 
-    private final String backupPluginPath = "backupPlugin";
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private final IntegrationConfiguration integrationConfiguration;
@@ -248,7 +247,7 @@ public class DefaultPluginOperator implements PluginOperator {
             if(!"jar".equalsIgnoreCase(suffixName) && !"zip".equalsIgnoreCase(suffixName)){
                 throw new PluginPlugException("Invalid file type,please select .jar or .zip file");
             }
-            String tempPath = "temp" + File.separator + fileName;
+            String tempPath = integrationConfiguration.uploadTempPath() + File.separator + fileName;
             Path tempPluginFile = Files.write(getExistFile(Paths.get(tempPath)), pluginFile.getBytes());
             try {
                 Path verifyPath = uploadPluginVerify.verify(tempPluginFile);
@@ -257,6 +256,7 @@ public class DefaultPluginOperator implements PluginOperator {
                             File.separator + fileName;
                     Path pluginFilePath = Paths.get(pluginFilePathString);
                     if(Files.exists(pluginFilePath)){
+                        // 如果存在同名插件的化, 先备份它
                         backup(pluginFilePath, "uploadPluginFile", 1);
                     }
                     return Files.move(verifyPath, pluginFilePath);
@@ -366,7 +366,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * @param pluginWrapper
      * @throws PluginBeanFactoryException
      */
-    public void registryPluginBeanToSpring(PluginWrapper pluginWrapper) throws PluginBeanFactoryException {
+    private void registryPluginBeanToSpring(PluginWrapper pluginWrapper) throws PluginBeanFactoryException {
         log.debug("start registryPluginBeanToSpring");
         Plugin plugin = pluginWrapper.getPlugin();
         if(plugin instanceof BasePlugin){
@@ -378,7 +378,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
     /**
      * 得到插件包装类
-     * @param pluginId
+     * @param pluginId 插件id
      * @return
      * @throws PluginPlugException
      */
@@ -436,7 +436,7 @@ public class DefaultPluginOperator implements PluginOperator {
         }
         try {
             String fileName = path.getFileName().toString();
-            String targetName = backupPluginPath + File.separator + getNowTimeByFormat();
+            String targetName = integrationConfiguration.backupPath() + File.separator + getNowTimeByFormat();
             if(!StringUtils.isEmpty(appendName)){
                 targetName = targetName + "_" + appendName;
             }

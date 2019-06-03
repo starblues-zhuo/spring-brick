@@ -36,9 +36,9 @@
     </licenses>
 
     <scm>
-        <url>https://gitee.com/gitksm/springboot-plugin-framework-parent</url>
-        <connection>scm:https://gitee.com/gitksm/springboot-plugin-framework-parent.git</connection>
-        <developerConnection>scm:https://gitee.com/gitksm/springboot-plugin-framework-parent.git</developerConnection>
+        <url>https://gitee.com/starblues/springboot-plugin-framework-parent</url>
+        <connection>scm:https://gitee.com/starblues/springboot-plugin-framework-parent.git</connection>
+        <developerConnection>scm:https://gitee.com/starblues/springboot-plugin-framework-parent.git</developerConnection>
         <tag>1.0</tag>
     </scm>
 
@@ -57,9 +57,9 @@
 
     <developers>
         <developer>
-            <name>zhuo</name>
-            <email>ksmzhuo@foxmail.com</email>
-            <url>https://gitee.com/gitksm/</url>
+            <name>StarBlues</name>
+            <email>starblues@foxmail.com</email>
+            <url>https://gitee.com/starblues/</url>
         </developer>
     </developers>
 
@@ -152,47 +152,6 @@
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>sonatype-nexus-staging</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
                         </goals>
                     </execution>
                 </executions>

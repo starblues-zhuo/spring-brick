@@ -31,4 +31,20 @@ public interface IntegrationConfiguration {
      */
     String pluginConfigFileDir();
 
+    /**
+     * 上传插件的临时保存路径。默认: temp, 替换默认请重写
+     * @return
+     */
+    default String uploadTempPath(){
+        return "temp";
+    }
+
+    /**
+     * 插件备份路径。默认: backupPlugin, 替换默认请重写
+     * @return
+     */
+    default String backupPath(){
+        return "backupPlugin";
+    }
+
 }
