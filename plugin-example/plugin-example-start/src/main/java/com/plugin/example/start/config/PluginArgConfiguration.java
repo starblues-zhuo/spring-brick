@@ -36,7 +36,7 @@ public class PluginArgConfiguration implements IntegrationConfiguration {
     /**
      * 插件文件的路径
      */
-    @Value("${pluginConfigFilePath:}")
+    @Value("${pluginConfigFilePath:pluginConfigs}")
     private String pluginConfigFilePath;
 
 

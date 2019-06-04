@@ -23,7 +23,7 @@
         <springboot-plugin-framework.version>1.0-SNAPSHOT</springboot-plugin-framework.version>
 
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+        <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
     </properties>
 
     <dependencies>
@@ -50,7 +50,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>${maven-jar-plugin.version}</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
@@ -64,6 +64,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>

@@ -41,7 +41,7 @@
 @ConfigurationProperties(prefix = "plugin")
 public class PluginArgConfiguration implements IntegrationConfiguration {
 
-        /**
+    /**
      * 运行模式
      *  开发环境: development、dev
      *  生产/部署 环境: deployment、prod
@@ -58,7 +58,7 @@ public class PluginArgConfiguration implements IntegrationConfiguration {
     /**
      * 插件文件的路径
      */
-    @Value("${pluginConfigFilePath:}")
+    @Value("${pluginConfigFilePath:pluginConfigs}")
     private String pluginConfigFilePath;
 
 
@@ -189,7 +189,7 @@ public class PluginBeanConfig {
 
 
     <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-    <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+    <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
 </properties>
 <build>
     <plugins>
@@ -206,7 +206,7 @@ public class PluginBeanConfig {
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
-            <version>3.0.2</version>
+            <version>${maven-jar-plugin.version}</version>
             <configuration>
                 <archive>
                     <manifestEntries>
@@ -389,8 +389,11 @@ subConfig:
 
     调用PluginUser->getSpringDefineBean方法获取。例如ConsoleName consoleNameImpl consoleNameMap = pluginUser.getSpringDefineBeansOfType(
     'com.plugin.example.plugin1.service.ConsoleNameImpl');
-    
-    
+
+5. 部署插件
+
+见案例: com.plugin.example.start.rest.PluginResource
+   
 #### 开发环境目录结构
 见 `plugin-example` 案例
 
