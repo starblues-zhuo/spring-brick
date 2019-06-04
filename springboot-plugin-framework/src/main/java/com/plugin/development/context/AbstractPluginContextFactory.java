@@ -5,10 +5,12 @@ import com.plugin.development.realize.PluginApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * @Description:
+ * @Description: 抽象的插件上下文工厂
  * @Author: zhangzhuo
  * @Version: 1.0
  * @Create Date Time: 2019-05-30 09:11
@@ -17,6 +19,8 @@ import java.util.Objects;
  */
 public abstract class AbstractPluginContextFactory<T extends ApplicationContext> implements PluginContextFactory{
 
+
+    private final List<PluginSpringBeanListener> pluginSpringBeanListeners = new ArrayList<>();
 
 
     @Override
@@ -56,6 +60,42 @@ public abstract class AbstractPluginContextFactory<T extends ApplicationContext>
     }
 
 
+    /**
+     * 设置监听者
+     * @param pluginOperatorListener
+     */
+    public void addListener(PluginSpringBeanListener pluginOperatorListener){
+        if(pluginOperatorListener != null){
+            pluginSpringBeanListeners.add(pluginOperatorListener);
+        }
+    }
 
+    /**
+     * 通知监听器注册
+     * @param pluginId 插件id
+     */
+    protected void notifyRegistry(String pluginId){
+        for (PluginSpringBeanListener pluginSpringBeanListener : pluginSpringBeanListeners) {
+            try {
+                pluginSpringBeanListener.registryEvent(pluginId);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 通知监听器卸载事件
+     * @param pluginId 插件id
+     */
+    protected void notifyUnRegistry(String pluginId){
+        for (PluginSpringBeanListener pluginSpringBeanListener : pluginSpringBeanListeners) {
+            try {
+                pluginSpringBeanListener.unRegistryEvent(pluginId);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

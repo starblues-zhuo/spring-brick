@@ -1,9 +1,6 @@
 package com.plugin.development.integration;
 
-import com.plugin.development.context.AnnotationConfigPluginContextFactory;
-import com.plugin.development.context.DefaultPluginContext;
-import com.plugin.development.context.PluginContext;
-import com.plugin.development.context.PluginContextFactory;
+import com.plugin.development.context.*;
 import com.plugin.development.integration.operator.DefaultPluginOperator;
 import com.plugin.development.integration.operator.PluginOperator;
 import com.plugin.development.integration.user.DefaultPluginUser;
@@ -16,6 +13,8 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -38,13 +37,24 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
     private PluginOperator pluginOperator;
     private PluginContextFactory pluginContextFactory;
 
+    private List<PluginSpringBeanListener> pluginSpringBeanListeners = new ArrayList<>();
+
     public DefaultPluginApplication() {
-        this(null);
+        this(null, null);
     }
 
 
-    public DefaultPluginApplication(PluginContextFactory pluginContextFactory) {
+    public DefaultPluginApplication(List<PluginSpringBeanListener> pluginSpringBeanListeners) {
+        this(null, pluginSpringBeanListeners);
+    }
+
+
+    public DefaultPluginApplication(PluginContextFactory pluginContextFactory,
+                                    List<PluginSpringBeanListener> pluginSpringBeanListeners) {
         this.pluginContextFactory = pluginContextFactory;
+        if(pluginSpringBeanListeners != null && !pluginSpringBeanListeners.isEmpty()){
+            this.pluginSpringBeanListeners.addAll(pluginSpringBeanListeners);
+        }
     }
 
 
@@ -55,7 +65,14 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
         this.pluginManager = applicationContext.getBean(PluginManager.class);
         if(pluginContextFactory == null){
             PluginContext pluginContext = new DefaultPluginContext(this.applicationContext);
-            this.pluginContextFactory = new AnnotationConfigPluginContextFactory(pluginContext);
+            AnnotationConfigPluginContextFactory pluginContextFactory =
+                    new AnnotationConfigPluginContextFactory(pluginContext);
+            for (PluginSpringBeanListener pluginSpringBeanListener : pluginSpringBeanListeners) {
+                if(pluginSpringBeanListener != null){
+                    pluginContextFactory.addListener(pluginSpringBeanListener);
+                }
+            }
+            this.pluginContextFactory = pluginContextFactory;
         }
         try {
             IntegrationConfiguration bean = applicationContext.getBean(IntegrationConfiguration.class);
@@ -78,7 +95,6 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
         assertInjected();
         return pluginUser;
     }
-
 
 
     /**

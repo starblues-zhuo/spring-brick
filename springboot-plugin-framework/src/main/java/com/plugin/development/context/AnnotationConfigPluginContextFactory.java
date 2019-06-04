@@ -1,11 +1,8 @@
 package com.plugin.development.context;
 
-import com.plugin.development.context.process.PluginConfigProcess;
 import com.plugin.development.context.process.PluginPostBeanProcess;
 import com.plugin.development.exception.PluginBeanFactoryException;
 import com.plugin.development.context.factory.PluginBeanRegistry;
-import com.plugin.development.context.factory.PluginComponentBeanRegistry;
-import com.plugin.development.context.factory.PluginControllerBeanRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -71,6 +68,7 @@ public class AnnotationConfigPluginContextFactory
         // 刷新插件ApplicationContext
         applicationContext.refresh();
         processPluginApplication(pluginId, applicationContext);
+        notifyRegistry(pluginId);
         log.debug("registry finish");
     }
 
@@ -218,6 +216,7 @@ public class AnnotationConfigPluginContextFactory
             Set<RequestMappingInfo> requestMappingInfos = pluginSpringBean.getRequestMappingInfos();
             pluginControllerBeanRegistry.unRegistry(requestMappingInfos);
             SPRING_BEAN_MAP.remove(pluginId);
+            notifyUnRegistry(pluginId);
         } finally {
             LOCK.unlock();
         }
