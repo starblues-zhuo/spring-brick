@@ -1,5 +1,7 @@
 package com.plugin.development.integration;
 
+import com.plugin.development.context.PluginContextListener;
+import com.plugin.development.context.PluginSpringBeanListener;
 import com.plugin.development.integration.operator.PluginOperator;
 import com.plugin.development.integration.user.PluginUser;
 
@@ -11,7 +13,7 @@ import com.plugin.development.integration.user.PluginUser;
  * @Update Date Time:
  * @see
  */
-public interface PluginApplication {
+public interface PluginApplication extends PluginContextListener {
 
 
     /**
@@ -25,5 +27,6 @@ public interface PluginApplication {
      * @return
      */
     PluginUser getPluginUser();
+
 
 }

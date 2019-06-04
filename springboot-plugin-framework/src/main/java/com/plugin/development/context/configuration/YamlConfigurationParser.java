@@ -41,6 +41,9 @@ public class YamlConfigurationParser extends AbstractConfigurationParser{
             InputStream input = new FileInputStream(resource.getFile());
             YAMLParser yamlParser = yamlFactory.createParser(input);
             final JsonNode node = objectMapper.readTree(yamlParser);
+            if(node == null){
+                return pluginConfigClass.newInstance();
+            }
             TreeTraversingParser treeTraversingParser = new TreeTraversingParser(node);
             final Object o = objectMapper.readValue(treeTraversingParser, pluginConfigClass);
             return o;

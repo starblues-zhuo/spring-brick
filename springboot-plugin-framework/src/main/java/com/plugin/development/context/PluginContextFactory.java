@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationContext;
  * @Update Date Time:
  * @see
  */
-public interface PluginContextFactory {
+public interface PluginContextFactory extends PluginContextListener{
 
     /**
      * 注册插件

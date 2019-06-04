@@ -3,5 +3,5 @@ server:
 
 plugin:
   runMode: dev
-  pluginDir: plugins
-  pluginConfigFileDir:
+  pluginPath: plugins
+  pluginConfigFilePath:

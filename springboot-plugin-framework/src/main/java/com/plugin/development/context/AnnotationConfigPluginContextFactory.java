@@ -205,7 +205,8 @@ public class AnnotationConfigPluginContextFactory
     public void unRegistry(String pluginId) throws PluginBeanFactoryException {
         PluginSpringBean pluginSpringBean = SPRING_BEAN_MAP.get(pluginId);
         if(pluginSpringBean == null){
-            throw new PluginBeanFactoryException("Not found plugin id : " + pluginId);
+            log.warn("unRegistry->Not found plugin id : {}", pluginId);
+            return;
         }
         LOCK.lock();
         try {

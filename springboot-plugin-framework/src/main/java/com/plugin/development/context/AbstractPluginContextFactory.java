@@ -17,7 +17,8 @@ import java.util.Objects;
  * @Update Date Time:
  * @see
  */
-public abstract class AbstractPluginContextFactory<T extends ApplicationContext> implements PluginContextFactory{
+public abstract class AbstractPluginContextFactory<T extends ApplicationContext>
+        implements PluginContextFactory{
 
 
     private final List<PluginSpringBeanListener> pluginSpringBeanListeners = new ArrayList<>();
@@ -36,6 +37,8 @@ public abstract class AbstractPluginContextFactory<T extends ApplicationContext>
         }
         registry(pluginId, (T)applicationContext);
     }
+
+
 
     /**
      * 注册
@@ -62,11 +65,12 @@ public abstract class AbstractPluginContextFactory<T extends ApplicationContext>
 
     /**
      * 设置监听者
-     * @param pluginOperatorListener
+     * @param pluginSpringBeanListener
      */
-    public void addListener(PluginSpringBeanListener pluginOperatorListener){
-        if(pluginOperatorListener != null){
-            pluginSpringBeanListeners.add(pluginOperatorListener);
+    @Override
+    public void addListener(PluginSpringBeanListener pluginSpringBeanListener){
+        if(pluginSpringBeanListener != null){
+            pluginSpringBeanListeners.add(pluginSpringBeanListener);
         }
     }
 

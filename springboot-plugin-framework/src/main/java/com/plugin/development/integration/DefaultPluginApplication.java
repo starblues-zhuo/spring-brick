@@ -43,11 +43,13 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
         this(null, null);
     }
 
+    public DefaultPluginApplication(PluginContextFactory pluginContextFactory) {
+        this(pluginContextFactory, null);
+    }
 
     public DefaultPluginApplication(List<PluginSpringBeanListener> pluginSpringBeanListeners) {
         this(null, pluginSpringBeanListeners);
     }
-
 
     public DefaultPluginApplication(PluginContextFactory pluginContextFactory,
                                     List<PluginSpringBeanListener> pluginSpringBeanListeners) {
@@ -58,6 +60,7 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
     }
 
 
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         Objects.requireNonNull(applicationContext);
@@ -65,7 +68,7 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
         this.pluginManager = applicationContext.getBean(PluginManager.class);
         if(pluginContextFactory == null){
             PluginContext pluginContext = new DefaultPluginContext(this.applicationContext);
-            AnnotationConfigPluginContextFactory pluginContextFactory =
+            PluginContextFactory pluginContextFactory =
                     new AnnotationConfigPluginContextFactory(pluginContext);
             for (PluginSpringBeanListener pluginSpringBeanListener : pluginSpringBeanListeners) {
                 if(pluginSpringBeanListener != null){
@@ -75,9 +78,10 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
             this.pluginContextFactory = pluginContextFactory;
         }
         try {
-            IntegrationConfiguration bean = applicationContext.getBean(IntegrationConfiguration.class);
+            IntegrationConfiguration configuration = applicationContext.getBean(IntegrationConfiguration.class);
             this.pluginUser = new DefaultPluginUser(this.applicationContext, this.pluginManager);
-            this.pluginOperator = new DefaultPluginOperator(bean, this.pluginContextFactory, this.pluginManager);
+            this.pluginOperator = new DefaultPluginOperator(configuration, this.pluginContextFactory,
+                    this.pluginManager);
         } catch (Exception e){
             throw new BeanCreationException("Instant PluginUser or PluginOperator Failure : " + e.getMessage(), e);
         }
@@ -94,6 +98,15 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
     public PluginUser getPluginUser() {
         assertInjected();
         return pluginUser;
+    }
+
+
+    @Override
+    public void addListener(PluginSpringBeanListener pluginSpringBeanListener){
+        assertInjected();
+        if(pluginSpringBeanListener != null){
+            pluginContextFactory.addListener(pluginSpringBeanListener);
+        }
     }
 
 

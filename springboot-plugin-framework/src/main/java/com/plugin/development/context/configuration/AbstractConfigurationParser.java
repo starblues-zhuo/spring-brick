@@ -44,7 +44,7 @@ public abstract class AbstractConfigurationParser implements ConfigurationParser
         try {
             Object o = parse(getResource(fileName, configClass), configClass);
             if(o == null){
-                throw new ConfigurationParseException(this.getClass().getName() + " parse result is null");
+                return configClass.newInstance();
             }
             return o;
         } catch (Exception e) {
