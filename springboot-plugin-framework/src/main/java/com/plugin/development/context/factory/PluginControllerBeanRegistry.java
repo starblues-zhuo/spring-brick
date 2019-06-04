@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @Description: 插件中的 controller 注册
+ * @Description: 注册插件中的 Controller
  * @Author: zhangzhuo
  * @Version: 1.0
  * @Create Date Time: 2019-05-28 15:40
