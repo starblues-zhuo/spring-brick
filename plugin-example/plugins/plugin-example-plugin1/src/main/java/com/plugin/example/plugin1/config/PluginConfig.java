@@ -18,6 +18,75 @@ import java.util.Set;
 @ConfigDefinition("plugin1.yml")
 public class PluginConfig {
 
+    private String name;
+    private String plugin;
+    private Set<String> setString;
+    private List<Integer> listInteger;
 
+    private String defaultValue = "defaultValue";
+
+    private SubConfig subConfig;
+
+
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPlugin() {
+        return plugin;
+    }
+
+    public void setPlugin(String plugin) {
+        this.plugin = plugin;
+    }
+
+    public Set<String> getSetString() {
+        return setString;
+    }
+
+    public void setSetString(Set<String> setString) {
+        this.setString = setString;
+    }
+
+    public List<Integer> getListInteger() {
+        return listInteger;
+    }
+
+    public void setListInteger(List<Integer> listInteger) {
+        this.listInteger = listInteger;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public SubConfig getSubConfig() {
+        return subConfig;
+    }
+
+    public void setSubConfig(SubConfig subConfig) {
+        this.subConfig = subConfig;
+    }
+
+    @Override
+    public String toString() {
+        return "PluginConfig{" +
+                "name='" + name + '\'' +
+                ", plugin='" + plugin + '\'' +
+                ", setString=" + setString +
+                ", listInteger=" + listInteger +
+                ", defaultValue='" + defaultValue + '\'' +
+                '}';
+    }
 
 }

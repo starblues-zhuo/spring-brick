@@ -187,12 +187,13 @@ public class PluginBeanConfig {
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-
     <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-    <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+    <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
+    <springboot-plugin-framework.version>1.0-SNAPSHOT</springboot-plugin-framework.version>
 </properties>
 <build>
     <plugins>
+        
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -203,12 +204,20 @@ public class PluginBeanConfig {
                 <encoding>${project.build.sourceEncoding}</encoding>
             </configuration>
         </plugin>
+
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>${maven-jar-plugin.version}</version>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>${maven-assembly-plugin.version}</version>
             <configuration>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
                 <archive>
+                    <manifest>
+                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                    </manifest>
                     <manifestEntries>
                         <Plugin-Id>${plugin.id}</Plugin-Id>
                         <Plugin-Version>${plugin.version}</Plugin-Version>
@@ -217,6 +226,15 @@ public class PluginBeanConfig {
                     </manifestEntries>
                 </archive>
             </configuration>
+            <executions>
+                <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+            </executions>
         </plugin>
     </plugins>
 </build>
@@ -229,7 +247,6 @@ plugin.id=springboot-plugin-example-plugin2
 plugin.class=com.plugin.example.plugin2.DefinePlugin
 plugin.version=1.0-SNAPSHOT
 plugin.provider=StarBlues
-plugin.dependencies=
 ```
 
 配置说明:
@@ -392,10 +409,145 @@ subConfig:
 
 5. 部署插件
 
-见案例: com.plugin.example.start.rest.PluginResource
+windows环境下运行: package.bat
+
+linux、mac 环境下运行: package.sh
    
 #### 开发环境目录结构
 见 `plugin-example` 案例
+
+建议给每个插件定义个父级 pom.xml。
+
+例如:
+``` xml
+<groupId>com.gitee.starblues</groupId>
+<artifactId>plugin-example-plugin-parent</artifactId>
+<version>1.0-SNAPSHOT</version>
+<packaging>pom</packaging>
+
+<modules>
+    <module>plugin-example-plugin1</module>
+    <module>plugin-example-plugin2</module>
+</modules>
+
+<properties>
+    <!-- 子类覆盖该配置 -->
+    <plugin.id/>
+    <plugin.class/>
+    <plugin.version/>
+    <plugin.provider/>
+
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+    <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
+    <springboot-plugin-framework.version>1.0-SNAPSHOT</springboot-plugin-framework.version>
+</properties>
+
+<dependencies>
+    <dependency>
+        <groupId>com.gitee.starblues</groupId>
+        <artifactId>springboot-plugin-framework</artifactId>
+        <version>${springboot-plugin-framework.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>com.gitee.starblues</groupId>
+        <artifactId>plugin-example-start</artifactId>
+        <version>${project.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+</dependencies>
+
+<build>
+    <plugins>
+        
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${maven-compiler-plugin.version}</version>
+            <configuration>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
+                <encoding>${project.build.sourceEncoding}</encoding>
+            </configuration>
+        </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>${maven-assembly-plugin.version}</version>
+            <configuration>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+                <archive>
+                    <manifest>
+                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                    </manifest>
+                    <manifestEntries>
+                        <Plugin-Id>${plugin.id}</Plugin-Id>
+                        <Plugin-Version>${plugin.version}</Plugin-Version>
+                        <Plugin-Provider>${plugin.provider}</Plugin-Provider>
+                        <Plugin-Class>${plugin.class}</Plugin-Class>
+                    </manifestEntries>
+                </archive>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+
+插件继承该父类pom.xml
+
+例如:
+```xml
+<modelVersion>4.0.0</modelVersion>
+
+<parent>
+    <groupId>com.gitee.starblues</groupId>
+    <artifactId>plugin-example-plugin-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+</parent>
+
+<artifactId>plugin-example-plugin1</artifactId>
+<version>1.0-SNAPSHOT</version>
+<packaging>jar</packaging>
+
+<properties>
+    <plugin.id>springboot-plugin-example-plugin1</plugin.id>
+    <plugin.class>com.plugin.example.plugin1.DefinePlugin</plugin.class>
+    <plugin.version>${project.version}</plugin.version>
+    <plugin.provider>StarBlues</plugin.provider>
+
+    <gson.version>2.8.2</gson.version>
+</properties>
+
+<dependencies>
+
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${gson.version}</version>
+    </dependency>
+
+</dependencies>
+```
 
 #### 生产环境目录结构
 
@@ -413,6 +565,68 @@ subConfig:
   -plugin2.yml
 ```
 
+#### 开发环境建议配置
+
+建议定义一个用于启动的pom.xml。**这样既可以解决在开发环境下可以加载插件中的依赖包、也可以解决在启动时无法自动编译插件包的问题。**
+
+例如:
+```xml
+<modelVersion>4.0.0</modelVersion>
+
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.0.3.RELEASE</version>
+    <relativePath/>
+</parent>
+
+<groupId>com.gitee.starblues</groupId>
+<artifactId>plugin-example-runner</artifactId>
+<version>1.0-SNAPSHOT</version>
+<packaging>pom</packaging>
+
+<dependencies>
+
+    <dependency>
+        <groupId>com.gitee.starblues</groupId>
+        <artifactId>plugin-example-start</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.gitee.starblues</groupId>
+        <artifactId>plugin-example-plugin1</artifactId>
+        <version>${project.version}</version>
+        <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>com.gitee.starblues</groupId>
+        <artifactId>plugin-example-plugin2</artifactId>
+        <version>${project.version}</version>
+        <scope>compile</scope>
+    </dependency>
+
+</dependencies>
+
+```
+
+该启动的pom.xml依赖主程序、插件程序(以`<scope>compile</scope>`方式引入)。
+
+运行配置(idea):
+
+Working directory : D:\xx\xx\springboot-plugin-framework-parent\plugin-example
+
+Use classpath of module: plugin-exampe-runner
+
+勾选: Include dependencies with "Provided" scope
+
 #### 注意事项
 
-**在插件中代码编写完后, 请保证在class文件下的类都是最新编译的, 再运行主程序, 否则会导致运行的插件代码不是最新的。**
+**1. 如果没有按照开发环境建议配置, 则在插件中代码编写完后, 请保证在class文件下的类都是最新编译的, 再运行主程序, 否则会导致运行的插件代码不是最新的。**
+
+**2.如果启动时插件没有加载。请检查配置文件中的 pluginPath**
+
+    如果pluginPath 配置为相当路径，请检查是否是相对于当前工作环境的目录。
+
+    如果pluginPath配置为绝对路径，请检查路径是否正确。

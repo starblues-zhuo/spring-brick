@@ -12,8 +12,8 @@
 
     <modules>
         <module>plugin-example-start</module>
-        <module>plugins/plugin-example-plugin1</module>
-        <module>plugins/plugin-example-plugin2</module>
+        <module>plugins</module>
+        <module>plugin-example-runner</module>
     </modules>
 
 

@@ -1,0 +1,7 @@
+server:
+  port: 80
+
+plugin:
+  runMode: prod
+  pluginPath: plugins
+  pluginConfigFilePath: pluginConfig

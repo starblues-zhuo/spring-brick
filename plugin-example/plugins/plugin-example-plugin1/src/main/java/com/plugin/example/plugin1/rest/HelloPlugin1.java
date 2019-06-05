@@ -1,5 +1,6 @@
 package com.plugin.example.plugin1.rest;
 
+import com.google.gson.Gson;
 import com.plugin.example.plugin1.config.PluginConfig;
 import com.plugin.example.plugin1.service.HelloService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class HelloPlugin1 {
     @Autowired
     private PluginConfig pluginConfig;
 
+    private Gson gson = new Gson();
+
     @GetMapping
     public String sya(){
         return "hello plugin1 example";
@@ -46,5 +49,13 @@ public class HelloPlugin1 {
         return helloService.sayService2();
     }
 
+    /**
+     * 依赖测试
+     * @return
+     */
+    @GetMapping("dependency")
+    public String gson(){
+        return gson.toJson(pluginConfig);
+    }
 
 }
