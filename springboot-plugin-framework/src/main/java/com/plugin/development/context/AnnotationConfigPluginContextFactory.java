@@ -18,12 +18,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * @Description: 针对 AnnotationConfigApplicationContext 处理的插件工厂管理者
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-28 17:29
- * @Update Date Time:
- * @see
+ * 针对 AnnotationConfigApplicationContext 处理的插件工厂管理者
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class AnnotationConfigPluginContextFactory
         extends AbstractPluginContextFactory<AnnotationConfigApplicationContext> {
@@ -76,9 +73,9 @@ public class AnnotationConfigPluginContextFactory
 
     /**
      * 处理插件中的Application
-     * @param pluginId
-     * @param applicationContext
-     * @throws PluginBeanFactoryException
+     * @param pluginId 插件id
+     * @param applicationContext 主程序上下文
+     * @throws PluginBeanFactoryException 插件bean工厂异常
      */
     protected void processPluginApplication(String pluginId, AnnotationConfigApplicationContext applicationContext)
             throws PluginBeanFactoryException {
@@ -100,11 +97,11 @@ public class AnnotationConfigPluginContextFactory
 
     /**
      * 解决 @Component 组件
-     * @param pluginApplicationContext
-     * @param beanDefinitionNames
-     * @param pluginSpringBean
-     * @return
-     * @throws PluginBeanFactoryException
+     * @param pluginApplicationContext 插件上下文
+     * @param beanDefinitionNames bean 定义的名称
+     * @param pluginSpringBean 插件中要注册到spring中的bean
+     * @return 返回注册的组件名称
+     * @throws PluginBeanFactoryException 插件bean工厂异常
      */
     private Set<String> resolveComponent(AnnotationConfigApplicationContext pluginApplicationContext,
                                          String[] beanDefinitionNames,
@@ -139,6 +136,7 @@ public class AnnotationConfigPluginContextFactory
      * 刷新之前。此处用于扩展
      * @param pluginId 插件id
      * @param applicationContext 上下文
+     * @throws PluginBeanFactoryException 插件bean工厂异常
      */
     protected void refreshBefore(String pluginId, AnnotationConfigApplicationContext applicationContext)
             throws PluginBeanFactoryException {
@@ -149,8 +147,9 @@ public class AnnotationConfigPluginContextFactory
 
     /**
      * 向主容器注册之前的操作
-     * @param pluginId
-     * @param applicationContext
+     * @param pluginId 插件id
+     * @param applicationContext 主程序上下文
+     * @throws PluginBeanFactoryException 插件bean工厂异常
      */
     protected void registryBefore(String pluginId, AnnotationConfigApplicationContext applicationContext)
             throws PluginBeanFactoryException{
@@ -161,6 +160,7 @@ public class AnnotationConfigPluginContextFactory
      * 扩展点： 向主容器注册之前处理 插件中的bean。
      * @param bean bean实例对象
      * @param pluginApplicationContext 插件的 applicationContext
+     * @throws PluginBeanFactoryException 插件bean工厂异常
      */
     protected void registryBeforePostBeanProcess(Object bean,
                                                  AnnotationConfigApplicationContext pluginApplicationContext)
@@ -176,9 +176,9 @@ public class AnnotationConfigPluginContextFactory
 
     /**
      * 注册 @Controller
-     * @param pluginSpringBean
-     * @param controllerComponentNames
-     * @throws PluginBeanFactoryException
+     * @param pluginSpringBean  插件中要注册到spring中的bean
+     * @param controllerComponentNames controller 组件名称
+     * @throws PluginBeanFactoryException 插件bean工厂异常
      */
     private void resolveController(PluginSpringBean pluginSpringBean,
                                    Set<String> controllerComponentNames) throws PluginBeanFactoryException {
@@ -230,8 +230,8 @@ public class AnnotationConfigPluginContextFactory
 
     /**
      * 要忽略的bean名称
-     * @param beanName
-     * @return
+     * @param beanName bean名称
+     * @return 是否忽略
      */
     private Boolean ignoreBeanNames(String beanName){
         if(StringUtils.isEmpty(beanName)){

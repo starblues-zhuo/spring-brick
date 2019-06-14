@@ -13,12 +13,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @Description:
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-31 09:11
- * @Update Date Time:
- * @see
+ * 默认的插件上下文
+ * @author  zhangzhuo
+ * @version 1.0
  */
 public class DefaultPluginContext implements PluginContext {
 

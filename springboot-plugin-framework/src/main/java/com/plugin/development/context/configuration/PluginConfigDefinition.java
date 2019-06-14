@@ -1,14 +1,11 @@
-package com.plugin.development.realize;
+package com.plugin.development.context.configuration;
 
 import java.util.Objects;
 
 /**
- * @Description: 插件配置的参数定义
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-29 16:53
- * @Update Date Time:
- * @see
+ * 插件配置的参数定义
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class PluginConfigDefinition {
 

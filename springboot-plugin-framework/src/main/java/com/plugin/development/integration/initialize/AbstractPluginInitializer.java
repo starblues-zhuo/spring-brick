@@ -5,12 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @Description: 抽象的初始化者
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-31 10:36
- * @Update Date Time:
- * @see
+ * 抽象的插件初始化者
+ * @author zhangzhuo
+ * @version 1.0
+ * @see com.plugin.development.integration.initialize.AutoPluginInitializer
+ * @see com.plugin.development.integration.initialize.ManualPluginInitializer
  */
 public abstract class AbstractPluginInitializer implements PluginInitializer{
 
@@ -24,7 +23,7 @@ public abstract class AbstractPluginInitializer implements PluginInitializer{
 
     /**
      * 执行初始化
-     * @throws PluginPlugException
+     * @throws PluginPlugException 插件插拔异常
      */
     public abstract void executeInitialize()  throws PluginPlugException;
 

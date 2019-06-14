@@ -11,14 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * @Description: 注册插件中 @Component注解修饰 的bean
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-28 15:33
- * @Update Date Time:
- * @see
+ * 注册插件中 @Component注解修饰 的bean
+ * @author zhangzhuo
+ * @version 1.0
  */
-
 public class PluginComponentBeanRegistry implements PluginBeanRegistry<String> {
 
     private final Logger log = LoggerFactory.getLogger(PluginComponentBeanRegistry.class);

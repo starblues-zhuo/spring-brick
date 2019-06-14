@@ -7,12 +7,9 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * @Description: 插件包合法校验
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-06-01 11:21
- * @Update Date Time:
- * @see
+ * 插件包合法校验
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class PluginLegalVerify implements PluginVerify{
 
@@ -48,10 +45,10 @@ public class PluginLegalVerify implements PluginVerify{
 
     /**
      * 合法后的校验.可扩展校验
-     * @param path
-     * @param pluginDescriptor
-     * @return
-     * @throws PluginException
+     * @param path 路径
+     * @param pluginDescriptor 插件解析者
+     * @return 返回路径
+     * @throws PluginException 插件异常
      */
     protected Path postVerify(Path path, PluginDescriptor pluginDescriptor) throws PluginException{
         return path;

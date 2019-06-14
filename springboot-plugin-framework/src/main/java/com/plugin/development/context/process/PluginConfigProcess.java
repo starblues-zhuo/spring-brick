@@ -6,19 +6,16 @@ import com.plugin.development.exception.PluginBeanFactoryException;
 import com.plugin.development.integration.IntegrationConfiguration;
 import com.plugin.development.context.configuration.ConfigurationParser;
 import com.plugin.development.context.configuration.YamlConfigurationParser;
-import com.plugin.development.realize.PluginConfigDefinition;
+import com.plugin.development.context.configuration.PluginConfigDefinition;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.StringUtils;
 
 /**
- * @Description: 插件配置处理者
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-30 11:57
- * @Update Date Time:
- * @see
+ * 插件配置处理者
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class PluginConfigProcess implements PluginPostBeanProcess{
 
@@ -54,6 +51,10 @@ public class PluginConfigProcess implements PluginPostBeanProcess{
         }
     }
 
+    /**
+     * 在此处可以更换插件配置文件解析者
+     * @param configurationParser 插件配置文件解析者
+     */
     public void setConfigurationParser(ConfigurationParser configurationParser) {
         this.configurationParser = configurationParser;
     }

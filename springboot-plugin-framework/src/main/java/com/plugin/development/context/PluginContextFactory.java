@@ -5,12 +5,9 @@ import com.plugin.development.realize.PluginApplicationContext;
 import org.springframework.context.ApplicationContext;
 
 /**
- * @Description: 插件 ApplicationContext 工厂
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-28 16:52
- * @Update Date Time:
- * @see
+ * 插件 ApplicationContext 工厂
+ * @author zhangzhuo
+ * @version 1.0
  */
 public interface PluginContextFactory extends PluginContextListener{
 
@@ -18,20 +15,20 @@ public interface PluginContextFactory extends PluginContextListener{
      * 注册插件
      * @param pluginId 插件id
      * @param pluginApplicationContext 插件实现的 PluginApplicationContext 接口
-     * @throws PluginBeanFactoryException
+     * @throws PluginBeanFactoryException 插件bean工厂异常
      */
     void registry(String pluginId, PluginApplicationContext pluginApplicationContext) throws PluginBeanFactoryException;
 
     /**
      * 卸载插件
      * @param pluginId 插件id
-     * @throws PluginBeanFactoryException
+     * @throws PluginBeanFactoryException 插件bean工厂异常
      */
     void unRegistry(String pluginId) throws PluginBeanFactoryException;
 
     /**
      * 当前工厂支持的ApplicationContext
-     * @return
+     * @return 支持的插件上下文
      */
     Class<? extends ApplicationContext> supportApplicationContextClass();
 

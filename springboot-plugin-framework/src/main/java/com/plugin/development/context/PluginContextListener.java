@@ -1,12 +1,9 @@
 package com.plugin.development.context;
 
 /**
- * @Description: 上下文监听者
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-06-04 14:28
- * @Update Date Time: 2019-06-04 14:28
- * @see
+ * 上下文监听者
+ * @author zhangzhuo
+ * @version 1.0
  */
 public interface PluginContextListener {
 

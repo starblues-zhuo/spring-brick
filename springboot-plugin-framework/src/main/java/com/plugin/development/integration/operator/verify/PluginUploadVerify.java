@@ -6,12 +6,9 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * @Description: 校验上传的插件包
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-06-01 11:21
- * @Update Date Time:
- * @see
+ * 校验上传的插件包
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class PluginUploadVerify extends PluginLegalVerify{
 

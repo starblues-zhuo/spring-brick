@@ -2,7 +2,6 @@ package com.plugin.development.context.configuration;
 
 import com.plugin.development.exception.ConfigurationParseException;
 import com.plugin.development.integration.IntegrationConfiguration;
-import com.plugin.development.realize.PluginConfigDefinition;
 import org.pf4j.RuntimeMode;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileUrlResource;
@@ -12,12 +11,9 @@ import java.io.File;
 import java.util.Objects;
 
 /**
- * @Description: 抽象的插件配置文件解析者
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-29 14:00
- * @Update Date Time:
- * @see
+ * 抽象的插件配置文件解析者
+ * @author zhangzhuo
+ * @version 1.0
  */
 public abstract class AbstractConfigurationParser implements ConfigurationParser{
 
@@ -57,8 +53,8 @@ public abstract class AbstractConfigurationParser implements ConfigurationParser
      * 子类实现解析
      * @param resource 配置文件的资源信息
      * @param pluginConfigClass 配置文件class
-     * @return
-     * @throws ConfigurationParseException
+     * @return 返回映射后的存在值得对象
+     * @throws ConfigurationParseException 配置文件解析异常
      */
     protected abstract Object parse(Resource resource,
                                     Class<?> pluginConfigClass) throws ConfigurationParseException;
@@ -68,8 +64,8 @@ public abstract class AbstractConfigurationParser implements ConfigurationParser
      * 获取配置文件资源
      * @param fileName 配置文件名称
      * @param aClass 配置文件对应的类class
-     * @return
-     * @throws Exception
+     * @return 返回资源
+     * @throws Exception 抛出异常
      */
     private Resource getResource(String fileName, Class<?> aClass) throws Exception {
         Resource resource;

@@ -9,37 +9,35 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @Description: 插件上下文
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-31 09:07
- * @Update Date Time:
- * @see
+ * 插件上下文
+ * @author  zhangzhuo
+ * @see com.plugin.development.context.DefaultPluginContext
+ * @version 1.0
  */
 public interface PluginContext {
 
     /**
      * 得到主程序的ApplicationContext
-     * @return
+     * @return 返回主程序上下文
      */
     ApplicationContext getMainApplicationContext();
 
     /**
      * 得到组件注册者
-     * @return
+     * @return 返回插件Component bean 注册者
      */
     PluginBeanRegistry<String> getComponentBeanRegistry();
 
 
     /**
      * 得到Controller注册者
-     * @return
+     * @return 返回插件Controller 注册者
      */
     PluginBeanRegistry<Set<RequestMappingInfo>> getControllerBeanRegistry();
 
     /**
      * 插件后置bean处理者
-     * @return
+     * @return 返回插件bean后置处理链
      */
     List<PluginPostBeanProcess> getPluginPostBeanProcess();
 

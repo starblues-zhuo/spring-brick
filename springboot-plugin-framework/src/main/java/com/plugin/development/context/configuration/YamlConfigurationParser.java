@@ -14,12 +14,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 /**
- * @Description: yaml 配置解析者
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-29 13:49
- * @Update Date Time:
- * @see
+ * yaml 配置解析者
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class YamlConfigurationParser extends AbstractConfigurationParser{
 

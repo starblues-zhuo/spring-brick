@@ -18,12 +18,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @Description: 开发者直接使用的。插件应用
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-28 16:57
- * @Update Date Time:
- * @see
+ * 开发者直接使用的。插件应用
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class DefaultPluginApplication implements ApplicationContextAware, PluginApplication {
 

@@ -8,21 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.PostConstruct;
 
 /**
- * @Description: 初始化者
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-29 09:43
- * @Update Date Time:
- * @see
+ * 自动初始化者
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class AutoPluginInitializer extends AbstractPluginInitializer {
 
 
-
     private final PluginOperator pluginOperator;
 
-    @Autowired
-    public AutoPluginInitializer(PluginApplication pluginApplication) {
+
+    public AutoPluginInitializer(@Autowired PluginApplication pluginApplication) {
         this.pluginOperator = pluginApplication.getPluginOperator();
     }
 

@@ -1,12 +1,9 @@
 package com.plugin.development.exception;
 
 /**
- * @Description: 插件bean注册异常
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-28 16:23
- * @Update Date Time:
- * @see
+ * 插件bean注册异常
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class PluginBeanFactoryException extends Exception{
 

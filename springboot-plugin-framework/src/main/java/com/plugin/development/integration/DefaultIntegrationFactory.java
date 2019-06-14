@@ -6,12 +6,9 @@ import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
- * @Description:
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-26 19:34
- * @Update Date Time:
- * @see
+ * 默认的插件集成工厂
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class DefaultIntegrationFactory implements IntegrationFactory {
 

@@ -1,12 +1,9 @@
 package com.plugin.development.exception;
 
 /**
- * @Description: 插件安装异常
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-29 10:01
- * @Update Date Time:
- * @see
+ * 插件安装异常
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class PluginPlugException extends Exception{
 
@@ -27,7 +24,8 @@ public class PluginPlugException extends Exception{
         super(cause);
     }
 
-    protected PluginPlugException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected PluginPlugException(String message, Throwable cause, boolean enableSuppression,
+                                  boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

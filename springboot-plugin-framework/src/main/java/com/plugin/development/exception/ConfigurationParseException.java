@@ -1,12 +1,9 @@
 package com.plugin.development.exception;
 
 /**
- * @Description: 配置文件解析异常
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-29 14:04
- * @Update Date Time:
- * @see
+ * 配置文件解析异常
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class ConfigurationParseException extends Exception{
 

@@ -5,12 +5,9 @@ import org.pf4j.PluginState;
 
 
 /**
- * @Description: 插件信息
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-31 11:12
- * @Update Date Time:
- * @see
+ * 插件信息
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class PluginInfo {
 

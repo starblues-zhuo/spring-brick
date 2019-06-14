@@ -18,12 +18,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @Description: 注册插件中的 Controller
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-28 15:40
- * @Update Date Time:
- * @see
+ * 注册插件中的 Controller
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class PluginControllerBeanRegistry implements PluginBeanRegistry<Set<RequestMappingInfo>> {
 
@@ -60,10 +57,6 @@ public class PluginControllerBeanRegistry implements PluginBeanRegistry<Set<Requ
             }
             return requestMappingInfos;
         } catch (SecurityException e) {
-            throw new PluginBeanFactoryException(e);
-        } catch (IllegalAccessException e) {
-            throw new PluginBeanFactoryException(e);
-        } catch (IllegalArgumentException e) {
             throw new PluginBeanFactoryException(e);
         } catch (InvocationTargetException e) {
             throw new PluginBeanFactoryException(e);

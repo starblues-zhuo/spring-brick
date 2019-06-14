@@ -8,12 +8,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.util.Objects;
 
 /**
- * @Description: 插件包要继承的抽象类
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-26 18:38
- * @Update Date Time:
- * @see
+ * 插件包要继承的抽象类
+ * @author zhangzhuo
+ * @version 1.0
  */
 public abstract class BasePlugin extends Plugin implements PluginApplicationContext{
 
@@ -54,7 +51,7 @@ public abstract class BasePlugin extends Plugin implements PluginApplicationCont
 
     /**
      * 创建当前插件包的 ApplicationContext
-     * @return
+     * @return 注解上下文
      */
     private AnnotationConfigApplicationContext createApplicationContext(){
         String scanPackage = scanPackage();
@@ -70,8 +67,8 @@ public abstract class BasePlugin extends Plugin implements PluginApplicationCont
 
 
     /**
-     * 获取当前实现类的包命
-     * @return
+     * 获取当前实现类的包名
+     * @return 包名
      */
     private String getCurrentPackageName(){
         return this.getClass().getPackage().getName();
@@ -79,7 +76,7 @@ public abstract class BasePlugin extends Plugin implements PluginApplicationCont
 
     /**
      * 扫描包。默认为当前类包名。可重写自定义包名
-     * @return
+     * @return 包名
      */
     protected String scanPackage(){
         return this.getCurrentPackageName();

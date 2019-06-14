@@ -27,12 +27,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @Description: 默认的插件操作者
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-29 10:25
- * @Update Date Time: 2019-05-29 10:25
- * @see
+ * 默认的插件操作者
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class DefaultPluginOperator implements PluginOperator {
 

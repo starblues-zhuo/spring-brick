@@ -10,12 +10,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @Description: 抽象的插件上下文工厂
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-30 09:11
- * @Update Date Time:
- * @see
+ * 抽象的插件上下文工厂
+ * @author zhangzhuo
+ * @version 1.0
+ * @see com.plugin.development.context.AnnotationConfigPluginContextFactory
  */
 public abstract class AbstractPluginContextFactory<T extends ApplicationContext>
         implements PluginContextFactory{
@@ -44,15 +42,15 @@ public abstract class AbstractPluginContextFactory<T extends ApplicationContext>
      * 注册
      * @param pluginId 插件id
      * @param pluginApplicationContext 插件中的applicationContext
-     * @throws PluginBeanFactoryException
+     * @throws PluginBeanFactoryException 插件bean工厂异常
      */
     public abstract void registry(String pluginId, T pluginApplicationContext) throws PluginBeanFactoryException;
 
 
     /**
      * 是否为空
-     * @param pluginApplicationContext
-     * @return
+     * @param pluginApplicationContext 插件上下文
+     * @return 插件上下文
      */
     private ApplicationContext isNull(PluginApplicationContext pluginApplicationContext){
         Objects.requireNonNull(pluginApplicationContext, "pluginApplicationContext can not be null");
@@ -65,7 +63,7 @@ public abstract class AbstractPluginContextFactory<T extends ApplicationContext>
 
     /**
      * 设置监听者
-     * @param pluginSpringBeanListener
+     * @param pluginSpringBeanListener 插件SpringBean监听者
      */
     @Override
     public void addListener(PluginSpringBeanListener pluginSpringBeanListener){
