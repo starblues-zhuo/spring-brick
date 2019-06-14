@@ -21,7 +21,7 @@
 1. jdk1.8+
 2. apache maven 3.6
 
-#### 仓库地址
+#### maven仓库地址
 
 https://search.maven.org/artifact/com.gitee.starblues/springboot-plugin-framework/1.0-RELEASE/jar
 
@@ -32,7 +32,7 @@ https://search.maven.org/artifact/com.gitee.starblues/springboot-plugin-framewor
 <dependency>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework</artifactId>
-    <version>${springboot-plugin-framework.version}</version>
+    <version>1.0-RELEASE</version>
 </dependency>
 ```
 
