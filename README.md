@@ -115,14 +115,6 @@ public class PluginArgConfiguration implements IntegrationConfiguration {
 3. 配置集成bean
   
 ```
-/**
- * @Description: 插件集成配置
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-30 15:53
- * @Update Date Time:
- * @see
- */
 @Configuration
 public class PluginBeanConfig {
 
