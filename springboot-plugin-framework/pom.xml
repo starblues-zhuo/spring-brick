@@ -4,30 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RELEASE</version>
 
     <description>spring boot 插件式开发集成包</description>
 
-
-    <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
-        <maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
-        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-
-        <pf4j-version>2.6.0</pf4j-version>
-        <pf4j-update.version>2.0.0</pf4j-update.version>
-        <spring-version>5.1.7.RELEASE</spring-version>
-        <jackson.version>2.9.9</jackson.version>
-        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
-        <junit.version>4.11</junit.version>
-    </properties>
 
     <licenses>
         <license>
@@ -64,6 +53,24 @@
             <url>https://gitee.com/starblues/</url>
         </developer>
     </developers>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+        <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+
+        <pf4j-version>2.6.0</pf4j-version>
+        <pf4j-update.version>2.0.0</pf4j-update.version>
+        <spring-version>5.1.7.RELEASE</spring-version>
+        <jackson.version>2.9.9</jackson.version>
+        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+        <junit.version>4.11</junit.version>
+    </properties>
 
     <dependencies>
 
@@ -161,8 +168,28 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <configuration>
+                    <skip>${plugin.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
+                <configuration>
+                    <skip>${plugin.skip}</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -177,6 +204,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>${maven-gpg-plugin.version}</version>
+                <configuration>
+                    <skip>${plugin.skip}</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -188,7 +218,29 @@
                 </executions>
             </plugin>
 
+
         </plugins>
     </build>
+
+    <profiles>
+
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <plugin.skip>true</plugin.skip>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>release</id>
+            <properties>
+                <plugin.skip>false</plugin.skip>
+            </properties>
+        </profile>
+    </profiles>
+
 
 </project>

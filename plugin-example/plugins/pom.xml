@@ -7,7 +7,7 @@
 
     <groupId>com.gitee.starblues</groupId>
     <artifactId>plugin-example-plugin-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RELEASE</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -28,7 +28,7 @@
 
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
-        <springboot-plugin-framework.version>1.0-SNAPSHOT</springboot-plugin-framework.version>
+        <springboot-plugin-framework.version>1.0-RELEASE</springboot-plugin-framework.version>
     </properties>
 
     <dependencies>

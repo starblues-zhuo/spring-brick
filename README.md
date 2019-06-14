@@ -21,6 +21,10 @@
 1. jdk1.8+
 2. apache maven 3.6
 
+#### 仓库地址
+
+https://search.maven.org/artifact/com.gitee.starblues/springboot-plugin-framework/1.0-RELEASE/jar
+
 #### 主程序集成步骤
 1. 在主程序中新增maven依赖包
 

@@ -14,7 +14,7 @@
 
     <groupId>com.gitee.starblues</groupId>
     <artifactId>plugin-example-runner</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RELEASE</version>
     <packaging>pom</packaging>
 
     <dependencies>
