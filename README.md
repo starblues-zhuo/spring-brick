@@ -41,6 +41,12 @@ https://search.maven.org/artifact/com.gitee.starblues/springboot-plugin-framewor
     实现 **com.plugin.development.integration.IntegrationConfiguration** 接口。
 
 ```java
+import com.plugin.development.integration.*;
+import org.pf4j.RuntimeMode;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
 @Component
 @ConfigurationProperties(prefix = "plugin")
 public class PluginArgConfiguration implements IntegrationConfiguration {
@@ -115,6 +121,14 @@ public class PluginArgConfiguration implements IntegrationConfiguration {
 3. 配置集成bean
   
 ```
+import com.plugin.development.integration.*;
+import com.plugin.development.integration.initialize.AutoPluginInitializer;
+import com.plugin.development.integration.initialize.PluginInitializer;
+import org.pf4j.PluginException;
+import org.pf4j.PluginManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 @Configuration
 public class PluginBeanConfig {
 
@@ -255,6 +269,9 @@ plugin.provider: 插件作者
     
 3. 继承 `com.plugin.development.realize.BasePlugin` 包
 ``` java
+import com.plugin.development.realize.BasePlugin;
+import org.pf4j.PluginWrapper;
+
 public class DefinePlugin extends BasePlugin {
     public DefinePlugin(PluginWrapper wrapper) {
         super(wrapper);
@@ -293,6 +310,12 @@ public class DefinePlugin extends BasePlugin {
 
 例如:
 ```java
+import com.plugin.development.annotation.ApplyMainBean;
+import com.plugin.example.start.config.PluginArgConfiguration;
+import com.plugin.example.start.plugin.ConsoleName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 @Component
 @ApplyMainBean
 public class ConsoleNameImpl implements ConsoleName {
@@ -310,6 +333,13 @@ public class ConsoleNameImpl implements ConsoleName {
 
 2. 插件中定义Controller例子。同springboot一致。注意每个插件和主程序中的RequestMapping不要重复。
 ```java
+import com.plugin.example.plugin1.config.PluginConfig;
+import com.plugin.example.plugin1.service.HelloService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 @RestController
 @RequestMapping("/plugin1")
 public class HelloPlugin1 {
@@ -350,6 +380,13 @@ public class HelloPlugin1 {
 
 例如:
 ```java
+import com.plugin.development.annotation.ConfigDefinition;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Set;
+
+
 @Component
 @ConfigDefinition("plugin1.yml")
 public class PluginConfig {
