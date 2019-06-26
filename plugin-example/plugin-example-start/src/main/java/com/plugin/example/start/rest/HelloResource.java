@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,10 +37,24 @@ public class HelloResource {
     @GetMapping("/consoleName")
     public String consoleName(){
         StringBuffer stringBuffer = new StringBuffer();
-        Map<String, ConsoleName> consoleNameMap = pluginUser.getSpringDefineBeansOfType(ConsoleName.class);
-        for (ConsoleName consoleName : consoleNameMap.values()) {
+        List<ConsoleName> consoleNames = pluginUser
+                .getSpringDefineBeansOfType(ConsoleName.class);
+        for (ConsoleName consoleName : consoleNames) {
             stringBuffer.append(consoleName.name())
-                    .append("\n");
+                    .append("<br/>");
+        }
+        return stringBuffer.toString();
+    }
+
+
+    @GetMapping("/pluginName")
+    public String pluginName(){
+        StringBuffer stringBuffer = new StringBuffer();
+        List<ConsoleName> consoleNames = pluginUser
+                .getPluginSpringDefineBeansOfType(ConsoleName.class);
+        for (ConsoleName consoleName : consoleNames) {
+            stringBuffer.append(consoleName.name())
+                    .append("<br/>");
         }
         System.out.println(stringBuffer);
         return stringBuffer.toString();

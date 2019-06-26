@@ -1,12 +1,16 @@
 package com.plugin.development.integration.user;
 
+import com.plugin.development.context.factory.name.PluginBeanNameDefine;
+import com.plugin.development.context.factory.name.PluginBeanNameDefineFactory;
 import org.pf4j.PluginManager;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 默认插件使用者
@@ -17,7 +21,8 @@ public class DefaultPluginUser implements PluginUser{
 
     private final ApplicationContext applicationContext;
     private final PluginManager pluginManager;
-    private AutowireCapableBeanFactory autowireCapableBeanFactory;
+    private final AutowireCapableBeanFactory autowireCapableBeanFactory;
+    private final PluginBeanNameDefine pluginBeanNameDefine;
 
     public DefaultPluginUser(ApplicationContext applicationContext, PluginManager pluginManager) {
         Objects.requireNonNull(applicationContext);
@@ -25,6 +30,7 @@ public class DefaultPluginUser implements PluginUser{
         this.applicationContext = applicationContext;
         this.autowireCapableBeanFactory = applicationContext.getAutowireCapableBeanFactory();
         this.pluginManager = pluginManager;
+        this.pluginBeanNameDefine = PluginBeanNameDefineFactory.get();
     }
 
     /**
@@ -43,11 +49,38 @@ public class DefaultPluginUser implements PluginUser{
      * 在主程序中定义的接口。插件或者主程序实现该接口。可以该方法获取到实现该接口的所有实现类。（Spring管理的bean）
      * @param aClass 接口的类
      * @param <T> bean的类型
-     * @return 返回bean
+     * @return List
      */
     @Override
-    public <T> Map<String,T> getSpringDefineBeansOfType(Class<T> aClass){
-        return applicationContext.getBeansOfType(aClass);
+    public <T> List<T> getSpringDefineBeansOfType(Class<T> aClass){
+        Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
+        if(beansOfTypeMap == null){
+            return Collections.emptyList();
+        }
+        return beansOfTypeMap.values()
+                .stream()
+                .filter(beansOfType-> beansOfTypeMap != null)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 在主程序中定义的接口。获取插件中实现该接口的实现类。（Spring管理的bean）
+     * @param aClass 接口的类
+     * @param <T> bean的类型
+     * @return List
+     */
+    @Override
+    public <T> List<T> getPluginSpringDefineBeansOfType(Class<T> aClass) {
+        Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
+        if(beansOfTypeMap == null){
+            return Collections.emptyList();
+        }
+        return beansOfTypeMap.keySet()
+                .stream()
+                .filter(name -> name != null && pluginBeanNameDefine.isPluginBeanName(name))
+                .map(name -> beansOfTypeMap.get(name))
+                .filter(bean -> bean != null)
+                .collect(Collectors.toList());
     }
 
     /**

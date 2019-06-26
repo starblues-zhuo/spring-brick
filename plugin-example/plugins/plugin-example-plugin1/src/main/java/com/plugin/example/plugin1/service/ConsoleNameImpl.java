@@ -23,6 +23,6 @@ public class ConsoleNameImpl implements ConsoleName {
 
     @Override
     public String name() {
-        return "My name is Plugin1" + "; pluginArgConfiguration :" + pluginArgConfiguration.toString();
+        return "My name is Plugin1" + "->pluginArgConfiguration :" + pluginArgConfiguration.toString();
     }
 }

@@ -7,7 +7,7 @@
 
     <groupId>com.gitee.starblues</groupId>
     <artifactId>plugin-example-start</artifactId>
-    <version>1.0-RELEASE</version>
+    <version>1.1-RELEASE</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -17,20 +17,17 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <properties>
-        <springboot-plugin-framework.version>1.0-RELEASE</springboot-plugin-framework.version>
-    </properties>
+
 
     <dependencies>
 
         <dependency>
             <groupId>com.gitee.starblues</groupId>
             <artifactId>springboot-plugin-framework</artifactId>
-            <version>${springboot-plugin-framework.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
 
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>

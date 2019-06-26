@@ -1,6 +1,9 @@
 package com.plugin.development.context.factory;
 
 import com.plugin.development.annotation.ApplyMainBean;
+import com.plugin.development.context.factory.name.DefaultPluginBeanNameDefine;
+import com.plugin.development.context.factory.name.PluginBeanNameDefine;
+import com.plugin.development.context.factory.name.PluginBeanNameDefineFactory;
 import com.plugin.development.exception.PluginBeanFactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +24,13 @@ public class PluginComponentBeanRegistry implements PluginBeanRegistry<String> {
 
 
     private final DefaultListableBeanFactory defaultListableBeanFactory;
+    private final PluginBeanNameDefine pluginBeanNameDefine;
 
     public PluginComponentBeanRegistry(ApplicationContext applicationContext) {
         DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory)
                 applicationContext.getAutowireCapableBeanFactory();
         this.defaultListableBeanFactory = defaultListableBeanFactory;
+        this.pluginBeanNameDefine = PluginBeanNameDefineFactory.get();
     }
 
 
@@ -46,6 +51,7 @@ public class PluginComponentBeanRegistry implements PluginBeanRegistry<String> {
             } else {
                 beanName = component.value();
             }
+            beanName = pluginBeanNameDefine.getPluginName(beanName);
             if(!defaultListableBeanFactory.containsSingleton(beanName)){
                 ApplyMainBean applyMainBean = aClass.getAnnotation(ApplyMainBean.class);
                 if(applyMainBean != null) {

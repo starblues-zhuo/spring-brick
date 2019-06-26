@@ -663,3 +663,13 @@ Use classpath of module: plugin-exampe-runner
     如果pluginPath 配置为相当路径，请检查是否是相对于当前工作环境的目录。
 
     如果pluginPath配置为绝对路径，请检查路径是否正确。
+    
+#### 版本更新
+
+##### 1.1 版本
+**1. 新增插件注册、卸载监听器。
+
+**2. 新增可通过 PluginUser 获取插件中实现主程序中定义的接口的实现类。
+
+**3. 新增插件注册、卸载时监听时, 可手动刷新接口定义的实现Bean的机制。继承com.plugin.development.context.refresh.AbstractPluginSpringBeanRefresh 或者 com.plugin.development.context.refresh.AbstractSpringBeanRefresh 即可实现。 
+
