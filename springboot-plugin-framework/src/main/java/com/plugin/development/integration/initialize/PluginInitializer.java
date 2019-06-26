@@ -16,4 +16,5 @@ public interface PluginInitializer {
      */
     void initialize() throws PluginPlugException;
 
+
 }

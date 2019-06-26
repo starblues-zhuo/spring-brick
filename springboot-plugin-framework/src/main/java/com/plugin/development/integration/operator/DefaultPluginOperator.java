@@ -5,6 +5,8 @@ import com.plugin.development.exception.PluginPlugException;
 import com.plugin.development.context.PluginContextFactory;
 import com.plugin.development.integration.DefaultPluginApplication;
 import com.plugin.development.integration.IntegrationConfiguration;
+import com.plugin.development.integration.initialize.DefaultInitializerListener;
+import com.plugin.development.integration.initialize.PluginInitializerListener;
 import com.plugin.development.integration.operator.module.PluginInfo;
 import com.plugin.development.integration.operator.verify.PluginLegalVerify;
 import com.plugin.development.integration.operator.verify.PluginUploadVerify;
@@ -61,9 +63,13 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
     @Override
-    public boolean initPlugins() throws PluginPlugException {
+    public boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws PluginPlugException {
         try {
+            if(pluginInitializerListener == null){
+                pluginInitializerListener = new DefaultInitializerListener();
+            }
             log.info("Start Init Plugins");
+            pluginInitializerListener.before();
             pluginManager.loadPlugins();
             pluginManager.startPlugins();
             List<PluginWrapper> pluginWrappers = pluginManager.getStartedPlugins();
@@ -88,8 +94,10 @@ public class DefaultPluginOperator implements PluginOperator {
                     }
                 }
             }
+            pluginInitializerListener.complete();
             return true;
         }  catch (Exception e){
+            pluginInitializerListener.failure(e);
             throw new PluginPlugException(e);
         }
     }

@@ -15,11 +15,10 @@ import java.util.List;
  */
 public abstract class AbstractSpringBeanRefresh<T> implements PluginSpringBeanListener {
 
-    private final Class<T> typeClass;
-
     private List<T> beans;
 
-    private final PluginApplication pluginApplication;
+    protected final Class<T> typeClass;
+    protected final PluginApplication pluginApplication;
 
 
     public AbstractSpringBeanRefresh(PluginApplication pluginApplication) {
@@ -32,32 +31,41 @@ public abstract class AbstractSpringBeanRefresh<T> implements PluginSpringBeanLi
 
     @Override
     public void registryEvent(String pluginId) throws Exception {
-        refresh();
+        this.beans = refresh();
+        registryEvent(beans);
     }
 
     @Override
-    public void unRegistryEvent(String pluginId) throws Exception {
-        refresh();
-    }
-
-
-    private void refresh(){
-        List<T> beans = pluginApplication
-                .getPluginUser()
-                .getSpringDefineBeansOfType(typeClass);
-        if(beans != null){
-            this.beans = refresh(beans);
-        } else {
-            this.beans = beans;
-        }
+    public void unRegistryEvent(String pluginId) throws Exception{
+        this.beans = refresh();
+        unRegistryEvent(beans);
     }
 
     /**
-     * 刷新beans的操作
-     * @param beans 当前 对 T 的实现类的所有beans(包括主程序中的beans)
-     * @return 操作后的beans
+     * 注册事件
+     * @param beans 当前所有实现的bean
      */
-    protected abstract List<T> refresh(List<T> beans);
+    protected void registryEvent(List<T> beans){
+
+    }
+
+    /**
+     * 卸载事件
+     * @param beans 当前卸载后所有的beans
+     */
+    protected void unRegistryEvent(List<T> beans){
+
+    }
+
+    /**
+     * 刷新bean
+     */
+    protected List<T> refresh(){
+        return pluginApplication
+                .getPluginUser()
+                .getPluginSpringDefineBeansOfType(typeClass);
+    }
+
 
     /**
      * 得到beans

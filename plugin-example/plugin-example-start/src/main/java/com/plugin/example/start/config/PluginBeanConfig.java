@@ -47,8 +47,11 @@ public class PluginBeanConfig {
      * @return
      */
     @Bean
-    public PluginInitializer pluginInitializer(PluginApplication pluginApplication){
-        return new AutoPluginInitializer(pluginApplication);
+    public PluginInitializer pluginInitializer(PluginApplication pluginApplication,
+                                               PluginListener pluginListener){
+        AutoPluginInitializer autoPluginInitializer = new AutoPluginInitializer(pluginApplication);
+        autoPluginInitializer.setPluginInitializerListener(pluginListener);
+        return autoPluginInitializer;
     }
 
 }

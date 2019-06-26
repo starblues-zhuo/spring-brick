@@ -18,9 +18,16 @@ public class ManualPluginInitializer extends AbstractPluginInitializer {
         this.pluginOperator = pluginApplication.getPluginOperator();
     }
 
+    public ManualPluginInitializer(PluginApplication pluginApplication,
+                                   PluginInitializerListener pluginInitializerListener) {
+        super(pluginInitializerListener);
+        this.pluginOperator = pluginApplication.getPluginOperator();
+    }
+
 
     @Override
     public void executeInitialize() throws PluginPlugException {
-        pluginOperator.initPlugins();
+        pluginOperator.initPlugins(pluginInitializerListener);
     }
+
 }

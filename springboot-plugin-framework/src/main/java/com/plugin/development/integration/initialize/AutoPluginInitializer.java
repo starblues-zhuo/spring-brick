@@ -22,12 +22,18 @@ public class AutoPluginInitializer extends AbstractPluginInitializer {
         this.pluginOperator = pluginApplication.getPluginOperator();
     }
 
+    public AutoPluginInitializer(PluginApplication pluginApplication,
+                                   PluginInitializerListener pluginInitializerListener) {
+        super(pluginInitializerListener);
+        this.pluginOperator = pluginApplication.getPluginOperator();
+    }
+
 
     @PostConstruct
     @Override
     public void executeInitialize() throws PluginPlugException {
         try {
-            pluginOperator.initPlugins();
+            pluginOperator.initPlugins(pluginInitializerListener);
         } catch (Exception e) {
             e.printStackTrace();
         }

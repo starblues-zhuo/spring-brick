@@ -1,11 +1,8 @@
 package com.plugin.development.context.refresh;
 
-import com.plugin.development.context.PluginSpringBeanListener;
 import com.plugin.development.integration.PluginApplication;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 抽象的插件SpringBean刷新类监听类.
@@ -14,57 +11,23 @@ import java.util.Map;
  * @author zhangzhuo
  * @version 1.0
  */
-public abstract class AbstractPluginSpringBeanRefresh<T> implements PluginSpringBeanListener {
-
-    private final Class<T> typeClass;
-
-    private List<T> beans;
-
-    private final PluginApplication pluginApplication;
+public abstract class AbstractPluginSpringBeanRefresh<T> extends AbstractSpringBeanRefresh<T> {
 
 
     public AbstractPluginSpringBeanRefresh(PluginApplication pluginApplication) {
-        this.pluginApplication = pluginApplication;
-        pluginApplication.addListener(this);
-        this.typeClass  = (Class<T>)((ParameterizedType)getClass()
-                .getGenericSuperclass())
-                .getActualTypeArguments()[0];
+        super(pluginApplication);
     }
 
+
+
+    /**
+     * 刷新bean
+     */
     @Override
-    public void registryEvent(String pluginId) throws Exception {
-        refresh();
-    }
-
-    @Override
-    public void unRegistryEvent(String pluginId) throws Exception {
-        refresh();
-    }
-
-
-    private void refresh(){
-        List<T> beans = pluginApplication
+    protected List<T> refresh(){
+        return pluginApplication
                 .getPluginUser()
                 .getPluginSpringDefineBeansOfType(typeClass);
-        if(beans != null){
-            this.beans = refresh(beans);
-        } else {
-            this.beans = beans;
-        }
     }
 
-    /**
-     * 刷新beans的操作
-     * @param beans beans
-     * @return 刷新后的beans
-     */
-    protected abstract List<T> refresh(List<T> beans);
-
-    /**
-     * 得到beans
-     * @return beansMap
-     */
-    public List<T> getBeans() {
-        return beans;
-    }
 }

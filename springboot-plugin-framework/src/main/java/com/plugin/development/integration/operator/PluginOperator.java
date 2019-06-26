@@ -1,6 +1,7 @@
 package com.plugin.development.integration.operator;
 
 import com.plugin.development.exception.PluginPlugException;
+import com.plugin.development.integration.initialize.PluginInitializerListener;
 import com.plugin.development.integration.operator.module.PluginInfo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,10 +19,11 @@ public interface PluginOperator {
 
     /**
      * 初始化插件
+     * @param pluginInitializerListener 插件初始化监听者
      * @return 成功返回true.不成功抛出异常或者返回false
      * @throws PluginPlugException 插件插头异常
      */
-    boolean initPlugins() throws PluginPlugException;
+    boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws PluginPlugException;
 
     /**
      * 通过路径加载插件(不会启用)
