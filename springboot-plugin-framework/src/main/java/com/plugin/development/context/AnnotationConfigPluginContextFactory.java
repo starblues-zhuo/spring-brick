@@ -3,15 +3,20 @@ package com.plugin.development.context;
 import com.plugin.development.context.process.PluginPostBeanProcess;
 import com.plugin.development.exception.PluginBeanFactoryException;
 import com.plugin.development.context.factory.PluginBeanRegistry;
+import com.plugin.development.integration.IntegrationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -41,6 +46,8 @@ public class AnnotationConfigPluginContextFactory
 
     private final List<PluginPostBeanProcess> pluginPostBeanProcess;
 
+    private final IntegrationConfiguration integrationConfiguration;
+
     public AnnotationConfigPluginContextFactory(PluginContext pluginContext) {
         Objects.requireNonNull(pluginContext);
         Objects.requireNonNull(pluginContext.getMainApplicationContext());
@@ -53,7 +60,8 @@ public class AnnotationConfigPluginContextFactory
         } else {
             this.pluginPostBeanProcess = pluginPostBeanProcess;
         }
-
+        this.integrationConfiguration =
+                mainApplicationContext.getBean(IntegrationConfiguration.class);
     }
 
 
@@ -77,7 +85,8 @@ public class AnnotationConfigPluginContextFactory
      * @param applicationContext 主程序上下文
      * @throws PluginBeanFactoryException 插件bean工厂异常
      */
-    protected void processPluginApplication(String pluginId, AnnotationConfigApplicationContext applicationContext)
+    protected void processPluginApplication(String pluginId,
+                                            AnnotationConfigApplicationContext applicationContext)
             throws PluginBeanFactoryException {
         String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
         LOCK.lock();
@@ -87,8 +96,10 @@ public class AnnotationConfigPluginContextFactory
                 throw new PluginBeanFactoryException("The plugin " + pluginId + " has been registered");
             }
             PluginSpringBean pluginSpringBean = new PluginSpringBean();
-            Set<String> controllerComponentNames = resolveComponent(applicationContext, beanDefinitionNames, pluginSpringBean);
-            resolveController(pluginSpringBean, controllerComponentNames);
+            Set<String> controllerComponentNames = resolveComponent(applicationContext,
+                    beanDefinitionNames, pluginSpringBean);
+            resolveController(pluginId, pluginSpringBean,
+                    controllerComponentNames);
             SPRING_BEAN_MAP.put(pluginId, pluginSpringBean);
         } finally {
             LOCK.unlock();
@@ -176,11 +187,12 @@ public class AnnotationConfigPluginContextFactory
 
     /**
      * 注册 @Controller
+     * @param pluginId 插件id
      * @param pluginSpringBean  插件中要注册到spring中的bean
      * @param controllerComponentNames controller 组件名称
      * @throws PluginBeanFactoryException 插件bean工厂异常
      */
-    private void resolveController(PluginSpringBean pluginSpringBean,
+    private void resolveController(String pluginId, PluginSpringBean pluginSpringBean,
                                    Set<String> controllerComponentNames) throws PluginBeanFactoryException {
         for (String controllerComponentName : controllerComponentNames) {
             // 从spring容器中获取到controller实例
@@ -188,6 +200,9 @@ public class AnnotationConfigPluginContextFactory
             if(controllerComponent == null){
                 continue;
             }
+            // 统一设置请求前缀。
+            setPathPrefix(pluginId, controllerComponent);
+
             Set<RequestMappingInfo> requestMappingInfos = pluginControllerBeanRegistry.registry(
                     controllerComponent);
             if(requestMappingInfos == null){
@@ -199,6 +214,49 @@ public class AnnotationConfigPluginContextFactory
         }
     }
 
+    /**
+     * 设置请求路径前缀
+     * @param controllerComponent controller 组件
+     */
+    private void setPathPrefix(String pluginId,
+                               Object controllerComponent) {
+        RequestMapping requestMapping = controllerComponent.getClass()
+                .getAnnotation(RequestMapping.class);
+        if(requestMapping == null){
+            return;
+        }
+        String pathPrefix = integrationConfiguration.pluginRestControllerPathPrefix();
+        if(integrationConfiguration.enablePluginIdRestControllerPathPrefix()){
+            if(pathPrefix != null && !"".equals(pathPrefix)){
+                pathPrefix = joiningPath(pathPrefix, pluginId);
+            } else {
+                pathPrefix = pluginId;
+            }
+        } else {
+            if(pathPrefix == null || "".equals(pathPrefix)){
+                // 不启用插件id作为路径前缀, 并且路径前缀为空, 则直接返回。
+                return;
+            }
+        }
+        InvocationHandler invocationHandler = Proxy.getInvocationHandler(requestMapping);
+        Set<String> definePaths = new HashSet<>();
+        definePaths.addAll(Arrays.asList(requestMapping.path()));
+        definePaths.addAll(Arrays.asList(requestMapping.value()));
+        try {
+            Field field = invocationHandler.getClass().getDeclaredField("memberValues");
+            field.setAccessible(true);
+            Map<String, Object>  memberValues = (Map<String, Object>) field.get(invocationHandler);
+            String[] newPath = new String[definePaths.size()];
+            int i = 0;
+            for (String definePath : definePaths) {
+                newPath[i++] = joiningPath(pathPrefix, definePath);
+            }
+            memberValues.put("path", newPath);
+            memberValues.put("value", new String[]{});
+        } catch (Exception e) {
+            log.error("Define Plugin RestController pathPrefix error : {}", e.getMessage(), e);
+        }
+    }
 
 
     @Override
@@ -252,6 +310,30 @@ public class AnnotationConfigPluginContextFactory
                 return true;
             default:
                 return false;
+        }
+    }
+
+    /**
+     * 拼接路径
+     * @param path1 路径1
+     * @param path2 路径2
+     * @return 拼接的路径
+     */
+    public String joiningPath(String path1, String path2){
+        if(path1 != null && path2 != null){
+            if(path1.endsWith("/") && path2.startsWith("/")){
+                return path1 + path2.substring(1);
+            } else if(!path1.endsWith("/") && !path2.startsWith("/")){
+                return path1 + "/" + path2;
+            } else {
+                return path1 + path2;
+            }
+        } else if(path1 != null){
+            return path1;
+        } else if(path2 != null){
+            return path2;
+        } else {
+            return "";
         }
     }
 

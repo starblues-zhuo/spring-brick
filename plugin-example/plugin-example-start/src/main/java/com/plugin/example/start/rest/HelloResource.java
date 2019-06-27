@@ -19,7 +19,7 @@ import java.util.Map;
  * @see
  */
 @RestController
-@RequestMapping("/hello")
+@RequestMapping(path = "/hello")
 public class HelloResource {
 
 

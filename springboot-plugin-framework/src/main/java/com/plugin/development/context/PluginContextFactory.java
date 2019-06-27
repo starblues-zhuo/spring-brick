@@ -17,7 +17,8 @@ public interface PluginContextFactory extends PluginContextListener{
      * @param pluginApplicationContext 插件实现的 PluginApplicationContext 接口
      * @throws PluginBeanFactoryException 插件bean工厂异常
      */
-    void registry(String pluginId, PluginApplicationContext pluginApplicationContext) throws PluginBeanFactoryException;
+    void registry(String pluginId,
+                  PluginApplicationContext pluginApplicationContext) throws PluginBeanFactoryException;
 
     /**
      * 卸载插件

@@ -29,19 +29,29 @@ public interface IntegrationConfiguration {
     String pluginConfigFilePath();
 
     /**
-     * 上传插件的临时保存路径。默认: temp, 替换默认请重写
-     * @return 上传插件的临时保存路径。默认: temp, 替换默认请重写
+     * 上传插件的临时保存路径。
+     * @return 上传插件的临时保存路径。
      */
-    default String uploadTempPath(){
-        return "temp";
-    }
+    String uploadTempPath();
 
     /**
-     * 插件备份路径。默认: backupPlugin, 替换默认请重写
-     * @return 插件备份路径。默认: backupPlugin, 替换默认请重写
+     * 插件备份路径。
+     * @return 插件备份路径。
      */
-    default String backupPath(){
-        return "backupPlugin";
-    }
+    String backupPath();
+
+    /**
+     * 统一插件RestController的路径前缀
+     * @return path
+     */
+    String pluginRestControllerPathPrefix();
+
+    /**
+     * 启用插件id作为RestController的路径前缀。
+     * 如果启用。则路径前缀为 pluginRestControllerPathPrefix() 返回的路径拼接插件id,
+     * 即为: /pathPrefix/pluginId/**
+     * @return boolean
+     */
+    boolean enablePluginIdRestControllerPathPrefix();
 
 }

@@ -5,6 +5,7 @@ import com.plugin.development.context.factory.PluginComponentBeanRegistry;
 import com.plugin.development.context.factory.PluginControllerBeanRegistry;
 import com.plugin.development.context.process.PluginConfigProcess;
 import com.plugin.development.context.process.PluginPostBeanProcess;
+import com.plugin.development.integration.IntegrationConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
@@ -32,8 +33,6 @@ public class DefaultPluginContext implements PluginContext {
         this.pluginControllerBeanRegistry = new PluginControllerBeanRegistry(applicationContext);
         initPluginPostBeanProcess();
     }
-
-
 
     @Override
     public ApplicationContext getMainApplicationContext() {

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @see
  */
 @RestController
-@RequestMapping("/plugin2")
+@RequestMapping("/hello")
 public class HelloPlugin1 {
 
     @Autowired

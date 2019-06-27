@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties(prefix = "plugin")
-public class PluginArgConfiguration implements IntegrationConfiguration {
+public class PluginArgConfiguration extends DefaultIntegrationConfiguration {
 
     /**
      * 运行模式

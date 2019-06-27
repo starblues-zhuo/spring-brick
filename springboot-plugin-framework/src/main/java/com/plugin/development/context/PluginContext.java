@@ -2,6 +2,7 @@ package com.plugin.development.context;
 
 import com.plugin.development.context.factory.PluginBeanRegistry;
 import com.plugin.development.context.process.PluginPostBeanProcess;
+import com.plugin.development.integration.IntegrationConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
