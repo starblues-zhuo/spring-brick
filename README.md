@@ -49,7 +49,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "plugin")
-public class PluginArgConfiguration implements IntegrationConfiguration {
+public class PluginArgConfiguration extends DefaultIntegrationConfiguration {
 
     /**
      * 运行模式
@@ -103,6 +103,24 @@ public class PluginArgConfiguration implements IntegrationConfiguration {
     @Override
     public String backupPath() {
         return "backupPlugin";
+    }
+    
+    /**
+     * 重写插件RestController请求的路径前缀
+     * @return String
+     */
+    @Override
+    public String pluginRestControllerPathPrefix() {
+        return "/api/plugin";
+    }
+
+    /**
+     * 重写是否启用插件id作为RestController请求的路径前缀
+     * @return String
+     */
+    @Override
+    public boolean enablePluginIdRestControllerPathPrefix() {
+        return true;
     }
     
 }
