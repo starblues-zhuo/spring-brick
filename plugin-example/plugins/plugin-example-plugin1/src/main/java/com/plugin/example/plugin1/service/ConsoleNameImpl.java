@@ -1,6 +1,5 @@
 package com.plugin.example.plugin1.service;
 
-import com.plugin.development.annotation.ApplyMainBean;
 import com.plugin.example.start.config.PluginArgConfiguration;
 import com.plugin.example.start.plugin.ConsoleName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
  * @see
  */
 @Component
-@ApplyMainBean
 public class ConsoleNameImpl implements ConsoleName {
 
     @Autowired(required = false)

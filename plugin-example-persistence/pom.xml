@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.gitee.starblues</groupId>
+    <artifactId>plugin-example-persistence</artifactId>
+    <version>2.0-RELEASE</version>
+    <packaging>pom</packaging>
+
+    <description>访问数据库的持久层案例</description>
+
+    <modules>
+        <module>plugin-example-persistence-main</module>
+        <module>plugin-example-persistence-runner</module>
+        <module>plugin-example-persistence-plugin-parent</module>
+        <module>plugins/plugin-example-persistence-plugin1</module>
+        <module>plugins/plugin-example-persistence-plugin2</module>
+    </modules>
+
+</project>

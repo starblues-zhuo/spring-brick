@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * @Update Date Time:
  * @see
  */
-@Component
+@Component("plugin2Service2")
 public class Service2 {
 
     public String getName(){

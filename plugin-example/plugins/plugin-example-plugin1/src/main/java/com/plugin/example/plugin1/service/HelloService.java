@@ -1,6 +1,6 @@
 package com.plugin.example.plugin1.service;
 
-import com.plugin.example.plugin1.config.PluginConfig;
+import com.plugin.example.plugin1.config.PluginConfig1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,20 +12,20 @@ import org.springframework.stereotype.Component;
  * @Update Date Time:
  * @see
  */
-@Component
+@Component("plugin2HelloService")
 public class HelloService {
 
-    private final PluginConfig pluginConfig;
+    private final PluginConfig1 pluginConfig1;
     private final Service2 service2;
 
     @Autowired
-    public HelloService(PluginConfig pluginConfig, Service2 service2) {
-        this.pluginConfig = pluginConfig;
+    public HelloService(PluginConfig1 pluginConfig1, Service2 service2) {
+        this.pluginConfig1 = pluginConfig1;
         this.service2 = service2;
     }
 
-    public PluginConfig getPluginConfig(){
-        return pluginConfig;
+    public PluginConfig1 getPluginConfig1(){
+        return pluginConfig1;
     }
 
 

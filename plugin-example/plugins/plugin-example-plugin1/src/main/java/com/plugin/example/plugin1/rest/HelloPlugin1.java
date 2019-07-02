@@ -1,7 +1,7 @@
 package com.plugin.example.plugin1.rest;
 
 import com.google.gson.Gson;
-import com.plugin.example.plugin1.config.PluginConfig;
+import com.plugin.example.plugin1.config.PluginConfig1;
 import com.plugin.example.plugin1.service.HelloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,31 +17,31 @@ import org.springframework.web.bind.annotation.RestController;
  * @see
  */
 @RestController
-@RequestMapping(path = "hello")
+@RequestMapping(path = "plugin1")
 public class HelloPlugin1 {
 
     @Autowired
     private HelloService helloService;
 
     @Autowired
-    private PluginConfig pluginConfig;
+    private PluginConfig1 pluginConfig1;
 
     private Gson gson = new Gson();
 
-    @GetMapping
+    @GetMapping("plugin1")
     public String sya(){
         return "hello plugin1 example";
     }
 
     @GetMapping("config")
     public String getConfig(){
-        return pluginConfig.toString();
+        return pluginConfig1.toString();
     }
 
 
     @GetMapping("serviceConfig")
     public String getServiceConfig(){
-        return helloService.getPluginConfig().toString();
+        return helloService.getPluginConfig1().toString();
     }
 
     @GetMapping("service")
@@ -55,7 +55,7 @@ public class HelloPlugin1 {
      */
     @GetMapping("dependency")
     public String gson(){
-        return gson.toJson(pluginConfig);
+        return gson.toJson(pluginConfig1);
     }
 
 }

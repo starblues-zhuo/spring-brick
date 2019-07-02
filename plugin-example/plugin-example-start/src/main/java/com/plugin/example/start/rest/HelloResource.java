@@ -1,14 +1,13 @@
 package com.plugin.example.start.rest;
 
-import com.plugin.development.integration.PluginApplication;
-import com.plugin.development.integration.user.PluginUser;
+import com.gitee.starblues.integration.PluginApplication;
+import com.gitee.starblues.integration.user.PluginUser;
 import com.plugin.example.start.plugin.ConsoleName;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Description:
@@ -23,10 +22,10 @@ import java.util.Map;
 public class HelloResource {
 
 
-    private final PluginUser pluginUser;
+    private PluginUser pluginUser;
 
     public HelloResource(PluginApplication pluginApplication) {
-        this.pluginUser = pluginApplication.getPluginUser();
+        //this.pluginUser = pluginApplication.getPluginUser();
     }
 
     @GetMapping
@@ -58,6 +57,17 @@ public class HelloResource {
         }
         System.out.println(stringBuffer);
         return stringBuffer.toString();
+    }
+
+    @GetMapping("/test")
+    public void test(){
+        try {
+            Class<?> aClass = Class.forName("com.plugin.example.plugin1.Test");
+            Object o = aClass.newInstance();
+            System.out.println(o);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

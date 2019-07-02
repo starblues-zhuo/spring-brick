@@ -1,7 +1,6 @@
 package com.plugin.example.plugin2.config;
 
-import com.plugin.development.annotation.ConfigDefinition;
-import org.springframework.stereotype.Component;
+import com.gitee.starblues.annotation.ConfigDefinition;
 
 import java.util.List;
 import java.util.Set;
@@ -14,7 +13,6 @@ import java.util.Set;
  * @Update Date Time:
  * @see
  */
-@Component
 @ConfigDefinition("plugin2.yml")
 public class Plugin2Config {
 
@@ -80,7 +78,7 @@ public class Plugin2Config {
 
     @Override
     public String toString() {
-        return "PluginConfig{" +
+        return "BasePluginExtension{" +
                 "name='" + name + '\'' +
                 ", plugin='" + plugin + '\'' +
                 ", setString=" + setString +

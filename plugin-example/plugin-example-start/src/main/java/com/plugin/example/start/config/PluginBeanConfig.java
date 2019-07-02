@@ -1,8 +1,8 @@
 package com.plugin.example.start.config;
 
-import com.plugin.development.integration.*;
-import com.plugin.development.integration.initialize.AutoPluginInitializer;
-import com.plugin.development.integration.initialize.PluginInitializer;
+import com.gitee.starblues.integration.*;
+import com.gitee.starblues.integration.initialize.AutoPluginInitializer;
+import com.gitee.starblues.integration.initialize.PluginInitializer;
 import org.pf4j.PluginException;
 import org.pf4j.PluginManager;
 import org.springframework.context.annotation.Bean;

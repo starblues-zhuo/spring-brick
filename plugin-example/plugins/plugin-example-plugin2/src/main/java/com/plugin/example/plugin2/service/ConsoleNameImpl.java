@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * @author zhangzhuo
  * @version 1.0
  */
-@Component
+@Component("plugin2ConsoleNameImpl")
 public class ConsoleNameImpl implements ConsoleName {
     @Override
     public String name() {

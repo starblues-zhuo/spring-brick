@@ -1,9 +1,9 @@
 package com.plugin.example.start.rest;
 
-import com.plugin.development.exception.PluginPlugException;
-import com.plugin.development.integration.PluginApplication;
-import com.plugin.development.integration.operator.PluginOperator;
-import com.plugin.development.integration.operator.module.PluginInfo;
+import com.gitee.starblues.exception.PluginPlugException;
+import com.gitee.starblues.integration.PluginApplication;
+import com.gitee.starblues.integration.operator.PluginOperator;
+import com.gitee.starblues.integration.operator.module.PluginInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

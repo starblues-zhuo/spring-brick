@@ -1,6 +1,6 @@
 package com.plugin.example.start.config;
 
-import com.plugin.development.integration.initialize.PluginInitializerListener;
+import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import org.springframework.stereotype.Component;
 
 /**

@@ -1,6 +1,7 @@
 package com.plugin.example.plugin2;
 
-import com.plugin.development.realize.BasePlugin;
+import com.gitee.starblues.realize.BasePlugin;
+import org.pf4j.PluginException;
 import org.pf4j.PluginWrapper;
 
 /**
@@ -17,7 +18,22 @@ public class DefinePlugin extends BasePlugin {
     }
 
     @Override
-    protected String scanPackage() {
+    protected void startEvent() throws PluginException {
+
+    }
+
+    @Override
+    protected void deleteEvent() throws PluginException {
+
+    }
+
+    @Override
+    protected void stopEvent() {
+
+    }
+
+    @Override
+    public String scanPackage() {
         return "com.plugin.example.plugin2";
     }
 }

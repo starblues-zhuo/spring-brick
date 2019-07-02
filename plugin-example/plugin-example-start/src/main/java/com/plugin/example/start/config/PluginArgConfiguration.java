@@ -1,6 +1,6 @@
 package com.plugin.example.start.config;
 
-import com.plugin.development.integration.*;
+import com.gitee.starblues.integration.DefaultIntegrationConfiguration;
 import org.pf4j.RuntimeMode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;

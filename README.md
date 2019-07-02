@@ -1,5 +1,7 @@
 # springboot插件式开发框架
 
+## 正在升级到2.0, 文档随后补充
+
 #### 介绍
 该框架主要是集成于springboot项目，用于开发插件式应用的集成框架。
 
@@ -38,7 +40,7 @@ https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framewo
 
 2. 定义配置
 
-    实现 **com.plugin.development.integration.IntegrationConfiguration** 接口。
+    实现 **IntegrationConfiguration** 接口。
 
 ```java
 import com.plugin.development.integration.*;
@@ -140,8 +142,8 @@ public class PluginArgConfiguration extends DefaultIntegrationConfiguration {
   
 ```
 import com.plugin.development.integration.*;
-import com.plugin.development.integration.initialize.AutoPluginInitializer;
-import com.plugin.development.integration.initialize.PluginInitializer;
+import AutoPluginInitializer;
+import PluginInitializer;
 import org.pf4j.PluginException;
 import org.pf4j.PluginManager;
 import org.springframework.context.annotation.Bean;
@@ -173,7 +175,7 @@ public class PluginBeanConfig {
 
     /**
      * 初始化插件。此处定义可以在系统启动时自动加载插件。
-     *  如果想手动加载插件, 则可以使用 com.plugin.development.integration.initialize.ManualPluginInitializer 来初始化插件。
+     *  如果想手动加载插件, 则可以使用 ManualPluginInitializer 来初始化插件。
      * @param pluginApplication
      * @return
      */
@@ -285,9 +287,9 @@ plugin.version: 插件版本
 plugin.provider: 插件作者
 ```
     
-3. 继承 `com.plugin.development.realize.BasePlugin` 包
+3. 继承 `BasePlugin` 包
 ``` java
-import com.plugin.development.realize.BasePlugin;
+import BasePlugin;
 import org.pf4j.PluginWrapper;
 
 public class DefinePlugin extends BasePlugin {
@@ -328,7 +330,7 @@ public class DefinePlugin extends BasePlugin {
 
 例如:
 ```java
-import com.plugin.development.annotation.ApplyMainBean;
+import ApplyMainBean;
 import com.plugin.example.start.config.PluginArgConfiguration;
 import com.plugin.example.start.plugin.ConsoleName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -398,7 +400,7 @@ public class HelloPlugin1 {
 
 例如:
 ```java
-import com.plugin.development.annotation.ConfigDefinition;
+import ConfigDefinition;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -676,11 +678,41 @@ Use classpath of module: plugin-exampe-runner
 
 **1. 如果没有按照开发环境建议配置, 则在插件中代码编写完后, 请保证在class文件下的类都是最新编译的, 再运行主程序, 否则会导致运行的插件代码不是最新的。**
 
-**2.如果启动时插件没有加载。请检查配置文件中的 pluginPath**
+**2. 如果启动时插件没有加载。请检查配置文件中的 pluginPath**
 
     如果pluginPath 配置为相当路径，请检查是否是相对于当前工作环境的目录。
 
     如果pluginPath配置为绝对路径，请检查路径是否正确。
+
+**3. 插件中注入主程序中的bean时
+
+     - 注入类的注解请使用@Autowired(required = false)
+        例如: 
+        @Autowired(required = false)
+        private PluginArgConfiguration pluginArgConfiguration;
+     
+     - 在使用类上加上@ApplyMainBean注解
+        例如:
+        @Component
+        @ApplyMainBean
+        public class ConsoleNameImpl implements ConsoleName {
+        }
+     
+     - 不要使用构造器注入, 否则会导致无法注入。
+     
+     案例：
+        @Component
+        @ApplyMainBean
+        public class ConsoleNameImpl implements ConsoleName {
+        
+            @Autowired(required = false)
+            private PluginArgConfiguration pluginArgConfiguration;
+        
+            @Override
+            public String name() {
+                return "My name is Plugin1" + "->pluginArgConfiguration :" + pluginArgConfiguration.toString();
+            }
+        }
     
 #### 版本更新
 
@@ -689,5 +721,5 @@ Use classpath of module: plugin-exampe-runner
 
 **2. 新增可通过 PluginUser 获取插件中实现主程序中定义的接口的实现类。
 
-**3. 新增插件注册、卸载时监听时, 可手动刷新接口定义的实现Bean的机制。继承com.plugin.development.context.refresh.AbstractPluginSpringBeanRefresh 或者 com.plugin.development.context.refresh.AbstractSpringBeanRefresh 即可实现。 
+**3. 新增插件注册、卸载时监听时, 可手动刷新接口定义的实现Bean的机制。继承com.plugin.development.context.refresh.AbstractPluginSpringBeanRefresh 或者 com.plugin.development.factory.spring.refresh.AbstractSpringBeanRefresh 即可实现。 
 
