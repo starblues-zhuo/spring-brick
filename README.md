@@ -1,33 +1,70 @@
 # springboot插件式开发框架
 
-## 正在升级到2.0, 文档随后补充
-
-#### 介绍
+### 介绍
 该框架主要是集成于springboot项目，用于开发插件式应用的集成框架。
 
-#### 核心功能
-1. 配置式插拔于springboot项目。
-2. 在springboot上可以插件式开发, 扩展性极强, 可以针对不同项目开发不同插件, 进行不同部署。
-3. 在插件应用模块上可以任意使用spring注解式进行依赖注入、可以开发controller接口、也可以遵循主程序提供的插件接口开发任意扩展功能。
-4. 插件可以自定义配置文件。目前只支持yml文件。
-5. 支持上传插件和插件配置文件到服务器, 并且无需重启主程序, 动态部署插件、更新插件。
-6. 支持查看插件运行状态, 查看插件安装位置。
-7. 无需重启主程序, 动态的安装插件、卸载插件、启用插件、停止插件、备份插件、删除插件。
+### 核心功能
+1. 插件配置式插拔于springboot项目。
+2. 在springboot上可以进行插件式开发, 扩展性极强, 可以针对不同项目开发不同插件, 进行不同插件jar包的部署。
+3. 支持上传插件和插件配置文件到服务器, 并且无需重启主程序, 动态部署插件、更新插件。
+4. 支持查看插件运行状态, 查看插件安装位置。
+5. 无需重启主程序, 动态的安装插件、卸载插件、启用插件、停止插件、备份插件、删除插件。
+6. 在插件应用模块上可以使用Spring注解定义组件, 进行依赖注入。
+7. 支持在插件中开发Rest接口。
+8. 支持在插件中单独定义持久层访问等需求。
+9. 可以遵循主程序提供的插件接口开发任意扩展功能。
+10. 插件可以自定义配置文件。目前只支持yml文件。
+11. 支持自定义扩展开发接口, 使用者可以在预留接口上扩展额外功能。
+12. 利用扩展机制, 定制了SpringBoot-Mybatis扩展包。使用该扩展包, 使用者可以在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean。
 
-#### 软件架构
-待完善
-软件架构说明
 
 
-#### 环境支持
+### 运行环境
 1. jdk1.8+
 2. apache maven 3.6
 
-#### maven仓库地址
+### mavne 仓库地址
 
-https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework
+[https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework](https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework)
+
+### 快速入门
+
+#### 新建项目。
+Maven目录结构下所示
+```
+-example
+    - example-runner
+        - pom.xml
+    - example-main
+        - pom.xml
+    - example-plugin-parent
+        - pom.xml
+    - plugins
+        - example-plugin1
+            - pom.xml
+            - plugin.properties
+        - example-plugin2
+            - pom.xml
+            - plugin.properties
+        - pom.xml
+    - pom.xml
+```
+
+结构说明:
+
+1. pom.xml 代表maven的pom.xml
+2. plugin.properties 为开发环境下, 插件的元信息配置文件, 配置内容详见下文。
+3. example 为项目的总Maven目录。
+4. example-runner 在运行环境下启动的模块。主要依赖example-main模块和插件中使用到的依赖包。
+5. example-main 该模块为项目的主程序模块。
+6. example-plugin-parent 该模块为插件的父级maven pom 模块, 主要定义插件中公共用到的依赖, 以及插件的打包配置。
+7. plugins 该文件夹下主要存储插件模块。上述模块中主要包括example-plugin1、example-plugin2 两个插件。
+8. example-plugin1、example-plugin2 分别为两个插件Maven包。
 
 #### 主程序集成步骤
+
+主程序为上述目录结构中的 example-main 模块。
+
 1. 在主程序中新增maven依赖包
 
 ```xml
@@ -38,12 +75,12 @@ https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framewo
 </dependency>
 ```
 
-2. 定义配置
+2. 实现并定义配置
 
-    实现 **IntegrationConfiguration** 接口。
+实现 **com.plugin.development.integration.IntegrationConfiguration** 接口。
 
 ```java
-import com.plugin.development.integration.*;
+import com.gitee.starblues.integration.DefaultIntegrationConfiguration;
 import org.pf4j.RuntimeMode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -51,7 +88,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "plugin")
-public class PluginArgConfiguration extends DefaultIntegrationConfiguration {
+public class PluginConfiguration extends DefaultIntegrationConfiguration {
 
     /**
      * 运行模式
@@ -91,7 +128,7 @@ public class PluginArgConfiguration extends DefaultIntegrationConfiguration {
 
     /**
      * 重写上传插件包的临时存储路径。只适用于生产环境
-     * @return
+     * @return String
      */
     @Override
     public String uploadTempPath() {
@@ -100,50 +137,91 @@ public class PluginArgConfiguration extends DefaultIntegrationConfiguration {
 
     /**
      * 重写插件备份路径。只适用于生产环境
-     * @return
+     * @return String
      */
     @Override
     public String backupPath() {
         return "backupPlugin";
     }
-    
+
     /**
      * 重写插件RestController请求的路径前缀
      * @return String
      */
     @Override
     public String pluginRestControllerPathPrefix() {
-        return "/api/plugin";
+        return "/api/plugins";
     }
 
     /**
-     * 重写是否启用插件id作为RestController请求的路径前缀
+     * 重写是否启用插件id作为RestController请求的路径前缀。
+     * 启动则插件id会作为二级路径前缀。即: /api/plugins/pluginId/**
      * @return String
      */
     @Override
     public boolean enablePluginIdRestControllerPathPrefix() {
         return true;
     }
-    
+
+    public String getRunMode() {
+        return runMode;
+    }
+
+    public void setRunMode(String runMode) {
+        this.runMode = runMode;
+    }
+
+
+    public String getPluginPath() {
+        return pluginPath;
+    }
+
+    public void setPluginPath(String pluginPath) {
+        this.pluginPath = pluginPath;
+    }
+
+    public String getPluginConfigFilePath() {
+        return pluginConfigFilePath;
+    }
+
+    public void setPluginConfigFilePath(String pluginConfigFilePath) {
+        this.pluginConfigFilePath = pluginConfigFilePath;
+    }
+
+    @Override
+    public String toString() {
+        return "PluginArgConfiguration{" +
+                "runMode='" + runMode + '\'' +
+                ", pluginPath='" + pluginPath + '\'' +
+                ", pluginConfigFilePath='" + pluginConfigFilePath + '\'' +
+                '}';
+    }
 }
 ```
 
 配置说明:
 
-    runMode：运行项目时的模式。分为开发环境(dev)、生产环境(prod)
-    pluginPath: 插件的路径。开发环境建议直接配置为插件模块的父级目录。例如: plugins。
-    pluginConfigFilePath: 在生产环境下, 插件的配置文件路径。在生产环境下， 请将所有插件使用到的配置文件统一放到该路径下管理。
-    uploadTempPath: 上传插件包时使用。上传插件包存储的临时路径。默认 temp(相对于主程序jar路径)
-    backupPath: 备份插件包时使用。备份插件包的路径。默认: backupPlugin(相对于主程序jar路径)
-    
+**runMode**：运行项目时的模式。分为开发环境(dev)、生产环境(prod)
+
+**pluginPath**: 插件的路径。开发环境建议直接配置为插件模块的父级目录。例如: plugins。如果启动主程序时, 插件为加载, 请检查该配置是否正确。
+
+**pluginConfigFilePath**: 在生产环境下, 插件的配置文件路径。在生产环境下， 请将所有插件使用到的配置文件统一放到该路径下管理。如果启动主程序时, 报插件的配置文件加载错误, 有可能是该该配置不合适导致的。
+
+**uploadTempPath**: 上传插件包时使用。上传插件包存储的临时路径。默认 temp(相对于主程序jar路径)
+
+**backupPath**: 备份插件包时使用。备份插件包的路径。默认: backupPlugin(相对于主程序jar路径)
+
+**pluginRestControllerPathPrefix**: 插件RestController请求的路径前缀
+
+**enablePluginIdRestControllerPathPrefix**: 是否启用插件id作为RestController请求的路径前缀。启动则插件id会作为二级路径前缀。即: /api/plugins/pluginId/**
     
 
-3. 配置集成bean
+3. 配置bean
   
 ```
-import com.plugin.development.integration.*;
-import AutoPluginInitializer;
-import PluginInitializer;
+import com.gitee.starblues.integration.*;
+import com.gitee.starblues.integration.initialize.AutoPluginInitializer;
+import com.gitee.starblues.integration.initialize.PluginInitializer;
 import org.pf4j.PluginException;
 import org.pf4j.PluginManager;
 import org.springframework.context.annotation.Bean;
@@ -152,7 +230,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PluginBeanConfig {
 
-    /**
+  /**
      * 通过默认的集成工厂返回 PluginManager
      * @param integrationConfiguration 集成的配置文件
      * @return
@@ -175,13 +253,14 @@ public class PluginBeanConfig {
 
     /**
      * 初始化插件。此处定义可以在系统启动时自动加载插件。
-     *  如果想手动加载插件, 则可以使用 ManualPluginInitializer 来初始化插件。
+     *  如果想手动加载插件, 则可以使用 com.plugin.development.integration.initialize.ManualPluginInitializer 来初始化插件。
      * @param pluginApplication
      * @return
      */
     @Bean
     public PluginInitializer pluginInitializer(PluginApplication pluginApplication){
-        return new AutoPluginInitializer(pluginApplication);
+        AutoPluginInitializer autoPluginInitializer = new AutoPluginInitializer(pluginApplication);
+        return autoPluginInitializer;
     }
 
 }
@@ -219,7 +298,6 @@ public class PluginBeanConfig {
 
     <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
     <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
-    <springboot-plugin-framework.version>1.0-SNAPSHOT</springboot-plugin-framework.version>
 </properties>
 <build>
     <plugins>
@@ -270,12 +348,12 @@ public class PluginBeanConfig {
 </build>
 ```
 
-2. 在插件一级目录下新建plugin.properties文件(用于开发环境)
+2. 在插件包的一级目录下新建plugin.properties文件(用于开发环境)
 新增如下内容(属性值同步骤1中pom.xml定义的`manifestEntries`属性一致):
 ```
-plugin.id=springboot-plugin-example-plugin2
-plugin.class=com.plugin.example.plugin2.DefinePlugin
-plugin.version=1.0-SNAPSHOT
+plugin.id=springboot-plugin-example-plugin1
+plugin.class=com.plugin.example.plugin1.DefinePlugin
+plugin.version=2.0-SNAPSHOT
 plugin.provider=StarBlues
 ```
 
@@ -287,143 +365,140 @@ plugin.version: 插件版本
 plugin.provider: 插件作者
 ```
     
-3. 继承 `BasePlugin` 包
+3. 继承 `com.gitee.starblues.realize.BasePlugin` 包
 ``` java
-import BasePlugin;
+import com.gitee.starblues.realize.BasePlugin;
+import org.pf4j.PluginException;
 import org.pf4j.PluginWrapper;
 
 public class DefinePlugin extends BasePlugin {
-    public DefinePlugin(PluginWrapper wrapper) {
+   public DefinePlugin(PluginWrapper wrapper) {
         super(wrapper);
     }
-    
-    /**
-     * 此项是重写的。也可以不用定义。则会默认当前类的包
-     * @return
-     */
+
     @Override
-    protected String scanPackage() {
-        return "com.plugin.example.plugin1";
+    protected void startEvent() throws PluginException {
+
+    }
+
+    @Override
+    protected void deleteEvent() throws PluginException {
+
+    }
+
+    @Override
+    protected void stopEvent() {
+
     }
 }
 ```
 
-并且将该类全路径定义在步骤1和2的plugin.class属性中。
+并且将该类的包路径(com.plugin.example.plugin1.DefinePlugin)配置在步骤1和2的plugin.class属性中。
 
+4. 新增HelloPlugin1 controller
 
-#### 使用说明
-1. 插件中要使用主程序中Spring容器管理的bean
+此步骤主要验证环境是否加载插件成功。
 
-以`<scope>provided</scope>`作用范围在插件中引入主程序依赖
-``` xml
-<dependency>
-    <groupId>com.gitee.starblues</groupId>
-    <artifactId>plugin-example-start</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <scope>provided</scope>
-</dependency>
-
-```
-
-在要注入主程序bean的类上加入注解 `@Component、@ApplyMainBean`
-注入bean时, 请使用`@Autowired(required = false)`
-
-例如:
 ```java
-import ApplyMainBean;
-import com.plugin.example.start.config.PluginArgConfiguration;
-import com.plugin.example.start.plugin.ConsoleName;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-@Component
-@ApplyMainBean
-public class ConsoleNameImpl implements ConsoleName {
-
-    @Autowired(required = false)
-    private PluginArgConfiguration pluginArgConfiguration;
-
-    @Override
-    public String name() {
-        return "My name is Plugin1" + "; pluginArgConfiguration :" + pluginArgConfiguration.toString();
-    }
-}
-
-```
-
-2. 插件中定义Controller例子。同springboot一致。注意每个插件和主程序中的RequestMapping不要重复。
-```java
-import com.plugin.example.plugin1.config.PluginConfig;
-import com.plugin.example.plugin1.service.HelloService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/plugin1")
+@RequestMapping(path = "plugin1")
 public class HelloPlugin1 {
 
-    @Autowired
-    private HelloService helloService;
-
-    @Autowired
-    private PluginConfig pluginConfig;
-
-    @GetMapping
-    public String sya(){
-        return "hello plugin1 example";
-    }
-
-    @GetMapping("config")
+    @GetMapping()
     public String getConfig(){
-        return pluginConfig.toString();
-    }
-
-
-    @GetMapping("serviceConfig")
-    public String getServiceConfig(){
-        return helloService.getPluginConfig().toString();
-    }
-
-    @GetMapping("service")
-    public String getService(){
-        return helloService.sayService2();
+        return "hello plugin1"
     }
 
 }
+
 ```
 
-3. 插件中定义配置文件。
+#### 运行配置
+1. 配置模块 example-runner 的pom.xml
 
-在配置文件类上加入注解`@Component、@ConfigDefinition("配置文件名")`
+- 将主程序的依赖新增到pom.xml 下
+- 将插件中的依赖以  `<scope>provided</scope>`  方式引入到 pom.xml 下
 
-例如:
-```java
-import ConfigDefinition;
-import org.springframework.stereotype.Component;
+如下所示:
 
-import java.util.List;
-import java.util.Set;
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
 
-@Component
-@ConfigDefinition("plugin1.yml")
-public class PluginConfig {
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.3.RELEASE</version>
+        <relativePath/>
+    </parent>
 
-    private String name;
-    private String plugin;
-    private Set<String> setString;
-    private List<Integer> listInteger;
+    <groupId>com.gitee.starblues</groupId>
+    <artifactId>plugin-example-runner</artifactId>
+    <version>2.0-RELEASE</version>
+    <packaging>pom</packaging>
 
-    private String defaultValue = "defaultValue";
+    <properties>
+        <gson.version>2.8.2</gson.version>
+    </properties>
 
-    private SubConfig subConfig;
+    <dependencies>
+        <dependency>
+            <groupId>com.gitee.starblues</groupId>
+            <artifactId>plugin-example-start</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-}
+        <!-- 此处依赖用于解决在开发环境下, 插件包找不到对应依赖包 -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-配置文件(plugin1.yml):
+    </dependencies>
 
+</project>
+```
+
+2. 设置idea的启动
+
+Working directory : D:\xx\xx\springboot-plugin-framework-parent\plugin-example
+
+Use classpath of module: plugin-exampe-runner
+
+勾选: Include dependencies with "Provided" scope
+
+3. 启动2步骤的配置。
+
+观察日志出现如下说明加载插件成功。
+
+``` java
+ Plugin 'springboot-plugin-example-plugin1@2.0-RELEASE' resolved
+ Start plugin 'springboot-plugin-example-plugin1@2.0-RELEASE'
+ Init Plugins <springboot-plugin-example-plugin1> Success
+```
+
+4. 访问插件中的Controller 验证。
+
+浏览器输入：http://ip:port/api/plugins/springboot-plugin-example-plugin1/plugin1
+
+响应并显示: hello plugin1 
+
+说明集成成功！
+
+### 使用说明
+
+#### 插件中定义配置文件
+
+1. 在插件包的 resources 目录下定义配置文件 plugin1.yml
+
+```yml
 name: plugin1
 plugin: examplePlugin1
 setString:
@@ -435,176 +510,245 @@ listInteger:
   - 3
 subConfig:
   subName: subConfigName
-
 ```
 
-在配置文件映射的bean中, 必须加入get set方法, 此处为了展示, 没有引入get set方法。推荐使用lombok)
+2. 在代码中定义对应的bean
 
-*注意:*
+```java
+import com.gitee.starblues.annotation.ConfigDefinition;
+import java.util.List;
+import java.util.Set;
+
+@ConfigDefinition("plugin1.yml")
+public class PluginConfig1 {
+
+    private String name;
+    private String plugin;
+    private Set<String> setString;
+    private List<Integer> listInteger;
+    private String defaultValue = "defaultValue";
+    private SubConfig subConfig;
+
+    // 自行提供get set 方法
+
+}
+
+
+public class SubConfig {
+
+    private String subName;
+    public String getSubName() {
+        return subName;
+    }
+    
+    // 自行提供get set 方法
+}
+```
+
+该bean必须加上 @ConfigDefinition("plugin1.yml") 注解。其中值为插件文件的名称。
+
+3. 其他地方使用时, 可以通过注入方式使用。
+
+例如：
+``` java
+@Component("plugin2HelloService")
+public class HelloService {
+
+    private final PluginConfig1 pluginConfig1;
+    private final Service2 service2;
+
+    @Autowired
+    public HelloService(PluginConfig1 pluginConfig1, Service2 service2) {
+        this.pluginConfig1 = pluginConfig1;
+        this.service2 = service2;
+    }
+
+    public PluginConfig1 getPluginConfig1(){
+        return pluginConfig1;
+    }
+
+
+    public String sayService2(){
+        return service2.getName();
+    }
+
+}
+```
+
+4. 注意事项
 
 *在开发环境：配置文件必须放在resources目录下。并且@ConfigDefinition("plugin1.yml")中定义的文件名和resources下配置的文件名一致。*
 
 *在生产环境: 该文件存放在`pluginConfigFilePath`配置的目录下。*
 
-4. 在主程序中获取插件的bean。
 
-通过使用 PluginApplication 获取 PluginUser实现类，然后操作。
+#### 集成SpringBoot Mybatis
+
+##### 主程序配置
+
+1. 引入依赖
+```xmml
+<dependency>
+    <groupId>com.gitee.starblues</groupId>
+    <artifactId>springboot-plugin-framework-extension-mybatis</artifactId>
+    <version>${springboot-plugin-framework-extension-mybatis.version}</version>
+</dependency>
+
+<!--  自行引入 mybatis-spring-boot-starter 依赖 -->
+ <dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>${mybatis-spring-boot-starter.version}</version>
+</dependency>
+
+```
+
+2. 集成
+
+定义PluginApplication bean时, 新增该扩展。
+```java
+@Bean
+public PluginApplication pluginApplication(){
+    DefaultPluginApplication defaultPluginApplication = new DefaultPluginApplication();
+    defaultPluginApplication.addExtension(new SpringBootMybatisExtension());
+    return defaultPluginApplication;
+}
+```
+
+##### 插件程序配置
+
+1. 引入依赖
+```xmml
+<dependency>
+    <groupId>com.gitee.starblues</groupId>
+    <artifactId>springboot-plugin-framework-extension-mybatis</artifactId>
+    <version>${springboot-plugin-framework-extension-mybatis.version}</version>
+</dependency>
+
+<!-- 自行引入 mybatis-spring-boot-starter 依赖。可用于自定义注解Sql。该依赖非必须 -->
+<dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>${mybatis-spring-boot-starter.version}</version>
+</dependency>
+
+```
+
+2. 继承BasePlugin的类, 实现接口 com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConfig 
+
+例如:
+```java
+import com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConfig;
+import com.gitee.starblues.realize.BasePlugin;
+import org.pf4j.PluginException;
+import org.pf4j.PluginWrapper;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class PersistenceExamplePlugin1 extends BasePlugin implements SpringBootMybatisConfig {
+
+    private final Set<String> mybatisMapperXmlLocationsMatch = new HashSet<>();
 
 
-通过接口获取插件中所有的实现类：
+    public PersistenceExamplePlugin1(PluginWrapper wrapper) {
+        super(wrapper);
+        mybatisMapperXmlLocationsMatch.add("classpath:mapper/*PluginMapper.xml");
+    }
 
-    调用PluginUser->getSpringDefineBeansOfType方法获取。例如：Map<String, ConsoleName> consoleNameMap = pluginUser.getSpringDefineBeansOfType(ConsoleName.class);
+    @Override
+    protected void startEvent() throws PluginException {
 
-通过beanName获取插件中的类：
+    }
 
-    调用PluginUser->getSpringDefineBean方法获取。例如ConsoleName consoleNameImpl consoleNameMap = pluginUser.getSpringDefineBeansOfType(
-    'com.plugin.example.plugin1.service.ConsoleNameImpl');
+    @Override
+    protected void deleteEvent() throws PluginException {
 
-5. 部署插件
+    }
+
+    @Override
+    protected void stopEvent() {
+
+    }
+
+    @Override
+    public Set<String> mybatisMapperXmlLocationsMatch() {
+        return mybatisMapperXmlLocationsMatch;
+    }
+}
+
+```
+
+该步骤主要定义插件中的Mapper xml的位置。该位置的定义规则如下:
+
+``` text
+? 匹配一个字符
+* 匹配零个或多个字符
+** 匹配路径中的零或多个目录
+
+例如:
+文件路径-> file: D://xml/*PluginMapper.xml
+classpath路径-> classpath: xml/mapper/*PluginMapper.xml
+包路径-> package: com.plugin.xml.mapper.*PluginMapper.xml
+
+```
+
+3. 定义的Mapper 接口需要加上注解 @PluginMapper
+
+注解位置: com.gitee.starblues.extension.mybatis.annotation.PluginMapper
+
+例如:
+```java
+
+import com.gitee.starblues.extension.mybatis.annotation.PluginMapper;
+import com.persistence.plugin1.entity.Plugin1;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+@PluginMapper
+public interface Plugin1Mapper {
+
+
+    /**
+     * 得到角色列表
+     * @return List
+     */
+    List<Plugin1> getList();
+
+    /**
+     * 通过id获取数据
+     * @param id id
+     * @return Plugin2
+     */
+    Plugin1 getById(@Param("id") String id);
+
+}
+
+```
+
+具体案例参考: plugin-example-persistence 模块。
+
+### 案例部署
+
+普通例子运行见：package/example
 
 windows环境下运行: package.bat
 
 linux、mac 环境下运行: package.sh
-   
-#### 开发环境目录结构
-见 `plugin-example` 案例
 
-建议给每个插件定义个父级 pom.xml。
+### mybatis 案例部署
 
-例如:
-``` xml
-<groupId>com.gitee.starblues</groupId>
-<artifactId>plugin-example-plugin-parent</artifactId>
-<version>1.0-SNAPSHOT</version>
-<packaging>pom</packaging>
+普通例子运行见：package/example-persistence
 
-<modules>
-    <module>plugin-example-plugin1</module>
-    <module>plugin-example-plugin2</module>
-</modules>
+windows环境下运行: package.bat
 
-<properties>
-    <!-- 子类覆盖该配置 -->
-    <plugin.id/>
-    <plugin.class/>
-    <plugin.version/>
-    <plugin.provider/>
+linux、mac 环境下运行: package.sh
 
-    <java.version>1.8</java.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+sql在 plugin-example-persistence/sql 文件夹下。
 
-    <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-    <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
-    <springboot-plugin-framework.version>1.0-SNAPSHOT</springboot-plugin-framework.version>
-</properties>
+### 生产环境目录
 
-<dependencies>
-    <dependency>
-        <groupId>com.gitee.starblues</groupId>
-        <artifactId>springboot-plugin-framework</artifactId>
-        <version>${springboot-plugin-framework.version}</version>
-        <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-        <groupId>com.gitee.starblues</groupId>
-        <artifactId>plugin-example-start</artifactId>
-        <version>${project.version}</version>
-        <scope>provided</scope>
-    </dependency>
-
-</dependencies>
-
-<build>
-    <plugins>
-        
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>${maven-compiler-plugin.version}</version>
-            <configuration>
-                <source>${java.version}</source>
-                <target>${java.version}</target>
-                <encoding>${project.build.sourceEncoding}</encoding>
-            </configuration>
-        </plugin>
-
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>${maven-assembly-plugin.version}</version>
-            <configuration>
-                <descriptorRefs>
-                    <descriptorRef>jar-with-dependencies</descriptorRef>
-                </descriptorRefs>
-                <archive>
-                    <manifest>
-                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                    </manifest>
-                    <manifestEntries>
-                        <Plugin-Id>${plugin.id}</Plugin-Id>
-                        <Plugin-Version>${plugin.version}</Plugin-Version>
-                        <Plugin-Provider>${plugin.provider}</Plugin-Provider>
-                        <Plugin-Class>${plugin.class}</Plugin-Class>
-                    </manifestEntries>
-                </archive>
-            </configuration>
-            <executions>
-                <execution>
-                    <id>make-assembly</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>single</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-    </plugins>
-</build>
-```
-
-插件继承该父类pom.xml
-
-例如:
-```xml
-<modelVersion>4.0.0</modelVersion>
-
-<parent>
-    <groupId>com.gitee.starblues</groupId>
-    <artifactId>plugin-example-plugin-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
-</parent>
-
-<artifactId>plugin-example-plugin1</artifactId>
-<version>1.0-SNAPSHOT</version>
-<packaging>jar</packaging>
-
-<properties>
-    <plugin.id>springboot-plugin-example-plugin1</plugin.id>
-    <plugin.class>com.plugin.example.plugin1.DefinePlugin</plugin.class>
-    <plugin.version>${project.version}</plugin.version>
-    <plugin.provider>StarBlues</plugin.provider>
-
-    <gson.version>2.8.2</gson.version>
-</properties>
-
-<dependencies>
-
-    <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>${gson.version}</version>
-    </dependency>
-
-</dependencies>
-```
-
-#### 生产环境目录结构
-
-```
+```text
 -main.jar
 
 -main.yml
@@ -616,110 +760,37 @@ linux、mac 环境下运行: package.sh
 -pluginFile
   -plugin1.yml
   -plugin2.yml
-```
-
-#### 开发环境建议配置
-
-建议定义一个用于启动的pom.xml。**这样既可以解决在开发环境下可以加载插件中的依赖包、也可以解决在启动时无法自动编译插件包的问题。**
-
-例如:
-```xml
-<modelVersion>4.0.0</modelVersion>
-
-<parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.0.3.RELEASE</version>
-    <relativePath/>
-</parent>
-
-<groupId>com.gitee.starblues</groupId>
-<artifactId>plugin-example-runner</artifactId>
-<version>1.0-SNAPSHOT</version>
-<packaging>pom</packaging>
-
-<dependencies>
-
-    <dependency>
-        <groupId>com.gitee.starblues</groupId>
-        <artifactId>plugin-example-start</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-        <groupId>com.gitee.starblues</groupId>
-        <artifactId>plugin-example-plugin1</artifactId>
-        <version>${project.version}</version>
-        <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-        <groupId>com.gitee.starblues</groupId>
-        <artifactId>plugin-example-plugin2</artifactId>
-        <version>${project.version}</version>
-        <scope>compile</scope>
-    </dependency>
-
-</dependencies>
 
 ```
 
-该启动的pom.xml依赖主程序、插件程序(以`<scope>compile</scope>`方式引入)。
+### 案例说明
 
-运行配置(idea):
+plugin-example：插件基础功能案例。
 
-Working directory : D:\xx\xx\springboot-plugin-framework-parent\plugin-example
+plugin-example-persistence: 针对Mybatis集成的案例。
 
-Use classpath of module: plugin-exampe-runner
+### 注意事项
 
-勾选: Include dependencies with "Provided" scope
+1. 插件中代码编写完后, 请保证在class文件下的类都是最新编译的, 再运行主程序, 否则会导致运行的插件代码不是最新的。
+2. 如果启动时插件没有加载。请检查配置文件中的 pluginPath
 
-#### 注意事项
+```text
+如果pluginPath 配置为相当路径，请检查是否是相对于当前工作环境的目录。
 
-**1. 如果没有按照开发环境建议配置, 则在插件中代码编写完后, 请保证在class文件下的类都是最新编译的, 再运行主程序, 否则会导致运行的插件代码不是最新的。**
+如果pluginPath配置为绝对路径，请检查路径是否正确。
+```
 
-**2. 如果启动时插件没有加载。请检查配置文件中的 pluginPath**
+### 版本更新
 
-    如果pluginPath 配置为相当路径，请检查是否是相对于当前工作环境的目录。
+#### 1.1 版本
+1. 新增插件注册、卸载监听器。
+2. 新增可通过 PluginUser 获取插件中实现主程序中定义的接口的实现类。
+3. 新增插件注册、卸载时监听器。
 
-    如果pluginPath配置为绝对路径，请检查路径是否正确。
+#### 2.0 版本(重大版本更新)
 
-**3. 插件中注入主程序中的bean时
-
-     - 注入类的注解请使用@Autowired(required = false)
-        例如: 
-        @Autowired(required = false)
-        private PluginArgConfiguration pluginArgConfiguration;
-     
-     - 在使用类上加上@ApplyMainBean注解
-        例如:
-        @Component
-        @ApplyMainBean
-        public class ConsoleNameImpl implements ConsoleName {
-        }
-     
-     - 不要使用构造器注入, 否则会导致无法注入。
-     
-     案例：
-        @Component
-        @ApplyMainBean
-        public class ConsoleNameImpl implements ConsoleName {
-        
-            @Autowired(required = false)
-            private PluginArgConfiguration pluginArgConfiguration;
-        
-            @Override
-            public String name() {
-                return "My name is Plugin1" + "->pluginArgConfiguration :" + pluginArgConfiguration.toString();
-            }
-        }
-    
-#### 版本更新
-
-##### 1.1 版本
-**1. 新增插件注册、卸载监听器。
-
-**2. 新增可通过 PluginUser 获取插件中实现主程序中定义的接口的实现类。
-
-**3. 新增插件注册、卸载时监听时, 可手动刷新接口定义的实现Bean的机制。继承com.plugin.development.context.refresh.AbstractPluginSpringBeanRefresh 或者 com.plugin.development.factory.spring.refresh.AbstractSpringBeanRefresh 即可实现。 
-
+1. 重构代码。
+2. 新增扩展机制。
+3. 简化依赖注入注解, 保持与SpringBoot依赖注入方式一致。
+4. 新增插件工厂监听器、新增插件初始化监听器(适用于第一次启动)。
+5. 新增插件包Mybatis的集成, 可在插件包中独立定义Mapper接口、Mapper xml、实体bean。
