@@ -8,7 +8,7 @@ import java.util.Set;
  * @author zhangzhuo
  * @version 1.0
  */
-public interface SpringBootMybatisConfig {
+    public interface SpringBootMybatisConfig {
 
 
     /**
@@ -17,9 +17,9 @@ public interface SpringBootMybatisConfig {
      * * 匹配零个或多个字符
      * ** 匹配路径中的零或多个目录
      * 例如:
-     *      文件路径-> file: D://xml/*Mapper.xml
-     *      classpath路径-> classpath: xml/mapper/*Mapper.xml
-     *      包路径-> package: com.plugin.xml.mapper.*Mapper.xml
+     *      文件路径-> file: D://xml/*PluginMapper.xml
+     *      classpath路径-> classpath: xml/mapper/*PluginMapper.xml
+     *      包路径-> package: com.plugin.xml.mapper.*PluginMapper.xml
      * @return Set
      */
     Set<String> mybatisMapperXmlLocationsMatch();

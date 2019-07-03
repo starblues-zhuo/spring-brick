@@ -1,7 +1,7 @@
 package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.exception.PluginBeanFactoryException;
-import com.gitee.starblues.extension.mybatis.annotation.Mapper;
+import com.gitee.starblues.extension.mybatis.annotation.PluginMapper;
 import com.gitee.starblues.extension.mybatis.utils.MybatisInjectWrapper;
 import com.gitee.starblues.factory.bean.register.PluginBasicBeanRegister;
 import com.gitee.starblues.factory.bean.register.name.PluginAnnotationBeanNameGenerator;
@@ -54,7 +54,7 @@ public class PluginMybatisMapperRegister extends PluginBasicBeanRegister {
     @Override
     public String registry(BasePlugin basePlugin, Class<?> aClass) throws PluginBeanFactoryException {
         if(!AnnotationsUtils.haveAnnotations(aClass, false,
-                Mapper.class)){
+                PluginMapper.class)){
             return null;
         }
         if(!mybatisExist()){

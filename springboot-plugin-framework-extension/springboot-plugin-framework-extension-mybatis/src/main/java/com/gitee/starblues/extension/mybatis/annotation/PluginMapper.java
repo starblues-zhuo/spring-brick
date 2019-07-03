@@ -3,7 +3,7 @@ package com.gitee.starblues.extension.mybatis.annotation;
 import java.lang.annotation.*;
 
 /**
- * Mybatis Mapper 接口的注解
+ * Mybatis PluginMapper 接口的注解
  *
  * @author zhangzhuo
  * @version 1.0
@@ -12,5 +12,5 @@ import java.lang.annotation.*;
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
-public @interface Mapper {
+public @interface PluginMapper {
 }

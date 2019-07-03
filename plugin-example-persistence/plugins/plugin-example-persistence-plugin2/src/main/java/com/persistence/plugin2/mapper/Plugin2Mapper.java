@@ -1,6 +1,6 @@
 package com.persistence.plugin2.mapper;
 
-import com.gitee.starblues.extension.mybatis.annotation.Mapper;
+import com.gitee.starblues.extension.mybatis.annotation.PluginMapper;
 import com.persistence.plugin2.entity.Plugin2;
 import org.apache.ibatis.annotations.Param;
 
@@ -12,7 +12,7 @@ import java.util.List;
  * @author zhangzhuo
  * @version 1.0
  */
-@Mapper
+@PluginMapper
 public interface Plugin2Mapper {
 
 

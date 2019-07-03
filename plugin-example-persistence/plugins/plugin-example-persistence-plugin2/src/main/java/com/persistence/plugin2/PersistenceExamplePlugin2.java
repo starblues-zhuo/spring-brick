@@ -21,7 +21,7 @@ public class PersistenceExamplePlugin2 extends BasePlugin implements SpringBootM
 
     public PersistenceExamplePlugin2(PluginWrapper wrapper) {
         super(wrapper);
-        mybatisMapperXmlLocationsMatch.add("classpath:mapper/*Mapper.xml");
+        mybatisMapperXmlLocationsMatch.add("classpath:mapper/*PluginMapper.xml");
     }
 
     @Override
