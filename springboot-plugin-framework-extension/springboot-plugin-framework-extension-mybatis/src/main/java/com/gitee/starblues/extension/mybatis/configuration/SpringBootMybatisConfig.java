@@ -12,14 +12,14 @@ import java.util.Set;
 
 
     /**
-     * mybatis xml mapper 匹配规则
-     * ? 匹配一个字符
-     * * 匹配零个或多个字符
-     * ** 匹配路径中的零或多个目录
-     * 例如:
-     *      文件路径-> file: D://xml/*PluginMapper.xml
-     *      classpath路径-> classpath: xml/mapper/*PluginMapper.xml
-     *      包路径-> package: com.plugin.xml.mapper.*PluginMapper.xml
+     * mybatis xml mapper 匹配规则 <br>
+     * ? 匹配一个字符 <br>
+     * * 匹配零个或多个字符 <br>
+     * ** 匹配路径中的零或多个目录 <br>
+     * 例如: <br>
+     *  文件路径配置为 <p>file: D://xml/*PluginMapper.xml<p> <br>
+     *  resources路径配置为 <p>classpath: xml/mapper/*PluginMapper.xml<p> <br>
+     *  包路径配置为 <p>package: com.plugin.xml.mapper.*PluginMapper.xml<p> <br>
      * @return Set
      */
     Set<String> mybatisMapperXmlLocationsMatch();

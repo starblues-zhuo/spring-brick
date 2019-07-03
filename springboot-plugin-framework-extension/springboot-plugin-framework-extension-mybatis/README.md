@@ -1,37 +1,149 @@
-# springboot插件式开发框架-mybatis扩展包
+### 扩展包 - 集成SpringBoot Mybatis
 
-#### 介绍
-springboot插件式开发框架-扩展mybatis集成功能
+##### 主程序配置
 
-#### 软件架构
-软件架构说明
+1. 引入依赖
+```xmml
+<dependency>
+    <groupId>com.gitee.starblues</groupId>
+    <artifactId>springboot-plugin-framework-extension-mybatis</artifactId>
+    <version>${springboot-plugin-framework-extension-mybatis.version}</version>
+</dependency>
+
+<!--  自行引入 mybatis-spring-boot-starter 依赖 -->
+ <dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>${mybatis-spring-boot-starter.version}</version>
+</dependency>
+
+```
+
+2. 集成
+
+定义PluginApplication bean时, 新增该扩展。
+```java
+@Bean
+public PluginApplication pluginApplication(){
+    DefaultPluginApplication defaultPluginApplication = new DefaultPluginApplication();
+    defaultPluginApplication.addExtension(new SpringBootMybatisExtension());
+    return defaultPluginApplication;
+}
+```
+
+##### 插件程序配置
+
+1. 引入依赖
+```xmml
+<dependency>
+    <groupId>com.gitee.starblues</groupId>
+    <artifactId>springboot-plugin-framework-extension-mybatis</artifactId>
+    <version>${springboot-plugin-framework-extension-mybatis.version}</version>
+</dependency>
+
+<!-- 自行引入 mybatis-spring-boot-starter 依赖。可用于自定义注解Sql。该依赖非必须 -->
+<dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>${mybatis-spring-boot-starter.version}</version>
+</dependency>
+
+```
+
+2. 继承BasePlugin的类, 实现接口 com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConfig 
+
+例如:
+```java
+import com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConfig;
+import com.gitee.starblues.realize.BasePlugin;
+import org.pf4j.PluginException;
+import org.pf4j.PluginWrapper;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class PersistenceExamplePlugin1 extends BasePlugin implements SpringBootMybatisConfig {
+
+    private final Set<String> mybatisMapperXmlLocationsMatch = new HashSet<>();
 
 
-#### 安装教程
+    public PersistenceExamplePlugin1(PluginWrapper wrapper) {
+        super(wrapper);
+        mybatisMapperXmlLocationsMatch.add("classpath:mapper/*PluginMapper.xml");
+    }
 
-1. xxxx
-2. xxxx
-3. xxxx
+    @Override
+    protected void startEvent() throws PluginException {
 
-#### 使用说明
+    }
 
-1. xxxx
-2. xxxx
-3. xxxx
+    @Override
+    protected void deleteEvent() throws PluginException {
 
-#### 参与贡献
+    }
 
-1. Fork 本仓库
-2. 新建 Feat_xxx 分支
-3. 提交代码
-4. 新建 Pull Request
+    @Override
+    protected void stopEvent() {
+
+    }
+
+    @Override
+    public Set<String> mybatisMapperXmlLocationsMatch() {
+        return mybatisMapperXmlLocationsMatch;
+    }
+}
+
+```
+
+该步骤主要定义插件中的Mapper xml的位置。该位置的定义规则如下:
+
+``` text
+? 匹配一个字符
+* 匹配零个或多个字符
+** 匹配路径中的零或多个目录
+
+例如:
+文件路径-> file: D://xml/*PluginMapper.xml
+classpath路径-> classpath: xml/mapper/*PluginMapper.xml
+包路径-> package: com.plugin.xml.mapper.*PluginMapper.xml
+
+```
+
+3. 定义的Mapper 接口需要加上注解 @PluginMapper
+
+注解位置: com.gitee.starblues.extension.mybatis.annotation.PluginMapper
+
+例如:
+```java
+
+import com.gitee.starblues.extension.mybatis.annotation.PluginMapper;
+import com.persistence.plugin1.entity.Plugin1;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+@PluginMapper
+public interface Plugin1Mapper {
 
 
-#### 码云特技
+    /**
+     * 得到角色列表
+     * @return List
+     */
+    List<Plugin1> getList();
 
-1. 使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2. 码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3. 你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4. [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5. 码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6. 码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+    /**
+     * 通过id获取数据
+     * @param id id
+     * @return Plugin2
+     */
+    Plugin1 getById(@Param("id") String id);
+
+}
+
+```
+
+具体案例参考: plugin-example-persistence 模块。
+```
+graph LR
+A-->B
+```
