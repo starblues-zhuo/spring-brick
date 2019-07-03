@@ -143,7 +143,3 @@ public interface Plugin1Mapper {
 ```
 
 具体案例参考: plugin-example-persistence 模块。
-```
-graph LR
-A-->B
-```
