@@ -1,4 +1,4 @@
-package com.plugin.example.start.config;
+package com.plugin.example.main.config;
 
 import com.gitee.starblues.integration.DefaultIntegrationConfiguration;
 import org.pf4j.RuntimeMode;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties(prefix = "plugin")
-public class PluginArgConfiguration extends DefaultIntegrationConfiguration {
+public class PluginConfiguration extends DefaultIntegrationConfiguration {
 
     /**
      * 运行模式
@@ -79,12 +79,12 @@ public class PluginArgConfiguration extends DefaultIntegrationConfiguration {
      */
     @Override
     public String pluginRestControllerPathPrefix() {
-        return "/api/plugin";
+        return "/api/plugins";
     }
 
     /**
      * 重写是否启用插件id作为RestController请求的路径前缀。
-     * 启动则插件id会作为二级路径前缀。即: /api/plugin/pluginId/**
+     * 启动则插件id会作为二级路径前缀。即: /api/plugins/pluginId/**
      * @return String
      */
     @Override

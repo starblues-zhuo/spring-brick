@@ -1,4 +1,4 @@
-package com.plugin.example.start.rest;
+package com.plugin.example.main.rest;
 
 import com.gitee.starblues.exception.PluginPlugException;
 import com.gitee.starblues.integration.PluginApplication;

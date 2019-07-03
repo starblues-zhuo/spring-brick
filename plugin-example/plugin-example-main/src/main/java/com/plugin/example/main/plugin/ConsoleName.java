@@ -1,4 +1,4 @@
-package com.plugin.example.start.plugin;
+package com.plugin.example.main.plugin;
 
 /**
  * @Description: 提供给插件的一个接口

@@ -1,4 +1,4 @@
-package com.plugin.example.start.plugin;
+package com.plugin.example.main.plugin;
 
 import org.springframework.stereotype.Component;
 

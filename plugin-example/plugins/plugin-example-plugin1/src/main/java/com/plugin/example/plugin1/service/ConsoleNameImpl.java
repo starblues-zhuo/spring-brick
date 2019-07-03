@@ -1,7 +1,7 @@
 package com.plugin.example.plugin1.service;
 
-import com.plugin.example.start.config.PluginArgConfiguration;
-import com.plugin.example.start.plugin.ConsoleName;
+import com.plugin.example.main.config.PluginConfiguration;
+import com.plugin.example.main.plugin.ConsoleName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConsoleNameImpl implements ConsoleName {
 
-    @Autowired(required = false)
-    private PluginArgConfiguration pluginArgConfiguration;
+    @Autowired
+    private PluginConfiguration pluginConfiguration;
 
     @Override
     public String name() {
-        return "My name is Plugin1" + "->pluginArgConfiguration :" + pluginArgConfiguration.toString();
+        return "My name is Plugin1" + "->pluginArgConfiguration :" + pluginConfiguration.toString();
     }
 }

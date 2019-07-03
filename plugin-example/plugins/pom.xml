@@ -40,7 +40,7 @@
 
         <dependency>
             <groupId>com.gitee.starblues</groupId>
-            <artifactId>plugin-example-start</artifactId>
+            <artifactId>plugin-example-main</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

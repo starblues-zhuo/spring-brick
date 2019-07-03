@@ -1,4 +1,4 @@
-package com.plugin.example.start.config;
+package com.plugin.example.main.config;
 
 import com.gitee.starblues.integration.*;
 import com.gitee.starblues.integration.initialize.AutoPluginInitializer;

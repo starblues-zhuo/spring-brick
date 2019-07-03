@@ -1,6 +1,6 @@
 package com.plugin.example.plugin2.service;
 
-import com.plugin.example.start.plugin.ConsoleName;
+import com.plugin.example.main.plugin.ConsoleName;
 import org.springframework.stereotype.Component;
 
 /**

@@ -1,8 +1,8 @@
-package com.plugin.example.start.rest;
+package com.plugin.example.main.rest;
 
 import com.gitee.starblues.integration.PluginApplication;
 import com.gitee.starblues.integration.user.PluginUser;
-import com.plugin.example.start.plugin.ConsoleName;
+import com.plugin.example.main.plugin.ConsoleName;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

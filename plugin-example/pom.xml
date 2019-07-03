@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>plugin-example-start</module>
+        <module>plugin-example-main</module>
         <module>plugins</module>
         <module>plugin-example-runner</module>
     </modules>
