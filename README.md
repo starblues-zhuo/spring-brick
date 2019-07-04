@@ -641,6 +641,14 @@ plugin-example-persistence: 针对Mybatis集成的案例。
 如果pluginPath配置为绝对路径，请检查路径是否正确。
 ```
 
+### 小技巧
+1. idea 启动主程序时, 自动编译插件包的配置
+选择 
+File->Project Structure->Project Settings->Artifacts->点击+号->JAR->From modules whith dependencies->选择对应的插件包->确认OK
+                            
+启动配置: 
+在Before launch 下-> 点击小+号 -> Build ->Artifacts -> 选择上一步新增的>Artifacts
+
 ### 版本更新
 
 #### 1.1 版本
