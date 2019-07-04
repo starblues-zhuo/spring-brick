@@ -46,11 +46,9 @@ public class PluginMybatisXmlMapperBuilder extends XMLMapperBuilder {
         Map<String, Class<?>> typeAliases = typeAliasRegistry.getTypeAliases();
         String key = alias.toLowerCase(Locale.ENGLISH);
         if (typeAliases.containsKey(key)) {
-            System.out.println("contauin " + alias);
             return typeAliasRegistry.resolveAlias(alias);
         } else {
             try {
-                System.out.println("classforname " + alias);
                 return (Class<T>) Class.forName(alias, false, pluginClassLoader);
             } catch (ClassNotFoundException e) {
                 throw new TypeException("Could not resolve type alias '" + alias + "'.  Cause: " + e, e);
