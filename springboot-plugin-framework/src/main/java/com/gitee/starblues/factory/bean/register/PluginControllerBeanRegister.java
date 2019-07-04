@@ -91,6 +91,9 @@ public class PluginControllerBeanRegister extends PluginBasicBeanRegister {
             for (String definePath : definePaths) {
                 newPath[i++] = joiningPath(pathPrefix, definePath);
             }
+            if(newPath.length == 0){
+                newPath = new String[]{ pathPrefix };
+            }
             memberValues.put("path", newPath);
             memberValues.put("value", new String[]{});
         } catch (Exception e) {
