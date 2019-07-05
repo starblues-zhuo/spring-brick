@@ -24,7 +24,7 @@
 1. jdk1.8+
 2. apache maven 3.6
 
-### mavne 仓库地址
+### maven 仓库地址
 
 [https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework](https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework)
 

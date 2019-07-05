@@ -1,6 +1,12 @@
-### 扩展包 - 集成SpringBoot Mybatis
+#扩展包 - 集成SpringBoot Mybatis
 
-##### 主程序配置
+### maven 仓库地址
+
+https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework-extension-mybatis
+
+### 集成步骤
+
+#### 主程序配置
 
 1. 引入依赖
 ```xmml
@@ -31,7 +37,7 @@ public PluginApplication pluginApplication(){
 }
 ```
 
-##### 插件程序配置
+#### 插件程序配置
 
 1. 引入依赖
 ```xmml
