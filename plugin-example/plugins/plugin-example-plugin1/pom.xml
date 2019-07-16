@@ -8,12 +8,12 @@
     <parent>
         <groupId>com.gitee.starblues</groupId>
         <artifactId>plugin-example-plugin-parent</artifactId>
-        <version>2.0-RELEASE</version>
+        <version>2.0.1-RELEASE</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>plugin-example-plugin1</artifactId>
-    <version>2.0-RELEASE</version>
+    <version>2.0.1-RELEASE</version>
     <packaging>jar</packaging>
 
     <properties>

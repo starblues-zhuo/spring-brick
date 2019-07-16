@@ -691,9 +691,11 @@ File->Project Structure->Project Settings->Artifacts->点击+号->JAR->From modu
 3. 新增插件注册、卸载时监听器。
 
 #### 2.0 版本(重大版本更新)
-
 1. 重构代码。
 2. 新增扩展机制。
 3. 简化依赖注入注解, 保持与SpringBoot依赖注入方式一致。
 4. 新增插件工厂监听器、新增插件初始化监听器(适用于第一次启动)。
 5. 新增插件包Mybatis的集成, 可在插件包中独立定义Mapper接口、Mapper xml、实体bean。
+
+#### 2.0.1 版本
+1. 修复插件的Controller无法定义一级请求路径的bug。

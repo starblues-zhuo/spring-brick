@@ -64,6 +64,7 @@
         <maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 
+        <springboot-plugin-framework.version>2.0.1-RELEASE</springboot-plugin-framework.version>
         <mybatis-spring-boot-starter.version>2.0.1</mybatis-spring-boot-starter.version>
     </properties>
 
@@ -72,7 +73,7 @@
         <dependency>
             <groupId>com.gitee.starblues</groupId>
             <artifactId>springboot-plugin-framework</artifactId>
-            <version>${project.version}</version>
+            <version>${springboot-plugin-framework.version}</version>
             <scope>provided</scope>
         </dependency>
 
