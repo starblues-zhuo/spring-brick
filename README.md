@@ -675,6 +675,26 @@ example-plugin1
 如果pluginPath配置为绝对路径，请检查路径是否正确。
 ```
 
+3. 如果出现Spring包冲突。可以排除Spring包。
+例如:
+```xml
+<dependency>
+<groupId>com.gitee.starblues</groupId>
+<artifactId>springboot-plugin-framework</artifactId>
+<version>${springboot-plugin-framework.version}</version>
+<exclusions>
+    <exclusion>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+    </exclusion>
+     <exclusion>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+     </exclusion>
+</exclusions>
+</dependency>
+```
+
 ### 小技巧
 1. idea 启动主程序时, 自动编译插件包的配置
 选择 
