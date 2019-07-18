@@ -705,4 +705,4 @@ File->Project Structure->Project Settings->Artifacts->点击+号->JAR->From modu
 
 使用场景: 在主程序中定义了接口, 插件中存在实现了该接口的实现类, 通过PluginUser 的 getPluginBeans(接口Class) 可以获取所有插件中实现该接口的实现类。具体详见源码。
 
-2. 新增插件bean刷新刷新抽象类。继承它可动态获取接口实现类集合。
+2. 新增插件bean刷新抽象类。继承它可动态获取接口实现类集合。
