@@ -3,13 +3,12 @@ package com.plugin.example.main.rest;
 import com.gitee.starblues.integration.PluginApplication;
 import com.gitee.starblues.integration.user.PluginUser;
 import com.plugin.example.main.plugin.ConsoleName;
-import org.springframework.context.ApplicationContext;
+import com.plugin.example.main.plugin.ConsoleNameFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Description:
@@ -25,10 +24,12 @@ public class HelloResource {
 
 
     private final PluginUser pluginUser;
+    private final ConsoleNameFactory consoleNameFactory;
 
-    public HelloResource(List<ConsoleName> consoleNames,
-                         PluginApplication pluginApplication) {
+    public HelloResource(PluginApplication pluginApplication,
+                         ConsoleNameFactory consoleNameFactory) {
         this.pluginUser = pluginApplication.getPluginUser();
+        this.consoleNameFactory = consoleNameFactory;
     }
 
     @GetMapping
@@ -48,6 +49,13 @@ public class HelloResource {
     public String pluginConsoleName(){
         StringBuffer stringBuffer = new StringBuffer();
         List<ConsoleName> consoleNames = pluginUser.getPluginBeans(ConsoleName.class);
+        return getConsoleNames(stringBuffer, consoleNames);
+    }
+
+    @GetMapping("/pluginConsoleName2")
+    public String pluginConsoleName2(){
+        StringBuffer stringBuffer = new StringBuffer();
+        List<ConsoleName> consoleNames = consoleNameFactory.getBeans();
         return getConsoleNames(stringBuffer, consoleNames);
     }
 
