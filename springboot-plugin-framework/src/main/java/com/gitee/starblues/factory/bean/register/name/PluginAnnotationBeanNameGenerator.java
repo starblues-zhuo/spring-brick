@@ -15,7 +15,7 @@ public class PluginAnnotationBeanNameGenerator extends AnnotationBeanNameGenerat
     /**
      * 插件id
      */
-    public final String pluginId;
+    private final String pluginId;
 
     public PluginAnnotationBeanNameGenerator(String pluginId) {
         if(pluginId == null){
@@ -23,11 +23,12 @@ public class PluginAnnotationBeanNameGenerator extends AnnotationBeanNameGenerat
         } else {
             this.pluginId = pluginId + "-";
         }
-
     }
 
     @Override
     public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
         return pluginId + super.generateBeanName(definition, registry);
     }
+
+
 }

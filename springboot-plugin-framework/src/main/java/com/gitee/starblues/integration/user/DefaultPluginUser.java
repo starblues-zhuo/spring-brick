@@ -1,31 +1,29 @@
 package com.gitee.starblues.integration.user;
 
+import com.gitee.starblues.factory.bean.register.PluginBasicBeanRegister;
 import org.pf4j.PluginManager;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * 默认插件使用者
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.0.2
  */
 public class DefaultPluginUser implements PluginUser{
 
-    private final ApplicationContext applicationContext;
+    private final GenericApplicationContext applicationContext;
     private final PluginManager pluginManager;
-    private final AutowireCapableBeanFactory autowireCapableBeanFactory;
 
     public DefaultPluginUser(ApplicationContext applicationContext, PluginManager pluginManager) {
         Objects.requireNonNull(applicationContext);
         Objects.requireNonNull(pluginManager);
-        this.applicationContext = applicationContext;
-        this.autowireCapableBeanFactory = applicationContext.getAutowireCapableBeanFactory();
+        this.applicationContext = (GenericApplicationContext)applicationContext;
         this.pluginManager = pluginManager;
     }
 
@@ -36,9 +34,20 @@ public class DefaultPluginUser implements PluginUser{
      * @return 返回bean
      */
     @Override
-    public <T> T getSpringDefineBean(String name){
+    public <T> T getBean(String name){
         Object bean = applicationContext.getBean(name);
+        if(bean == null){
+            return null;
+        }
         return (T) bean;
+    }
+
+    @Override
+    public <T> T getPluginBean(String name) {
+        if(isPluginBean(name)){
+            return getBean(name);
+        }
+        return null;
     }
 
     /**
@@ -48,7 +57,7 @@ public class DefaultPluginUser implements PluginUser{
      * @return List
      */
     @Override
-    public <T> List<T> getSpringDefineBeansOfType(Class<T> aClass){
+    public <T> List<T> getBeans(Class<T> aClass){
         Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
         if(beansOfTypeMap == null){
             return Collections.emptyList();
@@ -66,39 +75,21 @@ public class DefaultPluginUser implements PluginUser{
      * @return List
      */
     @Override
-    public <T> List<T> getPluginSpringDefineBeansOfType(Class<T> aClass) {
+    public <T> List<T> getPluginBeans(Class<T> aClass) {
         Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
         if(beansOfTypeMap == null){
             return Collections.emptyList();
         }
-        return beansOfTypeMap.keySet()
-                .stream()
-                .filter(name -> name != null)
-                .map(name -> beansOfTypeMap.get(name))
-                .filter(bean -> bean != null)
-                .collect(Collectors.toList());
+        List<T> beans = new ArrayList<>();
+        beansOfTypeMap.forEach((beanName, bean)->{
+            if(isPluginBean(beanName)){
+                beans.add(bean);
+            }
+        });
+        return beans;
     }
 
-    /**
-     * 在主程序中获取注入了插件实现接口的bean。（Spring管理的bean）
-     * 该bean是在主程序中定义的。但是在该bean中通过 @Autowire 注解需要注入插件中实现了主程序中定义的接口。可以通过该函数获取该bean.
-     * 如果直接使用注解 @Autowire 使用该bean的话。则无法获取到插件对主程序接口定义的实现类。
-     * 比如：在主程序定义了：A 接口。在插件中实现了A接口：A-imp1类、A-imp2 类。
-     *      在主程序中C类 通过注解注入A接口的实现类（@Autowire {@code List<A>} list），而在C类的 method_c 中调用并使用了 list，则在
-     *       {@code List<A>} list 不存在插件对A的实现类（A-imp1类、A-imp2 类）
-     *      假如主程序D调用了C类的method_c方法，则在D程序中不要使用注解注入C类，直接使用该方法获取C类的实例，然后调用，这样就能动态
-     *      向{@code List<A>} 注入插件对A的实现类（A-imp1类、A-imp2 类）了。
-     * 说明：该方法比较绕，因此在程序中不要直接注入对插件定义的接口。建议直接使用 getSpringDefineBeansOfType({@code Class<T>} aClass) 方法
-     *      获取对接口aClass的实现。
-     * @param aClass  bean的类型
-     * @return 返回bean
-     */
-    @Override
-    public <T> T getSpringAutowirePluginDefineBean(Class<T> aClass){
-        T bean = applicationContext.getBean(aClass);
-        autowireCapableBeanFactory.autowireBean(bean);
-        return bean;
-    }
+
 
     /**
      * 得到插件扩展接口实现的bean。（非Spring管理）
@@ -111,5 +102,18 @@ public class DefaultPluginUser implements PluginUser{
         return pluginManager.getExtensions(tClass);
     }
 
+    /**
+     * 是否是插件中的bean
+     * @param beanName bean名称
+     * @return boolean
+     */
+    private boolean isPluginBean(String beanName){
+        if(beanName == null){
+            return false;
+        }
+        BeanDefinition beanDefinition = applicationContext.getBeanDefinition(beanName);
+        Object attribute = beanDefinition.getAttribute(PluginBasicBeanRegister.DEFINE_PLUGIN_SIGN);
+        return Objects.equals(PluginBasicBeanRegister.DEFINE_PLUGIN_SIGN, attribute);
+    }
 
 }

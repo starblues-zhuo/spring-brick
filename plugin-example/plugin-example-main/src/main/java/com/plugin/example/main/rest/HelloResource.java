@@ -3,11 +3,13 @@ package com.plugin.example.main.rest;
 import com.gitee.starblues.integration.PluginApplication;
 import com.gitee.starblues.integration.user.PluginUser;
 import com.plugin.example.main.plugin.ConsoleName;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description:
@@ -22,10 +24,11 @@ import java.util.List;
 public class HelloResource {
 
 
-    private PluginUser pluginUser;
+    private final PluginUser pluginUser;
 
-    public HelloResource(PluginApplication pluginApplication) {
-        //this.pluginUser = pluginApplication.getPluginUser();
+    public HelloResource(List<ConsoleName> consoleNames,
+                         PluginApplication pluginApplication) {
+        this.pluginUser = pluginApplication.getPluginUser();
     }
 
     @GetMapping
@@ -36,38 +39,24 @@ public class HelloResource {
     @GetMapping("/consoleName")
     public String consoleName(){
         StringBuffer stringBuffer = new StringBuffer();
-        List<ConsoleName> consoleNames = pluginUser
-                .getSpringDefineBeansOfType(ConsoleName.class);
-        for (ConsoleName consoleName : consoleNames) {
-            stringBuffer.append(consoleName.name())
-                    .append("<br/>");
-        }
-        return stringBuffer.toString();
+        List<ConsoleName> consoleNames = pluginUser.getBeans(ConsoleName.class);
+        return getConsoleNames(stringBuffer, consoleNames);
     }
 
 
-    @GetMapping("/pluginName")
-    public String pluginName(){
+    @GetMapping("/pluginConsoleName")
+    public String pluginConsoleName(){
         StringBuffer stringBuffer = new StringBuffer();
-        List<ConsoleName> consoleNames = pluginUser
-                .getPluginSpringDefineBeansOfType(ConsoleName.class);
+        List<ConsoleName> consoleNames = pluginUser.getPluginBeans(ConsoleName.class);
+        return getConsoleNames(stringBuffer, consoleNames);
+    }
+
+    private String getConsoleNames(StringBuffer stringBuffer, List<ConsoleName> consoleNames) {
         for (ConsoleName consoleName : consoleNames) {
             stringBuffer.append(consoleName.name())
                     .append("<br/>");
         }
-        System.out.println(stringBuffer);
         return stringBuffer.toString();
-    }
-
-    @GetMapping("/test")
-    public void test(){
-        try {
-            Class<?> aClass = Class.forName("com.plugin.example.plugin1.Test");
-            Object o = aClass.newInstance();
-            System.out.println(o);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }

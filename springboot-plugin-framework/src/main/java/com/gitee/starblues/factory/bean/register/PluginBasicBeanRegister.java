@@ -22,9 +22,15 @@ import org.springframework.stereotype.Service;
  * @see Component
  * @see Service
  * @see Repository
+ * @see Configuration
  * @version 1.0
  */
 public class PluginBasicBeanRegister extends AbstractPluginBeanRegister<String>{
+
+    /**
+     * 定义的插件标记
+     */
+    public static final String DEFINE_PLUGIN_SIGN = "ThisIsPluginBean";
 
     private final static Logger LOG = LoggerFactory.getLogger(PluginBasicBeanRegister.class);
 
@@ -67,8 +73,10 @@ public class PluginBasicBeanRegister extends AbstractPluginBeanRegister<String>{
         BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder
                 .genericBeanDefinition(aClass);
         BeanDefinition beanDefinition = beanDefinitionBuilder.getRawBeanDefinition();
+        beanDefinition.setAttribute(DEFINE_PLUGIN_SIGN, DEFINE_PLUGIN_SIGN);
         processBeanDefinition(basePlugin, beanDefinition);
-        BeanNameGenerator beanNameGenerator = new PluginAnnotationBeanNameGenerator(basePlugin.getWrapper().getPluginId());
+        BeanNameGenerator beanNameGenerator =
+                new PluginAnnotationBeanNameGenerator(basePlugin.getWrapper().getPluginId());
         String name = beanNameGenerator.generateBeanName(beanDefinition, applicationContext);
         applicationContext.registerBeanDefinition(name, beanDefinition);
         return name;

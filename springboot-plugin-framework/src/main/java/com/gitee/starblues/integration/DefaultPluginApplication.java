@@ -8,6 +8,8 @@ import com.gitee.starblues.factory.PluginListener;
 import com.gitee.starblues.factory.PluginFactory;
 import com.gitee.starblues.integration.operator.DefaultPluginOperator;
 import com.gitee.starblues.integration.operator.PluginOperator;
+import com.gitee.starblues.integration.user.DefaultPluginUser;
+import com.gitee.starblues.integration.user.PluginUser;
 import org.pf4j.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +25,7 @@ import java.util.Objects;
 /**
  * 开发者直接使用的。插件应用
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.0.2
  */
 public class DefaultPluginApplication implements ApplicationContextAware, PluginApplication {
 
@@ -34,6 +36,7 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
     private ExtensionFactory extensionFactory = ExtensionFactory.getSingleton();
 
     private PluginOperator pluginOperator;
+    private PluginUser pluginUser;
     private NoticePluginFactory noticePluginFactory;
 
     private List<PluginListener> pluginListeners = new ArrayList<>();
@@ -63,7 +66,7 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
         }
         try {
             IntegrationConfiguration configuration = applicationContext.getBean(IntegrationConfiguration.class);
-            //this.pluginUser = new DefaultPluginUser(this.applicationContext, this.pluginManager);
+            this.pluginUser = new DefaultPluginUser(this.applicationContext, this.pluginManager);
             this.pluginOperator = new DefaultPluginOperator(
                     applicationContext,
                     configuration,
@@ -78,7 +81,13 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
     @Override
     public PluginOperator getPluginOperator() {
         assertInjected();
-        return pluginOperator;
+        return this.pluginOperator;
+    }
+
+    @Override
+    public PluginUser getPluginUser() {
+        assertInjected();
+        return this.pluginUser;
     }
 
 
@@ -110,6 +119,10 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
         }
         if (this.pluginOperator == null) {
             throw new RuntimeException("PluginOperator is null," +
+                    " Please check whether the PluginManager or ApplicationContext is injected");
+        }
+        if (this.pluginUser == null) {
+            throw new RuntimeException("pluginUser is null," +
                     " Please check whether the PluginManager or ApplicationContext is injected");
         }
     }

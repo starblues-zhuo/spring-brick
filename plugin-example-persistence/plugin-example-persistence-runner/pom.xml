@@ -13,7 +13,7 @@
     </parent>
 
     <artifactId>plugin-example-persistence-runner</artifactId>
-    <version>2.0.1-RELEASE</version>
+    <version>2.0.2-RELEASE</version>
     <packaging>pom</packaging>
     <description>启动程序模块。将启动类配置到该模块下</description>
 
