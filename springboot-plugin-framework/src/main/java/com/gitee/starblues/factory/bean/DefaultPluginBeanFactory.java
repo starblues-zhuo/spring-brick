@@ -35,19 +35,20 @@ public class DefaultPluginBeanFactory implements PluginFactory {
     private final static Map<String, PluginSpringBean>
             PLUGIN_BEAN_MAP = new ConcurrentHashMap<>();
 
-    private final List<PluginBeanRegister> pluginBeanRegisters = new ArrayList<>(5);
-
+    private final List<PluginBeanRegister> otherPluginBeanRegisters = new ArrayList<>(5);
+    private final PluginBasicBeanRegister pluginBasicBeanRegister;
 
     public DefaultPluginBeanFactory(ApplicationContext mainApplicationContext){
         try {
-            pluginBeanRegisters.add(new PluginBasicBeanRegister(mainApplicationContext));
-            pluginBeanRegisters.add(new PluginConfigBeanRegister(mainApplicationContext));
-            pluginBeanRegisters.add(new PluginControllerBeanRegister(mainApplicationContext));
+            this.pluginBasicBeanRegister = new PluginBasicBeanRegister(mainApplicationContext);
+            otherPluginBeanRegisters.add(new PluginConfigBeanRegister(mainApplicationContext));
+            otherPluginBeanRegisters.add(new PluginControllerBeanRegister(mainApplicationContext,
+                    pluginBasicBeanRegister));
             addExtension(mainApplicationContext);
         } catch (PluginBeanFactoryException e){
             throw new RuntimeException(e);
         }
-        CommonUtils.order(pluginBeanRegisters, (pluginBeanRegister -> pluginBeanRegister.order()));
+        CommonUtils.order(otherPluginBeanRegisters, (pluginBeanRegister -> pluginBeanRegister.order()));
     }
 
     /**
@@ -62,7 +63,7 @@ public class DefaultPluginBeanFactory implements PluginFactory {
                 List<PluginBeanRegister> pluginBeanRegister = abstractExtension
                         .getPluginBeanRegister(mainApplicationContext);
                 if(pluginBeanRegister != null || !pluginBeanRegister.isEmpty()){
-                    pluginBeanRegisters.addAll(pluginBeanRegister);
+                    otherPluginBeanRegisters.addAll(pluginBeanRegister);
                 }
             }
             LOG.info("Register Extension PluginBeanRegister : {}", k);
@@ -88,11 +89,28 @@ public class DefaultPluginBeanFactory implements PluginFactory {
             pluginSpringBean = new PluginSpringBean();
             PLUGIN_BEAN_MAP.put(pluginWrapper.getPluginId(), pluginSpringBean);
         }
+        List<Class<?>> otherClass = new ArrayList<>();
+        // 先注册基本的Class
         for (Class<?> aClass : pluginClass) {
             if(aClass == null){
                 continue;
             }
-            for (PluginBeanRegister pluginBeanRegister : pluginBeanRegisters) {
+            if(pluginBasicBeanRegister.support(basePlugin, aClass)){
+                Object registry = pluginBasicBeanRegister.registry(basePlugin, aClass);
+                if(registry == null){
+                    continue;
+                }
+                pluginSpringBean.addPluginRegister(pluginBasicBeanRegister.key(), registry);
+            } else {
+                otherClass.add(aClass);
+            }
+        }
+        // 再注册其他的Class
+        for (Class<?> aClass : otherClass) {
+            for (PluginBeanRegister pluginBeanRegister : otherPluginBeanRegisters) {
+                if(!pluginBeanRegister.support(basePlugin, aClass)){
+                    continue;
+                }
                 Object registry = pluginBeanRegister.registry(basePlugin, aClass);
                 if(registry == null){
                     continue;
@@ -142,7 +160,11 @@ public class DefaultPluginBeanFactory implements PluginFactory {
             throw new PluginBeanFactoryException("Not found plugin <"
                     + pluginWrapper.getPluginId() + "> registry info!");
         }
-        for (PluginBeanRegister pluginBeanRegister : pluginBeanRegisters) {
+        Object basicPluginRegister = pluginSpringBean.getPluginRegister(pluginBasicBeanRegister.key());
+        if(basicPluginRegister != null){
+            pluginBasicBeanRegister.unRegistry(basePlugin, basicPluginRegister.toString());
+        }
+        for (PluginBeanRegister pluginBeanRegister : otherPluginBeanRegisters) {
             if(pluginBeanRegister == null){
                 continue;
             }
@@ -164,7 +186,7 @@ public class DefaultPluginBeanFactory implements PluginFactory {
      */
     public synchronized void addPluginBeanRegister(PluginBasicBeanRegister pluginBasicBeanRegister){
         if(pluginBasicBeanRegister != null){
-            pluginBeanRegisters.add(pluginBasicBeanRegister);
+            otherPluginBeanRegisters.add(pluginBasicBeanRegister);
         }
     }
 

@@ -45,11 +45,13 @@ public class PluginBasicBeanRegister extends AbstractPluginBeanRegister<String>{
     }
 
     @Override
+    public boolean support(BasePlugin basePlugin, Class<?> aClass) {
+        return AnnotationsUtils.haveAnnotations(aClass, false,
+                Component.class, Service.class, Repository.class, Configuration.class);
+    }
+
+    @Override
     public String registry(BasePlugin basePlugin, Class<?> aClass) throws PluginBeanFactoryException {
-        if(!AnnotationsUtils.haveAnnotations(aClass, false,
-                Component.class, Service.class, Repository.class, Configuration.class)){
-            return null;
-        }
         return register(basePlugin, aClass);
     }
 

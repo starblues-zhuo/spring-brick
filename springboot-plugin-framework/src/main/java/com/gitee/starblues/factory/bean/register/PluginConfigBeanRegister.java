@@ -46,6 +46,16 @@ public class PluginConfigBeanRegister extends AbstractPluginBeanRegister<String>
     }
 
     @Override
+    public boolean support(BasePlugin basePlugin, Class<?> aClass) {
+        ConfigDefinition configDefinition = aClass.getAnnotation(ConfigDefinition.class);
+        if(configDefinition != null){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public String registry(BasePlugin basePlugin, Class<?> aClass) throws PluginBeanFactoryException {
         ConfigDefinition configDefinition = aClass.getAnnotation(ConfigDefinition.class);
         if(configDefinition == null){

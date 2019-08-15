@@ -17,6 +17,16 @@ public interface PluginBeanRegister<T> {
      */
     String key();
 
+
+    /**
+     * 是否支持注册
+     * @param basePlugin 插件信息
+     * @param aClass 注册的class
+     * @return 支持返回true. 不支持返回false
+     */
+    boolean support(BasePlugin basePlugin, Class<?> aClass);
+
+
     /**
      * 注册插件中的bane
      * @param basePlugin basePlugin

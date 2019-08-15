@@ -51,7 +51,7 @@ public interface PluginOperator {
     boolean uninstall(String pluginId) throws PluginPlugException;
 
     /**
-     * 通过插件id删除插件
+     * 通过插件id删除插件。只适用于生产环境
      * @param pluginId 插件id
      * @return 成功返回true.不成功抛出异常或者返回false
      * @throws PluginPlugException 插件插头异常
@@ -60,7 +60,7 @@ public interface PluginOperator {
 
 
     /**
-     * 通过路径删除插件
+     * 通过路径删除插件。只适用于生产环境
      * @param path 插件路径
      * @return 成功返回true.不成功抛出异常或者返回false
      * @throws PluginPlugException 插件插头异常
@@ -86,7 +86,7 @@ public interface PluginOperator {
 
 
     /**
-     * 上传插件
+     * 上传插件。只适用于生产环境
      * @param pluginFile 插件文件
      * @return 成功返回插件路径.不成功返回null, 或者抛出异常
      * @throws PluginPlugException 插件插头异常
@@ -95,7 +95,7 @@ public interface PluginOperator {
 
 
     /**
-     * 上传插件并启用插件
+     * 上传插件并启用插件。只适用于生产环境
      * @param pluginFile 配置文件
      * @return 成功返回true.不成功返回false, 或者抛出异常
      * @throws PluginPlugException 插件插头异常
@@ -103,7 +103,7 @@ public interface PluginOperator {
     boolean uploadPluginAndStart(MultipartFile pluginFile) throws PluginPlugException;
 
     /**
-     * 上传配置文件(如果存在, 则覆盖)
+     * 上传配置文件(如果存在, 则覆盖)。只适用于生产环境
      * @param configFile 配置文件
      * @return 成功返回true.不成功返回false, 或者抛出异常
      * @throws PluginPlugException 插件插头异常
@@ -111,7 +111,7 @@ public interface PluginOperator {
     boolean uploadConfigFile(MultipartFile configFile) throws PluginPlugException;
 
     /**
-     * 通过路径备份插件文件
+     * 通过路径备份插件文件。只适用于生产环境
      * @param path 路径
      * @param appendName 追加的名称
      * @return 成功返回true.不成功返回false, 或者抛出异常
@@ -120,7 +120,7 @@ public interface PluginOperator {
     boolean backupPlugin(Path path, String appendName) throws PluginPlugException;
 
     /**
-     * 通过插件id备份插件
+     * 通过插件id备份插件。只适用于生产环境
      * @param pluginId 插件id
      * @param appendName 追加的名称
      * @return 成功返回true.不成功返回false, 或者抛出异常
@@ -136,7 +136,7 @@ public interface PluginOperator {
 
 
     /**
-     * 得到插件文件的路径
+     * 得到插件文件的路径。只适用于生产环境
      * @return 返回插件路径列表
      * @throws PluginPlugException 插件插头异常
      */

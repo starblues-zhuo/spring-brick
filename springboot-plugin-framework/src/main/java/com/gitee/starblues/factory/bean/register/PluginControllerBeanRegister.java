@@ -8,13 +8,15 @@ import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.*;
 
 /**
@@ -24,15 +26,23 @@ import java.util.*;
  * @see RestController
  * @version 1.0
  */
-public class PluginControllerBeanRegister extends PluginBasicBeanRegister {
+public class PluginControllerBeanRegister
+        extends AbstractPluginBeanRegister<PluginControllerBeanRegister.ControllerBeanWrapper> {
 
     private final static Logger LOG = LoggerFactory.getLogger(PluginControllerBeanRegister.class);
 
+    private final ApplicationContext applicationContext;
+    private final RequestMappingHandlerMapping requestMappingHandlerMapping;
     private final IntegrationConfiguration integrationConfiguration;
+    private final PluginBasicBeanRegister pluginBasicBeanRegister;
 
-    public PluginControllerBeanRegister(ApplicationContext mainApplicationContext) throws PluginBeanFactoryException {
+    public PluginControllerBeanRegister(ApplicationContext mainApplicationContext,
+                                        PluginBasicBeanRegister pluginBasicBeanRegister) throws PluginBeanFactoryException {
         super(mainApplicationContext);
+        this.applicationContext = mainApplicationContext;
+        this.requestMappingHandlerMapping = mainApplicationContext.getBean(RequestMappingHandlerMapping.class);
         this.integrationConfiguration = mainApplicationContext.getBean(IntegrationConfiguration.class);
+        this.pluginBasicBeanRegister = pluginBasicBeanRegister;
     }
 
 
@@ -42,12 +52,69 @@ public class PluginControllerBeanRegister extends PluginBasicBeanRegister {
     }
 
     @Override
-    public String registry(BasePlugin basePlugin, Class<?> aClass) throws PluginBeanFactoryException {
-        if(!AnnotationsUtils.haveAnnotations(aClass, false, RestController.class, Controller.class)){
-            return null;
+    public boolean support(BasePlugin basePlugin, Class<?> aClass) {
+        if(requestMappingHandlerMapping == null){
+            return false;
         }
+        return AnnotationsUtils.haveAnnotations(aClass, false, RestController.class, Controller.class);
+    }
+
+    @Override
+    public PluginControllerBeanRegister.ControllerBeanWrapper registry(BasePlugin basePlugin, Class<?> aClass) throws PluginBeanFactoryException {
+        String beanName = pluginBasicBeanRegister.registry(basePlugin, aClass);
+        if(beanName == null || "".equals(beanName)){
+            throw new PluginBeanFactoryException("registry "+ aClass.getName() + "failure!");
+        }
+        Object object = applicationContext.getBean(beanName);
+        if(object == null){
+            throw new PluginBeanFactoryException("registry "+ aClass.getName() + "failure! " +
+                    "Not found The instance of" + aClass.getName());
+        }
+        PluginControllerBeanRegister.ControllerBeanWrapper controllerBeanWrapper =
+                new PluginControllerBeanRegister.ControllerBeanWrapper();
+        controllerBeanWrapper.setBeanName(beanName);
         setPathPrefix(basePlugin.getWrapper().getPluginId(), aClass);
-        return super.register(basePlugin, aClass);
+        Method getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
+                "getMappingForMethod", Method.class, Class.class);
+        getMappingForMethod.setAccessible(true);
+        try {
+            Method[] methods = aClass.getMethods();
+            Set<RequestMappingInfo> requestMappingInfos = new HashSet<>();
+            for (Method method : methods) {
+                if (isHaveRequestMapping(method)) {
+                    RequestMappingInfo requestMappingInfo = (RequestMappingInfo)
+                            getMappingForMethod.invoke(requestMappingHandlerMapping, method, aClass);
+                    requestMappingHandlerMapping.registerMapping(requestMappingInfo, object, method);
+                    requestMappingInfos.add(requestMappingInfo);
+                }
+            }
+            controllerBeanWrapper.setRequestMappingInfos(requestMappingInfos);
+            return controllerBeanWrapper;
+        } catch (SecurityException e) {
+            throw new PluginBeanFactoryException(e);
+        } catch (InvocationTargetException e) {
+            throw new PluginBeanFactoryException(e);
+        } catch (Exception e){
+            throw new PluginBeanFactoryException(e);
+        }
+    }
+
+    @Override
+    public void unRegistry(BasePlugin basePlugin,
+                           PluginControllerBeanRegister.ControllerBeanWrapper controllerBeanWrapper) throws PluginBeanFactoryException {
+        if(controllerBeanWrapper == null){
+            return;
+        }
+        Set<RequestMappingInfo> requestMappingInfos = controllerBeanWrapper.getRequestMappingInfos();
+        if(requestMappingInfos != null && !requestMappingInfos.isEmpty()){
+            for (RequestMappingInfo requestMappingInfo : requestMappingInfos) {
+                requestMappingHandlerMapping.unregisterMapping(requestMappingInfo);
+            }
+        }
+        String beanName = controllerBeanWrapper.getBeanName();
+        if(beanName != null && !"".equals(beanName)){
+            pluginBasicBeanRegister.unRegistry(basePlugin, beanName);
+        }
     }
 
     @Override
@@ -89,7 +156,12 @@ public class PluginControllerBeanRegister extends PluginBasicBeanRegister {
             String[] newPath = new String[definePaths.size()];
             int i = 0;
             for (String definePath : definePaths) {
-                newPath[i++] = joiningPath(pathPrefix, definePath);
+                // 解决插件启用、禁用后, 路径前缀重复的问题。
+                if(definePath.contains(pathPrefix)){
+                    newPath[i++] = definePath;
+                } else {
+                    newPath[i++] = joiningPath(pathPrefix, definePath);
+                }
             }
             if(newPath.length == 0){
                 newPath = new String[]{ pathPrefix };
@@ -126,6 +198,53 @@ public class PluginControllerBeanRegister extends PluginBasicBeanRegister {
             return "";
         }
     }
+
+
+    /**
+     * 方法上是否存在 @RequestMapping 注解
+     * @param method method
+     * @return boolean
+     */
+    private boolean isHaveRequestMapping(Method method){
+        if (AnnotationUtils.findAnnotation(method, RequestMapping.class) != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * Controller Bean的包装
+     */
+    public static final class ControllerBeanWrapper{
+        /**
+         * controller bean 名称
+         */
+        private String beanName;
+
+        /**
+         * controller 的 RequestMappingInfo 集合
+         */
+        private Set<RequestMappingInfo> requestMappingInfos;
+
+        public String getBeanName() {
+            return beanName;
+        }
+
+        public void setBeanName(String beanName) {
+            this.beanName = beanName;
+        }
+
+        public Set<RequestMappingInfo> getRequestMappingInfos() {
+            return requestMappingInfos;
+        }
+
+        public void setRequestMappingInfos(Set<RequestMappingInfo> requestMappingInfos) {
+            this.requestMappingInfos = requestMappingInfos;
+        }
+    }
+
 
 
 }

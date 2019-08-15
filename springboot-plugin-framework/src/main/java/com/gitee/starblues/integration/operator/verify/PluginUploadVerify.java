@@ -35,7 +35,7 @@ public class PluginUploadVerify extends PluginLegalVerify{
                 .append("id:<").append(runPluginDescriptor.getPluginId())
                 .append("> ; version <").append(runPluginDescriptor.getVersion())
                 .append("> ) is already exist in the current environment。 ")
-                .append("Please stop and uninstall the plugin, then upload and update the plugin");
+                .append("Please uninstall the plugin, then upload and update the plugin");
         throw new PluginException(errorMsg.toString());
     }
 }

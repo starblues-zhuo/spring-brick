@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
  */
 public class DefaultPluginOperator implements PluginOperator {
 
+    private boolean isInit = false;
     private final Logger log = LoggerFactory.getLogger(DefaultPluginApplication.class);
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -67,7 +68,10 @@ public class DefaultPluginOperator implements PluginOperator {
 
 
     @Override
-    public boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws PluginPlugException {
+    public synchronized boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws PluginPlugException {
+        if(isInit){
+            throw new PluginPlugException("Plugins Already initialized. Cannot be initialized again");
+        }
         try {
             pluginInitializerListenerFactory.addPluginInitializerListeners(pluginInitializerListener);
             log.info("Start Init Plugins");
@@ -97,6 +101,7 @@ public class DefaultPluginOperator implements PluginOperator {
                 }
             }
             pluginInitializerListenerFactory.complete();
+            isInit = true;
             return true;
         }  catch (Exception e){
             pluginInitializerListenerFactory.failure(e);

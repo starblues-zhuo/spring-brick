@@ -19,7 +19,6 @@
 13. 利用扩展机制, 定制了SpringBoot-Mybatis扩展包。使用该扩展包, 使用者可以在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean。
 
 
-
 ### 运行环境
 1. jdk1.8+
 2. apache maven 3.6
@@ -694,6 +693,13 @@ example-plugin1
 </exclusions>
 </dependency>
 ```
+4. 以下功能只适用于生产环境下。
+- 插件的上传。
+- 插件的动态更新(上传并安装插件)。
+- 插件的备份。
+- 插件的配置文件上传。
+- 删除插件
+
 
 ### 小技巧
 1. idea 启动主程序时, 自动编译插件包的配置
@@ -702,6 +708,9 @@ File->Project Structure->Project Settings->Artifacts->点击+号->JAR->From modu
                             
 启动配置: 
 在Before launch 下-> 点击小+号 -> Build ->Artifacts -> 选择上一步新增的>Artifacts
+
+### QQ交流群
+859570617
 
 ### 版本更新
 
@@ -726,3 +735,6 @@ File->Project Structure->Project Settings->Artifacts->点击+号->JAR->From modu
 使用场景: 在主程序中定义了接口, 插件中存在实现了该接口的实现类, 通过PluginUser 的 getPluginBeans(接口Class) 可以获取所有插件中实现该接口的实现类。具体详见源码。
 
 2. 新增插件bean刷新抽象类。继承它可动态获取接口实现类集合。
+
+#### 2.0.3 版本
+1. 修复插件动态重新安装后, 无法访问到插件中的接口的bug。
