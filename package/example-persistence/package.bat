@@ -2,7 +2,7 @@ REM windows上打包的脚本
 
 cd ../../
 REM package'
-mvn clean install -Dmaven.test.skip=true
+call mvn clean install -Dmaven.test.skip=true
 
 REM del example-persistence-dist
 rmdir example-persistence-dist /s /q
