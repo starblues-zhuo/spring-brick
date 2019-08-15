@@ -73,6 +73,14 @@ Maven目录结构下所示
     <artifactId>springboot-plugin-framework</artifactId>
     <version>${springboot-plugin-framework.version}</version>
 </dependency>
+
+最新版本:
+<dependency>
+    <groupId>com.gitee.starblues</groupId>
+    <artifactId>springboot-plugin-framework</artifactId>
+    <version>2.0.3-RELEASE</version>
+</dependency>
+
 ```
 
 2. 实现并定义配置
