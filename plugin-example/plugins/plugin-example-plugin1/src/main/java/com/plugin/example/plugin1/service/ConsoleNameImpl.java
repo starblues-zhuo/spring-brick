@@ -6,12 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * @Description:
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-06-01 09:30
- * @Update Date Time:
- * @see
+ * 主程序定义接口的实现类: ConsoleName
+ *
+ * @author zhangzhuo
+ * @version 1.0
  */
 @Component
 public class ConsoleNameImpl implements ConsoleName {

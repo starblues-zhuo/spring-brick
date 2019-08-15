@@ -4,12 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @Description:
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-30 15:52
- * @Update Date Time:
- * @see
+ * 插件案例启动类
+ * @author zhangzhuo
+ * @version 1.0
  */
 @SpringBootApplication
 public class ExampleMain {

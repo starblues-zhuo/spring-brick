@@ -5,7 +5,7 @@ import com.gitee.starblues.integration.refresh.AbstractPluginSpringBeanRefresh;
 import org.springframework.stereotype.Component;
 
 /**
- * description
+ * 输出名称工厂
  *
  * @author zhangzhuo
  * @version 1.0

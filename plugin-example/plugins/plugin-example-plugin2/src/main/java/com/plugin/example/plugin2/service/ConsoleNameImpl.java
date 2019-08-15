@@ -4,7 +4,7 @@ import com.plugin.example.main.plugin.ConsoleName;
 import org.springframework.stereotype.Component;
 
 /**
- * description
+ * 插件实现
  *
  * @author zhangzhuo
  * @version 1.0

@@ -5,12 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * @Description:
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-30 16:05
- * @Update Date Time:
- * @see
+ * hello 服务类
+ *
+ * @author zhangzhuo
+ * @version 1.0
  */
 @Component("plugin2HelloService")
 public class HelloService {

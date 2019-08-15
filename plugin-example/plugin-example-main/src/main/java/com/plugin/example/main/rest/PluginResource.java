@@ -13,12 +13,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @Description: 测试操作插件功能
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-31 12:39
- * @Update Date Time:
- * @see
+ * 插件jar 包测试功能
+ * @author zhangzhuo
+ * @version 1.0
  */
 @RestController
 @RequestMapping("/plugin")
@@ -34,7 +31,7 @@ public class PluginResource {
 
     /**
      * 获取插件信息
-     * @return
+     * @return 返回插件信息
      */
     @GetMapping
     public List<PluginInfo> getPluginInfo(){
@@ -42,8 +39,8 @@ public class PluginResource {
     }
 
     /**
-     * 获取插件文件名
-     * @return
+     * 获取插件jar文件名
+     * @return 获取插件文件名。只在生产环境显示
      */
     @GetMapping("/files")
     public Set<String> getPluginFilePaths(){
@@ -57,9 +54,9 @@ public class PluginResource {
 
 
     /**
-     * 停止插件(
-     * @param id
-     * @return
+     * 根据插件id停止插件
+     * @param id 插件id
+     * @return 返回操作结果
      */
     @PostMapping("/stop/{id}")
     public String stop(@PathVariable("id") String id){
@@ -73,9 +70,9 @@ public class PluginResource {
     }
 
     /**
-     * 启动插件
-     * @param id
-     * @return
+     * 根据插件id启动插件
+     * @param id 插件id
+     * @return 返回操作结果
      */
     @PostMapping("/start/{id}")
     public String start(@PathVariable("id") String id){
@@ -90,9 +87,9 @@ public class PluginResource {
 
 
     /**
-     * 卸载插件
-     * @param id
-     * @return
+     * 根据插件id卸载插件
+     * @param id 插件id
+     * @return 返回操作结果
      */
     @PostMapping("/uninstall/{id}")
     public String uninstall(@PathVariable("id") String id){
@@ -106,13 +103,10 @@ public class PluginResource {
     }
 
 
-
-
-
     /**
-     * 安装插件
+     * 根据插件路径安装插件。该插件jar必须在服务器上存在。注意: 该操作只适用于生产环境
      * @param path 插件路径名称
-     * @return
+     * @return 操作结果
      */
     @PostMapping("/installByPath/{path}")
     public String install(@PathVariable("path") String path){
@@ -127,12 +121,12 @@ public class PluginResource {
 
 
     /**
-     * 上传并安装插件
-     * @param
-     * @return
+     * 上传并安装插件。注意: 该操作只适用于生产环境
+     * @param multipartFile 上传文件 multipartFile
+     * @return 操作结果
      */
-    @PostMapping("/install")
-    public String install(@RequestParam("file") MultipartFile multipartFile){
+    @PostMapping("/uploadInstallPluginJar")
+    public String install(@RequestParam("jarFile") MultipartFile multipartFile){
         try {
             pluginOperator.uploadPluginAndStart(multipartFile);
             return "install success";
@@ -144,12 +138,12 @@ public class PluginResource {
 
 
     /**
-     * 上传并安装插件
-     * @param
-     * @return
+     * 上传插件的配置文件。注意: 该操作只适用于生产环境
+     * @param multipartFile 上传文件 multipartFile
+     * @return 操作结果
      */
-    @PostMapping("/uploadConfig")
-    public String uploadConfig(@RequestParam("file") MultipartFile multipartFile){
+    @PostMapping("/uploadPluginConfigFile")
+    public String uploadConfig(@RequestParam("configFile") MultipartFile multipartFile){
         try {
             pluginOperator.uploadConfigFile(multipartFile);
             return "uploadConfig success";
@@ -161,9 +155,9 @@ public class PluginResource {
 
 
     /**
-     * 通过插件id删除插件
-     * @param
-     * @return
+     * 通过插件id删除插件。注意: 该操作只适用于生产环境
+     * @param pluginId 插件id
+     * @return 操作结果
      */
     @DeleteMapping("/pluginId/{pluginId}")
     public String deleteById(@PathVariable("pluginId") String pluginId){
@@ -177,14 +171,14 @@ public class PluginResource {
     }
 
     /**
-     * 通过路径删除插件
-     * @param
-     * @return
+     * 通过路径删除插件。注意: 该操作只适用于生产环境
+     * @param pluginJarPath 插件jar路径
+     * @return 操作结果
      */
     @PostMapping("/path")
-    public String deleteByPath(@RequestParam("pluginPath") String path){
+    public String deleteByPath(@RequestParam("pluginJarPath") String pluginJarPath){
         try {
-            pluginOperator.delete(Paths.get(path));
+            pluginOperator.delete(Paths.get(pluginJarPath));
             return "deleteByPath success";
         } catch (PluginPlugException e) {
             e.printStackTrace();
@@ -193,9 +187,9 @@ public class PluginResource {
     }
 
     /**
-     * 备份插件
-     * @param
-     * @return
+     * 备份插件。注意: 该操作只适用于生产环境
+     * @param pluginId 插件id
+     * @return 操作结果
      */
     @PostMapping("/back/{pluginId}")
     public String backupPlugin(@PathVariable("pluginId") String pluginId){

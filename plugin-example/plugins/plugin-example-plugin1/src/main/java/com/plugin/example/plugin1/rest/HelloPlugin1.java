@@ -9,12 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @Description:
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-30 16:04
- * @Update Date Time:
- * @see
+ * 插件接口
+ *
+ * @author zhangzhuo
+ * @version 1.0
  */
 @RestController
 @RequestMapping(path = "plugin1")

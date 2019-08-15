@@ -8,6 +8,12 @@ package com.plugin.example.plugin1.config;
  * @Update Date Time:
  * @see
  */
+/**
+ * 插件子类配置文件对应bean定义
+ *
+ * @author zhangzhuo
+ * @version 1.0
+ */
 public class SubConfig {
 
     private String subName;

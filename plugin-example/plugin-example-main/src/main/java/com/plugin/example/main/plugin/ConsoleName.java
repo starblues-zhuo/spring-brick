@@ -1,18 +1,15 @@
 package com.plugin.example.main.plugin;
 
 /**
- * @Description: 提供给插件的一个接口
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-06-01 09:28
- * @Update Date Time:
- * @see
+ * 在主程序定义一个接口。插件中可以实现该接口
+ * @author zhangzhuo
+ * @version 1.0
  */
 public interface ConsoleName {
 
     /**
      * 返回名称
-     * @return
+     * @return 输出名称
      */
     String name();
 

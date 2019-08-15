@@ -6,12 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @Description:
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-30 16:01
- * @Update Date Time:
- * @see
+ * 插件2配置文件对应的bean 定义
+ * 必须有ConfigDefinition注解
+ * @author zhangzhuo
+ * @version 1.0
  */
 @ConfigDefinition("plugin2.yml")
 public class Plugin2Config {

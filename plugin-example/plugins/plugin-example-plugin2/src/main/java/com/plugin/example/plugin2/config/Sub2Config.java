@@ -1,12 +1,11 @@
 package com.plugin.example.plugin2.config;
 
+
 /**
- * @Description:
- * @Author: zhangzhuo
- * @Version: 1.0
- * @Create Date Time: 2019-05-30 16:03
- * @Update Date Time:
- * @see
+ * 插件2配置文件子bean映射类
+ *
+ * @author zhangzhuo
+ * @version 1.0
  */
 public class Sub2Config {
 
