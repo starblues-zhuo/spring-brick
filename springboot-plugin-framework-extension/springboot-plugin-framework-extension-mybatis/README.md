@@ -149,3 +149,7 @@ public interface Plugin1Mapper {
 ```
 
 具体案例参考: plugin-example-persistence 模块。
+
+### 版本升级
+#### 2.0.3 版本
+1. 修复Mapper无法注入的bug. (由于springboot-plugin-framework 2.0.3 版本升级导致)

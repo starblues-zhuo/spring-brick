@@ -21,7 +21,7 @@
 
     <properties>
         <mybatis-spring-boot-starter.version>2.0.1</mybatis-spring-boot-starter.version>
-        <extension-mybatis.version>2.0-RELEASE</extension-mybatis.version>
+        <extension-mybatis.version>2.0.3-RELEASE</extension-mybatis.version>
     </properties>
 
 

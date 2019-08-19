@@ -51,12 +51,15 @@ public class PluginMybatisMapperRegister extends PluginBasicBeanRegister {
         return "PluginMybatisMapperRegister";
     }
 
+
+    @Override
+    public boolean support(BasePlugin basePlugin, Class<?> aClass) {
+        return AnnotationsUtils.haveAnnotations(aClass, false,
+                PluginMapper.class);
+    }
+
     @Override
     public String registry(BasePlugin basePlugin, Class<?> aClass) throws PluginBeanFactoryException {
-        if(!AnnotationsUtils.haveAnnotations(aClass, false,
-                PluginMapper.class)){
-            return null;
-        }
         if(!mybatisExist()){
             return null;
         }
@@ -77,6 +80,10 @@ public class PluginMybatisMapperRegister extends PluginBasicBeanRegister {
         return super.order() + 20;
     }
 
+    /**
+     * 判断mybaits依赖是否存在
+     * @return 存在返回true, 不存在返回false
+     */
     private boolean mybatisExist(){
         SqlSessionFactory sqlSessionFactory = applicationContext.getBean(SqlSessionFactory.class);
         SqlSessionTemplate sqlSessionTemplate = applicationContext.getBean(SqlSessionTemplate.class);
