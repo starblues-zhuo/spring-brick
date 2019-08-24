@@ -19,7 +19,6 @@ public class PluginInitializerListenerFactory implements PluginInitializerListen
 
     public PluginInitializerListenerFactory(ApplicationContext mainApplicationContext) {
         this.mainApplicationContext = mainApplicationContext;
-        this.pluginInitializerListeners.add(new SetConfigurationInitializerListener(mainApplicationContext));
     }
 
     @Override

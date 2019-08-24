@@ -2,6 +2,7 @@ package com.gitee.starblues.factory.process.post;
 
 import com.gitee.starblues.extension.ExtensionFactory;
 import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.factory.process.post.bean.PluginConfigurationPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.PluginControllerPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.PluginInvokePostProcessor;
 import com.gitee.starblues.utils.CommonUtils;
@@ -26,6 +27,7 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
     private List<PluginPostProcessor> pluginPostProcessors = new ArrayList<>();
 
     public PluginPostProcessorFactory(ApplicationContext applicationContext){
+        pluginPostProcessors.add(new PluginConfigurationPostProcessor(applicationContext));
         pluginPostProcessors.add(new PluginInvokePostProcessor(applicationContext));
         pluginPostProcessors.add(new PluginControllerPostProcessor(applicationContext));
     }
