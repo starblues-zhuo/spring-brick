@@ -108,8 +108,8 @@ public class PluginResource {
      * @param path 插件路径名称
      * @return 操作结果
      */
-    @PostMapping("/installByPath/{path}")
-    public String install(@PathVariable("path") String path){
+    @PostMapping("/installByPath")
+    public String install(@RequestParam("path") String path){
         try {
             pluginOperator.install(Paths.get(path));
             return "installByPath success";
