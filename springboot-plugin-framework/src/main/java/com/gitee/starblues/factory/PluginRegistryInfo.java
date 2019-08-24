@@ -9,7 +9,7 @@ import java.util.*;
  * 注册的插件信息
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class PluginRegistryInfo {
 

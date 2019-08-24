@@ -24,7 +24,7 @@ import java.util.*;
  * 插件中controller处理者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class PluginControllerPostProcessor implements PluginPostProcessor {
 

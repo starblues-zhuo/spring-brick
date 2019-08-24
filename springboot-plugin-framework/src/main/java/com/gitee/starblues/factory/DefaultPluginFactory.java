@@ -20,7 +20,7 @@ import java.util.Map;
  * 默认的插件处理者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class DefaultPluginFactory implements PluginFactory {
 
@@ -43,6 +43,7 @@ public class DefaultPluginFactory implements PluginFactory {
     public DefaultPluginFactory(ApplicationContext applicationContext) {
         this(applicationContext, null);
     }
+
 
     public DefaultPluginFactory(ApplicationContext applicationContext,
                                 PluginListenerFactory pluginListenerFactory) {

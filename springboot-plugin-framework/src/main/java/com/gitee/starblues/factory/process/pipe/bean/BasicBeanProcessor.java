@@ -17,7 +17,7 @@ import java.util.Set;
  * 基础bean注册
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class BasicBeanProcessor implements PluginPipeProcessor {
 
@@ -59,7 +59,7 @@ public class BasicBeanProcessor implements PluginPipeProcessor {
      * 往Spring注册bean
      * @param pluginRegistryInfo 插件注册的信息
      * @param classes 要注册的类集合
-     * @param beanNames bean名称存储=
+     * @param beanNames 存储bean名称集合
      */
     private void register(PluginRegistryInfo pluginRegistryInfo,
                           List<Class<?>> classes,

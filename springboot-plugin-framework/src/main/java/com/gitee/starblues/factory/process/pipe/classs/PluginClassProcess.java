@@ -20,7 +20,7 @@ import java.util.List;
  * 插件类加载处理者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class PluginClassProcess implements PluginPipeProcessor {
 

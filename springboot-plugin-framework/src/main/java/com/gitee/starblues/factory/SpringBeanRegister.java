@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  * Spring bean注册者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class SpringBeanRegister {
 

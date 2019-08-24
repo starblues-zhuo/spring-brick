@@ -26,15 +26,13 @@ import java.util.Set;
 /**
  * 插件Controller bean注册者
  * @author zhangzhuo
- * @see Controller
- * @see RestController
- * @version 1.0
+ * @version 2.1.0
  */
 public class ConfigBeanProcessor implements PluginPipeProcessor {
 
     private static final String KEY = "ConfigBeanProcessor";
 
-    private final static Logger LOG = LoggerFactory.getLogger(ConfigBeanProcessor.class);
+    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     private final ConfigurationParser configurationParser;
     private final DefaultListableBeanFactory defaultListableBeanFactory;
 
@@ -84,7 +82,7 @@ public class ConfigBeanProcessor implements PluginPipeProcessor {
      * @param pluginRegistryInfo 插件注册的信息
      * @param aClass 配置文件类
      * @return 注册的bean名称
-     * @throws PluginBeanFactoryException
+     * @throws Exception Exception
      */
     private String registry(PluginRegistryInfo pluginRegistryInfo, Class<?> aClass) throws Exception{
         ConfigDefinition configDefinition = aClass.getAnnotation(ConfigDefinition.class);

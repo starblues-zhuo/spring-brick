@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  * 扩展工厂
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class ExtensionFactory {
 

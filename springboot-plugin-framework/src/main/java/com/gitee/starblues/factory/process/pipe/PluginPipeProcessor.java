@@ -6,7 +6,7 @@ import com.gitee.starblues.factory.PluginRegistryInfo;
  * 插件管道处理者接口
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public interface PluginPipeProcessor {
 

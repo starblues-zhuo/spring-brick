@@ -19,4 +19,18 @@ public @interface Supplier {
      */
     String value();
 
+    /**
+     * 被调用者的方法注解。配合 @Caller.Method 使用.如果不定义, 则以方法名称为准。
+     */
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @interface Method {
+        /**
+         * 方法名
+         * @return String
+         */
+        String value();
+    }
+
 }

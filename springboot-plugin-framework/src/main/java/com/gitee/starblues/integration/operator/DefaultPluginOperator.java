@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * 默认的插件操作者
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class DefaultPluginOperator implements PluginOperator {
 
@@ -78,7 +78,7 @@ public class DefaultPluginOperator implements PluginOperator {
             pluginManager.loadPlugins();
             pluginManager.startPlugins();
             List<PluginWrapper> pluginWrappers = pluginManager.getStartedPlugins();
-            if(pluginWrappers == null){
+            if(pluginWrappers == null || pluginWrappers.isEmpty()){
                 log.warn("Not found plugin!");
                 return false;
             }
@@ -108,7 +108,7 @@ public class DefaultPluginOperator implements PluginOperator {
     @Override
     public boolean install(Path path) throws PluginPlugException {
         if(path == null){
-            throw new IllegalArgumentException("Method:install param <pluginId> can not be empty");
+            throw new IllegalArgumentException("Method:install param [pluginId] can not be empty");
         }
         String pluginId = null;
         try {
@@ -133,10 +133,10 @@ public class DefaultPluginOperator implements PluginOperator {
         try {
             stop(pluginId);
             if(pluginManager.unloadPlugin(pluginId)){
-                log.info("Uninstall Plugin {} Success", pluginId);
+                log.info("Uninstall Plugin [{}] Success", pluginId);
                 return true;
             } else {
-                log.info("Uninstall Plugin {} failure", pluginId);
+                log.info("Uninstall Plugin [{}] failure", pluginId);
                 return false;
             }
         } catch (Exception e){
@@ -148,14 +148,14 @@ public class DefaultPluginOperator implements PluginOperator {
     public boolean delete(String pluginId) throws PluginPlugException {
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
         if(pluginWrapper == null){
-            log.error("Delete -> Not Found plugin {}", pluginId);
+            log.error("Delete -> Not Found plugin [{}]", pluginId);
             return false;
         }
         if(pluginWrapper.getPluginState() == PluginState.STARTED){
             uninstall(pluginId);
         }
         backup(pluginWrapper.getPluginPath(), "deleteByPluginId", 2);
-        log.info("Delete plugin {} Success", pluginId);
+        log.info("Delete plugin [{}] Success", pluginId);
         return true;
     }
 
@@ -170,7 +170,7 @@ public class DefaultPluginOperator implements PluginOperator {
             if(pluginWrapper != null){
                 return delete(pluginWrapper.getPluginId());
             } else {
-                log.error("Not found Plugin {} of path {}", pluginDescriptor.getPluginId(), path.toString());
+                log.error("Not found Plugin [{}] of path {}", pluginDescriptor.getPluginId(), path.toString());
                 return false;
             }
         } catch (PluginException e) {
@@ -184,42 +184,42 @@ public class DefaultPluginOperator implements PluginOperator {
     @Override
     public boolean start(String pluginId) throws PluginPlugException {
         if(StringUtils.isEmpty(pluginId)){
-            throw new IllegalArgumentException("Method:start param <pluginId> can not be empty");
+            throw new IllegalArgumentException("Method:start param [pluginId] can not be empty");
         }
         PluginWrapper pluginWrapper = getPluginWrapper(pluginId, "Start");
         if(pluginWrapper.getPluginState() == PluginState.STARTED){
-            throw new PluginPlugException("This plugin <" + pluginId + "> is not stopped");
+            throw new PluginPlugException("This plugin [" + pluginId + "] have already started");
         }
         try {
             PluginState pluginState = pluginManager.startPlugin(pluginId);
             if(pluginState == PluginState.STARTED){
                 pluginFactory.registry(pluginWrapper);
                 pluginFactory.build();
-                log.info("Start Plugin {} Success", pluginId);
+                log.info("Start Plugin [{}] Success", pluginId);
                 return true;
             }
-            log.error("Start Plugin {} Failure, plugin state is not start <{}>", pluginId, pluginState.toString());
+            log.error("Start Plugin [{}] Failure, plugin state is not start. State[{}]", pluginId, pluginState.toString());
             return false;
         } catch (Exception e){
-            throw new PluginPlugException("Start plugin <" + pluginId + "> failure. " + e.getMessage() ,e);
+            throw new PluginPlugException("Start plugin " + pluginId + " failure. " + e.getMessage() ,e);
         }
     }
 
     @Override
     public boolean stop(String pluginId) throws PluginPlugException {
         if(StringUtils.isEmpty(pluginId)){
-            throw new IllegalArgumentException("Method:stop param <pluginId> can not be empty");
+            throw new IllegalArgumentException("Method:stop param [pluginId] can not be empty");
         }
         PluginWrapper pluginWrapper = getPluginWrapper(pluginId, "Stop");
         if(pluginWrapper.getPluginState() != PluginState.STARTED){
-            throw new PluginPlugException("This plugin <" + pluginId + "> is not running");
+            throw new PluginPlugException("This plugin [" + pluginId + "] is not started");
         }
         try {
             pluginFactory.unRegistry(pluginId);
-            log.info("Stop Plugin {} Success", pluginId);
+            pluginFactory.build();
             return true;
         } catch (Exception e){
-            throw new PluginPlugException("Stop plugin <" + pluginId + "> failure. " + e.getMessage() ,e);
+            throw new PluginPlugException("Stop plugin [" + pluginId + "] failure. " + e.getMessage() ,e);
         } finally {
             pluginManager.stopPlugin(pluginId);
         }
@@ -231,7 +231,7 @@ public class DefaultPluginOperator implements PluginOperator {
     @Override
     public Path uploadPlugin(MultipartFile pluginFile) throws PluginPlugException {
         if(pluginFile == null){
-            throw new IllegalArgumentException("Method:uploadPlugin param <pluginFile> can not be null");
+            throw new IllegalArgumentException("Method:uploadPlugin param [pluginFile] can not be null");
         }
         try {
             // 获取文件的后缀名
@@ -239,10 +239,10 @@ public class DefaultPluginOperator implements PluginOperator {
             String suffixName = fileName.substring(fileName.lastIndexOf(".") + 1);
             //检查文件格式是否合法
             if(StringUtils.isEmpty(suffixName)){
-                throw new IllegalArgumentException("Invalid file type,please select .jar or .zip file");
+                throw new IllegalArgumentException("Invalid file type, please select .jar or .zip file");
             }
             if(!"jar".equalsIgnoreCase(suffixName) && !"zip".equalsIgnoreCase(suffixName)){
-                throw new IllegalArgumentException("Invalid file type,please select .jar or .zip file");
+                throw new IllegalArgumentException("Invalid file type, please select .jar or .zip file");
             }
             String tempPath = integrationConfiguration.uploadTempPath() + File.separator + fileName;
             Path tempPluginFile = Files.write(getExistFile(Paths.get(tempPath)), pluginFile.getBytes());
@@ -277,12 +277,12 @@ public class DefaultPluginOperator implements PluginOperator {
     @Override
     public boolean uploadPluginAndStart(MultipartFile pluginFile) throws PluginPlugException {
         if(pluginFile == null){
-            throw new PluginPlugException("Method:uploadPluginAndStart param <pluginFile> can not be null");
+            throw new PluginPlugException("Method:uploadPluginAndStart param [pluginFile] can not be null");
         }
         try {
             Path path = uploadPlugin(pluginFile);
             this.install(path);
-            log.info("Upload And Start Plugin {} Success. ",  path.toString());
+            log.info("Upload And Start Plugin [{}] Success. ",  path.toString());
             return true;
         } catch (Exception e){
             throw new PluginPlugException(e);
@@ -292,7 +292,7 @@ public class DefaultPluginOperator implements PluginOperator {
     @Override
     public boolean uploadConfigFile(MultipartFile configFile) throws PluginPlugException {
         if(configFile == null){
-            throw new IllegalArgumentException("Method:uploadConfigFile param<configFile> can not be null");
+            throw new IllegalArgumentException("Method:uploadConfigFile param [configFile] can not be null");
         }
         try {
             String fileName = configFile.getOriginalFilename();

@@ -9,10 +9,9 @@ import org.springframework.stereotype.Service;
  * 分组存在注解: Component、Service
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class ComponentGroup implements PluginClassGroup {
-
 
     /**
      * spring 组件bean.

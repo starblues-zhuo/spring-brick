@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 分组存在注解: @Controller、@RestController
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class ControllerGroup implements PluginClassGroup {
 

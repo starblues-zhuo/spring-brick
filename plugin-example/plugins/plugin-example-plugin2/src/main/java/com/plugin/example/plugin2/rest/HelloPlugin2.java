@@ -1,11 +1,8 @@
 package com.plugin.example.plugin2.rest;
 
-import com.plugin.example.main.TestProxy;
 import com.plugin.example.plugin2.config.Plugin2Config;
 import com.plugin.example.plugin2.service.HelloService;
-import com.plugin.example.plugin2.service.Suber;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,14 +24,7 @@ public class HelloPlugin2 {
     @Autowired
     private Plugin2Config plugin2Config;
 
-    @Autowired
-    private TestProxy testProxy;
 
-    @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
-    private Suber suber;
 
     @GetMapping("plugin2")
     public String sya(){
@@ -63,16 +53,7 @@ public class HelloPlugin2 {
     }
 
 
-    @GetMapping("proxy")
-    public Object proxy(){
-        return testProxy.say("plugin2");
-    }
 
-
-    @GetMapping("proxy2")
-    public Object proxy2(){
-        return suber.say("plugin2");
-    }
 
 
 }

@@ -20,4 +20,18 @@ public @interface Caller {
      */
     String value();
 
+    /**
+     * 调用者方法注解。配合 @Supper.Method 使用。如果不定义, 则以方法名称为准。
+     */
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @interface Method {
+        /**
+         * 方法名
+         * @return String
+         */
+        String value();
+    }
+
 }

@@ -9,7 +9,7 @@ import java.util.Set;
  * 插件信息共享容器
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class PluginInfoContainer {
 

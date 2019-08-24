@@ -6,7 +6,7 @@ import com.gitee.starblues.utils.OrderPriority;
  * 后置插件处理者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public interface PluginPostProcessorExtend extends PluginPostProcessor{
 

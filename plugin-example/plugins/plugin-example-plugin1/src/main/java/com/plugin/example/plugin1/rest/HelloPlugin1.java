@@ -1,8 +1,6 @@
 package com.plugin.example.plugin1.rest;
 
-import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
-import com.plugin.example.main.InteractiveData;
 import com.plugin.example.plugin1.config.PluginConfig1;
 import com.plugin.example.plugin1.service.HelloService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +24,8 @@ public class HelloPlugin1 {
     @Autowired
     private PluginConfig1 pluginConfig1;
 
-    private EventBus eventBus;
-
     private Gson gson = new Gson();
 
-    public HelloPlugin1(EventBus eventBus) {
-        this.eventBus = eventBus;
-        eventBus.register(this);
-    }
 
     @GetMapping("plugin1")
     public String sya(){
@@ -56,14 +48,6 @@ public class HelloPlugin1 {
         return helloService.sayService2();
     }
 
-    @GetMapping("service2")
-    public String getPlugin2(){
-        InteractiveData interactiveData = new InteractiveData();
-        interactiveData.setName("my is plugin1");
-        interactiveData.setAge(123);
-        eventBus.post(interactiveData);
-        return "ok";
-    }
 
     /**
      * 依赖测试

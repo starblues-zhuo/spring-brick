@@ -2,8 +2,8 @@ package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.extension.AbstractExtension;
 import com.gitee.starblues.loader.PluginResourceLoader;
-import com.gitee.starblues.register.process.pipe.PluginPipeProcessorExtend;
-import com.gitee.starblues.register.process.pipe.classs.PluginClassGroupExtend;
+import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
+import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
 import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;

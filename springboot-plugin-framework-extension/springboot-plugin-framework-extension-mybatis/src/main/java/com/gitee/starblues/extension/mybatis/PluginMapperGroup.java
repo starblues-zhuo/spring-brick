@@ -1,7 +1,7 @@
 package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.extension.mybatis.annotation.PluginMapper;
-import com.gitee.starblues.register.process.pipe.classs.PluginClassGroupExtend;
+import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
 import com.gitee.starblues.utils.AnnotationsUtils;
 
 /**

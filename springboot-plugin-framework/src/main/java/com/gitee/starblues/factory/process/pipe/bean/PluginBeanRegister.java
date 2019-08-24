@@ -7,7 +7,7 @@ import com.gitee.starblues.factory.PluginRegistryInfo;
  * 插件bean注册者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public interface PluginBeanRegister<T> {
 

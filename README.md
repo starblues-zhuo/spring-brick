@@ -78,7 +78,7 @@ Maven目录结构下所示
 <dependency>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework</artifactId>
-    <version>2.0.3-RELEASE</version>
+    <version>2.1.0-RELEASE</version>
 </dependency>
 
 ```
@@ -589,6 +589,78 @@ public class HelloService {
 
 *在生产环境: 该文件存放在`pluginConfigFilePath`配置的目录下。*
 
+#### 插件之间数据交互功能
+
+插件之间的数据交互功能, 是在同一JVM运行环境下, 基于代理、反射机制完成方法调用。使用说明如下：
+
+1. 被调用类需要使用注解 @Supplier(""), 注解值为被调用者的唯一key, (全局key不能重复) 供调用者使用。例如:
+```java
+@Supplier("SupplierService")
+public class SupplierService {
+
+    public Integer add(Integer a1, Integer a2){
+        return a1 + a2;
+    }
+    
+}
+```
+2. 另一个插件中要调用1步骤中定义的调用类时, 需要定义一个接口,新增注解@Caller(""), 值为1步骤中被调用者定义的全局key。其中方法名、参数个数和类型、返回类型需要和被调用者中定义的方法名、参数个数和类型一致。例如:
+```java
+@Caller("SupplierService")
+public interface CallerService {
+
+    Integer add(Integer a1, Integer a2);
+    
+}
+```
+
+3.被调用者和调用者也可以使用注解定义被调用的方法。例如:
+
+被调用者:
+
+```java
+@Supplier("SupplierService")
+public class SupplierService {
+
+    @Supplier.Method("call")
+    public String call(CallerInfo callerInfo, String key){
+        System.out.println(callerInfo);
+        return key;
+    }
+    
+}
+```
+
+调用者:
+
+```java
+@Caller("SupplierService")
+public interface CallerService {
+
+    @Caller.Method("call")
+    String test(CallerInfo callerInfo, String key);
+    
+}
+```
+
+该场景主要用于参数类型不在同一个地方定义时使用。比如 被调用者的参数类: CallerInfo 定义在被调用者的插件中, 调用者的参数类: CallerInfo 定义在调用者的插件中。就必须配合 @Supplier.Method("")、@Caller.Method("") 注解使用, 否则会导致NotFoundClass 异常。
+
+如果调用者没有使用注解 @Caller.Method("") 则默认使用方法和参数类型来调用。
+
+4.对于3步骤中问题的建议
+
+可以将被调用者和调用者的公用参数和返回值定义在主程序中、或者单独提出一个api maven包, 然后两者都依赖该包。
+
+
+5.案例位置
+
+pluging-example：
+
+com.plugin.example.plugin1.service.SupplierService
+com.plugin.example.plugin2.service.CallerService
+com.plugin.example.plugin2.rest.ProxyController
+
+
 
 ### 集成扩展
 
@@ -746,3 +818,9 @@ File->Project Structure->Project Settings->Artifacts->点击+号->JAR->From modu
 
 #### 2.0.3 版本
 1. 修复插件动态重新安装后, 无法访问到插件中的接口的bug。
+
+
+#### 2.1.0 版本
+1. 修复mybatis案例无法加载mapper.xml的bug。
+2. 优化代码逻辑。
+3. 新增插件之间数据交互功能。详见文档-使用说明->插件之间数据交互功能

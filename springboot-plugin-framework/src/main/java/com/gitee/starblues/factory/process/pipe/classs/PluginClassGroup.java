@@ -4,7 +4,7 @@ package com.gitee.starblues.factory.process.pipe.classs;
  * 插件类分组器
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public interface PluginClassGroup {
 

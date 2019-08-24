@@ -1,13 +1,12 @@
 package com.gitee.starblues.extension.mybatis;
 
-import com.gitee.starblues.exception.PluginBeanFactoryException;
 import com.gitee.starblues.extension.mybatis.utils.MybatisInjectWrapper;
 import com.gitee.starblues.realize.BasePlugin;
-import com.gitee.starblues.register.PluginInfoContainer;
-import com.gitee.starblues.register.PluginRegistryInfo;
-import com.gitee.starblues.register.SpringBeanRegister;
-import com.gitee.starblues.register.process.pipe.PluginPipeProcessorExtend;
-import com.gitee.starblues.register.process.pipe.bean.name.PluginAnnotationBeanNameGenerator;
+import com.gitee.starblues.factory.PluginInfoContainer;
+import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.factory.SpringBeanRegister;
+import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
+import com.gitee.starblues.factory.process.pipe.bean.name.PluginAnnotationBeanNameGenerator;
 import com.gitee.starblues.utils.OrderPriority;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;

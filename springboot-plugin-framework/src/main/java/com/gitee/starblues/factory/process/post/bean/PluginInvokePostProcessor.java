@@ -1,5 +1,6 @@
 package com.gitee.starblues.factory.process.post.bean;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitee.starblues.annotation.Caller;
 import com.gitee.starblues.annotation.Supplier;
 import com.gitee.starblues.factory.PluginInfoContainer;
@@ -28,7 +29,7 @@ import java.util.Set;
  * 处理插件中类之间相互调用的的功能
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.1.0
  */
 public class PluginInvokePostProcessor implements PluginPostProcessor {
 
@@ -170,6 +171,7 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
     private static class ProxyHandler implements InvocationHandler {
 
         private final Object supplier;
+        private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
         private ProxyHandler(Object supplier) {
             this.supplier = supplier;
@@ -178,14 +180,104 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+            Caller.Method callerMethod = method.getAnnotation(Caller.Method.class);
+            if(callerMethod == null){
+                return notAnnotationInvoke(method, args);
+            } else {
+                return annotationInvoke(method, callerMethod, args);
+            }
+        }
+
+        /**
+         * 有注解的调用
+         * @param method 调用接口的方法
+         * @param callerMethod 调用者方法注解
+         * @param args 传入参数
+         * @return 返回值
+         * @throws Throwable 异常
+         */
+        private Object annotationInvoke(Method method, Caller.Method callerMethod, Object[] args) throws Throwable{
+            String callerMethodName = callerMethod.value();
+            Class<?> aClass = supplier.getClass();
+            Method[] methods = aClass.getMethods();
+            Method supplierMethod = null;
+            for (Method m : methods) {
+                Supplier.Method supplierMethodAnnotation = m.getAnnotation(Supplier.Method.class);
+                if(supplierMethodAnnotation == null){
+                    continue;
+                }
+                if(Objects.equals(supplierMethodAnnotation.value(), callerMethodName)){
+                    supplierMethod = m;
+                    break;
+                }
+            }
+            if(supplierMethod == null){
+                // 如果为空, 说明没有找到被调用者的注解, 则走没有注解的代理调用。
+                return notAnnotationInvoke(method, args);
+            }
+            Class<?>[] parameterTypes = supplierMethod.getParameterTypes();
+            if(parameterTypes.length != args.length){
+                // 参数不匹配
+                return notAnnotationInvoke(method, args);
+            }
+            Object[] supplierArgs = new Object[args.length];
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Class<?> parameterType = parameterTypes[i];
+                Object arg = args[i];
+                if(parameterType == arg.getClass()){
+                    supplierArgs[i] = arg;
+                } else {
+                    // 类型不匹配, 尝试使用json序列化
+                    String json = OBJECT_MAPPER.writeValueAsString(arg);
+                    Object serializeObject = OBJECT_MAPPER.readValue(json, parameterType);
+                    supplierArgs[i] = serializeObject;
+                }
+            }
+            Object invokeReturn = supplierMethod.invoke(supplier, supplierArgs);
+            return getReturnObject(invokeReturn, method);
+        }
+
+        /**
+         * 没有注解调用
+         * @param method 调用接口的方法
+         * @param args 传入参数
+         * @return 返回值
+         * @throws Throwable 异常
+         */
+        private Object notAnnotationInvoke(Method method, Object[] args) throws Throwable{
             String name = method.getName();
             Class<?>[] argClasses = new Class<?>[args.length];
             for (int i = 0; i < args.length; i++) {
                 argClasses[i] = args[i].getClass();
             }
-            Method method1 = supplier.getClass().getMethod(name, argClasses);
-            return method1.invoke(supplier, args);
+            Method supplierMethod = supplier.getClass().getMethod(name, argClasses);
+            Object invokeReturn = supplierMethod.invoke(supplier, args);
+            return getReturnObject(invokeReturn, method);
         }
+
+
+        /**
+         * 得到返回值对象
+         * @param invokeReturn 反射调用后返回的对象
+         * @param method 调用接口的方法
+         * @return 返回值对象
+         * @throws Throwable Throwable
+         */
+        private Object getReturnObject(Object invokeReturn, Method method) throws Throwable{
+            if(invokeReturn == null){
+                return null;
+            }
+            Class<?> returnType = method.getReturnType();
+            if(returnType == invokeReturn.getClass()){
+                return invokeReturn;
+            } else {
+                String json = OBJECT_MAPPER.writeValueAsString(invokeReturn);
+                return OBJECT_MAPPER.readValue(json, returnType);
+            }
+        }
+
+
     }
 
     /**
