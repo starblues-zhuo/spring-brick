@@ -1,11 +1,9 @@
 package com.gitee.starblues.extension.mybatis;
 
-import com.gitee.starblues.exception.PluginBeanFactoryException;
 import com.gitee.starblues.extension.AbstractExtension;
-import com.gitee.starblues.factory.NoticePluginFactory;
-import com.gitee.starblues.factory.bean.register.PluginBeanRegister;
 import com.gitee.starblues.loader.PluginResourceLoader;
-import com.gitee.starblues.realize.BasePlugin;
+import com.gitee.starblues.register.process.pipe.PluginPipeProcessorExtend;
+import com.gitee.starblues.register.process.pipe.classs.PluginClassGroupExtend;
 import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ import java.util.List;
  */
 public class SpringBootMybatisExtension extends AbstractExtension {
 
-    public static final String KEY = "SpringBootMybatisExtension";
+    private static final String KEY = "SpringBootMybatisExtension";
 
 
     @Override
@@ -35,21 +33,19 @@ public class SpringBootMybatisExtension extends AbstractExtension {
     }
 
     @Override
-    public List<NoticePluginFactory> getNoticePluginFactory(ApplicationContext mainApplicationContext) {
-        final List<NoticePluginFactory> pluginFactoryList = new ArrayList<>();
-        pluginFactoryList.add(new NoticePluginFactory(new PluginMybatisXmlFactory(mainApplicationContext)));
-        return pluginFactoryList;
+    public List<PluginClassGroupExtend> getPluginClassGroup(ApplicationContext mainApplicationContext) {
+        final List<PluginClassGroupExtend> pluginClassGroups = new ArrayList<>();
+        pluginClassGroups.add(new PluginMapperGroup());
+        return pluginClassGroups;
     }
 
     @Override
-    public List<PluginBeanRegister> getPluginBeanRegister(ApplicationContext mainApplicationContext) {
-        try {
-            final List<PluginBeanRegister> pluginBeanRegisters = new ArrayList<>();
-            pluginBeanRegisters.add(new PluginMybatisMapperRegister(mainApplicationContext));
-            return pluginBeanRegisters;
-        } catch (PluginBeanFactoryException e) {
-            e.printStackTrace();
-            return super.getPluginBeanRegister(mainApplicationContext);
-        }
+    public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext applicationContext) {
+        final List<PluginPipeProcessorExtend> pluginPipeProcessorExtends = new ArrayList<>();
+        pluginPipeProcessorExtends.add(new PluginMybatisMapperProcessor(applicationContext));
+        pluginPipeProcessorExtends.add(new PluginMybatisXmlProcessor(applicationContext));
+        return pluginPipeProcessorExtends;
     }
+
+
 }

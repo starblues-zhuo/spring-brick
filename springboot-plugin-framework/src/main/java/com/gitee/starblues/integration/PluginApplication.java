@@ -1,6 +1,5 @@
 package com.gitee.starblues.integration;
 
-import com.gitee.starblues.factory.PluginListenerContext;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.user.PluginUser;
 

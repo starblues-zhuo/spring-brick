@@ -1,6 +1,7 @@
 package com.gitee.starblues.loader;
 
 import com.gitee.starblues.realize.BasePlugin;
+import com.gitee.starblues.utils.OrderPriority;
 import org.springframework.core.io.Resource;
 
 import java.util.List;
@@ -30,8 +31,8 @@ public interface PluginResourceLoader {
 
     /**
      * 执行顺序
-     * @return 数字越小越先执行
+     * @return OrderPriority
      */
-    int order();
+    OrderPriority order();
 
 }

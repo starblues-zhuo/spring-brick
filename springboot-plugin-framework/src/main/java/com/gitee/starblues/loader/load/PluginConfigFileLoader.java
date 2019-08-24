@@ -3,6 +3,7 @@ package com.gitee.starblues.loader.load;
 import com.gitee.starblues.loader.PluginResourceLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.OrderExecution;
+import com.gitee.starblues.utils.OrderPriority;
 import org.pf4j.RuntimeMode;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileUrlResource;
@@ -57,7 +58,7 @@ public class PluginConfigFileLoader implements PluginResourceLoader {
     }
 
     @Override
-    public int order() {
-        return OrderExecution.HIGH + 20;
+    public OrderPriority order() {
+        return OrderPriority.getHighPriority().down(20);
     }
 }

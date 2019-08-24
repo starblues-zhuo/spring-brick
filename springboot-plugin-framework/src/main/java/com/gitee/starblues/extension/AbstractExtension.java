@@ -1,9 +1,10 @@
 package com.gitee.starblues.extension;
 
-import com.gitee.starblues.factory.NoticePluginFactory;
-import com.gitee.starblues.factory.bean.register.PluginBeanRegister;
 import com.gitee.starblues.loader.PluginResourceLoader;
-import com.gitee.starblues.realize.BasePlugin;
+import com.gitee.starblues.register.process.pipe.PluginPipeProcessorExtend;
+import com.gitee.starblues.register.process.pipe.classs.PluginClassGroup;
+import com.gitee.starblues.register.process.pipe.classs.PluginClassGroupExtend;
+import com.gitee.starblues.register.process.post.PluginPostProcessorExtend;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
@@ -31,21 +32,30 @@ public abstract class AbstractExtension {
     }
 
     /**
-     * 得到可通知的插件工厂
-     * @param mainApplicationContext 主程序ApplicationContext
-     * @return List PluginFactory
+     * 得到扩展的插件中的类分组器
+     * @param applicationContext 主程序ApplicationContext
+     * @return List PluginPipeProcessorExtend
      */
-    public List<NoticePluginFactory> getNoticePluginFactory(ApplicationContext mainApplicationContext){
+    public List<PluginClassGroupExtend> getPluginClassGroup(ApplicationContext applicationContext){
         return null;
     }
 
 
     /**
-     * 得到插件bean注册者
-     * @param mainApplicationContext 主程序ApplicationContext
-     * @return List PluginBeanRegister
+     * 得到扩展的流插件处理者
+     * @param applicationContext 主程序ApplicationContext
+     * @return List PluginPipeProcessorExtend
      */
-    public List<PluginBeanRegister> getPluginBeanRegister(ApplicationContext mainApplicationContext){
+    public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext applicationContext){
+        return null;
+    }
+
+    /**
+     * 得到扩展的插件后置处理者
+     * @param applicationContext 主程序ApplicationContext
+     * @return List PluginPostProcessorExtend
+     */
+    public List<PluginPostProcessorExtend> getPluginPostProcessor(ApplicationContext applicationContext){
         return null;
     }
 

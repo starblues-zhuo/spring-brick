@@ -4,6 +4,7 @@ import com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConf
 import com.gitee.starblues.loader.PluginResourceLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.OrderExecution;
+import com.gitee.starblues.utils.OrderPriority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -30,6 +31,10 @@ public class PluginMybatisXmlLoader implements PluginResourceLoader {
     private final static String TYPE_CLASSPATH = "classpath";
     private final static String TYPE_PACKAGE = "package";
 
+    PluginMybatisXmlLoader(){
+
+    }
+
 
     @Override
     public String key() {
@@ -42,7 +47,7 @@ public class PluginMybatisXmlLoader implements PluginResourceLoader {
             String error = "Plugin<" + basePlugin.getClass().getName() +
                     "> not implements SpringBootMybatisConfig, Please implements SpringBootMybatisConfig interface";
             LOG.error(error);
-            throw new Exception(error);
+            return null;
         }
         SpringBootMybatisConfig springBootMybatisConfig = (SpringBootMybatisConfig) basePlugin;
         Set<String> mybatisMapperXmlLocationsMatch = springBootMybatisConfig.mybatisMapperXmlLocationsMatch();
@@ -67,8 +72,8 @@ public class PluginMybatisXmlLoader implements PluginResourceLoader {
     }
 
     @Override
-    public int order() {
-        return OrderExecution.HIGH + 30;
+    public OrderPriority order() {
+        return OrderPriority.getHighPriority();
     }
 
     /**

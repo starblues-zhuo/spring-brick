@@ -2,10 +2,8 @@ package com.gitee.starblues.integration;
 
 import com.gitee.starblues.extension.AbstractExtension;
 import com.gitee.starblues.extension.ExtensionFactory;
-import com.gitee.starblues.factory.NoticePluginFactory;
-import com.gitee.starblues.factory.OverallPluginFactory;
-import com.gitee.starblues.factory.PluginListener;
-import com.gitee.starblues.factory.PluginFactory;
+import com.gitee.starblues.integration.listener.PluginListener;
+import com.gitee.starblues.integration.listener.PluginListenerFactory;
 import com.gitee.starblues.integration.operator.DefaultPluginOperator;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.user.DefaultPluginUser;
@@ -37,9 +35,8 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
 
     private PluginOperator pluginOperator;
     private PluginUser pluginUser;
-    private NoticePluginFactory noticePluginFactory;
 
-    private List<PluginListener> pluginListeners = new ArrayList<>();
+    private PluginListenerFactory listenerFactory = new PluginListenerFactory();
 
     public DefaultPluginApplication() {
         this(null);
@@ -47,9 +44,7 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
 
 
     public DefaultPluginApplication(List<PluginListener> pluginListeners) {
-        if (pluginListeners != null && !pluginListeners.isEmpty()) {
-            this.pluginListeners.addAll(pluginListeners);
-        }
+        addListener(pluginListeners);
     }
 
 
@@ -58,20 +53,15 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
         Objects.requireNonNull(applicationContext);
         this.applicationContext = applicationContext;
         this.pluginManager = applicationContext.getBean(PluginManager.class);
-        if (this.noticePluginFactory == null) {
-            PluginFactory pluginFactory =
-                    new OverallPluginFactory(applicationContext);
-            this.noticePluginFactory = new NoticePluginFactory(pluginFactory);
-            this.noticePluginFactory.addListener(pluginListeners);
-        }
         try {
             IntegrationConfiguration configuration = applicationContext.getBean(IntegrationConfiguration.class);
             this.pluginUser = new DefaultPluginUser(this.applicationContext, this.pluginManager);
             this.pluginOperator = new DefaultPluginOperator(
                     applicationContext,
                     configuration,
-                    this.noticePluginFactory,
-                    this.pluginManager);
+                    this.pluginManager,
+                    this.listenerFactory
+                    );
         } catch (Exception e) {
             throw new BeanCreationException("Instant PluginUser or PluginOperator Failure : " + e.getMessage(), e);
         }
@@ -88,23 +78,6 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
     public PluginUser getPluginUser() {
         assertInjected();
         return this.pluginUser;
-    }
-
-
-    @Override
-    public void addListener(PluginListener pluginListener) {
-        assertInjected();
-        if (pluginListener != null) {
-            noticePluginFactory.addListener(pluginListener);
-        }
-    }
-
-    @Override
-    public void addListener(List<PluginListener> pluginListeners) {
-        assertInjected();
-        if (pluginListeners != null) {
-            noticePluginFactory.addListener(pluginListeners);
-        }
     }
 
     /**
@@ -135,5 +108,21 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
     public DefaultPluginApplication addExtension(AbstractExtension extension) {
         this.extensionFactory.addExtension(extension);
         return this;
+    }
+
+
+    @Override
+    public void addListener(PluginListener pluginListener) {
+        this.listenerFactory.addPluginListener(pluginListener);
+    }
+
+    @Override
+    public void addListener(List<PluginListener> pluginListeners) {
+        if(pluginListeners == null || pluginListeners.isEmpty()){
+            return;
+        }
+        for (PluginListener pluginListener : pluginListeners) {
+            this.listenerFactory.addPluginListener(pluginListener);
+        }
     }
 }

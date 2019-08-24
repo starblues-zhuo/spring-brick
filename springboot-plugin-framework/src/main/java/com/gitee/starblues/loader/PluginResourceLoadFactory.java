@@ -5,6 +5,7 @@ import com.gitee.starblues.extension.ExtensionFactory;
 import com.gitee.starblues.loader.load.PluginClassLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.OrderPriority;
 import org.pf4j.PluginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,13 @@ public class PluginResourceLoadFactory {
     public PluginResourceLoadFactory() {
         this.pluginResourceLoaders.add(new PluginClassLoader());
         addExtension();
-        CommonUtils.order(pluginResourceLoaders, (pluginResourceLoader -> pluginResourceLoader.order()));
+        CommonUtils.order(pluginResourceLoaders, (pluginResourceLoader -> {
+            OrderPriority order = pluginResourceLoader.order();
+            if (order == null) {
+                order = OrderPriority.getMiddlePriority();
+            }
+            return order.getPriority();
+        }));
     }
 
 
@@ -42,16 +49,12 @@ public class PluginResourceLoadFactory {
      */
     private void addExtension() {
         ExtensionFactory extensionFactory = ExtensionFactory.getSingleton();
-        Map<String, List<AbstractExtension>> pluginBeanRegisterMap = extensionFactory.getPluginExtension();
-        pluginBeanRegisterMap.forEach((k, abstractExtensions)->{
-            for (AbstractExtension abstractExtension : abstractExtensions) {
-                List<PluginResourceLoader> pluginResourceLoaders = abstractExtension
-                        .getPluginResourceLoader();
-                if(pluginResourceLoaders != null || !pluginResourceLoaders.isEmpty()){
-                    this.pluginResourceLoaders.addAll(pluginResourceLoaders);
-                }
-            }
-            LOG.info("Register Extension PluginResourceLoader : {}", k);
+        extensionFactory.iteration(abstractExtension -> {
+            List<PluginResourceLoader> pluginResourceLoaders = abstractExtension.getPluginResourceLoader();
+            extensionFactory.iteration(pluginResourceLoaders, pluginResourceLoader -> {
+                this.pluginResourceLoaders.add(pluginResourceLoader);
+                LOG.info("Register Extension PluginResourceLoader : {}", pluginResourceLoader.key());
+            });
         });
     }
 

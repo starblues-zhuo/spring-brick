@@ -1,9 +1,7 @@
 package com.gitee.starblues.integration.user;
 
-import com.gitee.starblues.factory.bean.register.PluginBasicBeanRegister;
+import com.gitee.starblues.register.PluginInfoContainer;
 import org.pf4j.PluginManager;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
@@ -40,6 +38,11 @@ public class DefaultPluginUser implements PluginUser{
             return null;
         }
         return (T) bean;
+    }
+
+    @Override
+    public <T> T getBean(Class<T> aClass) {
+        return applicationContext.getBean(aClass);
     }
 
     @Override
@@ -111,9 +114,7 @@ public class DefaultPluginUser implements PluginUser{
         if(beanName == null){
             return false;
         }
-        BeanDefinition beanDefinition = applicationContext.getBeanDefinition(beanName);
-        Object attribute = beanDefinition.getAttribute(PluginBasicBeanRegister.DEFINE_PLUGIN_SIGN);
-        return Objects.equals(PluginBasicBeanRegister.DEFINE_PLUGIN_SIGN, attribute);
+        return PluginInfoContainer.existRegisterBeanName(beanName);
     }
 
 }

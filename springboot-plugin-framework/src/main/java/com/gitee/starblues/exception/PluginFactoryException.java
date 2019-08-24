@@ -24,7 +24,7 @@ public class PluginFactoryException extends Exception{
         super(cause);
     }
 
-    protected PluginFactoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public PluginFactoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

@@ -1,13 +1,10 @@
 package com.gitee.starblues.integration.refresh;
 
-import com.gitee.starblues.factory.FactoryType;
-import com.gitee.starblues.factory.MainFactoryType;
-import com.gitee.starblues.factory.PluginListener;
 import com.gitee.starblues.integration.PluginApplication;
+import com.gitee.starblues.integration.listener.PluginListener;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 抽象的SpringBean刷新类监听类.
@@ -33,19 +30,20 @@ public abstract class AbstractSpringBeanRefresh<T> implements PluginListener {
     }
 
     @Override
-    public void registryEvent(FactoryType factoryType, String pluginId) throws Exception {
-        if(Objects.equals(MainFactoryType.OVERALL.getKey(), factoryType.getKey())){
-            this.beans = refresh();
-            registryEvent(beans);
-        }
+    public void registry(String pluginId) {
+        this.beans = refresh();
+        registryEvent(beans);
     }
 
     @Override
-    public void unRegistryEvent(FactoryType factoryType, String pluginId) throws Exception {
-        if(Objects.equals(MainFactoryType.OVERALL.getKey(), factoryType.getKey())){
-            this.beans = refresh();
-            unRegistryEvent(beans);
-        }
+    public void unRegistry(String pluginId)  {
+        this.beans = refresh();
+        unRegistryEvent(beans);
+    }
+
+    @Override
+    public void failure(String pluginId, Throwable throwable) {
+
     }
 
     /**

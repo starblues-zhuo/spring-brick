@@ -14,5 +14,6 @@ import org.springframework.stereotype.Component;
 public class ConsoleNameFactory extends AbstractPluginSpringBeanRefresh<ConsoleName> {
     public ConsoleNameFactory(PluginApplication pluginApplication) {
         super(pluginApplication);
+        pluginApplication.addListener(this);
     }
 }

@@ -23,7 +23,7 @@ public class AnnotationsUtils {
      * @return boolean
      */
     public static boolean haveAnnotations(Class<?> aClass, boolean isAllMatch,
-                                      Class<? extends Annotation> ...annotationClasses){
+                                          Class<? extends Annotation> ...annotationClasses){
         if(aClass == null){
             return false;
         }

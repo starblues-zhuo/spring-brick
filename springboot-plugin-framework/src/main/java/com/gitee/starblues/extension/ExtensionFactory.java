@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * 扩展工厂
@@ -50,6 +51,38 @@ public class ExtensionFactory {
     public Map<String, List<AbstractExtension>> getPluginExtension() {
         return pluginExtensionMap;
     }
+
+
+    /**
+     * 迭代器
+     * @param consumer 消费者
+     */
+    public void iteration(Consumer<AbstractExtension> consumer){
+        pluginExtensionMap.forEach((k, abstractExtensions)->{
+            for (AbstractExtension abstractExtension : abstractExtensions) {
+                consumer.accept(abstractExtension);
+            }
+        });
+    }
+
+    /**
+     * list 迭代器
+     * @param list list 集合
+     * @param consumer list数据项消费者
+     * @param <T> 泛型
+     */
+    public <T> void iteration(List<T> list, Consumer<T> consumer){
+        if(list == null || list.isEmpty()){
+            return;
+        }
+        for (T t : list) {
+            if(t == null){
+                continue;
+            }
+            consumer.accept(t);
+        }
+    }
+
 
 
 }

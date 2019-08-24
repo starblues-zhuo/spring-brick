@@ -17,6 +17,13 @@ public interface PluginUser {
      * @return T
      */
     <T> T getBean(String name);
+    /**
+     * 通过aClass得到bean。（Spring管理的bean）
+     * @param aClass class
+     * @param <T> bean的类型
+     * @return T
+     */
+    <T> T getBean(Class<T> aClass);
 
     /**
      * 通过bean名称得到插件中的bean。（Spring管理的bean）

@@ -3,6 +3,7 @@ package com.gitee.starblues.loader.load;
 import com.gitee.starblues.loader.PluginResourceLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.OrderExecution;
+import com.gitee.starblues.utils.OrderPriority;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 public class PluginClassLoader implements PluginResourceLoader {
 
-    public static final String KEY = "PluginClassLoader";
+    public static final String KEY = "PluginClassProcess";
 
 
 
@@ -45,7 +46,7 @@ public class PluginClassLoader implements PluginResourceLoader {
     }
 
     @Override
-    public int order() {
-        return OrderExecution.HIGH + 10;
+    public OrderPriority order() {
+        return OrderPriority.getHighPriority();
     }
 }

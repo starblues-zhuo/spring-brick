@@ -3,6 +3,7 @@ package com.plugin.example.main.config;
 import com.gitee.starblues.integration.*;
 import com.gitee.starblues.integration.initialize.AutoPluginInitializer;
 import com.gitee.starblues.integration.initialize.PluginInitializer;
+import com.google.common.eventbus.EventBus;
 import org.pf4j.PluginException;
 import org.pf4j.PluginManager;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +51,11 @@ public class PluginBeanConfig {
         AutoPluginInitializer autoPluginInitializer = new AutoPluginInitializer(pluginApplication);
         autoPluginInitializer.setPluginInitializerListener(pluginListener);
         return autoPluginInitializer;
+    }
+
+    @Bean
+    public EventBus eventBus(){
+        return new EventBus();
     }
 
 }
