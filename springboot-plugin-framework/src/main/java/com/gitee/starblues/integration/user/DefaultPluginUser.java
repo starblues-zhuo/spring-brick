@@ -1,6 +1,6 @@
 package com.gitee.starblues.integration.user;
 
-import com.gitee.starblues.register.PluginInfoContainer;
+import com.gitee.starblues.factory.PluginInfoContainer;
 import org.pf4j.PluginManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;

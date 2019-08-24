@@ -1,10 +1,9 @@
 package com.gitee.starblues.extension;
 
 import com.gitee.starblues.loader.PluginResourceLoader;
-import com.gitee.starblues.register.process.pipe.PluginPipeProcessorExtend;
-import com.gitee.starblues.register.process.pipe.classs.PluginClassGroup;
-import com.gitee.starblues.register.process.pipe.classs.PluginClassGroupExtend;
-import com.gitee.starblues.register.process.post.PluginPostProcessorExtend;
+import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
+import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
+import com.gitee.starblues.factory.process.post.PluginPostProcessorExtend;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
