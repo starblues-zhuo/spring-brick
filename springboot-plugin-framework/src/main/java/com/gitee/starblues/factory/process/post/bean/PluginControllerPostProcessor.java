@@ -6,6 +6,7 @@ import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.classs.group.ControllerGroup;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
+import com.gitee.starblues.utils.AopUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -49,6 +50,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
     @Override
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
+            AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
             List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(ControllerGroup.SPRING_CONTROLLER);
             if(groupClasses == null || groupClasses.isEmpty()){
                 continue;

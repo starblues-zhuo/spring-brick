@@ -6,10 +6,14 @@ import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorFactory;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
 import com.gitee.starblues.factory.process.post.PluginPostProcessorFactory;
+import com.gitee.starblues.utils.AopUtils;
+import com.sun.webkit.plugin.PluginManager;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +33,8 @@ public class DefaultPluginFactory implements PluginFactory {
     /**
      * 注册的插件集合
      */
+
+
     private final Map<String, PluginRegistryInfo> registerPluginInfoMap = new HashMap<>();
     private final PluginPipeProcessor pluginProcessor;
     private final PluginPostProcessor pluginPostProcessor;
@@ -54,7 +60,10 @@ public class DefaultPluginFactory implements PluginFactory {
         } else {
             this.pluginListenerFactory = pluginListenerFactory;
         }
+        AopUtils.registered(applicationContext);
     }
+
+
 
 
     @Override
@@ -69,7 +78,9 @@ public class DefaultPluginFactory implements PluginFactory {
         if(!buildContainer.isEmpty() && buildType == 2){
             throw new IllegalAccessException("Unable to Registry operate. Because there's no build");
         }
+
         PluginRegistryInfo registerPluginInfo = new PluginRegistryInfo(pluginWrapper);
+        AopUtils.resolveAop(pluginWrapper);
         try {
             pluginProcessor.registry(registerPluginInfo);
             registerPluginInfoMap.put(pluginWrapper.getPluginId(), registerPluginInfo);
@@ -80,6 +91,7 @@ public class DefaultPluginFactory implements PluginFactory {
             throw new Exception(e);
         } finally {
             buildType = 1;
+            AopUtils.recoverAop();
         }
     }
 
@@ -118,6 +130,9 @@ public class DefaultPluginFactory implements PluginFactory {
             }
         } finally {
             buildContainer.clear();
+            if(buildType == 1){
+                AopUtils.recoverAop();
+            }
             buildType = 0;
         }
     }
@@ -156,4 +171,8 @@ public class DefaultPluginFactory implements PluginFactory {
             }
         }
     }
+
+
+
+
 }

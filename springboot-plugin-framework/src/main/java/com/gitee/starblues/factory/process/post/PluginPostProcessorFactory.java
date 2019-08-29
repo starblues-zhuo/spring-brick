@@ -5,6 +5,7 @@ import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.post.bean.PluginConfigurationPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.PluginControllerPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.PluginInvokePostProcessor;
+import com.gitee.starblues.utils.AopUtils;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.OrderPriority;
 import org.slf4j.Logger;

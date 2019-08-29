@@ -9,6 +9,7 @@ import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.classs.group.CallerGroup;
 import com.gitee.starblues.factory.process.pipe.classs.group.SupplierGroup;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
+import com.gitee.starblues.utils.AopUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -51,6 +52,7 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
     @Override
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
+            AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
             List<Class<?>> suppers = pluginRegistryInfo.getGroupClasses(SupplierGroup.SUPPLIER);
             if(suppers == null){
                 continue;
@@ -58,6 +60,7 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
             processSupper(pluginRegistryInfo, suppers);
         }
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
+            AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
             List<Class<?>> callers = pluginRegistryInfo.getGroupClasses(CallerGroup.CALLER);
             if(callers == null){
                 continue;

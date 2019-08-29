@@ -63,6 +63,7 @@ public class SpringBeanRegister {
     public String register(String namePrefix, Class<?> aClass, Consumer<AnnotatedGenericBeanDefinition> consumer) {
         AnnotatedGenericBeanDefinition beanDefinition = new
                 AnnotatedGenericBeanDefinition(aClass);
+
         if(namePrefix == null){
             namePrefix = "";
         }

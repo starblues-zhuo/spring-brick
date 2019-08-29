@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * description
+ * service 测试
  *
  * @author zhangzhuo
  * @version 1.0
@@ -16,8 +16,11 @@ public class TestService {
     @Autowired
     private Gson gson;
 
+
     public void gson(){
         System.out.println(gson.toJson("123"));
     }
+
+
 
 }
