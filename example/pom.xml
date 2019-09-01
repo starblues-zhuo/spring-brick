@@ -5,17 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.gitee.starblues</groupId>
-    <artifactId>springboot-plugin-framework-parent</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>springboot-plugin-framework-example</artifactId>
     <version>2.1.0-RELEASE</version>
-
-    <description>spring boot 插件开发集成包</description>
+    <packaging>pom</packaging>
 
     <modules>
-        <module>springboot-plugin-framework</module>
-        <module>springboot-plugin-framework-extension</module>
-        <module>example</module>
+        <module>integration-mybatisplus</module>
+        <module>basic-example</module>
+        <module>integration-mybatis</module>
     </modules>
-	
+
 
 </project>

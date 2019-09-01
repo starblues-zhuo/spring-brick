@@ -7,6 +7,7 @@
 # Idea files
 *.iml
 .idea
+dist
 
 # BlueJ files
 *.ctxt

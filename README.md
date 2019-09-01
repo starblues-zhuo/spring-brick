@@ -16,8 +16,10 @@
 10. 可以遵循主程序提供的插件接口开发任意扩展功能。
 11. 插件可以自定义配置文件。目前只支持yml文件。
 12. 支持自定义扩展开发接口, 使用者可以在预留接口上扩展额外功能。
-13. 利用扩展机制, 定制了SpringBoot-Mybatis扩展包。使用该扩展包, 使用者可以在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean。
+13. 利用扩展机制, 定制了SpringBoot-Mybatis扩展包。使用该扩展包, 使用者可以在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean。并且支持集成Mybatis-Plus。
 14. 支持插件之间的通信。
+15. 支持插件中使用事务注解。
+16. 支持Swagger。
 
 ### 运行环境
 1. jdk1.8+
@@ -238,7 +240,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PluginBeanConfig {
 
-  /**
+    /**
      * 通过默认的集成工厂返回 PluginManager
      * @param integrationConfiguration 集成的配置文件
      * @return
@@ -380,7 +382,7 @@ import org.pf4j.PluginException;
 import org.pf4j.PluginWrapper;
 
 public class DefinePlugin extends BasePlugin {
-   public DefinePlugin(PluginWrapper wrapper) {
+    public DefinePlugin(PluginWrapper wrapper) {
         super(wrapper);
     }
 
@@ -415,7 +417,7 @@ public class HelloPlugin1 {
 
     @GetMapping()
     public String getConfig(){
-        return "hello plugin1"
+        return "hello plugin1 example";
     }
 
 }
@@ -494,9 +496,9 @@ Use classpath of module: plugin-exampe-runner
 
 4. 访问插件中的Controller 验证。
 
-浏览器输入：http://ip:port/api/plugins/springboot-plugin-example-plugin1/plugin1
+浏览器输入：http://ip:port/api/plugins/basic-example-plugin1/plugin1/plugin1
 
-响应并显示: hello plugin1 
+响应并显示: hello plugin1 example
 
 说明集成成功！
 
@@ -654,11 +656,11 @@ public interface CallerService {
 
 5.案例位置
 
-pluging-example：
+basic-example：
 
-com.plugin.example.plugin1.service.SupplierService
-com.plugin.example.plugin2.service.CallerService
-com.plugin.example.plugin2.rest.ProxyController
+com.basic.example.plugin1.service.SupplierService
+com.basic.example.plugin2.service.CallerService
+com.basic.example.plugin2.rest.ProxyController
 
 
 
@@ -669,23 +671,41 @@ com.plugin.example.plugin2.rest.ProxyController
 文档见: [springboot-plugin-framework-extension-mybatis](https://gitee.com/starblues/springboot-plugin-framework-parent/tree/master/springboot-plugin-framework-extension/springboot-plugin-framework-extension-mybatis)
 
 
-### 案例部署
+### 案例说明
 
-普通例子运行见：package/example
+basic-example：插件基础功能案例。
+
+integration-mybatis: 针对Mybatis集成的案例。
+
+integration-mybatisplus: 针对Mybatis-Plus集成的案例
+
+### 基础功能案例演示
+
+普通例子运行见：basic-example
 
 windows环境下运行: package.bat
 
 linux、mac 环境下运行: package.sh
 
-### mybatis 案例部署
+### mybatis 案例演示
 
-普通例子运行见：package/example-persistence
+例子见：integration-mybatis
 
 windows环境下运行: package.bat
 
 linux、mac 环境下运行: package.sh
 
-sql在 plugin-example-persistence/sql 文件夹下。
+sql在 integration-mybatis/sql 文件夹下。
+
+### mybatis-plus 案例演示
+
+例子见：integration-mybatisplus
+
+windows环境下运行: package.bat
+
+linux、mac 环境下运行: package.sh
+
+sql在 integration-mybatisplus/sql 文件夹下。
 
 ### 生产环境目录
 
@@ -704,11 +724,6 @@ sql在 plugin-example-persistence/sql 文件夹下。
 
 ```
 
-### 案例说明
-
-plugin-example：插件基础功能案例。
-
-plugin-example-persistence: 针对Mybatis集成的案例。
 
 ### 生产环境配置禁用启用功能
 
@@ -824,3 +839,6 @@ File->Project Structure->Project Settings->Artifacts->点击+号->JAR->From modu
 1. 修复mybatis案例无法加载mapper.xml的bug。
 2. 优化代码逻辑。
 3. 新增插件间的通信。详见文档-使用说明->插件之间数据交互功能
+
+#### 2.1.1 版本
+1. 插件中支持事务注解。
