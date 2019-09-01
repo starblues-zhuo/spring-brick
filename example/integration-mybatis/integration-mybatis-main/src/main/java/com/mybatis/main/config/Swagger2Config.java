@@ -1,4 +1,4 @@
-package com.basic.example.main.config;
+package com.mybatis.main.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,8 +33,8 @@ public class Swagger2Config {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Basic Plugin Example RESTful APIs")
-                .description("基本插件案例模块接口描述")
+                .title("Integration Mybatis Plugin Example RESTful APIs")
+                .description("集成Mybatis案例模块接口描述")
                 .termsOfServiceUrl("http://127.0.0.1")
                 .contact(new Contact("StartBlues", "", ""))
                 .version("2.1.1")

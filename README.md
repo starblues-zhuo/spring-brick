@@ -681,31 +681,37 @@ integration-mybatisplus: 针对Mybatis-Plus集成的案例
 
 ### 基础功能案例演示
 
-普通例子运行见：basic-example
+- 普通例子运行见：basic-example
 
-windows环境下运行: package.bat
+- windows环境下运行: package.bat
 
-linux、mac 环境下运行: package.sh
+- linux、mac 环境下运行: package.sh
+
+- 接口地址查看: http://127.0.0.1:8080/doc.html
 
 ### mybatis 案例演示
 
-例子见：integration-mybatis
+- 例子见：integration-mybatis
 
-windows环境下运行: package.bat
+- windows环境下运行: package.bat
 
-linux、mac 环境下运行: package.sh
+- linux、mac 环境下运行: package.sh
 
-sql在 integration-mybatis/sql 文件夹下。
+- sql在 integration-mybatis/sql 文件夹下。
+
+- 接口地址查看: http://127.0.0.1:8081/doc.html
 
 ### mybatis-plus 案例演示
 
-例子见：integration-mybatisplus
+- 例子见：integration-mybatisplus
 
-windows环境下运行: package.bat
+- windows环境下运行: package.bat
 
-linux、mac 环境下运行: package.sh
+- linux、mac 环境下运行: package.sh
 
-sql在 integration-mybatisplus/sql 文件夹下。
+- sql在 integration-mybatisplus/sql 文件夹下。
+
+- 接口地址查看: http://127.0.0.1:8082/doc.html
 
 ### 生产环境目录
 

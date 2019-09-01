@@ -27,6 +27,8 @@
         <mybatis-spring-boot-starter.version>2.0.1</mybatis-spring-boot-starter.version>
         <mybatis-plus-boot-starter.version>3.2.0</mybatis-plus-boot-starter.version>
         <extension-mybatis.version>2.1.1-RELEASE</extension-mybatis.version>
+        <springfox-swagger2.version>2.7.0</springfox-swagger2.version>
+        <swagger-bootstrap-ui.version>1.6</swagger-bootstrap-ui.version>
     </properties>
 
     <dependencies>
@@ -68,6 +70,18 @@
             <version>${mybatis-plus-boot-starter.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${springfox-swagger2.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>swagger-bootstrap-ui</artifactId>
+            <version>${swagger-bootstrap-ui.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
