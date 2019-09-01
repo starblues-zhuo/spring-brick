@@ -102,17 +102,15 @@ public class MybatisInjectWrapper {
         }
 
         if (StringUtils.hasText(this.sqlSessionTemplateBeanName)) {
-            if (explicitFactoryUsed) {
-                LOGGER.warn(() -> "Cannot use both: sqlSessionTemplate and sqlSessionFactory together. sqlSessionFactory is ignored.");
+            if (!explicitFactoryUsed) {
+                definition.getPropertyValues().add("sqlSessionTemplate", new RuntimeBeanReference(this.sqlSessionTemplateBeanName));
+                explicitFactoryUsed = true;
             }
-            definition.getPropertyValues().add("sqlSessionTemplate", new RuntimeBeanReference(this.sqlSessionTemplateBeanName));
-            explicitFactoryUsed = true;
         } else if (this.sqlSessionTemplate != null) {
-            if (explicitFactoryUsed) {
-                LOGGER.warn(() -> "Cannot use both: sqlSessionTemplate and sqlSessionFactory together. sqlSessionFactory is ignored.");
+            if (!explicitFactoryUsed) {
+                definition.getPropertyValues().add("sqlSessionTemplate", this.sqlSessionTemplate);
+                explicitFactoryUsed = true;
             }
-            definition.getPropertyValues().add("sqlSessionTemplate", this.sqlSessionTemplate);
-            explicitFactoryUsed = true;
         }
 
         if (!explicitFactoryUsed) {

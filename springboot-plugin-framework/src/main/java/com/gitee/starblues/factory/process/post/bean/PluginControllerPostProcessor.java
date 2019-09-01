@@ -1,12 +1,14 @@
 package com.gitee.starblues.factory.process.post.bean;
 
 import com.gitee.starblues.exception.PluginBeanFactoryException;
+import com.gitee.starblues.extension.PluginControllerProcessor;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.classs.group.ControllerGroup;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
 import com.gitee.starblues.utils.AopUtils;
+import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -62,6 +64,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
                 }
                 ControllerBeanWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
                 controllerBeanWrappers.add(controllerBeanWrapper);
+                process(1, pluginRegistryInfo.getPluginWrapper().getPluginId(), groupClass);
             }
             pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
         }
@@ -82,7 +85,11 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
                     continue;
                 }
                 unregister(controllerBeanWrapper);
+                process(2,
+                        pluginRegistryInfo.getPluginWrapper().getPluginId(),
+                        controllerBeanWrapper.getBeanClass());
             }
+
         }
     }
 
@@ -123,6 +130,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
                 }
             }
             controllerBeanWrapper.setRequestMappingInfos(requestMappingInfos);
+            controllerBeanWrapper.setBeanClass(aClass);
             return controllerBeanWrapper;
         } catch (SecurityException e) {
             throw new Exception(e);
@@ -254,6 +262,33 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         }
     }
 
+    private void process(int type, String pluginId, Class<?> aClass){
+        PluginControllerProcessor pluginControllerProcessor = null;
+        try {
+            pluginControllerProcessor = applicationContext.getBean(PluginControllerProcessor.class);
+        }catch (Exception e){
+            pluginControllerProcessor = null;
+        }
+        if(pluginControllerProcessor == null){
+            return;
+        }
+        if(type == 1){
+            try {
+                pluginControllerProcessor.registry(pluginId, aClass);
+            }catch (Exception e){
+                log.error("PluginControllerProcessor process {} {} error of registry",
+                        pluginId, aClass.getName());
+            }
+        } else {
+            try {
+                pluginControllerProcessor.unRegistry(pluginId, aClass);
+            }catch (Exception e){
+                log.error("PluginControllerProcessor process {} {} error of unRegistry",
+                        pluginId, aClass.getName());
+            }
+        }
+
+    }
 
     /**
      * Controller Bean的包装
@@ -264,10 +299,20 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
          */
         private String beanName;
 
+        private Class<?> beanClass;
+
         /**
          * controller 的 RequestMappingInfo 集合
          */
         private Set<RequestMappingInfo> requestMappingInfos;
+
+        public Class<?> getBeanClass() {
+            return beanClass;
+        }
+
+        public void setBeanClass(Class<?> beanClass) {
+            this.beanClass = beanClass;
+        }
 
         public String getBeanName() {
             return beanName;

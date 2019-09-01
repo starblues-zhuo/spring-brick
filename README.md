@@ -80,7 +80,7 @@ Maven目录结构下所示
 <dependency>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework</artifactId>
-    <version>2.1.0-RELEASE</version>
+    <version>2.1.1-RELEASE</version>
 </dependency>
 
 ```
@@ -842,3 +842,4 @@ File->Project Structure->Project Settings->Artifacts->点击+号->JAR->From modu
 
 #### 2.1.1 版本
 1. 插件中支持事务注解。
+2. 修复重复启动插件时报错的bug。

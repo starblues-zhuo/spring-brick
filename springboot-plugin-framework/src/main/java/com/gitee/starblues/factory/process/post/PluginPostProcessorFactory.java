@@ -31,6 +31,7 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
         pluginPostProcessors.add(new PluginConfigurationPostProcessor(applicationContext));
         pluginPostProcessors.add(new PluginInvokePostProcessor(applicationContext));
         pluginPostProcessors.add(new PluginControllerPostProcessor(applicationContext));
+        addExtension(applicationContext);
     }
 
     /**

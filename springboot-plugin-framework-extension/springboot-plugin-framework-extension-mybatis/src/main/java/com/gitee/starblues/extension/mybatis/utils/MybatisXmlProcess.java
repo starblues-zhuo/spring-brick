@@ -1,6 +1,7 @@
 package com.gitee.starblues.extension.mybatis.utils;
 
 import org.apache.ibatis.executor.ErrorContext;
+import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.core.io.Resource;
@@ -62,17 +63,20 @@ public class MybatisXmlProcess {
         }
         Configuration configuration = factory.getConfiguration();
         //removeConfig(configuration);
-        for (Resource resource :resources) {
-            try {
+        ClassLoader defaultClassLoader = Resources.getDefaultClassLoader();
+        try {
+            Resources.setDefaultClassLoader(pluginClassLoader);
+            for (Resource resource :resources) {
                 PluginMybatisXmlMapperBuilder xmlMapperBuilder =  new PluginMybatisXmlMapperBuilder(
                         resource.getInputStream(),
                         configuration, resource.toString(),
                         configuration.getSqlFragments(),
                         pluginClassLoader);
                 xmlMapperBuilder.parse();
-            } finally {
-                ErrorContext.instance().reset();
             }
+        } finally {
+            ErrorContext.instance().reset();
+            Resources.setDefaultClassLoader(defaultClassLoader);
         }
     }
 

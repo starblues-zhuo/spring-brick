@@ -1,31 +1,20 @@
 package com.gitee.starblues.factory.process.pipe.classs;
 
 import com.gitee.starblues.extension.ExtensionFactory;
-import com.gitee.starblues.loader.PluginResourceLoadFactory;
-import com.gitee.starblues.loader.load.PluginClassLoader;
-import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.group.*;
+import com.gitee.starblues.loader.PluginResourceLoadFactory;
+import com.gitee.starblues.loader.load.PluginClassLoader;
+import com.gitee.starblues.realize.BasePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 插件类加载处理者
@@ -82,17 +71,13 @@ public class PluginClassProcess implements PluginPipeProcessor {
         if(pluginResources == null){
             return;
         }
-        CustomClassLoader classLoader = new CustomClassLoader();
         for (Resource pluginResource : pluginResources) {
             String path = pluginResource.getURL().getPath();
             String packageName = path.substring(0, path.indexOf(".class"))
                     .replace("/", ".");
             packageName = packageName.substring(packageName.indexOf(basePlugin.scanPackage()));
-            Class<?> aClass = Class.forName(packageName, false, basePlugin.getWrapper().getPluginClassLoader());
-            //            System.out.println(pluginResource.getURL());
-//            URLClassLoader myloader =  new URLClassLoader( new URL[]{pluginResource.getURL()}, this.getClass().getClassLoader());
-//            myloader.loadClass(packageName);
-
+            Class<?> aClass = Class.forName(packageName, false,
+                    basePlugin.getWrapper().getPluginClassLoader());
             boolean findGroup = false;
             for (PluginClassGroup pluginClassGroup : pluginClassGroups) {
                 if(pluginClassGroup == null || StringUtils.isEmpty(pluginClassGroup.groupId())){
@@ -114,22 +99,5 @@ public class PluginClassProcess implements PluginPipeProcessor {
     public void unRegistry(PluginRegistryInfo registerPluginInfo) throws Exception {
         registerPluginInfo.cleanClasses();
     }
-
-    class CustomClassLoader extends ClassLoader{
-        private Map<String, Class> resourceMap = new ConcurrentHashMap<>();
-
-        public CustomClassLoader() {
-        }
-
-        public void setResource(String packageName, Class resource) {
-            this.resourceMap.put(packageName, resource);
-        }
-
-        @Override
-        protected Class<?> findClass(String name) throws ClassNotFoundException {
-           return resourceMap.get(name);
-        }
-    }
-
 
 }

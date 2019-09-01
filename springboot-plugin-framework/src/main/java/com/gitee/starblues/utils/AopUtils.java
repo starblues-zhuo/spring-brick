@@ -13,6 +13,8 @@ import org.springframework.util.ClassUtils;
  */
 public abstract class AopUtils {
 
+    private static final String AOP_NAME = "org.springframework.aop.config.internalAutoProxyCreator";
+
     private static InfrastructureAdvisorAutoProxyCreator infrastructureAdvisorAutoProxyCreator;
 
     /**
@@ -20,7 +22,10 @@ public abstract class AopUtils {
      * @param applicationContext 插件包装类
      */
     public static synchronized void registered(ApplicationContext applicationContext) {
-        Object bean = applicationContext.getBean("org.springframework.aop.config.internalAutoProxyCreator");
+        if(!applicationContext.containsBean(AOP_NAME)){
+            return;
+        }
+        Object bean = applicationContext.getBean(AOP_NAME);
         if(bean instanceof InfrastructureAdvisorAutoProxyCreator){
             infrastructureAdvisorAutoProxyCreator = (InfrastructureAdvisorAutoProxyCreator) bean;
         }
