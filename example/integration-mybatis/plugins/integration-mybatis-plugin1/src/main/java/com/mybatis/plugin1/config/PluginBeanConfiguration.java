@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PluginBeanConfiguration {
 
-    @Bean
+    @Bean("dewd")
     public Gson gson(){
         return new Gson();
     }

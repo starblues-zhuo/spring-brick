@@ -22,7 +22,6 @@ public class PluginConfigurationPostProcessor implements PluginPostProcessor {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 ;
     private final GenericApplicationContext applicationContext;
-    private Boolean isResolve = false;
 
     public PluginConfigurationPostProcessor(ApplicationContext applicationContext){
         Objects.requireNonNull(applicationContext);
@@ -32,13 +31,9 @@ public class PluginConfigurationPostProcessor implements PluginPostProcessor {
 
     @Override
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
-        if(isResolve){
-            return;
-        }
         ConfigurationClassPostProcessor configurationClassPostProcessor =
                 applicationContext.getBean(ConfigurationClassPostProcessor.class);
-        configurationClassPostProcessor.postProcessBeanDefinitionRegistry(applicationContext);
-        isResolve = true;
+        configurationClassPostProcessor.processConfigBeanDefinitions(applicationContext);
     }
 
     @Override

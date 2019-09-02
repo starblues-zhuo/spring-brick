@@ -12,14 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
  * @version 1.0
  */
 @Service
-@Transactional(rollbackFor = Exception.class)
-public class TestTransactional {
+public class TestTransactional implements TranServiec{
 
 
     @Autowired
     private Plugin1Mapper pluginMapperl;
 
-
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void transactional(){
         pluginMapperl.insert(String.valueOf(System.currentTimeMillis()), "123");
