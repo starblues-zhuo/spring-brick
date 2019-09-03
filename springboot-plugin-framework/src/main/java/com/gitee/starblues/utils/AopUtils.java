@@ -3,11 +3,15 @@ package com.gitee.starblues.utils;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
-import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
-import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
+import org.springframework.aop.framework.ProxyProcessorSupport;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ClassUtils;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * AOP 无法找到插件类的解决工具类
@@ -18,9 +22,8 @@ import org.springframework.util.ClassUtils;
 public class AopUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(AopUtils.class);
-    private static final String AOP_NAME = "org.springframework.aop.config.internalAutoProxyCreator";
 
-    private static AbstractAutoProxyCreator abstractAutoProxyCreator;
+    private static final List<ProxyWrapper> PROXY_WRAPPERS = new ArrayList<>();
 
     private AopUtils(){}
 
@@ -29,15 +32,19 @@ public class AopUtils {
      * @param applicationContext 插件包装类
      */
     public static synchronized void registered(ApplicationContext applicationContext) {
-        if(!applicationContext.containsBean(AOP_NAME)){
-            LOG.warn("Not found " + AOP_NAME + ", And Plugin AOP can't used");
+        Map<String, ProxyProcessorSupport> beansOfType = applicationContext
+                .getBeansOfType(ProxyProcessorSupport.class);
+        if(beansOfType.isEmpty()){
+            LOG.warn("Not found ProxyProcessorSupports, And Plugin AOP can't used");
             return;
         }
-        Object bean = applicationContext.getBean(AOP_NAME);
-        if(bean instanceof AbstractAutoProxyCreator){
-            abstractAutoProxyCreator = (AbstractAutoProxyCreator) bean;
-        } else {
-            LOG.warn(AOP_NAME + " type is not AbstractAutoProxyCreator, And Plugin AOP can't used");
+        for (ProxyProcessorSupport support : beansOfType.values()) {
+            if(support == null){
+                continue;
+            }
+            ProxyWrapper proxyWrapper = new ProxyWrapper();
+            proxyWrapper.setProxyProcessorSupport(support);
+            PROXY_WRAPPERS.add(proxyWrapper);
         }
     }
 
@@ -46,21 +53,99 @@ public class AopUtils {
      * @param pluginWrapper 插件包装类
      */
     public static synchronized void resolveAop(PluginWrapper pluginWrapper){
-        if(abstractAutoProxyCreator == null){
-            LOG.warn(AOP_NAME + " is null, And Plugin AOP can't used");
+        if(PROXY_WRAPPERS.isEmpty()){
+            LOG.warn("ProxyProcessorSupports is empty, And Plugin AOP can't used");
             return;
         }
-        abstractAutoProxyCreator.setBeanClassLoader(pluginWrapper.getPluginClassLoader());
+        ClassLoader pluginClassLoader = pluginWrapper.getPluginClassLoader();
+        for (ProxyWrapper proxyWrapper : PROXY_WRAPPERS) {
+            ProxyProcessorSupport proxyProcessorSupport = proxyWrapper.getProxyProcessorSupport();
+            ClassLoader classLoader = getClassLoader(proxyProcessorSupport);
+            proxyWrapper.setOriginalClassLoader(classLoader);
+            proxyProcessorSupport.setProxyClassLoader(pluginClassLoader);
+        }
     }
 
     /**
      * 恢复AOP 的 BeanClassLoader
      */
     public static synchronized void recoverAop(){
-        if(abstractAutoProxyCreator == null){
+        if(PROXY_WRAPPERS.isEmpty()){
             return;
         }
-        abstractAutoProxyCreator.setBeanClassLoader(ClassUtils.getDefaultClassLoader());
+        for (ProxyWrapper proxyWrapper : PROXY_WRAPPERS) {
+            ProxyProcessorSupport proxyProcessorSupport = proxyWrapper.getProxyProcessorSupport();
+            proxyProcessorSupport.setProxyClassLoader(proxyWrapper.getOriginalClassLoader());
+        }
+    }
+
+    /**
+     * 反射获取代理支持处理者的ClassLoader属性值
+     * @param proxyProcessorSupport proxyProcessorSupport
+     * @return ClassLoader
+     */
+    private static ClassLoader getClassLoader(ProxyProcessorSupport proxyProcessorSupport){
+        Class aClass = proxyProcessorSupport.getClass();
+        while (aClass != null){
+            if(aClass != ProxyProcessorSupport.class){
+                aClass = aClass.getSuperclass();
+                continue;
+            }
+            Field[] declaredFields = aClass.getDeclaredFields();
+            if(declaredFields == null || declaredFields.length == 0){
+                break;
+            }
+            for (Field field : declaredFields) {
+                if(Objects.equals("proxyClassLoader", field.getName()) || field.getType() == ClassLoader.class){
+                    field.setAccessible(true);
+                    try {
+                        Object o = field.get(proxyProcessorSupport);
+                        if(o instanceof ClassLoader){
+                            return (ClassLoader) o;
+                        } else {
+                            LOG.warn("Get {} classLoader type not is ClassLoader type,  And Return DefaultClassLoader",
+                                    aClass.getName());
+                            return ClassUtils.getDefaultClassLoader();
+                        }
+                    } catch (IllegalAccessException e) {
+                        LOG.error("Get {} classLoader failure {}, And Return DefaultClassLoader",
+                                aClass.getName(),
+                                e.getMessage());
+                        return ClassUtils.getDefaultClassLoader();
+                    }
+                }
+            }
+
+        }
+        LOG.warn("Not found classLoader field, And Return DefaultClassLoader",
+                aClass.getName());
+        return ClassUtils.getDefaultClassLoader();
+    }
+
+
+
+    /**
+     * 代理包装类
+     */
+    private static class ProxyWrapper{
+        ProxyProcessorSupport proxyProcessorSupport;
+        ClassLoader originalClassLoader;
+
+        ProxyProcessorSupport getProxyProcessorSupport() {
+            return proxyProcessorSupport;
+        }
+
+        void setProxyProcessorSupport(ProxyProcessorSupport proxyProcessorSupport) {
+            this.proxyProcessorSupport = proxyProcessorSupport;
+        }
+
+        ClassLoader getOriginalClassLoader() {
+            return originalClassLoader;
+        }
+
+        void setOriginalClassLoader(ClassLoader originalClassLoader) {
+            this.originalClassLoader = originalClassLoader;
+        }
     }
 
 }
