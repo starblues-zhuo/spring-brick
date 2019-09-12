@@ -52,12 +52,13 @@ public class ConfigBeanProcessor implements PluginPipeProcessor {
         if(configDefinitions == null || configDefinitions.isEmpty()){
             return;
         }
+        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         Set<String> beanNames = new HashSet<>();
         for (Class<?> aClass : configDefinitions) {
             String beanName = registry(pluginRegistryInfo, aClass);
             if(!StringUtils.isEmpty(beanName)){
                 beanNames.add(beanName);
-                PluginInfoContainer.addRegisterBeanName(beanName);
+                PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
             }
         }
         pluginRegistryInfo.addProcessorInfo(KEY, beanNames);
@@ -69,10 +70,11 @@ public class ConfigBeanProcessor implements PluginPipeProcessor {
         if(beanNames == null){
             return;
         }
+        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         for (String beanName : beanNames) {
             if(defaultListableBeanFactory.containsSingleton(beanName)){
                 defaultListableBeanFactory.destroySingleton(beanName);
-                PluginInfoContainer.removeRegisterBeanName(beanName);
+                PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
             }
         }
     }

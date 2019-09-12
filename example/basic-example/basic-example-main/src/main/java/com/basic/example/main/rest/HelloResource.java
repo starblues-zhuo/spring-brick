@@ -5,6 +5,7 @@ import com.gitee.starblues.integration.user.PluginUser;
 import com.basic.example.main.plugin.ConsoleName;
 import com.basic.example.main.plugin.ConsoleNameFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -69,6 +70,19 @@ public class HelloResource {
     public String pluginConsoleName2(){
         StringBuffer stringBuffer = new StringBuffer();
         List<ConsoleName> consoleNames = consoleNameFactory.getBeans();
+        return getConsoleNames(stringBuffer, consoleNames);
+    }
+
+
+    /**
+     * 通过 AbstractPluginSpringBeanRefresh 工厂获取实现类
+     * 打印实现接口 com.basic.demo.main.main.plugin.ConsoleName 的实现类
+     * @return 返回所有实现 com.basic.demo.main.main.plugin.ConsoleName 接口的实现类的 name() 方法的输出
+     */
+    @GetMapping("/consoleName/{pluginId}")
+    public String plugin1ConsoleName(@PathVariable("pluginId") String pluginId){
+        StringBuffer stringBuffer = new StringBuffer();
+        List<ConsoleName> consoleNames = pluginUser.getPluginBeans(pluginId, ConsoleName.class);
         return getConsoleNames(stringBuffer, consoleNames);
     }
 

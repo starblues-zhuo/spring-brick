@@ -815,6 +815,10 @@ File->Project Structure->Project Settings->Artifacts->点击+号->JAR->From modu
 
 ### 版本更新
 
+#### 2.1.2 版本
+1. 修复多AOP无法加载插件类的bug。
+2. 新增可以通过插件id获取插件中的bean的实现。详见：PluginUser->getPluginBeans(String pluginId, Class<T> aClass)
+
 #### 2.1.1 版本
 1. 插件中支持事务注解。
 2. 修复重复启动插件时报错的bug。

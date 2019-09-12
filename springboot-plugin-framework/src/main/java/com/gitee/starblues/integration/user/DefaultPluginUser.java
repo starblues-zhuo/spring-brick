@@ -92,6 +92,20 @@ public class DefaultPluginUser implements PluginUser{
         return beans;
     }
 
+    @Override
+    public <T> List<T> getPluginBeans(String pluginId, Class<T> aClass) {
+        Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
+        if(beansOfTypeMap == null){
+            return Collections.emptyList();
+        }
+        List<T> beans = new ArrayList<>();
+        beansOfTypeMap.forEach((beanName, bean)->{
+            if(PluginInfoContainer.existRegisterBeanName(pluginId, beanName)){
+                beans.add(bean);
+            }
+        });
+        return beans;
+    }
 
 
     /**

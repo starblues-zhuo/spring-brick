@@ -25,42 +25,46 @@ public class SpringBeanRegister {
 
     /**
      * 默认注册
+     * @param pluginId 插件id
      * @param aClass 类名
      * @return 注册的bean名称
      */
-    public String register(Class<?> aClass) {
-        return register(null, aClass, null);
+    public String register(String pluginId, Class<?> aClass) {
+        return register(pluginId, null, aClass, null);
     }
 
     /**
      * 默认注册
+     * @param pluginId 插件id
      * @param namePrefix bean名称前缀
      * @param aClass 类名
      * @return 注册的bean名称
      */
-    public String register(String namePrefix, Class<?> aClass) {
-        return register(namePrefix, aClass, null);
+    public String register(String pluginId, String namePrefix, Class<?> aClass) {
+        return register(pluginId, namePrefix, aClass, null);
     }
 
 
     /**
      * 默认注册
+     * @param pluginId 插件id
      * @param aClass 类名
      * @param consumer 自定义处理AnnotatedGenericBeanDefinition
      * @return 注册的bean名称
      */
-    public String register(Class<?> aClass, Consumer<AnnotatedGenericBeanDefinition> consumer) {
-        return register(null, aClass, consumer);
+    public String register(String pluginId, Class<?> aClass, Consumer<AnnotatedGenericBeanDefinition> consumer) {
+        return register(pluginId, null, aClass, consumer);
     }
 
     /**
      * 默认注册
+     * @param pluginId 插件id
      * @param namePrefix bean名称前缀
      * @param aClass 注册的类
      * @param consumer 自定义处理AnnotatedGenericBeanDefinition
      * @return 注册的bean名称
      */
-    public String register(String namePrefix, Class<?> aClass, Consumer<AnnotatedGenericBeanDefinition> consumer) {
+    public String register(String pluginId, String namePrefix, Class<?> aClass, Consumer<AnnotatedGenericBeanDefinition> consumer) {
         AnnotatedGenericBeanDefinition beanDefinition = new
                 AnnotatedGenericBeanDefinition(aClass);
 
@@ -79,26 +83,31 @@ public class SpringBeanRegister {
             consumer.accept(beanDefinition);
         }
         applicationContext.registerBeanDefinition(beanName, beanDefinition);
-        PluginInfoContainer.addRegisterBeanName(beanName);
+        PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
         return beanName;
     }
 
     /**
      * 指定bean名称注册
+     * @param pluginId 插件id
      * @param beanName 指定的bean名称
      * @param aClass 注册的类
      */
-    public void registerOfSpecifyName(String beanName, Class<?> aClass){
-        registerOfSpecifyName(beanName, aClass, null);
+    public void registerOfSpecifyName(String pluginId, String beanName, Class<?> aClass){
+        registerOfSpecifyName(pluginId, beanName, aClass, null);
     }
 
     /**
      * 指定bean名称注册
+     * @param pluginId 插件id
      * @param beanName 指定的bean名称
      * @param aClass 注册的类
      * @param consumer 注册异常
      */
-    public void registerOfSpecifyName(String beanName, Class<?> aClass, Consumer<AnnotatedGenericBeanDefinition> consumer) {
+    public void registerOfSpecifyName(String pluginId,
+                                      String beanName,
+                                      Class<?> aClass,
+                                      Consumer<AnnotatedGenericBeanDefinition> consumer) {
         AnnotatedGenericBeanDefinition beanDefinition = new
                 AnnotatedGenericBeanDefinition(aClass);
         if(PluginInfoContainer.existRegisterBeanName((beanName))){
@@ -109,7 +118,7 @@ public class SpringBeanRegister {
         if(consumer != null){
             consumer.accept(beanDefinition);
         }
-        PluginInfoContainer.addRegisterBeanName(beanName);
+        PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
         applicationContext.registerBeanDefinition(beanName, beanDefinition);
     }
 
@@ -117,11 +126,12 @@ public class SpringBeanRegister {
 
     /**
      * 卸载bean
+     * @param pluginId 插件id
      * @param beanName bean名称
      */
-    public void unregister(String beanName){
+    public void unregister(String pluginId, String beanName){
         applicationContext.removeBeanDefinition(beanName);
-        PluginInfoContainer.removeRegisterBeanName(beanName);
+        PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
     }
 
 

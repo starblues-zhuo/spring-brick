@@ -11,8 +11,6 @@ import org.pf4j.PluginState;
  */
 public class PluginInfo {
 
-
-
     /**
      * 插件基本信息
      */

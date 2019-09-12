@@ -48,9 +48,10 @@ public class BasicBeanProcessor implements PluginPipeProcessor {
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         Set<String> beanNames = pluginRegistryInfo.getProcessorInfo(KEY);
+        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         if(beanNames != null){
             for (String beanName : beanNames) {
-                springBeanRegister.unregister(beanName);
+                springBeanRegister.unregister(pluginId, beanName);
             }
         }
     }

@@ -80,11 +80,12 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             if(controllerBeanWrappers == null || controllerBeanWrappers.isEmpty()){
                 continue;
             }
+            String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
             for (ControllerBeanWrapper controllerBeanWrapper : controllerBeanWrappers) {
                 if(controllerBeanWrapper == null){
                     continue;
                 }
-                unregister(controllerBeanWrapper);
+                unregister(pluginId, controllerBeanWrapper);
                 process(2,
                         pluginRegistryInfo.getPluginWrapper().getPluginId(),
                         controllerBeanWrapper.getBeanClass());
@@ -144,9 +145,10 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
 
     /**
      * 卸载具体的Controller操作
+     * @param pluginId 插件id
      * @param controllerBeanWrapper controllerBean包装
      */
-    private void unregister(ControllerBeanWrapper controllerBeanWrapper) {
+    private void unregister(String pluginId, ControllerBeanWrapper controllerBeanWrapper) {
         Set<RequestMappingInfo> requestMappingInfos = controllerBeanWrapper.getRequestMappingInfos();
         if(requestMappingInfos != null && !requestMappingInfos.isEmpty()){
             for (RequestMappingInfo requestMappingInfo : requestMappingInfos) {
@@ -155,7 +157,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         }
         String beanName = controllerBeanWrapper.getBeanName();
         if(!StringUtils.isEmpty(beanName)){
-            springBeanRegister.unregister(beanName);
+            springBeanRegister.unregister(pluginId, beanName);
         }
     }
 
