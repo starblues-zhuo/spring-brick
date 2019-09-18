@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version 1.0
  */
 @Service
-public class TestTransactional implements TranServiec{
+public class TestTransactional1 implements TranServiec{
 
 
     @Autowired

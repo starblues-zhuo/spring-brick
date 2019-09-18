@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.mybatis.plugin1.entity.Plugin1;
 import com.mybatis.plugin1.mapper.Plugin1Mapper;
 import com.mybatis.plugin1.service.TestService;
-import com.mybatis.plugin1.service.TestTransactional;
 import com.mybatis.plugin1.service.TranServiec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

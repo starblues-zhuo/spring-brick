@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ClassUtils;
 
 import java.util.ArrayList;
@@ -33,9 +34,8 @@ public class DefaultPluginFactory implements PluginFactory {
     /**
      * 注册的插件集合
      */
-
-
     private final Map<String, PluginRegistryInfo> registerPluginInfoMap = new HashMap<>();
+    private final GenericApplicationContext applicationContext;
     private final PluginPipeProcessor pluginProcessor;
     private final PluginPostProcessor pluginPostProcessor;
     private final PluginListenerFactory pluginListenerFactory;
@@ -45,6 +45,7 @@ public class DefaultPluginFactory implements PluginFactory {
      */
     private Integer buildType = 0;
     private final List<PluginRegistryInfo> buildContainer = new ArrayList<>();
+    private final List<Class> listenerClasses = new ArrayList<>();
 
     public DefaultPluginFactory(ApplicationContext applicationContext) {
         this(applicationContext, null);
@@ -55,6 +56,7 @@ public class DefaultPluginFactory implements PluginFactory {
                                 PluginListenerFactory pluginListenerFactory) {
         this.pluginProcessor = new PluginPipeProcessorFactory(applicationContext);
         this.pluginPostProcessor = new PluginPostProcessorFactory(applicationContext);
+        this.applicationContext = (GenericApplicationContext) applicationContext;
         if(pluginListenerFactory == null){
             this.pluginListenerFactory = new PluginListenerFactory();
         } else {
@@ -62,7 +64,6 @@ public class DefaultPluginFactory implements PluginFactory {
         }
         AopUtils.registered(applicationContext);
     }
-
 
 
 
@@ -78,7 +79,6 @@ public class DefaultPluginFactory implements PluginFactory {
         if(!buildContainer.isEmpty() && buildType == 2){
             throw new IllegalAccessException("Unable to Registry operate. Because there's no build");
         }
-
         PluginRegistryInfo registerPluginInfo = new PluginRegistryInfo(pluginWrapper);
         AopUtils.resolveAop(pluginWrapper);
         try {
@@ -122,6 +122,8 @@ public class DefaultPluginFactory implements PluginFactory {
         if(buildContainer.isEmpty()){
             throw new IllegalAccessException("No Found registered or unRegistry plugin. Unable to build");
         }
+        // 构建注册的Class插件监听者
+        pluginListenerFactory.buildListenerClass((GenericApplicationContext) applicationContext);
         try {
             if(buildType == 1){
                 registryBuild();
@@ -161,6 +163,11 @@ public class DefaultPluginFactory implements PluginFactory {
     @Override
     public void addListener(PluginListener pluginListener) {
         pluginListenerFactory.addPluginListener(pluginListener);
+    }
+
+    @Override
+    public <T extends PluginListener> void addListener(Class<T> pluginListenerClass) {
+        pluginListenerFactory.addPluginListener(pluginListenerClass);
     }
 
     @Override

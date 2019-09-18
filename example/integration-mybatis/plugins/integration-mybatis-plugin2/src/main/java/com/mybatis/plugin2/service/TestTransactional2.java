@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version 1.0
  */
 @Component
-public class TestTransactional {
+public class TestTransactional2 {
 
 
 
