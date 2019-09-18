@@ -19,7 +19,7 @@
 13. 利用扩展机制, 定制了SpringBoot-Mybatis扩展包。使用该扩展包, 使用者可以在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean。并且支持集成Mybatis-Plus。
 14. 支持插件之间的通信。
 15. 支持插件中使用事务注解。
-16. 支持Swagger。
+16. 支持Swagger。(仅支持首次启动初始化的插件)
 
 ### 运行环境
 1. jdk1.8+
