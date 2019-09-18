@@ -19,7 +19,7 @@
 13. 利用扩展机制, 定制了SpringBoot-Mybatis扩展包。使用该扩展包, 使用者可以在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean。并且支持集成Mybatis-Plus。
 14. 支持插件之间的通信。
 15. 支持插件中使用事务注解。
-16. 支持Swagger。
+16. 支持Swagger。(仅支持首次启动初始化的插件)
 
 ### 运行环境
 1. jdk1.8+
@@ -80,7 +80,7 @@ Maven目录结构下所示
 <dependency>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework</artifactId>
-    <version>2.1.1-RELEASE</version>
+    <version>2.1.2-RELEASE</version>
 </dependency>
 
 ```
@@ -814,6 +814,11 @@ File->Project Structure->Project Settings->Artifacts->点击+号->JAR->From modu
 859570617
 
 ### 版本更新
+
+#### 2.1.2 版本
+1. 修复使用多AOP情况, 无法加载插件类(被AOP代理的类)的bug。
+2. 新增可以通过插件id获取插件中的bean的实现。详见：PluginUser->getPluginBeans(String pluginId, Class<T> aClass)
+3. 新增插件注册监听器可通过Class方式添加。案例详见: basic-eaxmple->com.basic.example.main.config.ExamplePluginListener
 
 #### 2.1.1 版本
 1. 插件中支持事务注解。

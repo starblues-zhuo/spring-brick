@@ -2,7 +2,7 @@ package com.mybatis.plugin2.rest;
 
 import com.mybatis.plugin2.entity.Plugin2;
 import com.mybatis.plugin2.mapper.Plugin2Mapper;
-import com.mybatis.plugin2.service.TestTransactional;
+import com.mybatis.plugin2.service.TestTransactional2;
 import com.mybatis.plugin2.config.Plugin2Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +29,7 @@ public class Plugin2Controller {
     private Plugin2Config plugin2Config;
 
     @Autowired
-    private TestTransactional testTransactional;
+    private TestTransactional2 testTransactional;
 
 
     @GetMapping

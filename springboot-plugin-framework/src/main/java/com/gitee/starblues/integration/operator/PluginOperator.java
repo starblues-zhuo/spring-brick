@@ -3,6 +3,7 @@ package com.gitee.starblues.integration.operator;
 import com.gitee.starblues.exception.PluginPlugException;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
+import org.pf4j.PluginWrapper;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -141,6 +142,12 @@ public interface PluginOperator {
      * @throws PluginPlugException 插件插头异常
      */
     Set<String> getPluginFilePaths() throws PluginPlugException;
+
+    /**
+     * 得到插件的包装类
+     * @return 返回插件包装类集合
+     */
+    List<PluginWrapper> getPluginWrapper();
 
 
 }

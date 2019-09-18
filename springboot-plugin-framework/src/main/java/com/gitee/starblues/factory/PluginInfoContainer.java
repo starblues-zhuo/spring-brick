@@ -2,7 +2,9 @@ package com.gitee.starblues.factory;
 
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,23 +21,61 @@ public class PluginInfoContainer {
     /**
      * 全局插件中定义的BaneName
      */
-    private static Set<String> springRegisterBeanNames = new HashSet<>();
+    private static Map<String, Set<String>> springRegisterBeanNames = new HashMap<>();
 
-
-    public static synchronized void addRegisterBeanName(String beanName){
+    /**
+     * 添加注册的bean名称
+     * @param pluginId 插件id
+     * @param beanName 注册的bean名称
+     */
+    public static synchronized void addRegisterBeanName(String pluginId, String beanName){
         if(!StringUtils.isEmpty(beanName)){
-            springRegisterBeanNames.add(beanName);
+            Set<String> beanNames = springRegisterBeanNames.get(pluginId);
+            if(beanNames == null){
+                beanNames = new HashSet<>();
+                springRegisterBeanNames.put(pluginId, beanNames);
+            }
+            beanNames.add(beanName);
         }
     }
 
-    public static synchronized void removeRegisterBeanName(String beanName){
-        springRegisterBeanNames.remove(beanName);
+    /**
+     * 移除注册的bean名称
+     * @param pluginId 插件id
+     * @param beanName 注册的bean名称
+     */
+    public static synchronized void removeRegisterBeanName(String pluginId, String beanName){
+        Set<String> beanNames = springRegisterBeanNames.get(pluginId);
+        if(beanNames != null){
+            beanNames.remove(beanName);
+        }
     }
 
+    /**
+     * 是否存在bean名称
+     * @param pluginId 插件id
+     * @param beanName 注册的bean名称
+     */
+    public static synchronized boolean existRegisterBeanName(String pluginId, String beanName){
+        Set<String> beanNames = springRegisterBeanNames.get(pluginId);
+        if(beanNames != null){
+            return beanNames.contains(beanName);
+        } else {
+            return false;
+        }
+    }
 
+    /**
+     * 是否存在bean名称
+     * @param beanName 注册的bean名称
+     */
     public static synchronized boolean existRegisterBeanName(String beanName){
-        return springRegisterBeanNames.contains(beanName);
+        for (Set<String> beanNames : springRegisterBeanNames.values()){
+            if(beanNames.contains(beanName)){
+                return true;
+            }
+        }
+        return false;
     }
-
 
 }

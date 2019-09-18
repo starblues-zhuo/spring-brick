@@ -75,8 +75,9 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
             Set<String> supperNames = pluginRegistryInfo.getProcessorInfo(getKey(KEY_SUPPERS, pluginRegistryInfo));
             Set<String> callerNames = pluginRegistryInfo.getProcessorInfo(getKey(KEY_CALLERS, pluginRegistryInfo));
-            unregister(supperNames);
-            unregister(callerNames);
+            String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
+            unregister(pluginId, supperNames);
+            unregister(pluginId, callerNames);
         }
     }
 
@@ -92,6 +93,7 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
             return;
         }
         Set<String> beanNames = new HashSet<>();
+        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         for (Class<?> supperClass : supperClasses) {
             if(supperClass == null){
                 continue;
@@ -107,7 +109,7 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
                         pluginRegistryInfo.getPluginWrapper().getPluginId(), beanName, supperClass.getName());
                 throw new Exception(error);
             }
-            springBeanRegister.registerOfSpecifyName(beanName, supperClass);
+            springBeanRegister.registerOfSpecifyName(pluginId, beanName, supperClass);
             beanNames.add(beanName);
         }
         pluginRegistryInfo.addProcessorInfo(getKey(KEY_SUPPERS, pluginRegistryInfo), beanNames);
@@ -157,14 +159,15 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
 
     /**
      * 通过beanName卸载
+     * @param pluginId 插件id
      * @param beanNames beanNames集合
      */
-    private void unregister(Set<String> beanNames){
+    private void unregister(String pluginId, Set<String> beanNames){
         if(beanNames == null || beanNames.isEmpty()){
             return;
         }
         for (String beanName : beanNames) {
-            springBeanRegister.unregister(beanName);
+            springBeanRegister.unregister(pluginId, beanName);
         }
     }
 

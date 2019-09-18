@@ -355,6 +355,10 @@ public class DefaultPluginOperator implements PluginOperator {
         }
     }
 
+    @Override
+    public List<PluginWrapper> getPluginWrapper() {
+        return pluginManager.getPlugins();
+    }
 
 
     /**

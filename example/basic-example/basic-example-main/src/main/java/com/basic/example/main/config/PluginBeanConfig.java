@@ -35,7 +35,9 @@ public class PluginBeanConfig {
      */
     @Bean
     public PluginApplication pluginApplication(){
-        return new DefaultPluginApplication();
+        DefaultPluginApplication defaultPluginApplication = new DefaultPluginApplication();
+        defaultPluginApplication.addListener(ExamplePluginListener.class);
+        return defaultPluginApplication;
     }
 
     /**

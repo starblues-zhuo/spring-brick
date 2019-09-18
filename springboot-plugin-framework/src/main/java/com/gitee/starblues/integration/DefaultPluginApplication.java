@@ -15,6 +15,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,6 +115,11 @@ public class DefaultPluginApplication implements ApplicationContextAware, Plugin
     @Override
     public void addListener(PluginListener pluginListener) {
         this.listenerFactory.addPluginListener(pluginListener);
+    }
+
+    @Override
+    public <T extends PluginListener> void addListener(Class<T> pluginListenerClass) {
+        listenerFactory.addPluginListener(pluginListenerClass);
     }
 
     @Override

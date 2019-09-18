@@ -52,7 +52,7 @@ public class PluginMybatisMapperProcessor implements PluginPipeProcessorExtend {
     PluginMybatisMapperProcessor(ApplicationContext applicationContext) {
         this.applicationContext = (GenericApplicationContext) applicationContext;
         springBeanRegister = new SpringBeanRegister(applicationContext);
-        springBeanRegister.register(MybatisInjectWrapper.class);
+        springBeanRegister.register("PluginMybatisMapperProcessor", MybatisInjectWrapper.class);
         mybatisInjectWrapper = applicationContext.getBean(MybatisInjectWrapper.class);
     }
 
@@ -78,6 +78,7 @@ public class PluginMybatisMapperProcessor implements PluginPipeProcessorExtend {
             return;
         }
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
+        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         Set<String> beanNames = new HashSet<>();
         for (Class<?> groupClass : groupClasses) {
             if (groupClass == null) {
@@ -93,7 +94,7 @@ public class PluginMybatisMapperProcessor implements PluginPipeProcessorExtend {
             BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, applicationContext);
             mybatisInjectWrapper.processBeanDefinitions(definitionHolder, groupClass);
             beanNames.add(beanName);
-            PluginInfoContainer.addRegisterBeanName(beanName);
+            PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
         }
         pluginRegistryInfo.addProcessorInfo(KEY, beanNames);
     }
@@ -104,9 +105,10 @@ public class PluginMybatisMapperProcessor implements PluginPipeProcessorExtend {
         if(beanNames == null){
             return;
         }
+        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         for (String beanName : beanNames) {
             applicationContext.removeBeanDefinition(beanName);
-            PluginInfoContainer.removeRegisterBeanName(beanName);
+            PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
         }
     }
 

@@ -23,8 +23,6 @@ public class PluginClassLoader implements PluginResourceLoader {
 
     public static final String KEY = "PluginClassProcess";
 
-
-
     @Override
     public String key() {
         return KEY;

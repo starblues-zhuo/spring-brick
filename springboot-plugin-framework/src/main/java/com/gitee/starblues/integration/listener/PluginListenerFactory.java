@@ -1,5 +1,8 @@
 package com.gitee.starblues.integration.listener;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +14,8 @@ import java.util.List;
  */
 public class PluginListenerFactory implements PluginListener{
 
-    private List<PluginListener> listeners = new ArrayList<>();
+    private final List<PluginListener> listeners = new ArrayList<>();
+    private final List<Class> listenerClasses = new ArrayList<>();
 
     @Override
     public void registry(String pluginId) {
@@ -53,6 +57,32 @@ public class PluginListenerFactory implements PluginListener{
     public void addPluginListener(PluginListener pluginListener){
         if(pluginListener != null){
             listeners.add(pluginListener);
+        }
+    }
+
+    /**
+     * 添加监听者
+     * @param pluginListenerClass 插件监听者Class类
+     */
+    public <T extends PluginListener> void addPluginListener(Class<T> pluginListenerClass){
+        if(pluginListenerClass != null){
+            synchronized (listenerClasses){
+                listenerClasses.add(pluginListenerClass);
+            }
+        }
+    }
+
+    public <T extends PluginListener> void buildListenerClass(GenericApplicationContext applicationContext){
+        if(applicationContext == null){
+            return;
+        }
+        synchronized (listenerClasses){
+            for (Class<T> listenerClass : listenerClasses) {
+                applicationContext.registerBean(listenerClass);
+                T bean = applicationContext.getBean(listenerClass);
+                listeners.add(bean);
+            }
+            listenerClasses.clear();
         }
     }
 
