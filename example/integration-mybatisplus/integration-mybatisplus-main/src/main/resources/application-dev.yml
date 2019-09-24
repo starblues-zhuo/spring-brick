@@ -17,5 +17,5 @@ mybatis-plus:
 
 plugin:
   runMode: dev
-  pluginPath: plugins
+  pluginPath: ./example/integration-mybatisplus/plugins
   pluginConfigFilePath:

@@ -57,7 +57,7 @@ Maven目录结构下所示
 1. pom.xml 代表maven的pom.xml
 2. plugin.properties 为开发环境下, 插件的元信息配置文件, 配置内容详见下文。
 3. example 为项目的总Maven目录。
-4. example-runner 在运行环境下启动的模块。主要依赖example-main模块和插件中使用到的依赖包。
+4. example-runner 在运行环境下启动的模块。主要依赖example-main模块和插件中使用到的依赖包, 并且解决开发环境下无法找到插件依赖包的问题。
 5. example-main 该模块为项目的主程序模块。
 6. example-plugin-parent 该模块为插件的父级maven pom 模块, 主要定义插件中公共用到的依赖, 以及插件的打包配置。
 7. plugins 该文件夹下主要存储插件模块。上述模块中主要包括example-plugin1、example-plugin2 两个插件。
@@ -296,7 +296,7 @@ public class PluginBeanConfig {
 定义打包配置.主要用途是将 `Plugin-Id、Plugin-Version、Plugin-Provider、Plugin-Class、Plugin-Dependencies`的配置值定义到`META-INF\MANIFEST.MF`文件中
 ```xml
 <properties>
-    <plugin.id>springboot-plugin-example-plugin1</plugin.id>
+    <plugin.id>example-plugin1</plugin.id>
     <plugin.class>com.plugin.example.plugin1.DefinePlugin</plugin.class>
     <plugin.version>${project.version}</plugin.version>
     <plugin.provider>StarBlues</plugin.provider>
@@ -361,7 +361,7 @@ public class PluginBeanConfig {
 2. 在插件包的一级目录下新建plugin.properties文件(用于开发环境)
 新增如下内容(属性值同步骤1中pom.xml定义的`manifestEntries`属性一致):
 ```
-plugin.id=springboot-plugin-example-plugin1
+plugin.id=example-plugin1
 plugin.class=com.plugin.example.plugin1.DefinePlugin
 plugin.version=2.0-SNAPSHOT
 plugin.provider=StarBlues
@@ -464,13 +464,15 @@ public class HelloPlugin1 {
         </dependency>
 
         <!-- 此处依赖用于解决在开发环境下, 插件包找不到对应依赖包 -->
+        <!--
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
             <scope>provided</scope>
         </dependency>
-
+        -->
+        
     </dependencies>
 
 </project>
@@ -478,7 +480,7 @@ public class HelloPlugin1 {
 
 2. 设置idea的启动
 
-Working directory : D:\xx\xx\springboot-plugin-framework-parent\plugin-example
+Working directory : D:\xx\xx\plugin-example
 
 Use classpath of module: plugin-exampe-runner
 
@@ -489,14 +491,14 @@ Use classpath of module: plugin-exampe-runner
 观察日志出现如下说明加载插件成功。
 
 ``` java
- Plugin 'springboot-plugin-example-plugin1@2.0-RELEASE' resolved
- Start plugin 'springboot-plugin-example-plugin1@2.0-RELEASE'
- Init Plugins <springboot-plugin-example-plugin1> Success
+ Plugin 'example-plugin1@2.0-RELEASE' resolved
+ Start plugin 'example-plugin1@2.0-RELEASE'
+ Init Plugins <example-plugin1> Success
 ```
 
 4. 访问插件中的Controller 验证。
 
-浏览器输入：http://ip:port/api/plugins/basic-example-plugin1/plugin1/plugin1
+浏览器输入：http://ip:port/api/plugins/example-plugin1/plugin1
 
 响应并显示: hello plugin1 example
 
@@ -589,7 +591,7 @@ public class HelloService {
 
 *在开发环境：配置文件必须放在resources目录下。并且@ConfigDefinition("plugin1.yml")中定义的文件名和resources下配置的文件名一致。*
 
-*在生产环境: 该文件存放在`pluginConfigFilePath`配置的目录下。*
+*在生产环境: 该文件存放在`pluginConfigFilePath`配置的目录下。生产环境下插件的配置文件必须外置, 不能使用jar包里面的配置文件 *
 
 #### 插件之间数据交互功能
 
@@ -770,9 +772,9 @@ example-plugin1
 2. 如果启动时插件没有加载。请检查配置文件中的 pluginPath
 
 ```text
-如果pluginPath 配置为相当路径，请检查是否是相对于当前工作环境的目录。
+如果 pluginPath 配置为相当路径，请检查是否是相对于当前工作环境的目录。
 
-如果pluginPath配置为绝对路径，请检查路径是否正确。
+如果 pluginPath 配置为绝对路径，请检查路径是否正确。
 ```
 
 3. 如果出现Spring包冲突。可以排除Spring包。

@@ -1,9 +1,7 @@
 package com.mybatis.plugin1.rest;
 
-import com.google.gson.Gson;
 import com.mybatis.plugin1.entity.Plugin1;
 import com.mybatis.plugin1.mapper.Plugin1Mapper;
-import com.mybatis.plugin1.service.TestService;
 import com.mybatis.plugin1.service.TranServiec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,18 +26,11 @@ public class Plugin1Controller {
     private Plugin1Mapper pluginMapperl;
 
     @Autowired
-    private Gson gson;
-
-    @Autowired
-    private TestService testService;
-
-    @Autowired
     private TranServiec testTransactional;
 
     @GetMapping
     public String hello(){
-        testService.gson();
-        return gson.toJson(pluginMapperl.getList());
+        return "hello, 这是集成mybatis 插件1";
     }
 
     @GetMapping("/list")
