@@ -27,15 +27,6 @@
         <extension-mybatis.version>2.1.2-RELEASE</extension-mybatis.version>
     </properties>
 
-    <dependencies>
-
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
-
-    </dependencies>
 
 
 </project>

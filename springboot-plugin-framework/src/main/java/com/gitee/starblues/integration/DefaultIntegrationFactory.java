@@ -2,6 +2,7 @@ package com.gitee.starblues.integration;
 
 import org.pf4j.*;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
@@ -22,8 +23,8 @@ public class DefaultIntegrationFactory implements IntegrationFactory {
         }
         if(RuntimeMode.DEVELOPMENT == environment){
             // 开发环境下的插件管理者
-            System.setProperty("pf4j.pluginsDir", getDevPluginDir(configuration));
-            return new DefaultPluginManager(){
+            Path path = Paths.get(getDevPluginDir(configuration));
+            return new DefaultPluginManager(path){
                 @Override
                 public RuntimeMode getRuntimeMode() {
                     System.setProperty("pf4j.mode", RuntimeMode.DEVELOPMENT.toString());
@@ -32,7 +33,8 @@ public class DefaultIntegrationFactory implements IntegrationFactory {
             };
         } else if(RuntimeMode.DEPLOYMENT == environment){
             // 运行环境下的插件管理者
-            return new DefaultPluginManager(Paths.get(getProdPluginDir(configuration))){
+            Path path = Paths.get(getProdPluginDir(configuration));
+            return new DefaultPluginManager(path){
                 @Override
                 protected PluginRepository createPluginRepository() {
                     return new CompoundPluginRepository()
