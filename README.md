@@ -681,7 +681,8 @@ integration-mybatis: 针对Mybatis集成的案例。
 
 integration-mybatisplus: 针对Mybatis-Plus集成的案例
 
-### 基础功能案例演示
+
+#### 基础功能案例演示
 
 - 普通例子运行见：basic-example
 
@@ -691,7 +692,7 @@ integration-mybatisplus: 针对Mybatis-Plus集成的案例
 
 - 接口地址查看: http://127.0.0.1:8080/doc.html
 
-### mybatis 案例演示
+#### mybatis 案例演示
 
 - 例子见：integration-mybatis
 
@@ -703,7 +704,7 @@ integration-mybatisplus: 针对Mybatis-Plus集成的案例
 
 - 接口地址查看: http://127.0.0.1:8081/doc.html
 
-### mybatis-plus 案例演示
+#### mybatis-plus 案例演示
 
 - 例子见：integration-mybatisplus
 
@@ -714,6 +715,13 @@ integration-mybatisplus: 针对Mybatis-Plus集成的案例
 - sql在 integration-mybatisplus/sql 文件夹下。
 
 - 接口地址查看: http://127.0.0.1:8082/doc.html
+
+#### 案例常见报错
+
+1. 插件未编译
+java.lang.ClassNotFoundException: com.basic.example.plugin1.DefinePlugin
+java.lang.ClassNotFoundException: com.basic.example.plugin2.DefinePlugin
+该类型报错是由于插件源码没有编译成 class 文件; 需要手动编译, 保证在插件目录出现 target 文件
 
 ### 生产环境目录
 
