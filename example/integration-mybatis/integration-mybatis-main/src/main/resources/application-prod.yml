@@ -9,8 +9,8 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
 
 mybatis:
-  typeAliasesPackage: com.persistence.example.entity
-  mapper-locations: classpath*:mapper/*.xml
+  typeAliasesPackage: com.mybatis.main.entity
+  mapperLocations: classpath:mapper/*.xml
 
 plugin:
   runMode: prod
