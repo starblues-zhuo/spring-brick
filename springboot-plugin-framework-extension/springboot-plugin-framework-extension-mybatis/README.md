@@ -176,6 +176,9 @@ public class PluginDataServiceImpl extends ServiceImplWrapper<PluginDataMapper, 
 
 ### 版本升级
 
+#### 2.1.3 版本
+跟随 springboot-plugin-framework 版本的部分类修改。升级到 2.1.3
+
 #### 2.1.1 版本
 1. 新增支持 Mybatis-Plus ServiceImpl的包装类。ServiceImplWrapper。使用详见`集成Mybatis-Plus说明`
 2. 修复 Mapper.xml 中定义的 resultType 类型无法定义的bug。
