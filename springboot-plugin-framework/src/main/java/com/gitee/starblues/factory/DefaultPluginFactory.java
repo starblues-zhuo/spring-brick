@@ -1,20 +1,17 @@
 package com.gitee.starblues.factory;
 
-import com.gitee.starblues.integration.listener.PluginListener;
-import com.gitee.starblues.integration.listener.PluginListenerFactory;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorFactory;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
 import com.gitee.starblues.factory.process.post.PluginPostProcessorFactory;
+import com.gitee.starblues.integration.listener.PluginListener;
+import com.gitee.starblues.integration.listener.PluginListenerFactory;
 import com.gitee.starblues.utils.AopUtils;
-import com.sun.webkit.plugin.PluginManager;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.util.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +42,6 @@ public class DefaultPluginFactory implements PluginFactory {
      */
     private Integer buildType = 0;
     private final List<PluginRegistryInfo> buildContainer = new ArrayList<>();
-    private final List<Class> listenerClasses = new ArrayList<>();
 
     public DefaultPluginFactory(ApplicationContext applicationContext) {
         this(applicationContext, null);
@@ -123,7 +119,7 @@ public class DefaultPluginFactory implements PluginFactory {
             throw new IllegalAccessException("No Found registered or unRegistry plugin. Unable to build");
         }
         // 构建注册的Class插件监听者
-        pluginListenerFactory.buildListenerClass((GenericApplicationContext) applicationContext);
+        pluginListenerFactory.buildListenerClass(applicationContext);
         try {
             if(buildType == 1){
                 registryBuild();

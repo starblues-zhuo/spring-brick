@@ -80,7 +80,7 @@ Maven目录结构下所示
 <dependency>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework</artifactId>
-    <version>2.1.2-RELEASE</version>
+    <version>2.1.3-RELEASE</version>
 </dependency>
 
 ```
@@ -824,6 +824,9 @@ File->Project Structure->Project Settings->Artifacts->点击+号->JAR->From modu
 859570617
 
 ### 版本更新
+
+#### 2.1.3 版本
+在PluginUser接口新增getMainBeans方法, 用于获取Spring管理的主程序接口的实现类。
 
 #### 2.1.2 版本
 1. 修复使用多AOP情况, 无法加载插件类(被AOP代理的类)的bug。

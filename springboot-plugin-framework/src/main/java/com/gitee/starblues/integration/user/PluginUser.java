@@ -34,12 +34,22 @@ public interface PluginUser {
     <T> T getPluginBean(String name);
 
     /**
-     * 在主程序中定义的接口。插件或者主程序实现该接口。可以该方法获取到实现该接口的所有实现类。（Spring管理的bean）
+     * 在主程序中定义的接口。
+     * 插件或者主程序实现该接口。可以该方法获取到实现该接口的所有实现类。（Spring管理的bean）
      * @param aClass 接口的类
      * @param <T> bean的类型
      * @return List
      */
     <T> List<T> getBeans(Class<T> aClass);
+
+    /**
+     * 得到主函数中定义的类。
+     * 主程序实现该接口。可以该方法获取到实现该接口的所有实现类。（Spring管理的bean）
+     * @param aClass 类/接口的类
+     * @param <T> bean 的类型
+     * @return List
+     */
+    <T> List<T> getMainBeans(Class<T> aClass);
 
 
     /**

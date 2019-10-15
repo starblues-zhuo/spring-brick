@@ -35,8 +35,23 @@ public class HelloResource {
         return "hello spring boot plugin example";
     }
 
+
     /**
-     * 通过 PluginUser 获取实现类
+     * 通过 PluginUser 获取到主程序的实现类
+     * 打印实现接口 com.basic.demo.main.main.plugin.ConsoleName 的实现类
+     * @return 返回所有实现 com.basic.demo.main.main.plugin.ConsoleName 接口的实现类的 name() 方法的输出
+     */
+    @GetMapping("/mainConsoleName")
+    public String mainConsoleName(){
+        StringBuffer stringBuffer = new StringBuffer();
+        // 获取到实现该接口的实现类
+        List<ConsoleName> consoleNames = pluginUser.getMainBeans(ConsoleName.class);
+        return getConsoleNames(stringBuffer, consoleNames);
+    }
+
+
+    /**
+     * 通过 PluginUser 获取到主程序和插件中所有的实现类
      * 打印实现接口 com.basic.demo.main.main.plugin.ConsoleName 的实现类
      * @return 返回所有实现 com.basic.demo.main.main.plugin.ConsoleName 接口的实现类的 name() 方法的输出
      */
@@ -49,7 +64,7 @@ public class HelloResource {
     }
 
     /**
-     * 通过 PluginUser 获取实现类
+     * 通过 PluginUser 获取插件中的实现类
      * 打印实现接口 com.basic.demo.main.main.plugin.ConsoleName 接口的插件中的实现类
      * @return 返回所有实现 com.basic.demo.main.main.plugin.ConsoleName 接口的插件中实现类的 name() 方法的输出
      */
@@ -75,7 +90,7 @@ public class HelloResource {
 
 
     /**
-     * 通过 AbstractPluginSpringBeanRefresh 工厂获取实现类
+     * 通过 插件id 获取指定的插件中的实现类
      * 打印实现接口 com.basic.demo.main.main.plugin.ConsoleName 的实现类
      * @return 返回所有实现 com.basic.demo.main.main.plugin.ConsoleName 接口的实现类的 name() 方法的输出
      */

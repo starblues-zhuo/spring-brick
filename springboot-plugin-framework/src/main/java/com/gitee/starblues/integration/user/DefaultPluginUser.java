@@ -71,6 +71,21 @@ public class DefaultPluginUser implements PluginUser{
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public <T> List<T> getMainBeans(Class<T> aClass) {
+        Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
+        if(beansOfTypeMap == null){
+            return Collections.emptyList();
+        }
+        List<T> beans = new ArrayList<>();
+        beansOfTypeMap.forEach((beanName, bean)->{
+            if(!isPluginBean(beanName)){
+                beans.add(bean);
+            }
+        });
+        return beans;
+    }
+
     /**
      * 在主程序中定义的接口。获取插件中实现该接口的实现类。（Spring管理的bean）
      * @param aClass 接口的类
