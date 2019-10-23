@@ -4,6 +4,7 @@ import com.gitee.starblues.realize.BasePlugin;
 import org.pf4j.PluginWrapper;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 注册的插件信息
@@ -13,11 +14,15 @@ import java.util.*;
  */
 public class PluginRegistryInfo {
 
+    /**
+     * 全局扩展信息
+     */
+    private static Map<String, Object> globalExtensionMap = new ConcurrentHashMap<>();
 
     /**
      * 扩展存储项
      */
-    private Map<String, Object> extensionMap = new HashMap<>();
+    private Map<String, Object> extensionMap = new ConcurrentHashMap<>();
 
     private PluginWrapper pluginWrapper;
     private BasePlugin basePlugin;
@@ -104,8 +109,6 @@ public class PluginRegistryInfo {
 
 
 
-
-
     /**
      * 添加扩展数据
      * @param key 扩展的key
@@ -123,6 +126,32 @@ public class PluginRegistryInfo {
      */
     public <T> T getExtension(String key){
         Object o = extensionMap.get(key);
+        if(o == null){
+            return null;
+        } else {
+            return (T) o;
+        }
+    }
+
+
+
+    /**
+     * 添加全局扩展数据
+     * @param key 扩展的key
+     * @param value 扩展值
+     */
+    public static synchronized void addGlobalExtension(String key, Object value){
+        globalExtensionMap.put(key, value);
+    }
+
+    /**
+     * 获取全局扩展值
+     * @param key 全局扩展的key
+     * @param <T> 返回值泛型
+     * @return 扩展值
+     */
+    public static synchronized <T> T getGlobalExtension(String key){
+        Object o = globalExtensionMap.get(key);
         if(o == null){
             return null;
         } else {

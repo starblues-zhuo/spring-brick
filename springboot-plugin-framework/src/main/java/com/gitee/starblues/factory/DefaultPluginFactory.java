@@ -84,7 +84,7 @@ public class DefaultPluginFactory implements PluginFactory {
             return this;
         } catch (Exception e) {
             pluginListenerFactory.failure(pluginWrapper.getPluginId(), e);
-            throw new Exception(e);
+            throw e;
         } finally {
             buildType = 1;
             AopUtils.recoverAop();
@@ -107,7 +107,7 @@ public class DefaultPluginFactory implements PluginFactory {
             return this;
         } catch (Exception e) {
             pluginListenerFactory.failure(pluginId, e);
-            throw new Exception(e);
+            throw e;
         } finally {
             buildType = 2;
         }

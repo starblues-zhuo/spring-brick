@@ -6,12 +6,18 @@ import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.group.ComponentGroup;
 import com.gitee.starblues.factory.process.pipe.classs.group.ConfigurationGroup;
 import com.gitee.starblues.factory.process.pipe.classs.group.RepositoryGroup;
+import org.springframework.aop.Advisor;
+import org.springframework.aop.framework.autoproxy.BeanFactoryAdvisorRetrievalHelper;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 基础bean注册
@@ -21,13 +27,19 @@ import java.util.Set;
  */
 public class BasicBeanProcessor implements PluginPipeProcessor {
 
+
     private static final String KEY = "BasicBeanProcessor";
 
+    private final static String AOP_BEAN_NAME_INC_NUM = "AOP_BEAN_NAME_INC_NUM";
+
     private final SpringBeanRegister springBeanRegister;
+    private final BeanFactoryAdvisorRetrievalHelper helper;
 
     public BasicBeanProcessor(ApplicationContext applicationContext){
         Objects.requireNonNull(applicationContext);
         this.springBeanRegister = new SpringBeanRegister(applicationContext);
+        this.helper = new BeanFactoryAdvisorRetrievalHelper(
+                (ConfigurableListableBeanFactory)applicationContext.getAutowireCapableBeanFactory());
     }
 
     @Override
@@ -73,11 +85,43 @@ public class BasicBeanProcessor implements PluginPipeProcessor {
             if(aClass == null){
                 continue;
             }
-            String beanName = springBeanRegister.register(pluginId, aClass);
+            String namePrefix = resolveAopClass(aClass);
+            String beanName = springBeanRegister.register(pluginId, namePrefix, aClass);
             beanNames.add(beanName);
         }
     }
 
+    /**
+     * 该方法解决重复安装、卸载插件时, AOP 类无法注入的bug.
+     *  无法注入的原因如下：
+     *
+     *      第一次初始化插件时, 首先spring boot 会将要注入的类依次匹配，如果是代理类的话，则在
+     *              AbstractAutoProxyCreator 该类的proxyTypes属性会将生成的代理类缓存下来，并返回，然后将该代理类注入到使用的类中。
+     *      第二次访问时, spring boot 会直接返回了缓存下来的代理类。导致注入类和代理类类型不匹配，无法注入。
+     *  解决办法: proxyTypes 缓存的key 是通过class、和beanName 生成的。所以每次注册插件时，将代理类的beanName 用AOP_BEAN_NAME_INC_NUM
+     *      的递增数字作为前缀，这样每次生成都得都是新代理类。
+     * @param aClass 当前要处理的类
+     * @return 返回代理类的bean名称前缀
+     */
+    private String resolveAopClass(Class<?> aClass){
+        List<Advisor> advisorBeans = helper.findAdvisorBeans();
+        List<Advisor> advisorsThatCanApply = AopUtils.findAdvisorsThatCanApply(advisorBeans, aClass);
+        if(advisorsThatCanApply.isEmpty()){
+            // 如果不是代理类, 则返回 null
+            return null;
+        } else {
+            Object o = PluginRegistryInfo.getGlobalExtension(AOP_BEAN_NAME_INC_NUM);
+            AtomicInteger atomicInteger = null;
+            if(o instanceof AtomicInteger){
+                atomicInteger = (AtomicInteger) o;
+            } else {
+                atomicInteger = new AtomicInteger(0);
+                PluginRegistryInfo.addGlobalExtension(AOP_BEAN_NAME_INC_NUM, atomicInteger);
+            }
+            // 是代理类
+            return String.valueOf(atomicInteger.getAndIncrement());
+        }
+    }
 
 
 }

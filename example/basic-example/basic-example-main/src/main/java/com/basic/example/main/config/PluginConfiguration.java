@@ -90,6 +90,10 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
         return true;
     }
 
+
+
+
+
     public String getRunMode() {
         return runMode;
     }

@@ -1,6 +1,5 @@
 package com.gitee.starblues.integration.initialize;
 
-import com.gitee.starblues.exception.PluginPlugException;
 import com.gitee.starblues.integration.PluginApplication;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.PluginOperator;
@@ -32,12 +31,8 @@ public class AutoPluginInitializer extends AbstractPluginInitializer {
 
     @PostConstruct
     @Override
-    public void executeInitialize() throws PluginPlugException {
-        try {
-            pluginOperator.initPlugins(pluginInitializerListener);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void executeInitialize() throws Exception {
+        pluginOperator.initPlugins(pluginInitializerListener);
     }
 
 }
