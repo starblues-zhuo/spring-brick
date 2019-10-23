@@ -53,19 +53,27 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
             AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
-            List<Class<?>> suppers = pluginRegistryInfo.getGroupClasses(SupplierGroup.SUPPLIER);
-            if(suppers == null){
-                continue;
+            try {
+                List<Class<?>> suppers = pluginRegistryInfo.getGroupClasses(SupplierGroup.SUPPLIER);
+                if(suppers == null){
+                    continue;
+                }
+                processSupper(pluginRegistryInfo, suppers);
+            } finally {
+                AopUtils.recoverAop();
             }
-            processSupper(pluginRegistryInfo, suppers);
         }
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
             AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
-            List<Class<?>> callers = pluginRegistryInfo.getGroupClasses(CallerGroup.CALLER);
-            if(callers == null){
-                continue;
+            try {
+                List<Class<?>> callers = pluginRegistryInfo.getGroupClasses(CallerGroup.CALLER);
+                if(callers == null){
+                    continue;
+                }
+                processCaller(pluginRegistryInfo, callers);
+            } finally {
+                AopUtils.recoverAop();
             }
-            processCaller(pluginRegistryInfo, callers);
         }
     }
 

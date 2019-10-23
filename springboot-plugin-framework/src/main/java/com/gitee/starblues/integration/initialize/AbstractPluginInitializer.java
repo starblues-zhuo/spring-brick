@@ -1,6 +1,5 @@
 package com.gitee.starblues.integration.initialize;
 
-import com.gitee.starblues.exception.PluginPlugException;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +25,16 @@ public abstract class AbstractPluginInitializer implements PluginInitializer{
     }
 
     @Override
-    public void initialize() throws PluginPlugException {
+    public void initialize() throws Exception {
         log.info("Start execute plugin initializer.");
         this.executeInitialize();
     }
 
     /**
      * 执行初始化
-     * @throws PluginPlugException 插件插拔异常
+     * @throws Exception 插件执行初始化异常
      */
-    public abstract void executeInitialize()  throws PluginPlugException;
+    public abstract void executeInitialize()  throws Exception;
 
 
     /**

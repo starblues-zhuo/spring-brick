@@ -1,6 +1,5 @@
 package com.basic.example.main.rest;
 
-import com.gitee.starblues.exception.PluginPlugException;
 import com.gitee.starblues.integration.PluginApplication;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
@@ -46,7 +45,7 @@ public class PluginResource {
     public Set<String> getPluginFilePaths(){
         try {
             return pluginOperator.getPluginFilePaths();
-        } catch (PluginPlugException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -63,7 +62,7 @@ public class PluginResource {
         try {
             pluginOperator.stop(id);
             return "plugin<" + id +"> stop success";
-        } catch (PluginPlugException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "plugin<" + id +"> stop failure : " + e.getMessage();
         }
@@ -79,7 +78,7 @@ public class PluginResource {
         try {
             pluginOperator.start(id);
             return "plugin<" + id +"> start success";
-        } catch (PluginPlugException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "plugin<" + id +"> start failure : " + e.getMessage();
         }
@@ -96,7 +95,7 @@ public class PluginResource {
         try {
             pluginOperator.uninstall(id);
             return "plugin<" + id +"> uninstall success";
-        } catch (PluginPlugException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "plugin<" + id +"> uninstall failure : " + e.getMessage();
         }
@@ -113,7 +112,7 @@ public class PluginResource {
         try {
             pluginOperator.install(Paths.get(path));
             return "installByPath success";
-        } catch (PluginPlugException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "installByPath failure : " + e.getMessage();
         }
@@ -130,7 +129,7 @@ public class PluginResource {
         try {
             pluginOperator.uploadPluginAndStart(multipartFile);
             return "install success";
-        } catch (PluginPlugException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "install failure : " + e.getMessage();
         }
@@ -147,7 +146,7 @@ public class PluginResource {
         try {
             pluginOperator.uploadConfigFile(multipartFile);
             return "uploadConfig success";
-        } catch (PluginPlugException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "uploadConfig failure : " + e.getMessage();
         }
@@ -164,7 +163,7 @@ public class PluginResource {
         try {
             pluginOperator.delete(pluginId);
             return "deleteById success";
-        } catch (PluginPlugException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "deleteById failure : " + e.getMessage();
         }
@@ -180,7 +179,7 @@ public class PluginResource {
         try {
             pluginOperator.delete(Paths.get(pluginJarPath));
             return "deleteByPath success";
-        } catch (PluginPlugException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "deleteByPath failure : " + e.getMessage();
         }
@@ -196,7 +195,7 @@ public class PluginResource {
         try {
             pluginOperator.backupPlugin(pluginId, "testBack");
             return "backupPlugin success";
-        } catch (PluginPlugException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "backupPlugin failure : " + e.getMessage();
         }

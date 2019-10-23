@@ -9,6 +9,7 @@ import com.gitee.starblues.loader.load.PluginClassLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;

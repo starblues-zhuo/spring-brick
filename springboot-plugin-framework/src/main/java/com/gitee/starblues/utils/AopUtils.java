@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * AOP 无法找到插件类的解决工具类
@@ -22,6 +23,8 @@ import java.util.Objects;
 public class AopUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(AopUtils.class);
+
+    private static AtomicBoolean isRecover = new AtomicBoolean(true);
 
     private static final List<ProxyWrapper> PROXY_WRAPPERS = new ArrayList<>();
 
@@ -57,6 +60,10 @@ public class AopUtils {
             LOG.warn("ProxyProcessorSupports is empty, And Plugin AOP can't used");
             return;
         }
+        if(!isRecover.get()){
+            throw new RuntimeException("Not invoking resolveAop(). And can not AopUtils.resolveAop");
+        }
+        isRecover.set(false);
         ClassLoader pluginClassLoader = pluginWrapper.getPluginClassLoader();
         for (ProxyWrapper proxyWrapper : PROXY_WRAPPERS) {
             ProxyProcessorSupport proxyProcessorSupport = proxyWrapper.getProxyProcessorSupport();
@@ -77,6 +84,7 @@ public class AopUtils {
             ProxyProcessorSupport proxyProcessorSupport = proxyWrapper.getProxyProcessorSupport();
             proxyProcessorSupport.setProxyClassLoader(proxyWrapper.getOriginalClassLoader());
         }
+        isRecover.set(true);
     }
 
     /**
@@ -145,6 +153,14 @@ public class AopUtils {
 
         void setOriginalClassLoader(ClassLoader originalClassLoader) {
             this.originalClassLoader = originalClassLoader;
+        }
+
+        @Override
+        public String toString() {
+            return "ProxyWrapper{" +
+                    "proxyProcessorSupport=" + proxyProcessorSupport +
+                    ", originalClassLoader=" + originalClassLoader +
+                    '}';
         }
     }
 
