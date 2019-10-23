@@ -18,7 +18,7 @@ import java.util.Set;
 public interface PluginOperator {
 
     /**
-     * 初始化插件
+     * 初始化插件。该方法只能执行一次。
      * @param pluginInitializerListener 插件初始化监听者
      * @return 成功返回true.不成功抛出异常或者返回false
      * @throws Exception 插件插头异常
