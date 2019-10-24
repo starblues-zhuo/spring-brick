@@ -61,10 +61,10 @@ public class PluginResource {
     public String stop(@PathVariable("id") String id){
         try {
             pluginOperator.stop(id);
-            return "plugin<" + id +"> stop success";
+            return "plugin '" + id +"' stop success";
         } catch (Exception e) {
             e.printStackTrace();
-            return "plugin<" + id +"> stop failure : " + e.getMessage();
+            return "plugin '" + id +"' stop failure. " + e.getMessage();
         }
     }
 
@@ -77,10 +77,10 @@ public class PluginResource {
     public String start(@PathVariable("id") String id){
         try {
             pluginOperator.start(id);
-            return "plugin<" + id +"> start success";
+            return "plugin '" + id +"' start success";
         } catch (Exception e) {
             e.printStackTrace();
-            return "plugin<" + id +"> start failure : " + e.getMessage();
+            return "plugin '" + id +"' start failure. " + e.getMessage();
         }
     }
 
@@ -94,10 +94,10 @@ public class PluginResource {
     public String uninstall(@PathVariable("id") String id){
         try {
             pluginOperator.uninstall(id);
-            return "plugin<" + id +"> uninstall success";
+            return "plugin '" + id +"' uninstall success";
         } catch (Exception e) {
             e.printStackTrace();
-            return "plugin<" + id +"> uninstall failure : " + e.getMessage();
+            return "plugin '" + id +"' uninstall failure. " + e.getMessage();
         }
     }
 

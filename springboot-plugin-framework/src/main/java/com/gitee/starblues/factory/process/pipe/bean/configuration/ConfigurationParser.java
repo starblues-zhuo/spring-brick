@@ -1,6 +1,5 @@
 package com.gitee.starblues.factory.process.pipe.bean.configuration;
 
-import com.gitee.starblues.exception.ConfigurationParseException;
 import com.gitee.starblues.realize.BasePlugin;
 
 /**
@@ -15,8 +14,8 @@ public interface ConfigurationParser {
      * @param basePlugin 插件信息
      * @param pluginConfigDefinition 插件配置定义
      * @return 解析后映射值的对象
-     * @throws ConfigurationParseException 抛出配置解析异常
+     * @throws Exception 抛出配置解析异常
      */
-    Object parse(BasePlugin basePlugin, PluginConfigDefinition pluginConfigDefinition) throws ConfigurationParseException;
+    Object parse(BasePlugin basePlugin, PluginConfigDefinition pluginConfigDefinition) throws Exception;
 
 }

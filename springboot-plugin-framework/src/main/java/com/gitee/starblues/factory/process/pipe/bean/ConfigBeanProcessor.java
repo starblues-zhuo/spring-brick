@@ -1,9 +1,6 @@
 package com.gitee.starblues.factory.process.pipe.bean;
 
 import com.gitee.starblues.annotation.ConfigDefinition;
-import com.gitee.starblues.exception.ConfigurationParseException;
-import com.gitee.starblues.exception.PluginBeanFactoryException;
-import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.factory.PluginInfoContainer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
@@ -11,13 +8,12 @@ import com.gitee.starblues.factory.process.pipe.bean.configuration.Configuration
 import com.gitee.starblues.factory.process.pipe.bean.configuration.PluginConfigDefinition;
 import com.gitee.starblues.factory.process.pipe.bean.configuration.YamlConfigurationParser;
 import com.gitee.starblues.factory.process.pipe.classs.group.ConfigDefinitionGroup;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +28,6 @@ public class ConfigBeanProcessor implements PluginPipeProcessor {
 
     private static final String KEY = "ConfigBeanProcessor";
 
-    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     private final ConfigurationParser configurationParser;
     private final DefaultListableBeanFactory defaultListableBeanFactory;
 
@@ -93,25 +88,19 @@ public class ConfigBeanProcessor implements PluginPipeProcessor {
         }
         String fileName = configDefinition.value();
         if(StringUtils.isEmpty(fileName)){
-            throw new Exception(aClass.getName() + " configDefinition value is null");
+            throw new IllegalArgumentException(aClass.getName() + " configDefinition value is null");
         }
-        try {
-            PluginConfigDefinition pluginConfigDefinition =
-                    new PluginConfigDefinition(fileName, aClass);
-            Object parseObject = configurationParser.parse(pluginRegistryInfo.getBasePlugin(), pluginConfigDefinition);
-            String name = configDefinition.name();
-            if(StringUtils.isEmpty(name)){
-                name = aClass.getName();
-            }
-            if(!defaultListableBeanFactory.containsSingleton(name)){
-                defaultListableBeanFactory.registerSingleton(name, parseObject);
-            }
-            return name;
-        } catch (ConfigurationParseException e) {
-            e.printStackTrace();
-            String errorMsg = "parse config <" + aClass.getName() + "> error,errorMsg : " + e.getMessage();
-            throw new Exception(errorMsg, e);
+        PluginConfigDefinition pluginConfigDefinition =
+                new PluginConfigDefinition(fileName, aClass);
+        Object parseObject = configurationParser.parse(pluginRegistryInfo.getBasePlugin(), pluginConfigDefinition);
+        String name = configDefinition.name();
+        if(StringUtils.isEmpty(name)){
+            name = aClass.getName();
         }
+        if(!defaultListableBeanFactory.containsSingleton(name)){
+            defaultListableBeanFactory.registerSingleton(name, parseObject);
+        }
+        return name;
     }
 
 }

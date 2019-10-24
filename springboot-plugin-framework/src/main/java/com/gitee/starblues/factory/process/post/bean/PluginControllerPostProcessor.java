@@ -1,16 +1,14 @@
 package com.gitee.starblues.factory.process.post.bean;
 
-import com.gitee.starblues.exception.PluginBeanFactoryException;
 import com.gitee.starblues.extension.PluginControllerProcessor;
-import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.classs.group.ControllerGroup;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.utils.AopUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -20,7 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 
 /**
@@ -111,12 +112,12 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         String beanName = springBeanRegister.register(pluginId, aClass);
         if(beanName == null || "".equals(beanName)){
-            throw new PluginBeanFactoryException("registry "+ aClass.getName() + "failure!");
+            throw new IllegalArgumentException("registry "+ aClass.getName() + "failure!");
         }
         try {
             Object object = applicationContext.getBean(beanName);
             if(object == null){
-                throw new PluginBeanFactoryException("registry "+ aClass.getName() + "failure! " +
+                throw new Exception("registry "+ aClass.getName() + "failure! " +
                         "Not found The instance of" + aClass.getName());
             }
             ControllerBeanWrapper controllerBeanWrapper = new ControllerBeanWrapper();

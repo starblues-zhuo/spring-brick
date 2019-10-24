@@ -1,6 +1,5 @@
 package com.gitee.starblues.extension.mybatis;
 
-import com.gitee.starblues.exception.PluginFactoryException;
 import com.gitee.starblues.extension.mybatis.utils.MybatisXmlProcess;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.factory.PluginRegistryInfo;
@@ -54,14 +53,9 @@ public class PluginMybatisXmlProcessor implements PluginPipeProcessorExtend {
         if(pluginResources == null || pluginResources.isEmpty()){
             return;
         }
-        try {
-            boolean change = mybatisXmlProcess.isChange(pluginResources);
-            if(change){
-                mybatisXmlProcess.loadXmlResource(pluginResources, pluginWrapper.getPluginClassLoader());
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-            throw new PluginFactoryException("load mybatis xml error :  " + e.getMessage());
+        boolean change = mybatisXmlProcess.isChange(pluginResources);
+        if(change){
+            mybatisXmlProcess.loadXmlResource(pluginResources, pluginWrapper.getPluginClassLoader());
         }
     }
 
