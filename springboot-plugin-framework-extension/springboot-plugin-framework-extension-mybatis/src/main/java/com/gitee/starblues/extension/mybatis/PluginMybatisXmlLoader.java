@@ -44,9 +44,8 @@ public class PluginMybatisXmlLoader implements PluginResourceLoader {
     @Override
     public List<Resource> load(BasePlugin basePlugin) throws Exception {
         if(!(basePlugin instanceof SpringBootMybatisConfig)){
-            String error = "Plugin<" + basePlugin.getClass().getName() +
-                    "> not implements SpringBootMybatisConfig, Please implements SpringBootMybatisConfig interface";
-            LOG.error(error);
+            LOG.warn("Plugin <{}> not implements SpringBootMybatisConfig, If you need to use mybatis in the plugin," +
+                    "Please implements SpringBootMybatisConfig interface", basePlugin.getClass().getName());
             return null;
         }
         SpringBootMybatisConfig springBootMybatisConfig = (SpringBootMybatisConfig) basePlugin;

@@ -6,12 +6,13 @@ import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.group.ComponentGroup;
 import com.gitee.starblues.factory.process.pipe.classs.group.ConfigurationGroup;
 import com.gitee.starblues.factory.process.pipe.classs.group.RepositoryGroup;
+import com.gitee.starblues.utils.GlobalRegistryInfo;
+import com.gitee.starblues.utils.PluginOperatorInfo;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.autoproxy.BeanFactoryAdvisorRetrievalHelper;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotationUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -85,7 +86,7 @@ public class BasicBeanProcessor implements PluginPipeProcessor {
             if(aClass == null){
                 continue;
             }
-            String namePrefix = resolveAopClass(aClass);
+            String namePrefix = resolveAopClass(pluginId, aClass);
             String beanName = springBeanRegister.register(pluginId, namePrefix, aClass);
             beanNames.add(beanName);
         }
@@ -103,23 +104,34 @@ public class BasicBeanProcessor implements PluginPipeProcessor {
      * @param aClass 当前要处理的类
      * @return 返回代理类的bean名称前缀
      */
-    private String resolveAopClass(Class<?> aClass){
+    private String resolveAopClass(String pluginId, Class<?> aClass){
+        PluginOperatorInfo operatorPluginInfo = GlobalRegistryInfo.getPluginInstallNum(pluginId);
+        if(operatorPluginInfo == null){
+            // 操作插件信息为空, 直接返回空
+            return null;
+        }
         List<Advisor> advisorBeans = helper.findAdvisorBeans();
         List<Advisor> advisorsThatCanApply = AopUtils.findAdvisorsThatCanApply(advisorBeans, aClass);
         if(advisorsThatCanApply.isEmpty()){
             // 如果不是代理类, 则返回 null
             return null;
+        }
+        // 是代理类
+        Object o = GlobalRegistryInfo.getExtension(AOP_BEAN_NAME_INC_NUM);
+        AtomicInteger atomicInteger = null;
+        if(o instanceof AtomicInteger){
+            atomicInteger = (AtomicInteger) o;
         } else {
-            Object o = PluginRegistryInfo.getGlobalExtension(AOP_BEAN_NAME_INC_NUM);
-            AtomicInteger atomicInteger = null;
-            if(o instanceof AtomicInteger){
-                atomicInteger = (AtomicInteger) o;
-            } else {
-                atomicInteger = new AtomicInteger(0);
-                PluginRegistryInfo.addGlobalExtension(AOP_BEAN_NAME_INC_NUM, atomicInteger);
-            }
-            // 是代理类
-            return String.valueOf(atomicInteger.getAndIncrement());
+            atomicInteger = new AtomicInteger(-1);
+            GlobalRegistryInfo.addExtension(AOP_BEAN_NAME_INC_NUM, atomicInteger);
+        }
+        PluginOperatorInfo.OperatorType operatorType = operatorPluginInfo.getOperatorType();
+        if(operatorType == PluginOperatorInfo.OperatorType.INSTALL){
+            // 现在的操作为安装操作, 则重新给代理类设置递增的 bean 名称编号
+            return String.valueOf(atomicInteger.incrementAndGet());
+        } else {
+            // 现在时启动操作, 则复用上次的编号
+            return String.valueOf(atomicInteger.get());
         }
     }
 
