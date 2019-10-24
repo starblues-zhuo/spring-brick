@@ -155,38 +155,6 @@ public class PluginResource {
 
 
     /**
-     * 通过插件id删除插件。注意: 该操作只适用于生产环境
-     * @param pluginId 插件id
-     * @return 操作结果
-     */
-    @DeleteMapping("/pluginId/{pluginId}")
-    public String deleteById(@PathVariable("pluginId") String pluginId){
-        try {
-            pluginOperator.delete(pluginId);
-            return "deleteById success";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "deleteById failure : " + e.getMessage();
-        }
-    }
-
-    /**
-     * 通过路径删除插件。注意: 该操作只适用于生产环境
-     * @param pluginJarPath 插件jar路径
-     * @return 操作结果
-     */
-    @PostMapping("/path")
-    public String deleteByPath(@RequestParam("pluginJarPath") String pluginJarPath){
-        try {
-            pluginOperator.delete(Paths.get(pluginJarPath));
-            return "deleteByPath success";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "deleteByPath failure : " + e.getMessage();
-        }
-    }
-
-    /**
      * 备份插件。注意: 该操作只适用于生产环境
      * @param pluginId 插件id
      * @return 操作结果

@@ -136,54 +136,6 @@ public class PluginResource {
     }
 
 
-    /**
-     * 上传插件的配置文件。注意: 该操作只适用于生产环境
-     * @param multipartFile 上传文件 multipartFile
-     * @return 操作结果
-     */
-    @PostMapping("/uploadPluginConfigFile")
-    public String uploadConfig(@RequestParam("configFile") MultipartFile multipartFile){
-        try {
-            pluginOperator.uploadConfigFile(multipartFile);
-            return "uploadConfig success";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "uploadConfig failure : " + e.getMessage();
-        }
-    }
-
-
-    /**
-     * 通过插件id删除插件。注意: 该操作只适用于生产环境
-     * @param pluginId 插件id
-     * @return 操作结果
-     */
-    @DeleteMapping("/pluginId/{pluginId}")
-    public String deleteById(@PathVariable("pluginId") String pluginId){
-        try {
-            pluginOperator.delete(pluginId);
-            return "deleteById success";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "deleteById failure : " + e.getMessage();
-        }
-    }
-
-    /**
-     * 通过路径删除插件。注意: 该操作只适用于生产环境
-     * @param pluginJarPath 插件jar路径
-     * @return 操作结果
-     */
-    @PostMapping("/path")
-    public String deleteByPath(@RequestParam("pluginJarPath") String pluginJarPath){
-        try {
-            pluginOperator.delete(Paths.get(pluginJarPath));
-            return "deleteByPath success";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "deleteByPath failure : " + e.getMessage();
-        }
-    }
 
     /**
      * 备份插件。注意: 该操作只适用于生产环境
@@ -198,6 +150,39 @@ public class PluginResource {
         } catch (Exception e) {
             e.printStackTrace();
             return "backupPlugin failure : " + e.getMessage();
+        }
+    }
+
+
+    /**
+     * 上传插件的配置文件。注意: 该操作只适用于生产环境
+     * @param multipartFile 上传文件 multipartFile
+     * @return 操作结果
+     */
+    @PostMapping("/uploadPluginConfigFile")
+    public String uploadConfig(@RequestParam("configFile") MultipartFile multipartFile){
+        try {
+            pluginOperator.uploadConfigFile(multipartFile);
+            return "uploadPluginConfigFile success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "uploadPluginConfigFile failure : " + e.getMessage();
+        }
+    }
+
+    /**
+     * 通过路径安装配置文件。注意: 该操作只适用于生产环境
+     * @param path 配置文件路径
+     * @return 操作结果
+     */
+    @PostMapping("/installPluginConfig")
+    public String installPluginConfig(@RequestParam("path") String path){
+        try {
+            pluginOperator.installConfigFile(Paths.get(path));
+            return "installPluginConfig success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "installPluginConfig failure : " + e.getMessage();
         }
     }
 

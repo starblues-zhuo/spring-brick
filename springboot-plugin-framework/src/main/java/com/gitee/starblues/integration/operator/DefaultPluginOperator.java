@@ -103,10 +103,6 @@ public class DefaultPluginOperator implements PluginOperator {
         }
     }
 
-    @Override
-    public String loadPlugin(Path path) throws Exception {
-        return pluginManager.loadPlugin(path);
-    }
 
     @Override
     public boolean install(Path path) throws Exception {
@@ -177,37 +173,8 @@ public class DefaultPluginOperator implements PluginOperator {
             log.error("Uninstall plugin '{}' failure. {}", pluginId, e.getMessage());
             throw e;
         }
-
     }
 
-    @Override
-    public boolean delete(String pluginId) throws Exception {
-        PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
-        if(pluginWrapper == null){
-            log.error("Delete -> Not found plugin '{}'", pluginId);
-            return false;
-        }
-        if(pluginWrapper.getPluginState() == PluginState.STARTED){
-            uninstall(pluginId);
-        }
-        log.info("Delete plugin '{}' Success", pluginId);
-        return true;
-    }
-
-    @Override
-    public boolean delete(Path path) throws Exception {
-        if(!Files.exists(path)){
-            throw new FileNotFoundException(path.toString() + "  does not exist!");
-        }
-        PluginDescriptor pluginDescriptor = pluginDescriptorFinder.find(path);
-        PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginDescriptor.getPluginId());
-        if(pluginWrapper != null){
-            return delete(pluginWrapper.getPluginId());
-        } else {
-            log.error("Not found plugin '{}' of path {}", pluginDescriptor.getPluginId(), path.toString());
-            return false;
-        }
-    }
 
 
     @Override
@@ -271,56 +238,6 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
 
-
-
-    @Override
-    public Path uploadPlugin(MultipartFile pluginFile) throws Exception {
-        if(pluginFile == null){
-            throw new IllegalArgumentException("Method:uploadPlugin param 'pluginFile' can not be null");
-        }
-        // 获取文件的后缀名
-        String fileName = pluginFile.getOriginalFilename();
-        String suffixName = fileName.substring(fileName.lastIndexOf(".") + 1);
-        //检查文件格式是否合法
-        if(StringUtils.isEmpty(suffixName)){
-            throw new IllegalArgumentException("Invalid file type, please select .jar or .zip file");
-        }
-        if(!"jar".equalsIgnoreCase(suffixName) && !"zip".equalsIgnoreCase(suffixName)){
-            throw new IllegalArgumentException("Invalid file type, please select .jar or .zip file");
-        }
-        String tempPathString = integrationConfiguration.uploadTempPath() + File.separator + fileName;
-        Path tempPath = PluginFileUtils.getExistPath(Paths.get(tempPathString));
-        File tempFile = tempPath.toFile();
-        FileUtils.writeByteArrayToFile(tempFile, pluginFile.getBytes());
-        try {
-            Path verifyPath = uploadPluginVerify.verify(tempPath);
-            if(verifyPath != null){
-                String pluginFilePathString = pluginManager.getPluginsRoot().toString() +
-                        File.separator + fileName;
-                Path pluginFilePath = Paths.get(pluginFilePathString);
-                File target = pluginFilePath.toFile();
-                if(target.exists()){
-                    // 存在则拷贝一份
-                    backup(pluginFilePath, "uploadPlugin", 2);
-                }
-                FileUtils.copyFile(verifyPath.toFile(), target);
-                // 删除临时文件
-                tempFile.deleteOnExit();
-                return pluginFilePath;
-            } else {
-                Exception exception =
-                        new Exception(fileName + " verify failure, verifyPath is null");
-                verifyFailureDelete(tempPath, exception);
-                throw exception;
-            }
-        } catch (Exception e){
-            // 出现异常, 删除刚才上传的临时文件
-            verifyFailureDelete(tempPath, e);
-            throw e;
-        }
-    }
-
-
     @Override
     public boolean uploadPluginAndStart(MultipartFile pluginFile) throws Exception {
         if(pluginFile == null){
@@ -334,6 +251,19 @@ public class DefaultPluginOperator implements PluginOperator {
             log.error("Upload And Start plugin failure");
             return false;
         }
+    }
+
+    @Override
+    public boolean installConfigFile(Path path) throws Exception {
+        if(!Files.exists(path)){
+            throw new FileNotFoundException("path ' " + path + "'  does not exist!");
+        }
+        File sourceFile = path.toFile();
+        String configPath = integrationConfiguration.pluginConfigFilePath() +
+                File.separator + sourceFile.getName();
+        Path targetPath = PluginFileUtils.getExistPath(Paths.get(configPath));
+        FileUtils.copyFile(sourceFile, targetPath.toFile());
+        return true;
     }
 
     @Override
@@ -397,6 +327,58 @@ public class DefaultPluginOperator implements PluginOperator {
     @Override
     public List<PluginWrapper> getPluginWrapper() {
         return pluginManager.getPlugins();
+    }
+
+    /**
+     * 上传插件
+     * @param pluginFile 插件文件
+     * @return 返回上传的插件路径
+     * @throws Exception 异常信息
+     */
+    private Path uploadPlugin(MultipartFile pluginFile) throws Exception {
+        if(pluginFile == null){
+            throw new IllegalArgumentException("Method:uploadPlugin param 'pluginFile' can not be null");
+        }
+        // 获取文件的后缀名
+        String fileName = pluginFile.getOriginalFilename();
+        String suffixName = fileName.substring(fileName.lastIndexOf(".") + 1);
+        //检查文件格式是否合法
+        if(StringUtils.isEmpty(suffixName)){
+            throw new IllegalArgumentException("Invalid file type, please select .jar or .zip file");
+        }
+        if(!"jar".equalsIgnoreCase(suffixName) && !"zip".equalsIgnoreCase(suffixName)){
+            throw new IllegalArgumentException("Invalid file type, please select .jar or .zip file");
+        }
+        String tempPathString = integrationConfiguration.uploadTempPath() + File.separator + fileName;
+        Path tempPath = PluginFileUtils.getExistPath(Paths.get(tempPathString));
+        File tempFile = tempPath.toFile();
+        FileUtils.writeByteArrayToFile(tempFile, pluginFile.getBytes());
+        try {
+            Path verifyPath = uploadPluginVerify.verify(tempPath);
+            if(verifyPath != null){
+                String pluginFilePathString = pluginManager.getPluginsRoot().toString() +
+                        File.separator + fileName;
+                Path pluginFilePath = Paths.get(pluginFilePathString);
+                File target = pluginFilePath.toFile();
+                if(target.exists()){
+                    // 存在则拷贝一份
+                    backup(pluginFilePath, "uploadPlugin", 2);
+                }
+                FileUtils.copyFile(verifyPath.toFile(), target);
+                // 删除临时文件
+                tempFile.deleteOnExit();
+                return pluginFilePath;
+            } else {
+                Exception exception =
+                        new Exception(fileName + " verify failure, verifyPath is null");
+                verifyFailureDelete(tempPath, exception);
+                throw exception;
+            }
+        } catch (Exception e){
+            // 出现异常, 删除刚才上传的临时文件
+            verifyFailureDelete(tempPath, e);
+            throw e;
+        }
     }
 
 
