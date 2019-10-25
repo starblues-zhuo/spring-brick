@@ -28,6 +28,7 @@ public interface PluginOperator {
 
     /**
      * 通过路径安装插件(会启用), 该插件文件必须存在于服务器 [适用于生产环境]
+     * 如果在插件目录存在同名的插件包(大小不为0k), 系统会自动备份该插件包。备份文件命名规则为；[install-backup][时间]_原jar名.jar
      * @param path 插件路径
      * @return 成功返回true.不成功抛出异常或者返回false
      * @throws Exception 异常信息
@@ -37,6 +38,8 @@ public interface PluginOperator {
 
     /**
      * 卸载插件 [适用于生产环境]
+     * 卸载后, 会将该插件备份到备份目录, 备份文件命名规则为；[uninstall][时间]_原jar名.jar
+     * 在插件目录, 卸载的插件文件会变成0k. 这是正常的。在下次启动时, 程序会自动清除该文件。
      * @param pluginId 插件id
      * @return 成功返回true.不成功抛出异常或者返回false
      * @throws Exception 异常信息
@@ -63,6 +66,7 @@ public interface PluginOperator {
 
     /**
      * 上传插件并启用插件。[适用于生产环境]
+     * 如果在插件目录存在同名的插件包(大小不为0k), 系统会自动备份该插件包。备份文件命名规则为；[install-backup][时间]_原jar名.jar
      * @param pluginFile 配置文件
      * @return 成功返回true.不成功返回false, 或者抛出异常
      * @throws Exception 异常信息
@@ -71,6 +75,7 @@ public interface PluginOperator {
 
     /**
      * 通过路径安装插件的配置文件。该文件必须存在于服务器。[适用于生产环境]
+     * 如果配置文件目录存在同名的配置文件, 系统会自动备份该配置文件。备份文件命名规则为；[install-config-backup][时间]_原jar名.jar
      * @param path 配置文件路径。
      * @return 成功返回true.不成功返回false, 或者抛出异常
      * @throws Exception
@@ -79,7 +84,8 @@ public interface PluginOperator {
     
     
     /**
-     * 上传配置文件(如果存在, 则覆盖)。[适用于生产环境]
+     * 上传配置文件。[适用于生产环境]
+     * 如果配置文件目录存在同名的配置文件, 系统会自动备份该配置文件。备份文件命名规则为；[upload-config-backup][时间]_原jar名.jar
      * @param configFile 配置文件
      * @return 成功返回true.不成功返回false, 或者抛出异常
      * @throws Exception 异常信息
@@ -89,20 +95,20 @@ public interface PluginOperator {
     /**
      * 通过路径备份文件。可备份插件和插件的配置文件。[适用于生产环境]
      * @param path 路径
-     * @param appendName 追加的名称
+     * @param sign 备份文件的自定义标识
      * @return 成功返回true.不成功返回false, 或者抛出异常
      * @throws Exception 异常信息
      */
-    boolean backupPlugin(Path path, String appendName) throws Exception;
+    boolean backupPlugin(Path path, String sign) throws Exception;
 
     /**
      * 通过插件id备份插件。[适用于生产环境]
      * @param pluginId 插件id
-     * @param appendName 追加的名称
+     * @param sign 备份文件的自定义标识
      * @return 成功返回true.不成功返回false, 或者抛出异常
      * @throws Exception 异常信息
      */
-    boolean backupPlugin(String pluginId, String appendName) throws Exception;
+    boolean backupPlugin(String pluginId, String sign) throws Exception;
 
     /**
      * 获取插件信息 [适用于生产环境、开发环境]

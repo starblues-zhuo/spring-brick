@@ -111,14 +111,32 @@ public class DefaultPluginOperator implements PluginOperator {
         }
         String pluginId = null;
         try {
-            pluginId = pluginManager.loadPlugin(path);
+            if(!Files.exists(path)){
+                throw new FileNotFoundException("Not found this path " + path);
+            }
+            Path pluginsRoot = pluginManager.getPluginsRoot();
+            if(path.getParent().compareTo(pluginsRoot) == 0){
+                // 说明该插件文件存在于插件root目录下。
+                pluginId = pluginManager.loadPlugin(path);
+            } else {
+                File sourceFile = path.toFile();
+                String targetPathString = pluginsRoot.toString() + File.separator +
+                        sourceFile.getName();
+                Path targetPath = PluginFileUtils.getExistPath(Paths.get(targetPathString));
+                if(Files.exists(targetPath)){
+                    // 如果存在该文件, 则备份
+                    backup(targetPath, "install-backup", 2);
+                }
+                FileUtils.copyFile(sourceFile, targetPath.toFile());
+                pluginId = pluginManager.loadPlugin(targetPath);
+            }
             if(StringUtils.isEmpty(pluginId)){
                 log.error("Install plugin '{}' failure, this plugin id is empty.", pluginId);
                 return false;
             }
             GlobalRegistryInfo.addOperatorPluginInfo(pluginId, PluginOperatorInfo.OperatorType.INSTALL, true);
             if(start(pluginId)){
-                log.info("Install plugin '{}' success. {}", pluginId);
+                log.info("Install plugin '{}' success", pluginId);
                 return true;
             } else {
                 log.error("Install plugin '{}' failure", pluginId);
@@ -159,7 +177,7 @@ public class DefaultPluginOperator implements PluginOperator {
         try {
             if (pluginManager.unloadPlugin(pluginId)) {
                 // 卸载完后，将插件文件移到备份文件中
-                backup(pluginWrapper.getPluginPath(), "uninstallPlugin", 1);
+                backup(pluginWrapper.getPluginPath(), "uninstall", 1);
                 log.info("Uninstall plugin '{}' success", pluginId);
                 return true;
             } else {
@@ -262,6 +280,9 @@ public class DefaultPluginOperator implements PluginOperator {
         String configPath = integrationConfiguration.pluginConfigFilePath() +
                 File.separator + sourceFile.getName();
         Path targetPath = PluginFileUtils.getExistPath(Paths.get(configPath));
+        if(Files.exists(targetPath)){
+            backup(targetPath, "install-config-backup",2);
+        }
         FileUtils.copyFile(sourceFile, targetPath.toFile());
         return true;
     }
@@ -274,22 +295,25 @@ public class DefaultPluginOperator implements PluginOperator {
         String fileName = configFile.getOriginalFilename();
         String configPath = integrationConfiguration.pluginConfigFilePath() +
                 File.separator + fileName;
-        Path srcPath = PluginFileUtils.getExistPath(Paths.get(configPath));
-        Files.write(srcPath, configFile.getBytes());
+        Path targetPath = PluginFileUtils.getExistPath(Paths.get(configPath));
+        if(Files.exists(targetPath)){
+            backup(targetPath, "upload-config-backup",2);
+        }
+        Files.write(targetPath, configFile.getBytes());
         return true;
     }
 
     @Override
-    public boolean backupPlugin(Path path, String appendName) throws Exception {
+    public boolean backupPlugin(Path path, String sign) throws Exception {
         Objects.requireNonNull(path);
-        return backup(path, appendName, 2);
+        return backup(path, sign, 2);
     }
 
 
     @Override
-    public boolean backupPlugin(String pluginId, String appendName) throws Exception {
+    public boolean backupPlugin(String pluginId, String sign) throws Exception {
         PluginWrapper pluginManager = getPluginWrapper(pluginId, "BackupPlugin by pluginId");
-        return backupPlugin(pluginManager.getPluginPath(), appendName);
+        return backupPlugin(pluginManager.getPluginPath(), sign);
     }
 
     @Override
@@ -362,7 +386,7 @@ public class DefaultPluginOperator implements PluginOperator {
                 File target = pluginFilePath.toFile();
                 if(target.exists()){
                     // 存在则拷贝一份
-                    backup(pluginFilePath, "uploadPlugin", 2);
+                    backup(pluginFilePath, "upload", 2);
                 }
                 FileUtils.copyFile(verifyPath.toFile(), target);
                 // 删除临时文件
@@ -415,12 +439,12 @@ public class DefaultPluginOperator implements PluginOperator {
     /**
      * 备份
      * @param sourcePath 源文件的路径
-     * @param appendName 追加的字符串
+     * @param sign 文件标志
      * @param type 类型 1移动 2拷贝
      * @return 结果
      * @throws Exception Exception
      */
-    private boolean backup(Path sourcePath, String appendName, int type) throws Exception {
+    private boolean backup(Path sourcePath, String sign, int type) throws Exception {
         if(isDev()){
             // 如果是开发环境, 则不进行备份
             return true;
@@ -430,10 +454,11 @@ public class DefaultPluginOperator implements PluginOperator {
         }
         try {
             String fileName = sourcePath.getFileName().toString();
-            String targetName = integrationConfiguration.backupPath() + File.separator + getNowTimeByFormat();
-            if(!StringUtils.isEmpty(appendName)){
-                targetName = targetName + "_" + appendName;
+            String targetName = integrationConfiguration.backupPath() + File.separator;
+            if(!StringUtils.isEmpty(sign)){
+                targetName = targetName + "[" + sign + "]";
             }
+            targetName = targetName + "[" + getNowTimeByFormat() + "]";
             Path target = Paths.get(targetName + "_" + fileName);
             if(!Files.exists(target.getParent())){
                 Files.createDirectories(target.getParent());
@@ -444,8 +469,9 @@ public class DefaultPluginOperator implements PluginOperator {
                 // 源文件字节为0, 说明为删除的插件。不需要备份
                 return true;
             }
-            FileUtils.writeByteArrayToFile(targetFile, FileUtils.readFileToByteArray(sourceFile));
+            FileUtils.copyFile(sourceFile, targetFile);
             if(type == 1){
+                // 在运行期间由于文件无法被删除, 因此将该文件置为空文件, 在系统下次启动时会清除空文件的。
                 FileUtils.writeByteArrayToFile(sourceFile, "".getBytes());
             }
             return true;
