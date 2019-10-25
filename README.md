@@ -27,11 +27,11 @@
 
 ### maven 仓库地址
 
-[https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework](https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework)
+[https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework](https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework?_blank)
 
 ### 文档地址
 
-[https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages)
+[https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages?_blank)
 
 
 ### QQ交流群
