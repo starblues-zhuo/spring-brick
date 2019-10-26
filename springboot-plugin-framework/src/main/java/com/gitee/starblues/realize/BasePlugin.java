@@ -2,7 +2,6 @@ package com.gitee.starblues.realize;
 
 import com.gitee.starblues.loader.PluginResourceLoadFactory;
 import org.pf4j.Plugin;
-import org.pf4j.PluginException;
 import org.pf4j.PluginWrapper;
 
 /**
@@ -21,45 +20,47 @@ public abstract class BasePlugin extends Plugin {
 
 
     @Override
-    public final void start() throws PluginException {
-        pluginResourceLoadFactory.load(this);
+    public final void start() {
+        try {
+            startEvent();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            pluginResourceLoadFactory.load(this);
+        }
     }
 
 
     @Override
-    public final void delete() throws PluginException {
-        deleteEvent();
+    public final void delete() {
+        try {
+            deleteEvent();
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            pluginResourceLoadFactory.unload(this);
+        }
+
     }
 
     @Override
     public final void stop() {
-        stopEvent();
+        try {
+            stopEvent();
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            pluginResourceLoadFactory.unload(this);
+        }
     }
-
-
-    /**
-     * 启动事件
-     * @throws PluginException PluginException
-     */
-    protected abstract void startEvent() throws PluginException;
-
-    /**
-     * 删除事件
-     * @throws PluginException PluginException
-     */
-    protected abstract void deleteEvent() throws PluginException;
-
-    /**
-     * 停止事件
-     */
-    protected abstract void stopEvent();
 
     /**
      * 扫描包。默认为当前类包名。可重写自定义包名
      * @return 包名
      */
     public String scanPackage(){
-        return this.getCurrentPackageName();
+        // 获取当前实现类的包名
+        return this.getClass().getPackage().getName();
     }
 
 
@@ -71,12 +72,20 @@ public abstract class BasePlugin extends Plugin {
         return pluginResourceLoadFactory;
     }
 
+
     /**
-     * 获取当前实现类的包名
-     * @return 包名
+     * 启动事件. Spring 容器都没有准备。无法使用注入。
      */
-    private String getCurrentPackageName(){
-        return this.getClass().getPackage().getName();
-    }
+    protected abstract void startEvent();
+
+    /**
+     * 删除事件. 在插件删除时触发。
+     */
+    protected abstract void deleteEvent();
+
+    /**
+     * 停止事件. 在插件停止时触发。
+     */
+    protected abstract void stopEvent();
 
 }

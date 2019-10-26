@@ -1,15 +1,12 @@
 package com.gitee.starblues.loader;
 
-import com.gitee.starblues.extension.AbstractExtension;
 import com.gitee.starblues.extension.ExtensionFactory;
 import com.gitee.starblues.loader.load.PluginClassLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.OrderPriority;
-import org.pf4j.PluginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -27,7 +24,7 @@ public class PluginResourceLoadFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginResourceLoadFactory.class);
 
-    private final Map<String, List<Resource>> pluginResourceMap = new ConcurrentHashMap<>();
+    private final Map<String, ResourceWrapper> pluginResourceWrappers = new ConcurrentHashMap<>();
     private final List<PluginResourceLoader> pluginResourceLoaders = new ArrayList<>(5);
 
 
@@ -58,16 +55,15 @@ public class PluginResourceLoadFactory {
         });
     }
 
-
-
-
     /**
      * 加载插件类
-     * @param basePlugin basePlugin
-     * @throws PluginException PluginException
+     * @param basePlugin 当前插件信息
      */
-    public synchronized void load(BasePlugin basePlugin) throws PluginException {
+    public synchronized void load(BasePlugin basePlugin) {
         for (PluginResourceLoader pluginResourceLoader : pluginResourceLoaders) {
+            if(pluginResourceLoader == null){
+                continue;
+            }
             String key = pluginResourceLoader.key();
             if(StringUtils.isEmpty(key)){
                 LOG.error("pluginResourceLoader {} key is empty, skip!",
@@ -75,24 +71,45 @@ public class PluginResourceLoadFactory {
                 continue;
             }
             try {
-                List<Resource> resources = pluginResourceLoader.load(basePlugin);
-                if(resources != null){
-                    pluginResourceMap.put(key, resources);
+                ResourceWrapper resourceWrapper = pluginResourceLoader.load(basePlugin);
+                if(resourceWrapper != null){
+                    pluginResourceWrappers.put(key, resourceWrapper);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new PluginException(e.getMessage());
+            } catch (Exception e){
+                LOG.error("Plugin resource loader '{}' load error. {}", key, e.getMessage(), e);
             }
+
         }
     }
 
     /**
+     * 卸载加载者加载的资源
+     * @param basePlugin 当前插件信息
+     */
+    public synchronized void unload(BasePlugin basePlugin) {
+        for (PluginResourceLoader pluginResourceLoader : pluginResourceLoaders) {
+            if(pluginResourceLoader == null){
+                continue;
+            }
+            String key = pluginResourceLoader.key();
+            try {
+                ResourceWrapper resourceWrapper = pluginResourceWrappers.get(key);
+                pluginResourceLoader.unload(basePlugin, resourceWrapper);
+            } catch (Exception e){
+                LOG.error("Plugin resource loader '{}' unload error. {}", key, e.getMessage(), e);
+            }
+        }
+    }
+
+
+
+    /**
      * 根据资源加载者的key获取插件资源
      * @param key key
-     * @return List
+     * @return ResourceWrapper
      */
-    public List<Resource> getPluginResources(String key) {
-        return pluginResourceMap.get(key);
+    public ResourceWrapper getPluginResources(String key) {
+        return pluginResourceWrappers.get(key);
     }
 
 

@@ -61,8 +61,11 @@ public class PluginResource {
     @PostMapping("/stop/{id}")
     public String stop(@PathVariable("id") String id){
         try {
-            pluginOperator.stop(id);
-            return "plugin '" + id +"' stop success";
+            if(pluginOperator.stop(id)){
+                return "plugin '" + id +"' stop success";
+            } else {
+                return "plugin '" + id +"' stop failure";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "plugin '" + id +"' stop failure. " + e.getMessage();
@@ -77,8 +80,11 @@ public class PluginResource {
     @PostMapping("/start/{id}")
     public String start(@PathVariable("id") String id){
         try {
-            pluginOperator.start(id);
-            return "plugin '" + id +"' start success";
+            if(pluginOperator.start(id)){
+                return "plugin '" + id +"' start success";
+            } else {
+                return "plugin '" + id +"' start failure";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "plugin '" + id +"' start failure. " + e.getMessage();
@@ -94,8 +100,11 @@ public class PluginResource {
     @PostMapping("/uninstall/{id}")
     public String uninstall(@PathVariable("id") String id){
         try {
-            pluginOperator.uninstall(id);
-            return "plugin '" + id +"' uninstall success";
+            if(pluginOperator.uninstall(id, true)){
+                return "plugin '" + id +"' uninstall success";
+            } else {
+                return "plugin '" + id +"' uninstall failure";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "plugin '" + id +"' uninstall failure. " + e.getMessage();
@@ -111,8 +120,11 @@ public class PluginResource {
     @PostMapping("/installByPath")
     public String install(@RequestParam("path") String path){
         try {
-            pluginOperator.install(Paths.get(path));
-            return "installByPath success";
+            if(pluginOperator.install(Paths.get(path))){
+                return "installByPath success";
+            } else {
+                return "installByPath failure";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "installByPath failure : " + e.getMessage();
@@ -128,8 +140,11 @@ public class PluginResource {
     @PostMapping("/uploadInstallPluginJar")
     public String install(@RequestParam("jarFile") MultipartFile multipartFile){
         try {
-            pluginOperator.uploadPluginAndStart(multipartFile);
-            return "install success";
+            if(pluginOperator.uploadPluginAndStart(multipartFile)){
+                return "install success";
+            } else {
+                return "install failure";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "install failure : " + e.getMessage();
@@ -145,8 +160,11 @@ public class PluginResource {
     @PostMapping("/uploadPluginConfigFile")
     public String uploadConfig(@RequestParam("configFile") MultipartFile multipartFile){
         try {
-            pluginOperator.uploadConfigFile(multipartFile);
-            return "uploadConfig success";
+            if(pluginOperator.uploadConfigFile(multipartFile)){
+                return "uploadConfig success";
+            } else {
+                return "uploadConfig failure";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "uploadConfig failure : " + e.getMessage();
@@ -162,8 +180,11 @@ public class PluginResource {
     @PostMapping("/back/{pluginId}")
     public String backupPlugin(@PathVariable("pluginId") String pluginId){
         try {
-            pluginOperator.backupPlugin(pluginId, "testBack");
-            return "backupPlugin success";
+            if(pluginOperator.backupPlugin(pluginId, "testBack")){
+                return "backupPlugin success";
+            } else {
+                return "backupPlugin failure";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "backupPlugin failure : " + e.getMessage();

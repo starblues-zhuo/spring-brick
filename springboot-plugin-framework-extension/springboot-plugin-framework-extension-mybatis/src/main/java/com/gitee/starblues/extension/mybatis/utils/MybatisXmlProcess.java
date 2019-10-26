@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -62,17 +63,25 @@ public class MybatisXmlProcess {
             return;
         }
         Configuration configuration = factory.getConfiguration();
-        //removeConfig(configuration);
+        // removeConfig(configuration);
         ClassLoader defaultClassLoader = Resources.getDefaultClassLoader();
         try {
             Resources.setDefaultClassLoader(pluginClassLoader);
             for (Resource resource :resources) {
-                PluginMybatisXmlMapperBuilder xmlMapperBuilder =  new PluginMybatisXmlMapperBuilder(
-                        resource.getInputStream(),
-                        configuration, resource.toString(),
-                        configuration.getSqlFragments(),
-                        pluginClassLoader);
-                xmlMapperBuilder.parse();
+                InputStream inputStream = resource.getInputStream();
+                try {
+                    PluginMybatisXmlMapperBuilder xmlMapperBuilder =  new PluginMybatisXmlMapperBuilder(
+                            inputStream,
+                            configuration, resource.toString(),
+                            configuration.getSqlFragments(),
+                            pluginClassLoader);
+                    xmlMapperBuilder.parse();
+                } finally {
+                    if(inputStream != null){
+                        inputStream.close();
+                    }
+                }
+
             }
         } finally {
             ErrorContext.instance().reset();
@@ -86,6 +95,7 @@ public class MybatisXmlProcess {
      * @return boolean
      * @throws IOException IOException
      */
+    @Deprecated
     public boolean isChange(List<Resource> resources) throws IOException {
         if(resources == null || resources.isEmpty()){
             return false;

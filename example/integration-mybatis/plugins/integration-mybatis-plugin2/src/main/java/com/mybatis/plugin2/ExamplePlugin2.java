@@ -2,7 +2,6 @@ package com.mybatis.plugin2;
 
 import com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConfig;
 import com.gitee.starblues.realize.BasePlugin;
-import org.pf4j.PluginException;
 import org.pf4j.PluginWrapper;
 
 import java.util.HashSet;
@@ -25,12 +24,12 @@ public class ExamplePlugin2 extends BasePlugin implements SpringBootMybatisConfi
     }
 
     @Override
-    protected void startEvent() throws PluginException {
+    protected void startEvent() {
 
     }
 
     @Override
-    protected void deleteEvent() throws PluginException {
+    protected void deleteEvent() {
 
     }
 

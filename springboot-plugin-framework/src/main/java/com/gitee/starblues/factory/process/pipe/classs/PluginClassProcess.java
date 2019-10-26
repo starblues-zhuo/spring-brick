@@ -5,6 +5,7 @@ import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.group.*;
 import com.gitee.starblues.loader.PluginResourceLoadFactory;
+import com.gitee.starblues.loader.ResourceWrapper;
 import com.gitee.starblues.loader.load.PluginClassLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import org.slf4j.Logger;
@@ -68,7 +69,11 @@ public class PluginClassProcess implements PluginPipeProcessor {
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
         PluginResourceLoadFactory pluginResourceLoadFactory = basePlugin.getPluginResourceLoadFactory();
-        List<Resource> pluginResources = pluginResourceLoadFactory.getPluginResources(PluginClassLoader.KEY);
+        ResourceWrapper resourceWrapper = pluginResourceLoadFactory.getPluginResources(PluginClassLoader.KEY);
+        if(resourceWrapper == null){
+            return;
+        }
+        List<Resource> pluginResources = resourceWrapper.getResources();
         if(pluginResources == null){
             return;
         }

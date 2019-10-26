@@ -14,12 +14,14 @@ import java.util.Objects;
 public class DefaultIntegrationFactory implements IntegrationFactory {
 
 
-
     @Override
-    public PluginManager getPluginManager(IntegrationConfiguration configuration) throws PluginException {
+    public PluginManager getPluginManager(IntegrationConfiguration configuration) {
+        if(configuration == null){
+            throw new NullPointerException("IntegrationConfiguration is null");
+        }
         RuntimeMode environment = configuration.environment();
         if(environment == null){
-            throw new PluginException("Run environment can is null" + configuration.environment());
+            throw new RuntimeException("Configuration RuntimeMode is null" + configuration.environment());
         }
         if(RuntimeMode.DEVELOPMENT == environment){
             // 开发环境下的插件管理者
@@ -42,7 +44,7 @@ public class DefaultIntegrationFactory implements IntegrationFactory {
                 }
             };
         } else {
-            throw new PluginException("Not found run environment " + configuration.environment());
+            throw new RuntimeException("Not found run environment " + configuration.environment());
         }
     }
 

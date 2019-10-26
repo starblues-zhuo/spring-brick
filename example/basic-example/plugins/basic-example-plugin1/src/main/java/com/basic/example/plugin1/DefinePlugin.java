@@ -1,7 +1,6 @@
 package com.basic.example.plugin1;
 
 import com.gitee.starblues.realize.BasePlugin;
-import org.pf4j.PluginException;
 import org.pf4j.PluginWrapper;
 
 /**
@@ -16,12 +15,12 @@ public class DefinePlugin extends BasePlugin {
     }
 
     @Override
-    protected void startEvent() throws PluginException {
+    protected void startEvent() {
 
     }
 
     @Override
-    protected void deleteEvent() throws PluginException {
+    protected void deleteEvent() {
 
     }
 

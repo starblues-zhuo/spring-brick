@@ -1,6 +1,5 @@
 package com.gitee.starblues.integration.operator.verify;
 
-import org.pf4j.PluginException;
 
 import java.nio.file.Path;
 
@@ -17,8 +16,8 @@ public interface PluginVerify {
      * 校验插件包
      * @param path 插件路径
      * @return 返回校验成功的路径
-     * @throws PluginException 插件异常
+     * @throws Exception 插件异常
      */
-    Path verify(Path path) throws PluginException;
+    Path verify(Path path) throws Exception;
 
 }

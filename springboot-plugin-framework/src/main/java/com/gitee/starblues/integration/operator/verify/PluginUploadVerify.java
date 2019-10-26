@@ -23,7 +23,7 @@ public class PluginUploadVerify extends PluginLegalVerify{
 
 
     @Override
-    protected Path postVerify(Path path, PluginDescriptor pluginDescriptor) throws PluginException {
+    protected Path postVerify(Path path, PluginDescriptor pluginDescriptor) throws Exception {
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginDescriptor.getPluginId());
         if(pluginWrapper == null){
             // 当前没有该插件包运行
@@ -36,6 +36,6 @@ public class PluginUploadVerify extends PluginLegalVerify{
                 .append("> ; version <").append(runPluginDescriptor.getVersion())
                 .append("> ) is already exist in the current environment。 ")
                 .append("Please uninstall the plugin, then upload and update the plugin");
-        throw new PluginException(errorMsg.toString());
+        throw new Exception(errorMsg.toString());
     }
 }

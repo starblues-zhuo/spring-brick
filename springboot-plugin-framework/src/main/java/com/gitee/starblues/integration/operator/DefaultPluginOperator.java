@@ -147,7 +147,7 @@ public class DefaultPluginOperator implements PluginOperator {
             log.error("Install plugin '{}' failure. {}", pluginId, e.getMessage());
             log.info("Start uninstall plugin '{}' failure", pluginId);
             try {
-                uninstall(pluginId);
+                uninstall(pluginId, false);
             } catch (Exception uninstallException){
                 log.error("Uninstall plugin '{}' failure. {}", pluginId, e.getMessage());
             }
@@ -160,11 +160,10 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
     @Override
-    public boolean uninstall(String pluginId) throws Exception {
+    public boolean uninstall(String pluginId, boolean isBackup) throws Exception {
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
         if(pluginWrapper == null){
-            log.error("Uninstall plugin failure, Not found plugin '{}'", pluginId);
-            return false;
+            throw new Exception("Uninstall plugin failure, Not found plugin ''" + pluginId + "'");
         }
         Exception exception = null;
         try {
@@ -175,9 +174,11 @@ public class DefaultPluginOperator implements PluginOperator {
             exception = e;
         }
         try {
-            if (pluginManager.unloadPlugin(pluginId)) {
-                // 卸载完后，将插件文件移到备份文件中
+            if(isBackup){
+                // 将插件文件移到备份文件中
                 backup(pluginWrapper.getPluginPath(), "uninstall", 1);
+            }
+            if (pluginManager.deletePlugin(pluginId)) {
                 log.info("Uninstall plugin '{}' success", pluginId);
                 return true;
             } else {
@@ -442,17 +443,20 @@ public class DefaultPluginOperator implements PluginOperator {
      * @param sign 文件标志
      * @param type 类型 1移动 2拷贝
      * @return 结果
-     * @throws Exception Exception
      */
-    private boolean backup(Path sourcePath, String sign, int type) throws Exception {
-        if(isDev()){
-            // 如果是开发环境, 则不进行备份
-            return true;
-        }
-        if(!Files.exists(sourcePath)){
-            throw new FileNotFoundException("path ' " + sourcePath.toString() + "'  does not exist!");
-        }
+    private boolean backup(Path sourcePath, String sign, int type) {
         try {
+            if(isDev()){
+                // 如果是开发环境, 则不进行备份
+                return false;
+            }
+            if(sourcePath == null){
+                return false;
+            }
+            if(!Files.exists(sourcePath)){
+                log.error("path '{}' does not exist", sourcePath.toString());
+                return false;
+            }
             String fileName = sourcePath.getFileName().toString();
             String targetName = integrationConfiguration.backupPath() + File.separator;
             if(!StringUtils.isEmpty(sign)){
@@ -471,12 +475,13 @@ public class DefaultPluginOperator implements PluginOperator {
             }
             FileUtils.copyFile(sourceFile, targetFile);
             if(type == 1){
-                // 在运行期间由于文件无法被删除, 因此将该文件置为空文件, 在系统下次启动时会清除空文件的。
-                FileUtils.writeByteArrayToFile(sourceFile, "".getBytes());
+                // 是移动的话, 则删除源文件
+                FileUtils.deleteQuietly(sourceFile);
             }
             return true;
         } catch (IOException e) {
-            throw new Exception("Backup plugin jar '" + sourcePath.toString() +  "' failure : " + e.getMessage(), e);
+            log.error("Backup plugin jar '{}' failure. {}", sourcePath.toString(), e.getMessage(), e);
+            return false;
         }
     }
 

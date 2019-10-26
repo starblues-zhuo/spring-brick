@@ -1,6 +1,7 @@
 package com.gitee.starblues.loader.load;
 
 import com.gitee.starblues.loader.PluginResourceLoader;
+import com.gitee.starblues.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.OrderExecution;
 import com.gitee.starblues.utils.OrderPriority;
@@ -29,7 +30,7 @@ public class PluginClassLoader implements PluginResourceLoader {
     }
 
     @Override
-    public List<Resource> load(BasePlugin basePlugin) throws Exception{
+    public ResourceWrapper load(BasePlugin basePlugin) throws Exception{
         String scanPackage = basePlugin.scanPackage();
         String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
                 ClassUtils.convertClassNameToResourcePath(scanPackage) +
@@ -38,9 +39,14 @@ public class PluginClassLoader implements PluginResourceLoader {
                 new PathMatchingResourcePatternResolver(basePlugin.getWrapper().getPluginClassLoader());
         Resource[] resources = resourcePatternResolver.getResources(packageSearchPath);
         if(resources == null){
-            return Collections.emptyList();
+            return new ResourceWrapper();
         }
-        return Arrays.asList(resources);
+        return new ResourceWrapper(resources);
+    }
+
+    @Override
+    public void unload(BasePlugin basePlugin, ResourceWrapper resourceWrapper) throws Exception {
+        // Do nothing
     }
 
     @Override

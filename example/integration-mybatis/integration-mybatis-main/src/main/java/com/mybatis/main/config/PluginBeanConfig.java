@@ -4,7 +4,6 @@ import com.gitee.starblues.extension.mybatis.SpringBootMybatisExtension;
 import com.gitee.starblues.integration.*;
 import com.gitee.starblues.integration.initialize.AutoPluginInitializer;
 import com.gitee.starblues.integration.initialize.PluginInitializer;
-import org.pf4j.PluginException;
 import org.pf4j.PluginManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,11 +22,11 @@ public class PluginBeanConfig {
     /**
      * 通过默认的集成工厂返回 PluginManager
      * @param integrationConfiguration 集成的配置文件
-     * @return
-     * @throws PluginException
+     * @return PluginManager
+     * @throws Exception
      */
     @Bean
-    public PluginManager pluginManager(IntegrationConfiguration integrationConfiguration) throws PluginException {
+    public PluginManager pluginManager(IntegrationConfiguration integrationConfiguration) {
         IntegrationFactory integrationFactory = new DefaultIntegrationFactory();
         return integrationFactory.getPluginManager(integrationConfiguration);
     }
