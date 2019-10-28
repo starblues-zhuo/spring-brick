@@ -17,7 +17,7 @@ import java.util.List;
  * mybatis xml 处理者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public class PluginMybatisXmlProcessor implements PluginPipeProcessorExtend {
 

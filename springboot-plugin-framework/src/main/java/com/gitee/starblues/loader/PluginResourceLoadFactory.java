@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 插件资源加载者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public class PluginResourceLoadFactory {
 

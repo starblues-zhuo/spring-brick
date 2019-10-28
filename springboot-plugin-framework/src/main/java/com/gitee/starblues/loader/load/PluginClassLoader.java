@@ -18,7 +18,7 @@ import java.util.List;
  * 插件类文件加载者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public class PluginClassLoader implements PluginResourceLoader {
 

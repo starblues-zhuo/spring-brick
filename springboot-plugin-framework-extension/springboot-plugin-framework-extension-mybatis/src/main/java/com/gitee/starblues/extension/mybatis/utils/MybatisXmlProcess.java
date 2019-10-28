@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * mybatis xml 操作者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public class MybatisXmlProcess {
 

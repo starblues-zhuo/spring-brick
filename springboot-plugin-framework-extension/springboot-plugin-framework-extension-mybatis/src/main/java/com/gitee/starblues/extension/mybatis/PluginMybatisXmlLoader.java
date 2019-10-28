@@ -20,7 +20,7 @@ import java.util.*;
  * 定制插件 Mybatis xml 加载者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public class PluginMybatisXmlLoader implements PluginResourceLoader {
 

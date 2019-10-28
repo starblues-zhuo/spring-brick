@@ -10,7 +10,7 @@ import java.util.Map;
  * 全局注册信息
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public final class GlobalRegistryInfo {
 

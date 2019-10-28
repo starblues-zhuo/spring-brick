@@ -10,7 +10,7 @@ import java.util.List;
  * 插件资源加载者统一定义的接口
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public interface PluginResourceLoader {
 

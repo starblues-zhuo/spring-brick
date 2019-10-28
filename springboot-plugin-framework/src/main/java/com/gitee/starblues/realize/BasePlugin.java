@@ -7,7 +7,7 @@ import org.pf4j.PluginWrapper;
 /**
  * 插件包要继承的抽象类
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public abstract class BasePlugin extends Plugin {
 
