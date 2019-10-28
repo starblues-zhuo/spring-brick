@@ -57,8 +57,8 @@ public class DefaultPluginOperator implements PluginOperator {
                                  IntegrationConfiguration integrationConfiguration,
                                  PluginManager pluginManager,
                                  PluginListenerFactory pluginListenerFactory) {
-        Objects.requireNonNull(integrationConfiguration);
-        Objects.requireNonNull(pluginManager);
+        Objects.requireNonNull(integrationConfiguration, "IntegrationConfiguration can't be null");
+        Objects.requireNonNull(pluginManager, "PluginManager can't be null");
         this.integrationConfiguration = integrationConfiguration;
         this.pluginManager = pluginManager;
         this.pluginFactory = new DefaultPluginFactory(applicationContext, pluginListenerFactory);

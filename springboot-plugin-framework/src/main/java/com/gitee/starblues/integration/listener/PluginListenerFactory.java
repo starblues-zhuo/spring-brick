@@ -1,6 +1,5 @@
 package com.gitee.starblues.integration.listener;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.ArrayList;
@@ -92,5 +91,13 @@ public class PluginListenerFactory implements PluginListener{
      */
     public List<PluginListener> getListeners() {
         return listeners;
+    }
+
+    /**
+     * 得到监听者class
+     * @return 监听者class集合
+     */
+    public List<Class> getListenerClasses() {
+        return listenerClasses;
     }
 }

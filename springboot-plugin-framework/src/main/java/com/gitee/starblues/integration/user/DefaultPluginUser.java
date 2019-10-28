@@ -19,8 +19,8 @@ public class DefaultPluginUser implements PluginUser{
     private final PluginManager pluginManager;
 
     public DefaultPluginUser(ApplicationContext applicationContext, PluginManager pluginManager) {
-        Objects.requireNonNull(applicationContext);
-        Objects.requireNonNull(pluginManager);
+        Objects.requireNonNull(applicationContext, "ApplicationContext can't be null");
+        Objects.requireNonNull(pluginManager, "PluginManager can't be null");
         this.applicationContext = (GenericApplicationContext)applicationContext;
         this.pluginManager = pluginManager;
     }

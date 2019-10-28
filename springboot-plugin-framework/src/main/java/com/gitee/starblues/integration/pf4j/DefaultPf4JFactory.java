@@ -1,5 +1,6 @@
-package com.gitee.starblues.integration;
+package com.gitee.starblues.integration.pf4j;
 
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.pf4j.*;
 
 import java.nio.file.Path;
@@ -11,11 +12,17 @@ import java.util.Objects;
  * @author zhangzhuo
  * @version 1.0
  */
-public class DefaultIntegrationFactory implements IntegrationFactory {
+public class DefaultPf4JFactory implements Pf4jFactory {
+
+    private final IntegrationConfiguration configuration;
+
+    public DefaultPf4JFactory(IntegrationConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
 
     @Override
-    public PluginManager getPluginManager(IntegrationConfiguration configuration) {
+    public PluginManager getPluginManager() {
         if(configuration == null){
             throw new NullPointerException("IntegrationConfiguration is null");
         }

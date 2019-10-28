@@ -1,6 +1,6 @@
 package com.basic.example.main.plugin;
 
-import com.gitee.starblues.integration.PluginApplication;
+import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.refresh.AbstractPluginSpringBeanRefresh;
 import org.springframework.stereotype.Component;
 

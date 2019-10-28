@@ -1,7 +1,7 @@
 package com.basic.example.main.rest;
 
 import com.basic.example.main.plugin.Hello;
-import com.gitee.starblues.integration.PluginApplication;
+import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.user.PluginUser;
 import com.basic.example.main.plugin.ConsoleName;
 import com.basic.example.main.plugin.ConsoleNameFactory;

@@ -1,6 +1,6 @@
 package com.basic.example.main.rest;
 
-import com.gitee.starblues.integration.PluginApplication;
+import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
 import org.springframework.beans.factory.annotation.Autowired;

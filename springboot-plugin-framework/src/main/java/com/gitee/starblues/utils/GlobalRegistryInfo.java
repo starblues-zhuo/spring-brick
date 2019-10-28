@@ -1,6 +1,8 @@
 package com.gitee.starblues.utils;
 
 
+import com.gitee.starblues.integration.IntegrationConfiguration;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,8 +16,6 @@ public final class GlobalRegistryInfo {
 
     private GlobalRegistryInfo(){}
 
-
-
     /**
      * 全局插件安装次数
      */
@@ -25,7 +25,6 @@ public final class GlobalRegistryInfo {
      * 全局扩展信息
      */
     private static Map<String, Object> extensionMap = new HashMap<>();
-
 
 
     /**
