@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * 默认的插件操作者
  * @author zhangzhuo
- * @version 2.1.0
+ * @version 2.2.0
  */
 public class DefaultPluginOperator implements PluginOperator {
 

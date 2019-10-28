@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 默认的插件 PluginApplication
  * @author zhangzhuo
- * @version 2.0.2
+ * @version 2.2.0
  */
 public class DefaultPluginApplication extends AbstractPluginApplication {
 

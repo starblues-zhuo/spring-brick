@@ -62,6 +62,7 @@ public class PluginListenerFactory implements PluginListener{
     /**
      * 添加监听者
      * @param pluginListenerClass 插件监听者Class类
+     * @param <T> 插件监听者类。继承 PluginListener
      */
     public <T extends PluginListener> void addPluginListener(Class<T> pluginListenerClass){
         if(pluginListenerClass != null){

@@ -14,7 +14,7 @@ import java.util.List;
  * 公用的的插件应用
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public abstract class AbstractPluginApplication implements PluginApplication {
 

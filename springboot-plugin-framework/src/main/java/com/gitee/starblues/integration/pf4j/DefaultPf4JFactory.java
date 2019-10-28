@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * 默认的插件集成工厂
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public class DefaultPf4JFactory implements Pf4jFactory {
 

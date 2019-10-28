@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationContextAware;
  * 自动初始化的 PluginApplication。该PluginApplication 基于 Spring InitializingBean 自动初始化插件。
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public class AutoPluginApplication extends DefaultPluginApplication
         implements PluginApplication, InitializingBean, ApplicationContextAware {

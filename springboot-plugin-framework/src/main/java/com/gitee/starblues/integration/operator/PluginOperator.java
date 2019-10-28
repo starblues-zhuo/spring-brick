@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * 操作插件的接口
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  * @see DefaultPluginOperator
  */
 public interface PluginOperator {

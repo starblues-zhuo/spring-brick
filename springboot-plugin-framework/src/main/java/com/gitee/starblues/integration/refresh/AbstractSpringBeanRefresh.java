@@ -64,6 +64,7 @@ public abstract class AbstractSpringBeanRefresh<T> implements PluginListener {
 
     /**
      * 刷新bean
+     * @return 返回刷新后的Bean集合
      */
     protected List<T> refresh(){
         return pluginApplication
