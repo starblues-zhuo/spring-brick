@@ -55,6 +55,7 @@ public class PluginInfoContainer {
      * 是否存在bean名称
      * @param pluginId 插件id
      * @param beanName 注册的bean名称
+     * @return true 存在。false不存在
      */
     public static synchronized boolean existRegisterBeanName(String pluginId, String beanName){
         Set<String> beanNames = springRegisterBeanNames.get(pluginId);
@@ -68,6 +69,7 @@ public class PluginInfoContainer {
     /**
      * 是否存在bean名称
      * @param beanName 注册的bean名称
+     * @return true 存在。false不存在
      */
     public static synchronized boolean existRegisterBeanName(String beanName){
         for (Set<String> beanNames : springRegisterBeanNames.values()){

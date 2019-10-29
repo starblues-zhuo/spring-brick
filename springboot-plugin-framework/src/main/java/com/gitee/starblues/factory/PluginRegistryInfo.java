@@ -50,22 +50,38 @@ public class PluginRegistryInfo {
         return basePlugin;
     }
 
+    /**
+     * 添加类到类集合容器
+     * @param aClass 类
+     */
     public void addClasses(Class<?> aClass){
         if(aClass != null){
             classes.add(aClass);
         }
     }
 
+    /**
+     * 清除类集合容器
+     */
     public void cleanClasses(){
         classes.clear();
     }
 
+    /**
+     * 得到类集合容器
+     * @return 类集合容器
+     */
     public List<Class<?>> getClasses(){
         List<Class<?>> result = new ArrayList<>();
         result.addAll(classes);
         return result;
     }
 
+    /**
+     * 添加分组的类型
+     * @param key 分组key
+     * @param aClass 类
+     */
     public void addGroupClasses(String key, Class<?> aClass){
         List<Class<?>> classes = groupClasses.get(key);
         if(classes == null){
@@ -75,6 +91,11 @@ public class PluginRegistryInfo {
         classes.add(aClass);
     }
 
+    /**
+     * 通过分组key得到分组中的类类型
+     * @param key 处理者key
+     * @return 类类型集合
+     */
     public List<Class<?>> getGroupClasses(String key){
         List<Class<?>> classes = groupClasses.get(key);
         List<Class<?>> result = new ArrayList<>();
@@ -87,6 +108,7 @@ public class PluginRegistryInfo {
     /**
      * 得到插件bean注册者信息
      * @param key 扩展的key
+     * @param <T> 处理者类型
      * @return 注册者信息
      */
     public <T> T getProcessorInfo(String key){
@@ -131,7 +153,6 @@ public class PluginRegistryInfo {
             return (T) o;
         }
     }
-
 
 
 

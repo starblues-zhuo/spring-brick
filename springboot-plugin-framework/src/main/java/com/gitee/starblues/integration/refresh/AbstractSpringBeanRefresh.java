@@ -1,6 +1,6 @@
 package com.gitee.starblues.integration.refresh;
 
-import com.gitee.starblues.integration.PluginApplication;
+import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.listener.PluginListener;
 
 import java.lang.reflect.ParameterizedType;
@@ -64,6 +64,7 @@ public abstract class AbstractSpringBeanRefresh<T> implements PluginListener {
 
     /**
      * 刷新bean
+     * @return 返回刷新后的Bean集合
      */
     protected List<T> refresh(){
         return pluginApplication

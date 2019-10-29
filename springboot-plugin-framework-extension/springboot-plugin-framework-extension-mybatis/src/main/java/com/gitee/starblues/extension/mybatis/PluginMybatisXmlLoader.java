@@ -2,6 +2,7 @@ package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConfig;
 import com.gitee.starblues.loader.PluginResourceLoader;
+import com.gitee.starblues.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.OrderExecution;
 import com.gitee.starblues.utils.OrderPriority;
@@ -19,7 +20,7 @@ import java.util.*;
  * 定制插件 Mybatis xml 加载者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public class PluginMybatisXmlLoader implements PluginResourceLoader {
 
@@ -42,7 +43,7 @@ public class PluginMybatisXmlLoader implements PluginResourceLoader {
     }
 
     @Override
-    public List<Resource> load(BasePlugin basePlugin) throws Exception {
+    public ResourceWrapper load(BasePlugin basePlugin) throws Exception {
         if(!(basePlugin instanceof SpringBootMybatisConfig)){
             LOG.warn("Plugin <{}> not implements SpringBootMybatisConfig, If you need to use mybatis in the plugin," +
                     "Please implements SpringBootMybatisConfig interface", basePlugin.getClass().getName());
@@ -53,7 +54,7 @@ public class PluginMybatisXmlLoader implements PluginResourceLoader {
         if(mybatisMapperXmlLocationsMatch == null || mybatisMapperXmlLocationsMatch.isEmpty()){
             LOG.warn("SpringBootMybatisConfig -> mybatisMapperXmlLocationsMatch return is empty, " +
                     "Please check configuration");
-            return Collections.emptyList();
+            return new ResourceWrapper();
         }
         ResourcePatternResolver resourcePatternResolver =
                 new PathMatchingResourcePatternResolver(basePlugin.getWrapper().getPluginClassLoader());
@@ -67,7 +68,12 @@ public class PluginMybatisXmlLoader implements PluginResourceLoader {
                 resources.addAll(loadResources);
             }
         }
-        return resources;
+        return new ResourceWrapper(resources);
+    }
+
+    @Override
+    public void unload(BasePlugin basePlugin, ResourceWrapper resourceWrapper) throws Exception {
+        //
     }
 
     @Override

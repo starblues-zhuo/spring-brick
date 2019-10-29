@@ -8,19 +8,19 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.3.RELEASE</version>
+        <version>2.1.1.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>com.gitee.starblues</groupId>
     <artifactId>integration-mybatis-main</artifactId>
-    <version>2.1.4-RELEASE</version>
+    <version>2.2.0-RELEASE</version>
     <packaging>jar</packaging>
     <description>主程序模块</description>
 
     <properties>
-        <springboot-plugin-framework.version>2.1.4-RELEASE</springboot-plugin-framework.version>
-        <extension-mybatis.version>2.1.4-RELEASE</extension-mybatis.version>
+        <springboot-plugin-framework.version>2.2.0-RELEASE</springboot-plugin-framework.version>
+        <extension-mybatis.version>2.2.0-RELEASE</extension-mybatis.version>
         <mybatis-spring-boot-starter.version>2.0.1</mybatis-spring-boot-starter.version>
         <springfox-swagger2.version>2.7.0</springfox-swagger2.version>
         <swagger-bootstrap-ui.version>1.6</swagger-bootstrap-ui.version>
@@ -85,7 +85,6 @@
             <version>${swagger-bootstrap-ui.version}</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -102,6 +101,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <!-- 高版本Spring-boot 2.1.1.RELEASE 需要新增id -->
+                        <id>repackage</id>
                         <goals>
                             <goal>repackage</goal>
                         </goals>

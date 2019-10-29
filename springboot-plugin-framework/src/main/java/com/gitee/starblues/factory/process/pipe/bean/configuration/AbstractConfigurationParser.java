@@ -2,6 +2,7 @@ package com.gitee.starblues.factory.process.pipe.bean.configuration;
 
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.loader.PluginResourceLoader;
+import com.gitee.starblues.loader.ResourceWrapper;
 import com.gitee.starblues.loader.load.PluginConfigFileLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import org.springframework.core.io.Resource;
@@ -41,7 +42,11 @@ public abstract class AbstractConfigurationParser implements ConfigurationParser
                 fileName,
                 configuration.environment()
         );
-        List<Resource> resources = pluginResourceLoader.load(basePlugin);
+        ResourceWrapper resourceWrapper = pluginResourceLoader.load(basePlugin);
+        if(resourceWrapper == null){
+            return null;
+        }
+        List<Resource> resources = resourceWrapper.getResources();
         if(resources.isEmpty() || resources.size() != 1){
             return null;
         }

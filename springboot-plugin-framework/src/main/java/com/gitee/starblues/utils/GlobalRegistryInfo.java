@@ -1,6 +1,8 @@
 package com.gitee.starblues.utils;
 
 
+import com.gitee.starblues.integration.IntegrationConfiguration;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,13 +10,11 @@ import java.util.Map;
  * 全局注册信息
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public final class GlobalRegistryInfo {
 
     private GlobalRegistryInfo(){}
-
-
 
     /**
      * 全局插件安装次数
@@ -27,10 +27,11 @@ public final class GlobalRegistryInfo {
     private static Map<String, Object> extensionMap = new HashMap<>();
 
 
-
     /**
      * 添加操作插件信息
      * @param pluginId 插件id
+     * @param operatorType 操作类型
+     * @param isLock 是否加锁
      */
     public static synchronized void addOperatorPluginInfo(String pluginId,
                                                           PluginOperatorInfo.OperatorType operatorType,
@@ -45,6 +46,11 @@ public final class GlobalRegistryInfo {
     }
 
 
+    /**
+     * 设置操作插件的信息
+     * @param pluginId 插件id
+     * @param isLock 是否加锁
+     */
     public static synchronized void setOperatorPluginInfo(String pluginId, boolean isLock){
         PluginOperatorInfo operatorPluginInfo = operatorPluginInfos.get(pluginId);
         if(operatorPluginInfo != null){

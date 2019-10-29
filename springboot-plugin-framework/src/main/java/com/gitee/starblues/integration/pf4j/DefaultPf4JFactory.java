@@ -1,5 +1,6 @@
-package com.gitee.starblues.integration;
+package com.gitee.starblues.integration.pf4j;
 
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.pf4j.*;
 
 import java.nio.file.Path;
@@ -9,17 +10,25 @@ import java.util.Objects;
 /**
  * 默认的插件集成工厂
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
-public class DefaultIntegrationFactory implements IntegrationFactory {
+public class DefaultPf4JFactory implements Pf4jFactory {
 
+    private final IntegrationConfiguration configuration;
+
+    public DefaultPf4JFactory(IntegrationConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
 
     @Override
-    public PluginManager getPluginManager(IntegrationConfiguration configuration) throws PluginException {
+    public PluginManager getPluginManager() {
+        if(configuration == null){
+            throw new NullPointerException("IntegrationConfiguration is null");
+        }
         RuntimeMode environment = configuration.environment();
         if(environment == null){
-            throw new PluginException("Run environment can is null" + configuration.environment());
+            throw new RuntimeException("Configuration RuntimeMode is null" + configuration.environment());
         }
         if(RuntimeMode.DEVELOPMENT == environment){
             // 开发环境下的插件管理者
@@ -42,7 +51,7 @@ public class DefaultIntegrationFactory implements IntegrationFactory {
                 }
             };
         } else {
-            throw new PluginException("Not found run environment " + configuration.environment());
+            throw new RuntimeException("Not found run environment " + configuration.environment());
         }
     }
 

@@ -1,6 +1,6 @@
 package com.gitee.starblues.integration.refresh;
 
-import com.gitee.starblues.integration.PluginApplication;
+import com.gitee.starblues.integration.application.PluginApplication;
 
 import java.util.List;
 
