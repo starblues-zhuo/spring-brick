@@ -1,6 +1,7 @@
 package com.gitee.starblues.loader.load;
 
 import com.gitee.starblues.loader.PluginResourceLoader;
+import com.gitee.starblues.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.OrderExecution;
 import com.gitee.starblues.utils.OrderPriority;
@@ -17,7 +18,7 @@ import java.util.List;
  * 插件配置文件加载者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.0
  */
 public class PluginConfigFileLoader implements PluginResourceLoader {
 
@@ -40,7 +41,7 @@ public class PluginConfigFileLoader implements PluginResourceLoader {
     }
 
     @Override
-    public List<Resource> load(BasePlugin basePlugin) throws Exception {
+    public ResourceWrapper load(BasePlugin basePlugin) throws Exception {
         Resource resource;
         if(runtimeMode == RuntimeMode.DEVELOPMENT){
             // 开发环境下
@@ -54,7 +55,12 @@ public class PluginConfigFileLoader implements PluginResourceLoader {
         }
         List<Resource> resources = new ArrayList<>();
         resources.add(resource);
-        return resources;
+        return new ResourceWrapper(resources);
+    }
+
+    @Override
+    public void unload(BasePlugin basePlugin, ResourceWrapper resourceWrapper) throws Exception {
+        // Do nothing
     }
 
     @Override

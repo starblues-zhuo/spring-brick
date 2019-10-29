@@ -22,23 +22,23 @@ public class PluginLegalVerify implements PluginVerify{
 
 
     @Override
-    public Path verify(Path path) throws PluginException {
+    public Path verify(Path path) throws Exception {
         if(path == null){
-            throw new PluginException("path can not be null");
+            throw new IllegalArgumentException("path can not be null");
         }
         if(!pluginDescriptorFinder.isApplicable(path)){
             // 插件包不合法
-            throw new PluginException(path.toString() + " : plugin illegal");
+            throw new Exception(path.toString() + " : plugin illegal");
         }
         PluginDescriptor pluginDescriptor = pluginDescriptorFinder.find(path);
         if(pluginDescriptor == null){
-            throw new PluginException(path.toString() + " : Not found Plugin Descriptor");
+            throw new Exception(path.toString() + " : Not found Plugin Descriptor");
         }
         if(StringUtils.isEmpty(pluginDescriptor.getPluginId())){
-            throw new PluginException(path.toString() + " : Not found Plugin Id");
+            throw new Exception(path.toString() + " : Not found Plugin Id");
         }
         if(StringUtils.isEmpty(pluginDescriptor.getPluginClass())){
-            throw new PluginException(path.toString() + " : Not found Plugin Class");
+            throw new Exception(path.toString() + " : Not found Plugin Class");
         }
         return postVerify(path, pluginDescriptor);
     }
@@ -48,9 +48,9 @@ public class PluginLegalVerify implements PluginVerify{
      * @param path 路径
      * @param pluginDescriptor 插件解析者
      * @return 返回路径
-     * @throws PluginException 插件异常
+     * @throws Exception 插件异常
      */
-    protected Path postVerify(Path path, PluginDescriptor pluginDescriptor) throws PluginException{
+    protected Path postVerify(Path path, PluginDescriptor pluginDescriptor) throws Exception{
         return path;
     }
 

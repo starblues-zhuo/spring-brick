@@ -29,13 +29,13 @@ public class UserController {
         user.setName("test");
         user.setPassword("123");
         user.setUsername("user");
-        //userService.save(user);
+        userService.save(user);
         return user;
     }
 
     @GetMapping
     public List<User> getAll(){
-        return null;
+        return userService.list();
     }
 
 }

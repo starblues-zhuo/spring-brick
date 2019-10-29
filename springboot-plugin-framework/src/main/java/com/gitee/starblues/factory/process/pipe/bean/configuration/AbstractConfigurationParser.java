@@ -1,8 +1,8 @@
 package com.gitee.starblues.factory.process.pipe.bean.configuration;
 
-import com.gitee.starblues.exception.ConfigurationParseException;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.loader.PluginResourceLoader;
+import com.gitee.starblues.loader.ResourceWrapper;
 import com.gitee.starblues.loader.load.PluginConfigFileLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import org.springframework.core.io.Resource;
@@ -25,36 +25,36 @@ public abstract class AbstractConfigurationParser implements ConfigurationParser
     }
 
     @Override
-    public Object parse(BasePlugin basePlugin, PluginConfigDefinition pluginConfigDefinition) throws ConfigurationParseException {
+    public Object parse(BasePlugin basePlugin, PluginConfigDefinition pluginConfigDefinition) throws Exception {
         Class<?> configClass = pluginConfigDefinition.getConfigClass();
         if(pluginConfigDefinition.getConfigClass() == null){
-            throw new ConfigurationParseException("pluginConfigDefinition : " + pluginConfigDefinition + " " +
+            throw new IllegalArgumentException("pluginConfigDefinition : " + pluginConfigDefinition + " " +
                     "configClass can not be null");
         }
         String fileName = pluginConfigDefinition.getFileName();
         if(pluginConfigDefinition.getFileName() == null || "".equals(pluginConfigDefinition.getFileName())){
-            throw new ConfigurationParseException("pluginConfigDefinition : " + pluginConfigDefinition + " " +
+            throw new IllegalArgumentException("pluginConfigDefinition : " + pluginConfigDefinition + " " +
                     "fileName can not be empty");
         }
 
-        try {
-            PluginResourceLoader pluginResourceLoader = new PluginConfigFileLoader(
-                    configuration.pluginConfigFilePath(),
-                    fileName,
-                    configuration.environment()
-            );
-            List<Resource> resources = pluginResourceLoader.load(basePlugin);
-            if(resources.isEmpty() || resources.size() != 1){
-                return null;
-            }
-            Object o = parse(resources.get(0), configClass);
-            if(o == null){
-                return configClass.newInstance();
-            }
-            return o;
-        } catch (Exception e) {
-            throw new ConfigurationParseException("Parse Plugin Config Failure" + e.getMessage(),e);
+        PluginResourceLoader pluginResourceLoader = new PluginConfigFileLoader(
+                configuration.pluginConfigFilePath(),
+                fileName,
+                configuration.environment()
+        );
+        ResourceWrapper resourceWrapper = pluginResourceLoader.load(basePlugin);
+        if(resourceWrapper == null){
+            return null;
         }
+        List<Resource> resources = resourceWrapper.getResources();
+        if(resources.isEmpty() || resources.size() != 1){
+            return null;
+        }
+        Object o = parse(resources.get(0), configClass);
+        if(o == null){
+            return configClass.newInstance();
+        }
+        return o;
     }
 
 
@@ -63,10 +63,10 @@ public abstract class AbstractConfigurationParser implements ConfigurationParser
      * @param resource 配置文件的资源信息
      * @param pluginConfigClass 配置文件class
      * @return 返回映射后的存在值得对象
-     * @throws ConfigurationParseException 配置文件解析异常
+     * @throws Exception 配置文件解析异常
      */
     protected abstract Object parse(Resource resource,
-                                    Class<?> pluginConfigClass) throws ConfigurationParseException;
+                                    Class<?> pluginConfigClass) throws Exception;
 
 
 }

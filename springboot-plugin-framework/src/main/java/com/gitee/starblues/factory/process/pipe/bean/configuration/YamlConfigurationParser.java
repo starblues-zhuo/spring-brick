@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TreeTraversingParser;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
-import com.gitee.starblues.exception.ConfigurationParseException;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.springframework.core.io.Resource;
 
@@ -33,19 +32,14 @@ public class YamlConfigurationParser extends AbstractConfigurationParser {
 
     @Override
     protected Object parse(Resource resource, Class<?> pluginConfigClass)
-            throws ConfigurationParseException{
-        try {
-            InputStream input = new FileInputStream(resource.getFile());
-            YAMLParser yamlParser = yamlFactory.createParser(input);
-            final JsonNode node = objectMapper.readTree(yamlParser);
-            if(node == null){
-                return pluginConfigClass.newInstance();
-            }
-            TreeTraversingParser treeTraversingParser = new TreeTraversingParser(node);
-            final Object o = objectMapper.readValue(treeTraversingParser, pluginConfigClass);
-            return o;
-        } catch (Exception e){
-            throw new ConfigurationParseException("Yaml Parse Failure : " + e.getMessage(), e);
+            throws Exception{
+        InputStream input = new FileInputStream(resource.getFile());
+        YAMLParser yamlParser = yamlFactory.createParser(input);
+        final JsonNode node = objectMapper.readTree(yamlParser);
+        if(node == null){
+            return pluginConfigClass.newInstance();
         }
+        TreeTraversingParser treeTraversingParser = new TreeTraversingParser(node);
+        return objectMapper.readValue(treeTraversingParser, pluginConfigClass);
     }
 }

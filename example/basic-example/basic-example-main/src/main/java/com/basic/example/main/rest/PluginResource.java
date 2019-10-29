@@ -1,7 +1,6 @@
 package com.basic.example.main.rest;
 
-import com.gitee.starblues.exception.PluginPlugException;
-import com.gitee.starblues.integration.PluginApplication;
+import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,6 @@ public class PluginResource {
     public PluginResource(PluginApplication pluginApplication) {
         this.pluginOperator = pluginApplication.getPluginOperator();
     }
-
     /**
      * 获取插件信息
      * @return 返回插件信息
@@ -46,7 +44,7 @@ public class PluginResource {
     public Set<String> getPluginFilePaths(){
         try {
             return pluginOperator.getPluginFilePaths();
-        } catch (PluginPlugException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -61,11 +59,14 @@ public class PluginResource {
     @PostMapping("/stop/{id}")
     public String stop(@PathVariable("id") String id){
         try {
-            pluginOperator.stop(id);
-            return "plugin<" + id +"> stop success";
-        } catch (PluginPlugException e) {
+            if(pluginOperator.stop(id)){
+                return "plugin '" + id +"' stop success";
+            } else {
+                return "plugin '" + id +"' stop failure";
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-            return "plugin<" + id +"> stop failure : " + e.getMessage();
+            return "plugin '" + id +"' stop failure. " + e.getMessage();
         }
     }
 
@@ -77,11 +78,14 @@ public class PluginResource {
     @PostMapping("/start/{id}")
     public String start(@PathVariable("id") String id){
         try {
-            pluginOperator.start(id);
-            return "plugin<" + id +"> start success";
-        } catch (PluginPlugException e) {
+            if(pluginOperator.start(id)){
+                return "plugin '" + id +"' start success";
+            } else {
+                return "plugin '" + id +"' start failure";
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-            return "plugin<" + id +"> start failure : " + e.getMessage();
+            return "plugin '" + id +"' start failure. " + e.getMessage();
         }
     }
 
@@ -94,11 +98,14 @@ public class PluginResource {
     @PostMapping("/uninstall/{id}")
     public String uninstall(@PathVariable("id") String id){
         try {
-            pluginOperator.uninstall(id);
-            return "plugin<" + id +"> uninstall success";
-        } catch (PluginPlugException e) {
+            if(pluginOperator.uninstall(id, true)){
+                return "plugin '" + id +"' uninstall success";
+            } else {
+                return "plugin '" + id +"' uninstall failure";
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-            return "plugin<" + id +"> uninstall failure : " + e.getMessage();
+            return "plugin '" + id +"' uninstall failure. " + e.getMessage();
         }
     }
 
@@ -111,9 +118,12 @@ public class PluginResource {
     @PostMapping("/installByPath")
     public String install(@RequestParam("path") String path){
         try {
-            pluginOperator.install(Paths.get(path));
-            return "installByPath success";
-        } catch (PluginPlugException e) {
+            if(pluginOperator.install(Paths.get(path))){
+                return "installByPath success";
+            } else {
+                return "installByPath failure";
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             return "installByPath failure : " + e.getMessage();
         }
@@ -128,9 +138,12 @@ public class PluginResource {
     @PostMapping("/uploadInstallPluginJar")
     public String install(@RequestParam("jarFile") MultipartFile multipartFile){
         try {
-            pluginOperator.uploadPluginAndStart(multipartFile);
-            return "install success";
-        } catch (PluginPlugException e) {
+            if(pluginOperator.uploadPluginAndStart(multipartFile)){
+                return "install success";
+            } else {
+                return "install failure";
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             return "install failure : " + e.getMessage();
         }
@@ -145,46 +158,17 @@ public class PluginResource {
     @PostMapping("/uploadPluginConfigFile")
     public String uploadConfig(@RequestParam("configFile") MultipartFile multipartFile){
         try {
-            pluginOperator.uploadConfigFile(multipartFile);
-            return "uploadConfig success";
-        } catch (PluginPlugException e) {
+            if(pluginOperator.uploadConfigFile(multipartFile)){
+                return "uploadConfig success";
+            } else {
+                return "uploadConfig failure";
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             return "uploadConfig failure : " + e.getMessage();
         }
     }
 
-
-    /**
-     * 通过插件id删除插件。注意: 该操作只适用于生产环境
-     * @param pluginId 插件id
-     * @return 操作结果
-     */
-    @DeleteMapping("/pluginId/{pluginId}")
-    public String deleteById(@PathVariable("pluginId") String pluginId){
-        try {
-            pluginOperator.delete(pluginId);
-            return "deleteById success";
-        } catch (PluginPlugException e) {
-            e.printStackTrace();
-            return "deleteById failure : " + e.getMessage();
-        }
-    }
-
-    /**
-     * 通过路径删除插件。注意: 该操作只适用于生产环境
-     * @param pluginJarPath 插件jar路径
-     * @return 操作结果
-     */
-    @PostMapping("/path")
-    public String deleteByPath(@RequestParam("pluginJarPath") String pluginJarPath){
-        try {
-            pluginOperator.delete(Paths.get(pluginJarPath));
-            return "deleteByPath success";
-        } catch (PluginPlugException e) {
-            e.printStackTrace();
-            return "deleteByPath failure : " + e.getMessage();
-        }
-    }
 
     /**
      * 备份插件。注意: 该操作只适用于生产环境
@@ -194,9 +178,12 @@ public class PluginResource {
     @PostMapping("/back/{pluginId}")
     public String backupPlugin(@PathVariable("pluginId") String pluginId){
         try {
-            pluginOperator.backupPlugin(pluginId, "testBack");
-            return "backupPlugin success";
-        } catch (PluginPlugException e) {
+            if(pluginOperator.backupPlugin(pluginId, "testBack")){
+                return "backupPlugin success";
+            } else {
+                return "backupPlugin failure";
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             return "backupPlugin failure : " + e.getMessage();
         }

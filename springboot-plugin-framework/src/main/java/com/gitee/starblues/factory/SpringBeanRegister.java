@@ -1,6 +1,8 @@
 package com.gitee.starblues.factory;
 
 import com.gitee.starblues.factory.process.pipe.bean.name.PluginAnnotationBeanNameGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.ApplicationContext;
@@ -16,6 +18,8 @@ import java.util.function.Consumer;
  * @version 2.1.0
  */
 public class SpringBeanRegister {
+
+    private static final Logger logger = LoggerFactory.getLogger(SpringBeanRegister.class);
 
     private final GenericApplicationContext applicationContext;
 
@@ -36,12 +40,12 @@ public class SpringBeanRegister {
     /**
      * 默认注册
      * @param pluginId 插件id
-     * @param namePrefix bean名称前缀
+     * @param suffixName bean 后缀名称
      * @param aClass 类名
      * @return 注册的bean名称
      */
-    public String register(String pluginId, String namePrefix, Class<?> aClass) {
-        return register(pluginId, namePrefix, aClass, null);
+    public String register(String pluginId, String suffixName, Class<?> aClass) {
+        return register(pluginId, suffixName, aClass, null);
     }
 
 
@@ -59,25 +63,24 @@ public class SpringBeanRegister {
     /**
      * 默认注册
      * @param pluginId 插件id
-     * @param namePrefix bean名称前缀
+     * @param suffixName bean 后缀名称
      * @param aClass 注册的类
      * @param consumer 自定义处理AnnotatedGenericBeanDefinition
      * @return 注册的bean名称
      */
-    public String register(String pluginId, String namePrefix, Class<?> aClass, Consumer<AnnotatedGenericBeanDefinition> consumer) {
+    public String register(String pluginId, String suffixName, Class<?> aClass,
+                           Consumer<AnnotatedGenericBeanDefinition> consumer) {
         AnnotatedGenericBeanDefinition beanDefinition = new
                 AnnotatedGenericBeanDefinition(aClass);
 
-        if(namePrefix == null){
-            namePrefix = "";
-        }
         BeanNameGenerator beanNameGenerator =
-                new PluginAnnotationBeanNameGenerator(namePrefix);
+                new PluginAnnotationBeanNameGenerator(suffixName);
         String beanName = beanNameGenerator.generateBeanName(beanDefinition, applicationContext);
         if(PluginInfoContainer.existRegisterBeanName((beanName))){
             String error = MessageFormat.format("Bean name {0} already exist of {1}",
                     beanName, aClass.getName());
-            throw new RuntimeException(error);
+            logger.error(error);
+            return null;
         }
         if(consumer != null){
             consumer.accept(beanDefinition);

@@ -19,8 +19,8 @@ public class DefaultPluginUser implements PluginUser{
     private final PluginManager pluginManager;
 
     public DefaultPluginUser(ApplicationContext applicationContext, PluginManager pluginManager) {
-        Objects.requireNonNull(applicationContext);
-        Objects.requireNonNull(pluginManager);
+        Objects.requireNonNull(applicationContext, "ApplicationContext can't be null");
+        Objects.requireNonNull(pluginManager, "PluginManager can't be null");
         this.applicationContext = (GenericApplicationContext)applicationContext;
         this.pluginManager = pluginManager;
     }
@@ -69,6 +69,21 @@ public class DefaultPluginUser implements PluginUser{
                 .stream()
                 .filter(beansOfType-> beansOfTypeMap != null)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public <T> List<T> getMainBeans(Class<T> aClass) {
+        Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
+        if(beansOfTypeMap == null){
+            return Collections.emptyList();
+        }
+        List<T> beans = new ArrayList<>();
+        beansOfTypeMap.forEach((beanName, bean)->{
+            if(!isPluginBean(beanName)){
+                beans.add(bean);
+            }
+        });
+        return beans;
     }
 
     /**

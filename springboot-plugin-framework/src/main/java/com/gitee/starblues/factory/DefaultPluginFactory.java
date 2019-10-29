@@ -1,20 +1,15 @@
 package com.gitee.starblues.factory;
 
-import com.gitee.starblues.integration.listener.PluginListener;
-import com.gitee.starblues.integration.listener.PluginListenerFactory;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorFactory;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
 import com.gitee.starblues.factory.process.post.PluginPostProcessorFactory;
+import com.gitee.starblues.integration.listener.PluginListener;
+import com.gitee.starblues.integration.listener.PluginListenerFactory;
 import com.gitee.starblues.utils.AopUtils;
-import com.sun.webkit.plugin.PluginManager;
 import org.pf4j.PluginWrapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.util.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +24,6 @@ import java.util.Map;
  */
 public class DefaultPluginFactory implements PluginFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultPluginFactory.class);
 
     /**
      * 注册的插件集合
@@ -45,7 +39,6 @@ public class DefaultPluginFactory implements PluginFactory {
      */
     private Integer buildType = 0;
     private final List<PluginRegistryInfo> buildContainer = new ArrayList<>();
-    private final List<Class> listenerClasses = new ArrayList<>();
 
     public DefaultPluginFactory(ApplicationContext applicationContext) {
         this(applicationContext, null);
@@ -88,7 +81,7 @@ public class DefaultPluginFactory implements PluginFactory {
             return this;
         } catch (Exception e) {
             pluginListenerFactory.failure(pluginWrapper.getPluginId(), e);
-            throw new Exception(e);
+            throw e;
         } finally {
             buildType = 1;
             AopUtils.recoverAop();
@@ -99,20 +92,20 @@ public class DefaultPluginFactory implements PluginFactory {
     public synchronized PluginFactory unRegistry(String pluginId) throws Exception {
         PluginRegistryInfo registerPluginInfo = registerPluginInfoMap.get(pluginId);
         if(registerPluginInfo == null){
-            throw new IllegalArgumentException("Not found plugin " + pluginId + " registered");
+            throw new Exception("Not found plugin " + pluginId + " registered");
         }
         if(!buildContainer.isEmpty() && buildType == 1){
-            throw new IllegalAccessException("Unable to UnRegistry operate. Because there's no build");
+            throw new Exception("Unable to UnRegistry operate. Because there's no build");
         }
         try {
             pluginProcessor.unRegistry(registerPluginInfo);
-            registerPluginInfoMap.remove(pluginId);
             buildContainer.add(registerPluginInfo);
             return this;
         } catch (Exception e) {
             pluginListenerFactory.failure(pluginId, e);
-            throw new Exception(e);
+            throw e;
         } finally {
+            registerPluginInfoMap.remove(pluginId);
             buildType = 2;
         }
     }
@@ -120,10 +113,10 @@ public class DefaultPluginFactory implements PluginFactory {
     @Override
     public synchronized void build() throws Exception {
         if(buildContainer.isEmpty()){
-            throw new IllegalAccessException("No Found registered or unRegistry plugin. Unable to build");
+            throw new Exception("No Found registered or unRegistry plugin. Unable to build");
         }
         // 构建注册的Class插件监听者
-        pluginListenerFactory.buildListenerClass((GenericApplicationContext) applicationContext);
+        pluginListenerFactory.buildListenerClass(applicationContext);
         try {
             if(buildType == 1){
                 registryBuild();

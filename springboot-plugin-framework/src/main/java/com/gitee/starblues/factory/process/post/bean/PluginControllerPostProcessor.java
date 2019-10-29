@@ -1,14 +1,12 @@
 package com.gitee.starblues.factory.process.post.bean;
 
-import com.gitee.starblues.exception.PluginBeanFactoryException;
 import com.gitee.starblues.extension.PluginControllerProcessor;
-import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.classs.group.ControllerGroup;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.utils.AopUtils;
-import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -20,7 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 
 /**
@@ -53,20 +54,25 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
             AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
-            List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(ControllerGroup.SPRING_CONTROLLER);
-            if(groupClasses == null || groupClasses.isEmpty()){
-                continue;
-            }
-            List<ControllerBeanWrapper> controllerBeanWrappers = new ArrayList<>();
-            for (Class<?> groupClass : groupClasses) {
-                if(groupClass == null){
+            try {
+                List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(ControllerGroup.SPRING_CONTROLLER);
+                if(groupClasses == null || groupClasses.isEmpty()){
                     continue;
                 }
-                ControllerBeanWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
-                controllerBeanWrappers.add(controllerBeanWrapper);
-                process(1, pluginRegistryInfo.getPluginWrapper().getPluginId(), groupClass);
+                List<ControllerBeanWrapper> controllerBeanWrappers = new ArrayList<>();
+                for (Class<?> groupClass : groupClasses) {
+                    if(groupClass == null){
+                        continue;
+                    }
+                    ControllerBeanWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
+                    controllerBeanWrappers.add(controllerBeanWrapper);
+                    process(1, pluginRegistryInfo.getPluginWrapper().getPluginId(), groupClass);
+                }
+                pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
+            } finally {
+                AopUtils.recoverAop();
             }
-            pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
+
         }
     }
 
@@ -103,23 +109,23 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
      */
     private ControllerBeanWrapper registry(PluginRegistryInfo pluginRegistryInfo, Class<?> aClass)
             throws Exception {
-        String pluginId= pluginRegistryInfo.getPluginWrapper().getPluginId();
+        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         String beanName = springBeanRegister.register(pluginId, aClass);
         if(beanName == null || "".equals(beanName)){
-            throw new PluginBeanFactoryException("registry "+ aClass.getName() + "failure!");
+            throw new IllegalArgumentException("registry "+ aClass.getName() + "failure!");
         }
-        Object object = applicationContext.getBean(beanName);
-        if(object == null){
-            throw new PluginBeanFactoryException("registry "+ aClass.getName() + "failure! " +
-                    "Not found The instance of" + aClass.getName());
-        }
-        ControllerBeanWrapper controllerBeanWrapper = new ControllerBeanWrapper();
-        controllerBeanWrapper.setBeanName(beanName);
-        setPathPrefix(pluginId, aClass);
-        Method getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
-                "getMappingForMethod", Method.class, Class.class);
-        getMappingForMethod.setAccessible(true);
         try {
+            Object object = applicationContext.getBean(beanName);
+            if(object == null){
+                throw new Exception("registry "+ aClass.getName() + "failure! " +
+                        "Not found The instance of" + aClass.getName());
+            }
+            ControllerBeanWrapper controllerBeanWrapper = new ControllerBeanWrapper();
+            controllerBeanWrapper.setBeanName(beanName);
+            setPathPrefix(pluginId, aClass);
+            Method getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
+                    "getMappingForMethod", Method.class, Class.class);
+            getMappingForMethod.setAccessible(true);
             Method[] methods = aClass.getMethods();
             Set<RequestMappingInfo> requestMappingInfos = new HashSet<>();
             for (Method method : methods) {
@@ -133,12 +139,10 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             controllerBeanWrapper.setRequestMappingInfos(requestMappingInfos);
             controllerBeanWrapper.setBeanClass(aClass);
             return controllerBeanWrapper;
-        } catch (SecurityException e) {
-            throw new Exception(e);
-        } catch (InvocationTargetException e) {
-            throw new Exception(e);
         } catch (Exception e){
-            throw new Exception(e);
+            // 出现异常, 卸载该 controller bean
+            springBeanRegister.unregister(pluginId, beanName);
+            throw e;
         }
     }
 

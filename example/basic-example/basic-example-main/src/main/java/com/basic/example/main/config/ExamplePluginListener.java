@@ -1,11 +1,10 @@
 package com.basic.example.main.config;
 
-import com.gitee.starblues.integration.PluginApplication;
+import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.listener.PluginListener;
 import com.gitee.starblues.integration.user.PluginUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 
 /**

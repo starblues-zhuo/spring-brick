@@ -1,6 +1,5 @@
 package com.gitee.starblues.factory.process.pipe.bean;
 
-import com.gitee.starblues.exception.PluginBeanFactoryException;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 
 /**
@@ -22,17 +21,17 @@ public interface PluginBeanRegister<T> {
      * 注册插件中的bane
      * @param registerPluginInfo 插件信息
      * @return 返回注册的bean的标识。卸载时,会将该参数传入
-     * @throws PluginBeanFactoryException 插件bean工厂异常
+     * @throws Exception 插件bean工厂异常
      */
-    T registry(PluginRegistryInfo registerPluginInfo) throws PluginBeanFactoryException;
+    T registry(PluginRegistryInfo registerPluginInfo) throws Exception;
 
     /**
      * 卸载插件中的bean
      * @param registerPluginInfo 插件信息
      * @param t 注册时返回的参数
-     * @throws PluginBeanFactoryException 插件bean工厂异常
+     * @throws Exception 插件bean工厂异常
      */
-    void unRegistry(PluginRegistryInfo registerPluginInfo, T t) throws PluginBeanFactoryException;
+    void unRegistry(PluginRegistryInfo registerPluginInfo, T t) throws Exception;
 
 
 }
