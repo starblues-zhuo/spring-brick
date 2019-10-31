@@ -11,6 +11,8 @@ spring:
 mybatis:
   typeAliasesPackage: com.mybatis.main.entity
   mapperLocations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 
 plugin:

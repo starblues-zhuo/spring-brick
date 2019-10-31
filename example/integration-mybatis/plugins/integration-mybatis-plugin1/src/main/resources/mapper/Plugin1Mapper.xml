@@ -22,9 +22,16 @@
         where id = #{id}
     </select>
 
-    <select id="getByIdOfBean" resultMap="BaseResultMap" parameterType="plugin1">
+    <select id="getByCondition" resultMap="BaseResultMap" parameterType="plugin1">
         select <include refid="Base_Column_List" /> from plugin1
-        where id = #{id, jdbcType=VARCHAR}
+        <where>
+            <if test="id!=null and id!=''">
+                id=#{id}
+            </if>
+            <if test="name!=null and name!=''">
+                and name=#{name}
+            </if>
+        </where>
     </select>
 
 </mapper>
