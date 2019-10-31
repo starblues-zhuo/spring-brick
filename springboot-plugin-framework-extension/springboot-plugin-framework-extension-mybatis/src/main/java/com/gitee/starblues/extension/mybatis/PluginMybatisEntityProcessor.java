@@ -1,7 +1,6 @@
 package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConfig;
-import com.gitee.starblues.extension.mybatis.utils.MybatisXmlProcess;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.realize.BasePlugin;
@@ -13,6 +12,7 @@ import org.apache.ibatis.type.TypeAliasRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -83,14 +83,12 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
             if(groupClass == null){
                 continue;
             }
+            String aliasName = lowerFirstChar(groupClass.getSimpleName());
             Alias alias = groupClass.getAnnotation(Alias.class);
-            String aliasNam;
-            if(alias == null){
-                aliasNam = lowerFirstChar(groupClass.getSimpleName());
-            } else {
-                aliasNam = alias.value();
+            if(alias != null && !StringUtils.isEmpty(alias.value())){
+                aliasName = alias.value();
             }
-            typeAliasRegistry.registerAlias(aliasNam, groupClass);
+            typeAliasRegistry.registerAlias(aliasName, groupClass);
         }
     }
 

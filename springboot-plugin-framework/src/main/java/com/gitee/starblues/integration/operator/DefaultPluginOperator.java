@@ -86,16 +86,28 @@ public class DefaultPluginOperator implements PluginOperator {
                 log.warn("Not found plugin!");
                 return false;
             }
+            boolean isFoundException = false;
             for (PluginWrapper pluginWrapper : pluginWrappers) {
-                GlobalRegistryInfo.addOperatorPluginInfo(pluginWrapper.getPluginId(),
+                String pluginId = pluginWrapper.getPluginId();
+                GlobalRegistryInfo.addOperatorPluginInfo(pluginId,
                         PluginOperatorInfo.OperatorType.INSTALL, false);
-                pluginFactory.registry(pluginWrapper);
+                try {
+                    pluginFactory.registry(pluginWrapper);
+                } catch (Exception e){
+                    log.error("Registry plugin '{}' failure. Reason : {}", pluginId, e.getMessage(), e);
+                    isFoundException = true;
+                }
             }
             pluginFactory.build();
-            log.info("Initialize plugins success");
-            pluginInitializerListenerFactory.complete();
-            isInit = true;
-            return true;
+            if(isFoundException){
+                log.error("Initialize plugins failure");
+                return false;
+            } else {
+                log.info("Initialize plugins success");
+                pluginInitializerListenerFactory.complete();
+                isInit = true;
+                return true;
+            }
         }  catch (Exception e){
             pluginInitializerListenerFactory.failure(e);
             throw e;
