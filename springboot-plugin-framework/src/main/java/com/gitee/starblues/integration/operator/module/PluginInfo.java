@@ -36,7 +36,11 @@ public class PluginInfo {
         return pluginDescriptor;
     }
 
-    public String getPluginState() {
+    public PluginState getPluginState() {
+        return pluginState;
+    }
+
+    public String getPluginStateString() {
         return pluginState.toString();
     }
 

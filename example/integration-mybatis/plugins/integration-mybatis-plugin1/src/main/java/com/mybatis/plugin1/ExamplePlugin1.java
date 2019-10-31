@@ -16,11 +16,13 @@ import java.util.Set;
 public class ExamplePlugin1 extends BasePlugin implements SpringBootMybatisConfig {
 
     private final Set<String> mybatisMapperXmlLocationsMatch = new HashSet<>();
+    private final Set<String> typeAliasesPackage = new HashSet<>();
 
 
     public ExamplePlugin1(PluginWrapper wrapper) {
         super(wrapper);
         mybatisMapperXmlLocationsMatch.add("classpath:mapper/*Mapper.xml");
+        typeAliasesPackage.add("com.mybatis.plugin1.entity");
     }
 
     @Override
@@ -41,5 +43,11 @@ public class ExamplePlugin1 extends BasePlugin implements SpringBootMybatisConfi
     @Override
     public Set<String> mybatisMapperXmlLocationsMatch() {
         return mybatisMapperXmlLocationsMatch;
+    }
+
+
+    @Override
+    public Set<String> typeAliasesPackage() {
+        return typeAliasesPackage;
     }
 }

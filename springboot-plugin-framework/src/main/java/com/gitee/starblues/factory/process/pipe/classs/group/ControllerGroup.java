@@ -1,6 +1,7 @@
 package com.gitee.starblues.factory.process.pipe.classs.group;
 
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroup;
+import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.AnnotationsUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,11 @@ public class ControllerGroup implements PluginClassGroup {
     @Override
     public String groupId() {
         return SPRING_CONTROLLER;
+    }
+
+    @Override
+    public void initialize(BasePlugin basePlugin) {
+
     }
 
     @Override

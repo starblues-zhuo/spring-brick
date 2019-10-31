@@ -53,7 +53,7 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
         CommonUtils.order(pluginPipeProcessorExtends, (pluginPipeProcessorExtend -> {
             OrderPriority order = pluginPipeProcessorExtend.order();
             if(order == null){
-                order = OrderPriority.getMiddlePriority();
+                order = OrderPriority.getLowPriority();
             }
             return order.getPriority();
         }));

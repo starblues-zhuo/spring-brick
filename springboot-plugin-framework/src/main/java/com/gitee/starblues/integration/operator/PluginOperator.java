@@ -115,6 +115,13 @@ public interface PluginOperator {
      */
     List<PluginInfo> getPluginInfo();
 
+    /**
+     * 根据插件id获取插件信息 [适用于生产环境、开发环境]
+     * @param pluginId 插件id
+     * @return 插件信息
+     */
+    PluginInfo getPluginInfo(String pluginId);
+
 
     /**
      * 得到插件文件的路径 [适用于生产环境]

@@ -1,5 +1,7 @@
 package com.mybatis.plugin1.entity;
 
+import org.apache.ibatis.type.Alias;
+
 /**
  * description
  *

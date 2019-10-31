@@ -12,7 +12,6 @@ import com.gitee.starblues.factory.PluginFactory;
 import com.gitee.starblues.utils.GlobalRegistryInfo;
 import com.gitee.starblues.utils.PluginOperatorInfo;
 import com.gitee.starblues.utils.PluginFileUtils;
-import org.apache.commons.io.FileUtils;
 import org.pf4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -44,13 +44,12 @@ public class DefaultPluginOperator implements PluginOperator {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
 
-    private final IntegrationConfiguration integrationConfiguration;
-    private final PluginManager pluginManager;
-    private final PluginFactory pluginFactory;
-    private final PluginInitializerListenerFactory pluginInitializerListenerFactory;
-
-    private final PluginDescriptorFinder pluginDescriptorFinder;
-    private final PluginLegalVerify uploadPluginVerify;
+    protected final IntegrationConfiguration integrationConfiguration;
+    protected final PluginManager pluginManager;
+    protected final PluginFactory pluginFactory;
+    protected final PluginInitializerListenerFactory pluginInitializerListenerFactory;
+    protected final PluginDescriptorFinder pluginDescriptorFinder;
+    protected final PluginLegalVerify uploadPluginVerify;
 
 
     public DefaultPluginOperator(ApplicationContext applicationContext,
@@ -114,20 +113,22 @@ public class DefaultPluginOperator implements PluginOperator {
             if(!Files.exists(path)){
                 throw new FileNotFoundException("Not found this path " + path);
             }
+            // 校验插件文件
+            uploadPluginVerify.verify(path);
             Path pluginsRoot = pluginManager.getPluginsRoot();
             if(path.getParent().compareTo(pluginsRoot) == 0){
-                // 说明该插件文件存在于插件root目录下。
+                // 说明该插件文件存在于插件root目录下。直接加载该插件
                 pluginId = pluginManager.loadPlugin(path);
             } else {
                 File sourceFile = path.toFile();
                 String targetPathString = pluginsRoot.toString() + File.separator +
                         sourceFile.getName();
-                Path targetPath = PluginFileUtils.getExistPath(Paths.get(targetPathString));
+                Path targetPath = Paths.get(targetPathString);
                 if(Files.exists(targetPath)){
-                    // 如果存在该文件, 则备份
-                    backup(targetPath, "install-backup", 2);
+                    // 如果存在该文件, 则移动备份
+                    backup(targetPath, "install-backup", 1);
                 }
-                FileUtils.copyFile(sourceFile, targetPath.toFile());
+                Files.copy(path, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 pluginId = pluginManager.loadPlugin(targetPath);
             }
             if(StringUtils.isEmpty(pluginId)){
@@ -147,7 +148,9 @@ public class DefaultPluginOperator implements PluginOperator {
             log.error("Install plugin '{}' failure. {}", pluginId, e.getMessage());
             log.info("Start uninstall plugin '{}' failure", pluginId);
             try {
-                uninstall(pluginId, false);
+                if(!StringUtils.isEmpty(pluginId)){
+                    uninstall(pluginId, false);
+                }
             } catch (Exception uninstallException){
                 log.error("Uninstall plugin '{}' failure. {}", pluginId, e.getMessage());
             }
@@ -161,9 +164,12 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public boolean uninstall(String pluginId, boolean isBackup) throws Exception {
+        if(StringUtils.isEmpty(pluginId)){
+            throw new IllegalArgumentException("Method:uninstall param 'pluginId' can not be empty");
+        }
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
         if(pluginWrapper == null){
-            throw new Exception("Uninstall plugin failure, Not found plugin ''" + pluginId + "'");
+            throw new Exception("Uninstall plugin failure, Not found plugin '" + pluginId + "'");
         }
         Exception exception = null;
         try {
@@ -174,11 +180,16 @@ public class DefaultPluginOperator implements PluginOperator {
             exception = e;
         }
         try {
-            if(isBackup){
-                // 将插件文件移到备份文件中
-                backup(pluginWrapper.getPluginPath(), "uninstall", 1);
-            }
-            if (pluginManager.deletePlugin(pluginId)) {
+
+            if (pluginManager.unloadPlugin(pluginId)) {
+                Path pluginPath = pluginWrapper.getPluginPath();
+                if(isBackup){
+                    // 将插件文件移到备份文件中
+                    backup(pluginPath, "uninstall", 1);
+                } else {
+                    // 不备份的话。直接删除该文件
+                    Files.deleteIfExists(pluginPath);
+                }
                 log.info("Uninstall plugin '{}' success", pluginId);
                 return true;
             } else {
@@ -280,11 +291,12 @@ public class DefaultPluginOperator implements PluginOperator {
         File sourceFile = path.toFile();
         String configPath = integrationConfiguration.pluginConfigFilePath() +
                 File.separator + sourceFile.getName();
-        Path targetPath = PluginFileUtils.getExistPath(Paths.get(configPath));
+        Path targetPath = PluginFileUtils.createExistFile(Paths.get(configPath));
         if(Files.exists(targetPath)){
-            backup(targetPath, "install-config-backup",2);
+            // 如果文件存在, 则移动备份
+            backup(targetPath, "install-config-backup",1);
         }
-        FileUtils.copyFile(sourceFile, targetPath.toFile());
+        Files.copy(path, targetPath, StandardCopyOption.REPLACE_EXISTING);
         return true;
     }
 
@@ -296,10 +308,12 @@ public class DefaultPluginOperator implements PluginOperator {
         String fileName = configFile.getOriginalFilename();
         String configPath = integrationConfiguration.pluginConfigFilePath() +
                 File.separator + fileName;
-        Path targetPath = PluginFileUtils.getExistPath(Paths.get(configPath));
+        Path targetPath = PluginFileUtils.createExistFile(Paths.get(configPath));
         if(Files.exists(targetPath)){
+            // 如果文件存在, 则拷贝备份
             backup(targetPath, "upload-config-backup",2);
         }
+        // 然后写入数据到该文件
         Files.write(targetPath, configFile.getBytes());
         return true;
     }
@@ -331,6 +345,16 @@ public class DefaultPluginOperator implements PluginOperator {
                             pw.getPluginPath().toAbsolutePath().toString());
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public PluginInfo getPluginInfo(String pluginId) {
+        PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
+        if(pluginWrapper == null){
+            throw new RuntimeException("Not found plugin '" + pluginId + "'");
+        }
+        return new PluginInfo(pluginWrapper.getDescriptor(), pluginWrapper.getPluginState(),
+                pluginWrapper.getPluginPath().toAbsolutePath().toString());
     }
 
 
@@ -375,24 +399,23 @@ public class DefaultPluginOperator implements PluginOperator {
             throw new IllegalArgumentException("Invalid file type, please select .jar or .zip file");
         }
         String tempPathString = integrationConfiguration.uploadTempPath() + File.separator + fileName;
-        Path tempPath = PluginFileUtils.getExistPath(Paths.get(tempPathString));
-        File tempFile = tempPath.toFile();
-        FileUtils.writeByteArrayToFile(tempFile, pluginFile.getBytes());
+        Path tempPath = PluginFileUtils.createExistFile(Paths.get(tempPathString));
+        Files.write(tempPath, pluginFile.getBytes());
         try {
             Path verifyPath = uploadPluginVerify.verify(tempPath);
             if(verifyPath != null){
-                String pluginFilePathString = pluginManager.getPluginsRoot().toString() +
+                String targetPathString = pluginManager.getPluginsRoot().toString() +
                         File.separator + fileName;
-                Path pluginFilePath = Paths.get(pluginFilePathString);
-                File target = pluginFilePath.toFile();
-                if(target.exists()){
+                Path targetPluginPath = Paths.get(targetPathString);
+                if(Files.exists(targetPluginPath)){
                     // 存在则拷贝一份
-                    backup(pluginFilePath, "upload", 2);
+                    backup(targetPluginPath, "upload", 2);
                 }
-                FileUtils.copyFile(verifyPath.toFile(), target);
+                // 拷贝校验的路径到插件路径下
+                Files.copy(verifyPath, targetPluginPath, StandardCopyOption.REPLACE_EXISTING);
                 // 删除临时文件
-                tempFile.deleteOnExit();
-                return pluginFilePath;
+                Files.deleteIfExists(tempPath);
+                return targetPluginPath;
             } else {
                 Exception exception =
                         new Exception(fileName + " verify failure, verifyPath is null");
@@ -467,16 +490,17 @@ public class DefaultPluginOperator implements PluginOperator {
             if(!Files.exists(target.getParent())){
                 Files.createDirectories(target.getParent());
             }
-            File targetFile = target.toFile();
             File sourceFile = sourcePath.toFile();
             if(sourceFile.length() == 0){
                 // 源文件字节为0, 说明为删除的插件。不需要备份
                 return true;
             }
-            FileUtils.copyFile(sourceFile, targetFile);
             if(type == 1){
                 // 是移动的话, 则删除源文件
-                FileUtils.deleteQuietly(sourceFile);
+                Files.move(sourcePath, target, StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                // 拷贝
+                Files.copy(sourcePath, target, StandardCopyOption.REPLACE_EXISTING);
             }
             return true;
         } catch (IOException e) {

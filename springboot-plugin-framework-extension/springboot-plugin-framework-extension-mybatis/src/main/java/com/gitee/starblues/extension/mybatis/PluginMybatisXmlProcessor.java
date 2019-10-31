@@ -1,10 +1,10 @@
 package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.extension.mybatis.utils.MybatisXmlProcess;
-import com.gitee.starblues.loader.ResourceWrapper;
-import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
+import com.gitee.starblues.loader.ResourceWrapper;
+import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.OrderPriority;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.pf4j.PluginWrapper;
@@ -22,9 +22,10 @@ import java.util.List;
 public class PluginMybatisXmlProcessor implements PluginPipeProcessorExtend {
 
     private final MybatisXmlProcess mybatisXmlProcess;
+    private final SqlSessionFactory sqlSessionFactory;
 
     PluginMybatisXmlProcessor(ApplicationContext mainApplicationContext) {
-        SqlSessionFactory sqlSessionFactory = mainApplicationContext.getBean(SqlSessionFactory.class);
+        sqlSessionFactory = mainApplicationContext.getBean(SqlSessionFactory.class);
         if(sqlSessionFactory != null){
             this.mybatisXmlProcess = MybatisXmlProcess.getInstance(sqlSessionFactory);
         } else {
@@ -44,7 +45,7 @@ public class PluginMybatisXmlProcessor implements PluginPipeProcessorExtend {
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        if(mybatisXmlProcess == null){
+        if(mybatisXmlProcess == null || sqlSessionFactory == null){
             return;
         }
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
@@ -54,6 +55,7 @@ public class PluginMybatisXmlProcessor implements PluginPipeProcessorExtend {
         if(resourceWrapper == null){
             return;
         }
+        processAliases(pluginRegistryInfo);
         List<Resource> pluginResources = resourceWrapper.getResources();
         if(pluginResources == null || pluginResources.isEmpty()){
             return;
@@ -61,8 +63,13 @@ public class PluginMybatisXmlProcessor implements PluginPipeProcessorExtend {
         mybatisXmlProcess.loadXmlResource(pluginResources, pluginWrapper.getPluginClassLoader());
     }
 
+    private void processAliases(PluginRegistryInfo pluginRegistryInfo) {
+
+    }
+
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         // not thing
     }
+
 }

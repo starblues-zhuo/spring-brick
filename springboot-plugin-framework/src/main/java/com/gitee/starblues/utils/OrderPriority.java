@@ -8,10 +8,13 @@ package com.gitee.starblues.utils;
  */
 public class OrderPriority {
 
+
+
     /**
-     * 低优先级
+     * 高优先级
      */
-    private static final Integer LOW_PRIORITY = -1000;
+    private static final Integer HIGH_PRIORITY = 1000;
+
 
 
     /**
@@ -19,11 +22,12 @@ public class OrderPriority {
      */
     private static final Integer MIDDLE_PRIORITY = 0;
 
-
     /**
-     * 高优先级
+     * 低优先级
      */
-    private static final Integer HIGH_PRIORITY = 1000;
+    private static final Integer LOW_PRIORITY = -1000;
+
+
 
 
     private Integer priority;

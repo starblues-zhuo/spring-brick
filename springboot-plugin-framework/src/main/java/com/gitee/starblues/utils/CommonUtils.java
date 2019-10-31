@@ -1,5 +1,6 @@
 package com.gitee.starblues.utils;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
@@ -15,7 +16,7 @@ public class CommonUtils {
     private CommonUtils(){}
 
     /**
-     * list按照int排序
+     * list按照int排序. 数字越大, 越排在前面
      * @param list list集合
      * @param orderImpl 排序实现
      * @param <T> T
@@ -25,7 +26,7 @@ public class CommonUtils {
         if(list == null){
             return list;
         }
-        list.sort(Comparator.comparing(orderImpl, Comparator.nullsLast(Comparator.naturalOrder())));
+        Collections.sort(list, Comparator.comparing(orderImpl, Comparator.nullsLast(Comparator.reverseOrder())));
         return list;
     }
 

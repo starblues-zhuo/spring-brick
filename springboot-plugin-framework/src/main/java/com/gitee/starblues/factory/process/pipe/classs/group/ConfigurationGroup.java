@@ -1,6 +1,7 @@
 package com.gitee.starblues.factory.process.pipe.classs.group;
 
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroup;
+import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.AnnotationsUtils;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,6 +22,11 @@ public class ConfigurationGroup implements PluginClassGroup {
     @Override
     public String groupId() {
         return SPRING_CONFIGURATION;
+    }
+
+    @Override
+    public void initialize(BasePlugin basePlugin) {
+
     }
 
     @Override

@@ -77,6 +77,14 @@ public class PluginClassProcess implements PluginPipeProcessor {
         if(pluginResources == null){
             return;
         }
+        for (PluginClassGroup pluginClassGroup : pluginClassGroups) {
+            try {
+                pluginClassGroup.initialize(basePlugin);
+            } catch (Exception e){
+                log.error("PluginClassGroup {} initialize exception. {}", pluginClassGroup.getClass(),
+                        e.getMessage(), e);
+            }
+        }
         for (Resource pluginResource : pluginResources) {
             String path = pluginResource.getURL().getPath();
             String packageName = path.substring(0, path.indexOf(".class"))
@@ -84,6 +92,9 @@ public class PluginClassProcess implements PluginPipeProcessor {
             packageName = packageName.substring(packageName.indexOf(basePlugin.scanPackage()));
             Class<?> aClass = Class.forName(packageName, false,
                     basePlugin.getWrapper().getPluginClassLoader());
+            if(aClass == null){
+                continue;
+            }
             boolean findGroup = false;
             for (PluginClassGroup pluginClassGroup : pluginClassGroups) {
                 if(pluginClassGroup == null || StringUtils.isEmpty(pluginClassGroup.groupId())){

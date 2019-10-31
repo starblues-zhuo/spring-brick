@@ -36,6 +36,7 @@ public class SpringBootMybatisExtension extends AbstractExtension {
     public List<PluginClassGroupExtend> getPluginClassGroup(ApplicationContext mainApplicationContext) {
         final List<PluginClassGroupExtend> pluginClassGroups = new ArrayList<>();
         pluginClassGroups.add(new PluginMapperGroup());
+        pluginClassGroups.add(new PluginEntityAliasesGroup());
         return pluginClassGroups;
     }
 
@@ -44,6 +45,7 @@ public class SpringBootMybatisExtension extends AbstractExtension {
         final List<PluginPipeProcessorExtend> pluginPipeProcessorExtends = new ArrayList<>();
         pluginPipeProcessorExtends.add(new PluginMybatisMapperProcessor(applicationContext));
         pluginPipeProcessorExtends.add(new PluginMybatisXmlProcessor(applicationContext));
+        pluginPipeProcessorExtends.add(new PluginMybatisEntityProcessor(applicationContext));
         return pluginPipeProcessorExtends;
     }
 

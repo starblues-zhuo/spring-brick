@@ -43,6 +43,13 @@ public class Plugin1Controller {
         return pluginMapperl.getById(id);
     }
 
+    @GetMapping("/bean/{id}")
+    public Plugin1 getUserByIdBean(@PathVariable("id") String id){
+        Plugin1 p = new Plugin1();
+        p.setId(id);
+        return pluginMapperl.getByIdOfBean(p);
+    }
+
     @GetMapping("/transactional")
     public void tran(){
         testTransactional.transactional();
