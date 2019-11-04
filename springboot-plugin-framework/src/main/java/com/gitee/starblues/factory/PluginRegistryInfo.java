@@ -136,7 +136,18 @@ public class PluginRegistryInfo {
      * @param value 扩展值
      */
     public void addExtension(String key, Object value){
+        if(extensionMap.containsKey(key)){
+            throw new RuntimeException("The extension key ' " + key + " 'already exists");
+        }
         extensionMap.put(key, value);
+    }
+
+    /**
+     * 移除扩展数据
+     * @param key 扩展的key
+     */
+    public void removeExtension(String key){
+        extensionMap.remove(key);
     }
 
     /**

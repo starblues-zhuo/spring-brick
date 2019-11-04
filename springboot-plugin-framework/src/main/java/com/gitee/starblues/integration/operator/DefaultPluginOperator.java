@@ -41,7 +41,7 @@ public class DefaultPluginOperator implements PluginOperator {
     private boolean isInit = false;
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private final static DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
 
     protected final IntegrationConfiguration integrationConfiguration;
@@ -74,11 +74,16 @@ public class DefaultPluginOperator implements PluginOperator {
             throw new RuntimeException("Plugins Already initialized. Cannot be initialized again");
         }
         try {
-            pluginInitializerListenerFactory.addPluginInitializerListeners(pluginInitializerListener);
-            log.info("Start initialize plugins of root path '{}'", pluginManager.getPluginsRoot().toString());
-            pluginInitializerListenerFactory.before();
             // 启动前, 清除空文件
             PluginFileUtils.cleanEmptyFile(pluginManager.getPluginsRoot());
+
+            pluginInitializerListenerFactory.addPluginInitializerListeners(pluginInitializerListener);
+            log.info("Plugins start initialize of root path '{}'", pluginManager.getPluginsRoot().toString());
+            // 触发插件初始化监听器
+            pluginInitializerListenerFactory.before();
+            // 开始初始化插件工厂
+            pluginFactory.initialize();
+            // 开始加载插件
             pluginManager.loadPlugins();
             pluginManager.startPlugins();
             List<PluginWrapper> pluginWrappers = pluginManager.getStartedPlugins();
@@ -92,18 +97,19 @@ public class DefaultPluginOperator implements PluginOperator {
                 GlobalRegistryInfo.addOperatorPluginInfo(pluginId,
                         PluginOperatorInfo.OperatorType.INSTALL, false);
                 try {
+                    // 依次注册插件信息到Spring boot
                     pluginFactory.registry(pluginWrapper);
                 } catch (Exception e){
-                    log.error("Registry plugin '{}' failure. Reason : {}", pluginId, e.getMessage(), e);
+                    log.error("Plugin '{}' registry failure. Reason : {}", pluginId, e.getMessage(), e);
                     isFoundException = true;
                 }
             }
             pluginFactory.build();
             if(isFoundException){
-                log.error("Initialize plugins failure");
+                log.error("Plugins initialize failure");
                 return false;
             } else {
-                log.info("Initialize plugins success");
+                log.info("Plugins initialize success");
                 pluginInitializerListenerFactory.complete();
                 isInit = true;
                 return true;
@@ -144,27 +150,27 @@ public class DefaultPluginOperator implements PluginOperator {
                 pluginId = pluginManager.loadPlugin(targetPath);
             }
             if(StringUtils.isEmpty(pluginId)){
-                log.error("Install plugin '{}' failure, this plugin id is empty.", pluginId);
+                log.error("Plugin '{}' install failure, this plugin id is empty.", pluginId);
                 return false;
             }
             GlobalRegistryInfo.addOperatorPluginInfo(pluginId, PluginOperatorInfo.OperatorType.INSTALL, true);
             if(start(pluginId)){
-                log.info("Install plugin '{}' success", pluginId);
+                log.info("Plugin '{}' install success", pluginId);
                 return true;
             } else {
-                log.error("Install plugin '{}' failure", pluginId);
+                log.error("Plugin '{}' install failure", pluginId);
                 return false;
             }
         } catch (Exception e){
             // 说明load成功, 但是没有启动成功, 则卸载该插件
-            log.error("Install plugin '{}' failure. {}", pluginId, e.getMessage());
+            log.error("Plugin '{}' install failure. {}", pluginId, e.getMessage());
             log.info("Start uninstall plugin '{}' failure", pluginId);
             try {
                 if(!StringUtils.isEmpty(pluginId)){
                     uninstall(pluginId, false);
                 }
             } catch (Exception uninstallException){
-                log.error("Uninstall plugin '{}' failure. {}", pluginId, e.getMessage());
+                log.error("Plugin '{}' uninstall failure. {}", pluginId, e.getMessage());
             }
             throw e;
         } finally {
@@ -181,14 +187,14 @@ public class DefaultPluginOperator implements PluginOperator {
         }
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
         if(pluginWrapper == null){
-            throw new Exception("Uninstall plugin failure, Not found plugin '" + pluginId + "'");
+            throw new Exception("Plugin uninstall failure, Not found plugin '" + pluginId + "'");
         }
         Exception exception = null;
         try {
             pluginFactory.unRegistry(pluginId);
             pluginFactory.build();
         } catch (Exception e){
-            log.error("Uninstall plugin '{}' failure, {}", pluginId, e.getMessage());
+            log.error("Plugin '{}' uninstall failure, {}", pluginId, e.getMessage());
             exception = e;
         }
         try {
@@ -202,17 +208,17 @@ public class DefaultPluginOperator implements PluginOperator {
                     // 不备份的话。直接删除该文件
                     Files.deleteIfExists(pluginPath);
                 }
-                log.info("Uninstall plugin '{}' success", pluginId);
+                log.info("Plugin '{}' uninstall success", pluginId);
                 return true;
             } else {
-                log.error("Uninstall plugin '{}' failure", pluginId);
+                log.error("Plugin '{}' uninstall failure", pluginId);
                 return false;
             }
         } catch (Exception e){
             if(exception != null){
                 exception.printStackTrace();
             }
-            log.error("Uninstall plugin '{}' failure. {}", pluginId, e.getMessage());
+            log.error("Plugin '{}' uninstall failure. {}", pluginId, e.getMessage());
             throw e;
         }
     }
@@ -234,18 +240,18 @@ public class DefaultPluginOperator implements PluginOperator {
                 GlobalRegistryInfo.addOperatorPluginInfo(pluginId, PluginOperatorInfo.OperatorType.START, false);
                 pluginFactory.registry(pluginWrapper);
                 pluginFactory.build();
-                log.info("Start plugin '{}' success", pluginId);
+                log.info("Plugin '{}' start success", pluginId);
                 return true;
             }
-            log.error("Start plugin '{}' failure, plugin state is not start. Current plugin state is '{}'",
+            log.error("Plugin '{}' start failure, plugin state is not start. Current plugin state is '{}'",
                     pluginId, pluginState.toString());
         } catch (Exception e){
-            log.error("Start plugin '{}' failure. {}", pluginId, e.getMessage());
+            log.error("Plugin '{}' start failure. {}", pluginId, e.getMessage());
             log.info("Start stop plugin {}", pluginId);
             try {
                 stop(pluginId);
             } catch (Exception stopException){
-                log.error("Stop plugin '{}' failure. {}", pluginId, e.getMessage());
+                log.error("Plugin '{}' stop failure. {}", pluginId, e.getMessage());
             }
             throw e;
         }
@@ -266,15 +272,15 @@ public class DefaultPluginOperator implements PluginOperator {
             pluginFactory.unRegistry(pluginId);
             pluginFactory.build();
         } catch (Exception e){
-            log.error("Stop plugin '{}' failure. {}", pluginId, e.getMessage());
+            log.error("Plugin '{}' stop failure. {}", pluginId, e.getMessage());
             e.printStackTrace();
         }
         try {
             pluginManager.stopPlugin(pluginId);
-            log.info("Stop plugin '{}' success", pluginId);
+            log.info("Plugin '{}' stop success", pluginId);
             return true;
         } catch (Exception e){
-            log.error("Stop plugin '{}' failure. {}", pluginId, e.getMessage());
+            log.error("Plugin '{}' stop failure. {}", pluginId, e.getMessage());
             throw e;
         }
     }
@@ -287,10 +293,10 @@ public class DefaultPluginOperator implements PluginOperator {
         }
         Path path = uploadPlugin(pluginFile);
         if(this.install(path)){
-            log.info("Upload And Start plugin Success");
+            log.info("Plugin upload and start success");
             return true;
         } else {
-            log.error("Upload And Start plugin failure");
+            log.error("Plugin upload and start failure");
             return false;
         }
     }
@@ -388,6 +394,11 @@ public class DefaultPluginOperator implements PluginOperator {
     @Override
     public List<PluginWrapper> getPluginWrapper() {
         return pluginManager.getPlugins();
+    }
+
+    @Override
+    public PluginWrapper getPluginWrapper(String pluginId) {
+        return pluginManager.getPlugin(pluginId);
     }
 
     /**
@@ -489,7 +500,7 @@ public class DefaultPluginOperator implements PluginOperator {
                 return false;
             }
             if(!Files.exists(sourcePath)){
-                log.error("path '{}' does not exist", sourcePath.toString());
+                log.error("Path '{}' does not exist", sourcePath.toString());
                 return false;
             }
             String fileName = sourcePath.getFileName().toString();
@@ -527,7 +538,7 @@ public class DefaultPluginOperator implements PluginOperator {
      */
     private String getNowTimeByFormat(){
         LocalDateTime localDateTime = LocalDateTime.now();
-        return dateTimeFormatter.format(localDateTime);
+        return FORMAT.format(localDateTime);
     }
 
     /**

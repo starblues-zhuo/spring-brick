@@ -1,6 +1,6 @@
 package com.gitee.starblues.loader;
 
-import com.gitee.starblues.extension.ExtensionFactory;
+import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.loader.load.PluginClassLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.CommonUtils;
@@ -30,7 +30,8 @@ public class PluginResourceLoadFactory {
 
     public PluginResourceLoadFactory() {
         this.pluginResourceLoaders.add(new PluginClassLoader());
-        addExtension();
+        // 添加扩展
+        this.pluginResourceLoaders.addAll(ExtensionInitializer.getResourceLoadersExtends());
         CommonUtils.order(pluginResourceLoaders, (pluginResourceLoader -> {
             OrderPriority order = pluginResourceLoader.order();
             if (order == null) {
@@ -38,21 +39,6 @@ public class PluginResourceLoadFactory {
             }
             return order.getPriority();
         }));
-    }
-
-
-    /**
-     * 添加扩展
-     */
-    private void addExtension() {
-        ExtensionFactory extensionFactory = ExtensionFactory.getSingleton();
-        extensionFactory.iteration(abstractExtension -> {
-            List<PluginResourceLoader> pluginResourceLoaders = abstractExtension.getPluginResourceLoader();
-            extensionFactory.iteration(pluginResourceLoaders, pluginResourceLoader -> {
-                this.pluginResourceLoaders.add(pluginResourceLoader);
-                LOG.info("Register Extension PluginResourceLoader : {}", pluginResourceLoader.key());
-            });
-        });
     }
 
     /**

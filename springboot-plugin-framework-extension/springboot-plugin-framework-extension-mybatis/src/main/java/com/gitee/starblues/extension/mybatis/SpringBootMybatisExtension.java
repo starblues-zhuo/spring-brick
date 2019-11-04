@@ -1,6 +1,7 @@
 package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.extension.AbstractExtension;
+import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.loader.PluginResourceLoader;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
@@ -24,6 +25,8 @@ public class SpringBootMybatisExtension extends AbstractExtension {
     public String key() {
         return KEY;
     }
+
+
 
     @Override
     public List<PluginResourceLoader> getPluginResourceLoader() {

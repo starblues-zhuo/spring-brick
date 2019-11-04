@@ -13,6 +13,13 @@ import org.pf4j.PluginWrapper;
 public interface PluginFactory extends PluginListenerContext {
 
     /**
+     * 工厂初始化
+     * @throws Exception 初始化异常
+     */
+    void initialize() throws Exception;
+
+
+    /**
      * 注册插件。
      * @param pluginWrapper 插件
      * @return 插件工厂

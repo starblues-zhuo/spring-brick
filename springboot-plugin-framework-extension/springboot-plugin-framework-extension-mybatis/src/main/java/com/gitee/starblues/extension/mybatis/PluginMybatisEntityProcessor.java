@@ -14,8 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 实体类别名处理者
@@ -28,6 +31,7 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
     private final static Logger LOG = LoggerFactory.getLogger(PluginMybatisEntityProcessor.class);
 
     private final static String KEY = "PluginMybatisEntityProcessor";
+    private final static String ALIAS_NAME_KEY = "mybatisAliasName";
 
     private final SqlSessionFactory sqlSessionFactory;
 
@@ -46,24 +50,58 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
     }
 
     @Override
+    public void initialize() throws Exception {
+
+    }
+
+    @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         if(sqlSessionFactory == null){
             LOG.warn("Mybatis SqlSessionFactory is null, Cannot register alias");
             return;
         }
+        TypeAliasRegistry typeAliasRegistry = getTypeAliasRegistry();
+        if (typeAliasRegistry == null){
+            return;
+        }
+        Set<String> mybatisAliasNames = pluginRegistryInfo.getExtension(ALIAS_NAME_KEY);
+        if(mybatisAliasNames == null){
+            mybatisAliasNames = new HashSet<>();
+            pluginRegistryInfo.addExtension(ALIAS_NAME_KEY, mybatisAliasNames);
+        }
+        processEntityClass(pluginRegistryInfo, typeAliasRegistry, mybatisAliasNames);
+        processAliasMapping(pluginRegistryInfo, typeAliasRegistry, mybatisAliasNames);
+    }
+
+    private TypeAliasRegistry getTypeAliasRegistry() {
         Configuration configuration = sqlSessionFactory.getConfiguration();
         if(configuration == null){
             LOG.warn("Mybatis Configuration is null, Cannot register alias");
-            return;
+            return null;
         }
         TypeAliasRegistry typeAliasRegistry = configuration.getTypeAliasRegistry();
         if(typeAliasRegistry == null){
             LOG.warn("Mybatis TypeAliasRegistry is null, Cannot register alias");
+            return null;
+        }
+        return typeAliasRegistry;
+    }
+
+    @Override
+    public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
+        TypeAliasRegistry typeAliasRegistry = getTypeAliasRegistry();
+        if(typeAliasRegistry == null){
             return;
         }
-        processEntityClass(pluginRegistryInfo, typeAliasRegistry);
-        processAliasMapping(pluginRegistryInfo, typeAliasRegistry);
+        Set<String> mybatisAliasNames = pluginRegistryInfo.getExtension(ALIAS_NAME_KEY);
+        if(mybatisAliasNames != null && !mybatisAliasNames.isEmpty()){
+            for (String mybatisAliasName : mybatisAliasNames) {
+                Map<String, Class<?>> typeAliases = getTypeAliases(typeAliasRegistry);
+                typeAliases.remove(mybatisAliasName);
+            }
+        }
     }
+
 
     /**
      * 处理别名的实体类
@@ -71,7 +109,8 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
      * @param typeAliasRegistry 别名注册器
      */
     private void processEntityClass(PluginRegistryInfo pluginRegistryInfo,
-                                    TypeAliasRegistry typeAliasRegistry){
+                                    TypeAliasRegistry typeAliasRegistry,
+                                    Set<String> mybatisAliasNames){
         List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(PluginEntityAliasesGroup.KEY);
         if(groupClasses == null || groupClasses.isEmpty()){
             return;
@@ -88,7 +127,11 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
             if(alias != null && !StringUtils.isEmpty(alias.value())){
                 aliasName = alias.value();
             }
-            typeAliasRegistry.registerAlias(aliasName, groupClass);
+            if(StringUtils.isEmpty(aliasName)){
+                continue;
+            }
+            registerAlias(typeAliasRegistry, aliasName, groupClass);
+            mybatisAliasNames.add(aliasName);
         }
     }
 
@@ -98,7 +141,8 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
      * @param typeAliasRegistry 别名注册器
      */
     private void processAliasMapping(PluginRegistryInfo pluginRegistryInfo,
-                                     TypeAliasRegistry typeAliasRegistry){
+                                     TypeAliasRegistry typeAliasRegistry,
+                                     Set<String> mybatisAliasNames){
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
         if(basePlugin instanceof SpringBootMybatisConfig){
             SpringBootMybatisConfig config = (SpringBootMybatisConfig) basePlugin;
@@ -107,18 +151,55 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
                 return;
             }
             aliasMapping.forEach((k, v)->{
-                typeAliasRegistry.registerAlias(k, v);
+                registerAlias(typeAliasRegistry, k, v);
+                mybatisAliasNames.add(k);
             });
         }
     }
 
 
-
-    @Override
-    public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-
+    /**
+     * 注册别名。
+     * @param typeAliasRegistry 别名注册器
+     * @param alias 别名名称
+     * @param value 别名对应的class类
+     */
+    private void registerAlias(TypeAliasRegistry typeAliasRegistry,
+                               String alias,
+                               Class<?> value){
+        if(StringUtils.isEmpty(alias)){
+            return;
+        }
+        Map<String, Class<?>> typeAliases = getTypeAliases(typeAliasRegistry);
+        typeAliases.put(alias, value);
     }
 
+    /**
+     *
+     * 通过反射获取别名注册器 TypeAliasRegistry 中存储别名的 typeAliases Map集合。
+     * @param typeAliasRegistry 别名注册器
+     * @return typeAliases Map集合。
+     */
+    private Map<String, Class<?>> getTypeAliases(TypeAliasRegistry typeAliasRegistry) {
+        if(typeAliasRegistry == null){
+            return null;
+        }
+        try {
+            Field field = typeAliasRegistry.getClass().getDeclaredField("typeAliases");
+            //设置对象的访问权限，保证对private的属性的访问
+            field.setAccessible(true);
+            Object fieldObject = field.get(typeAliasRegistry);
+            if(fieldObject instanceof Map){
+                return (Map<String, Class<?>>)fieldObject;
+            } else {
+                LOG.warn("Not found TypeAliasRegistry typeAliases");
+                return null;
+            }
+        } catch (Exception e) {
+            LOG.error("Found TypeAliasRegistry typeAliases exception. {}", e.getMessage(), e);
+            return null;
+        }
+    }
 
     /**
      * 首字母小写

@@ -56,4 +56,21 @@ public interface IntegrationConfiguration {
      */
     boolean enablePluginIdRestControllerPathPrefix();
 
+
+    /**
+     * 访问插件静态资源前缀。默认为: static-plugin。不允许出现 '/' '\' 符号
+     * @return 插件静态资源访问前缀
+     */
+    default String pluginStaticResourcePathPrefix(){
+        return "static-plugin";
+    }
+
+    /**
+     * 是否缓存插件访问的静态资源。默认不缓存
+     * @return true缓存。false不缓存
+     */
+    default boolean isCachePluginStaticResources(){
+        return false;
+    }
+
 }

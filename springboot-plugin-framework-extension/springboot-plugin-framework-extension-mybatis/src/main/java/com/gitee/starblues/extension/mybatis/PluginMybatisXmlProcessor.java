@@ -44,6 +44,11 @@ public class PluginMybatisXmlProcessor implements PluginPipeProcessorExtend {
     }
 
     @Override
+    public void initialize() throws Exception {
+
+    }
+
+    @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         if(mybatisXmlProcess == null || sqlSessionFactory == null){
             return;

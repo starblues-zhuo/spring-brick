@@ -1,5 +1,6 @@
 package com.gitee.starblues.extension;
 
+import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.loader.PluginResourceLoader;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
@@ -16,11 +17,26 @@ import java.util.List;
  */
 public abstract class AbstractExtension {
 
+    protected PluginApplication pluginApplication;
+
+
+    public void setPluginApplication(PluginApplication pluginApplication) {
+        this.pluginApplication = pluginApplication;
+    }
+
     /**
      * 扩展key
      * @return String
      */
     public abstract String key();
+
+    /**
+     * 该扩展初始化的操作
+     * @throws Exception 初始化异常
+     */
+    public void initialize(ApplicationContext applicationContext) throws Exception{
+    }
+
 
     /**
      * 得到插件的资源加载者

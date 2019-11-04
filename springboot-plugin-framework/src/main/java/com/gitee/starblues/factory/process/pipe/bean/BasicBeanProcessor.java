@@ -44,6 +44,11 @@ public class BasicBeanProcessor implements PluginPipeProcessor {
     }
 
     @Override
+    public void initialize() throws Exception {
+
+    }
+
+    @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         Set<String> beanNames = new HashSet<>();
         List<Class<?>> springComponents = pluginRegistryInfo

@@ -19,12 +19,15 @@ import java.util.List;
 public abstract class AbstractPluginApplication implements PluginApplication {
 
     protected final PluginListenerFactory listenerFactory = new PluginListenerFactory();
-    protected final ExtensionFactory extensionFactory = ExtensionFactory.getSingleton();
 
 
     @Override
     public void addExtension(AbstractExtension extension) {
-        extensionFactory.addExtension(extension);
+        if(extension == null){
+            return;
+        }
+        extension.setPluginApplication(this);
+        ExtensionFactory.addExtension(extension);
     }
 
     @Override

@@ -69,6 +69,11 @@ public class PluginMybatisMapperProcessor implements PluginPipeProcessorExtend {
 
 
     @Override
+    public void initialize() throws Exception {
+
+    }
+
+    @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         if(!mybatisExist()){
             return;

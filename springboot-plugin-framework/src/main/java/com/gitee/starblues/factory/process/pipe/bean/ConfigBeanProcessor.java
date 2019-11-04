@@ -41,6 +41,11 @@ public class ConfigBeanProcessor implements PluginPipeProcessor {
 
 
     @Override
+    public void initialize() throws Exception {
+
+    }
+
+    @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         List<Class<?>> configDefinitions =
                 pluginRegistryInfo.getGroupClasses(ConfigDefinitionGroup.CONFIG_DEFINITION);

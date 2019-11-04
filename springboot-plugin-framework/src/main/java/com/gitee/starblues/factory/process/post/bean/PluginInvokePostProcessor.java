@@ -50,6 +50,11 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
 
 
     @Override
+    public void initialize() throws Exception {
+
+    }
+
+    @Override
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
             AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());

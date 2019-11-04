@@ -1,13 +1,10 @@
 package com.gitee.starblues.factory.process.post;
 
-import com.gitee.starblues.extension.ExtensionFactory;
+import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.post.bean.PluginConfigurationPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.PluginControllerPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.PluginInvokePostProcessor;
-import com.gitee.starblues.utils.AopUtils;
-import com.gitee.starblues.utils.CommonUtils;
-import com.gitee.starblues.utils.OrderPriority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -25,44 +22,28 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private List<PluginPostProcessor> pluginPostProcessors = new ArrayList<>();
+    private final List<PluginPostProcessor> pluginPostProcessors = new ArrayList<>();
+    private final ApplicationContext applicationContext;
 
     public PluginPostProcessorFactory(ApplicationContext applicationContext){
+       this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void initialize() throws Exception{
         pluginPostProcessors.add(new PluginConfigurationPostProcessor(applicationContext));
         pluginPostProcessors.add(new PluginInvokePostProcessor(applicationContext));
         pluginPostProcessors.add(new PluginControllerPostProcessor(applicationContext));
-        addExtension(applicationContext);
+        // 添加扩展
+        pluginPostProcessors.addAll(ExtensionInitializer.getPostProcessorExtends());
+
+
+        // 进行初始化
+        for (PluginPostProcessor pluginPostProcessor : pluginPostProcessors) {
+            pluginPostProcessor.initialize();
+        }
     }
 
-    /**
-     * 添加扩展
-     * @param mainApplicationContext mainApplicationContext
-     */
-    private void addExtension(ApplicationContext mainApplicationContext) {
-        ExtensionFactory extensionFactory = ExtensionFactory.getSingleton();
-        List<PluginPostProcessorExtend> pluginPostProcessorExtends = new ArrayList<>();
-        extensionFactory.iteration(abstractExtension -> {
-            List<PluginPostProcessorExtend> pluginPostProcessors =
-                    abstractExtension.getPluginPostProcessor(mainApplicationContext);
-            extensionFactory.iteration(pluginPostProcessors, pluginPipeProcessorExtend->{
-                pluginPostProcessorExtends.add(pluginPipeProcessorExtend);
-            });
-        });
-        if(pluginPostProcessorExtends.isEmpty()){
-            return;
-        }
-        CommonUtils.order(pluginPostProcessorExtends, (pluginPipeProcessorExtend -> {
-            OrderPriority order = pluginPipeProcessorExtend.order();
-            if(order == null){
-                order = OrderPriority.getMiddlePriority();
-            }
-            return order.getPriority();
-        }));
-        for (PluginPostProcessorExtend pluginPostProcessorExtend : pluginPostProcessorExtends) {
-            pluginPostProcessors.add(pluginPostProcessorExtend);
-            log.info("Register Extension PluginPostProcessor : {}", pluginPostProcessorExtend.getClass());
-        }
-    }
 
     @Override
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception{

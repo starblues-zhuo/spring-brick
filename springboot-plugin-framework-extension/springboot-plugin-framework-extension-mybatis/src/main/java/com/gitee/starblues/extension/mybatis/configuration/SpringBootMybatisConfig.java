@@ -27,9 +27,8 @@ public interface SpringBootMybatisConfig {
 
     /**
      * 别名自定义映射。
-     * 如果同时配置了typeAliasesPackage, 则此处配置会覆盖typeAliasesPackage的默认配置。
-     * 别名优先级别: aliasMapping > @Alias('') > typeAliasesPackage
-     * 如果同时配置了三个地方, 并且key一样, 则最终优先级别高的生效。
+     * 如果同时配置了typeAliasesPackage, 则此处配置会覆盖typeAliasesPackage、或者注解@Alias('') 的配置。
+     * 别名生效优先级别: aliasMapping > @Alias('') > typeAliasesPackage。如果同时配置了三个地方, 并且key一样, 则最终优先级别高的生效。
      * @return 映射Map
      */
     default Map<String, Class> aliasMapping(){

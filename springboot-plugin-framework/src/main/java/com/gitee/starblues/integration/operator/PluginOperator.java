@@ -131,10 +131,17 @@ public interface PluginOperator {
     Set<String> getPluginFilePaths() throws Exception;
 
     /**
-     * 得到插件的包装类 [适用于生产环境、开发环境]
+     * 得到所有插件的包装类 [适用于生产环境、开发环境]
      * @return 返回插件包装类集合
      */
     List<PluginWrapper> getPluginWrapper();
+
+    /**
+     * 通过插件id得到插件的包装类 [适用于生产环境、开发环境]
+     * @param pluginId 插件id
+     * @return 返回插件包装类集合
+     */
+    PluginWrapper getPluginWrapper(String pluginId);
 
 
 }

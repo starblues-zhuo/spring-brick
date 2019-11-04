@@ -142,4 +142,5 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             return enablePluginIdRestControllerPathPrefix;
         }
     }
+
 }
