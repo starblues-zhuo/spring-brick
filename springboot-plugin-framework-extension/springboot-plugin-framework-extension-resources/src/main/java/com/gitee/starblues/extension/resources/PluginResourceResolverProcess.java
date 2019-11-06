@@ -8,17 +8,17 @@ import com.gitee.starblues.utils.OrderPriority;
 import java.util.List;
 
 /**
- * description
+ * 插件资源处理器
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.1
  */
-public class PluginHandlerMappingProcess implements PluginPostProcessorExtend {
+public class PluginResourceResolverProcess implements PluginPostProcessorExtend {
 
-    private static final String KEY = "PluginHandlerMappingProcess";
+    private static final String KEY = "PluginResourceResolverProcess";
 
 
-    PluginHandlerMappingProcess() {
+    PluginResourceResolverProcess() {
     }
 
     @Override
@@ -38,11 +38,9 @@ public class PluginHandlerMappingProcess implements PluginPostProcessorExtend {
 
     @Override
     public synchronized void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
-
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
             PluginResourceResolver.parse(pluginRegistryInfo.getBasePlugin());
         }
-
     }
 
     @Override

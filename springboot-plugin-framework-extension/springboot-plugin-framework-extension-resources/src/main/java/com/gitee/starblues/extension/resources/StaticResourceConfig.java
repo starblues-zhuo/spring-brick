@@ -6,9 +6,10 @@ import java.util.Set;
  * 插件静态资源的配置
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.1
  */
 public interface StaticResourceConfig {
+
 
     /**
      * 静态文件路径

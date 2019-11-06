@@ -61,7 +61,8 @@ public class PluginClassProcess implements PluginPipeProcessor {
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
-        PluginResourceLoadFactory pluginResourceLoadFactory = basePlugin.getPluginResourceLoadFactory();
+        PluginResourceLoadFactory pluginResourceLoadFactory = basePlugin.getBasePluginExtend()
+                .getPluginResourceLoadFactory();
         ResourceWrapper resourceWrapper = pluginResourceLoadFactory.getPluginResources(PluginClassLoader.KEY);
         if(resourceWrapper == null){
             return;

@@ -65,9 +65,9 @@
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 
         <pf4j-version>3.1.0</pf4j-version>
-        <spring-version>5.1.7.RELEASE</spring-version>
         <jackson.version>2.9.9</jackson.version>
 
+        <spring-version>5.0.7.RELEASE</spring-version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <junit.version>4.11</junit.version>
     </properties>
@@ -81,18 +81,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring-version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring-version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
@@ -102,6 +90,20 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring-version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

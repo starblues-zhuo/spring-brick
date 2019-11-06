@@ -66,6 +66,9 @@
         <maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 
+        <spring-version>5.0.7.RELEASE</spring-version>
+        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+
         <springboot-plugin-framework.version>2.2.0-RELEASE</springboot-plugin-framework.version>
         <spring-boot-starter-web.version>2.1.1.RELEASE</spring-boot-starter-web.version>
     </properties>
@@ -81,12 +84,19 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.1.1.RELEASE</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring-version}</version>
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>

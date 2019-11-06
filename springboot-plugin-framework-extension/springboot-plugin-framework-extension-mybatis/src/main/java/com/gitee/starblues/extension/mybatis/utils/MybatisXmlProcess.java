@@ -67,10 +67,10 @@ public class MybatisXmlProcess {
         ClassLoader defaultClassLoader = Resources.getDefaultClassLoader();
         try {
             Resources.setDefaultClassLoader(pluginClassLoader);
-            for (Resource resource :resources) {
+            for (Resource resource : resources) {
                 InputStream inputStream = resource.getInputStream();
                 try {
-                    PluginMybatisXmlMapperBuilder xmlMapperBuilder =  new PluginMybatisXmlMapperBuilder(
+                    PluginMybatisXmlMapperBuilder xmlMapperBuilder = new PluginMybatisXmlMapperBuilder(
                             inputStream,
                             configuration, resource.toString(),
                             configuration.getSqlFragments(),

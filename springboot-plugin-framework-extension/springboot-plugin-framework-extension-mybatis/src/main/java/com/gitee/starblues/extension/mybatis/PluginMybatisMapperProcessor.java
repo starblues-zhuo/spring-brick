@@ -22,8 +22,6 @@ import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.ScopeMetadata;
 import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,8 +30,6 @@ import java.util.Set;
 /**
  * 插件 mybatis mapper 注册者
  * @author zhangzhuo
- * @see Controller
- * @see RestController
  * @version 1.0
  */
 public class PluginMybatisMapperProcessor implements PluginPipeProcessorExtend {
