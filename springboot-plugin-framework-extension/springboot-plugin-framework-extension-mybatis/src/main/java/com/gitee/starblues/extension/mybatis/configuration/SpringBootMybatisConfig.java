@@ -1,5 +1,6 @@
 package com.gitee.starblues.extension.mybatis.configuration;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -8,7 +9,7 @@ import java.util.Set;
  * @author zhangzhuo
  * @version 1.0
  */
-    public interface SpringBootMybatisConfig {
+public interface SpringBootMybatisConfig {
 
 
     /**
@@ -23,5 +24,27 @@ import java.util.Set;
      * @return Set
      */
     Set<String> mybatisMapperXmlLocationsMatch();
+
+    /**
+     * 别名自定义映射。
+     * 如果同时配置了typeAliasesPackage, 则此处配置会覆盖typeAliasesPackage、或者注解@Alias('') 的配置。
+     * 优先级别:
+     *  别名生效优先级别(由大到小): aliasMapping、@Alias('')、typeAliasesPackage
+     *  如果同时配置了三个地方, 并且key一样, 则最终优先级别高的生效。
+     * @return 映射Map
+     */
+    default Map<String, Class> aliasMapping(){
+        return null;
+    }
+
+    /**
+     * 要统一定义别名的包集合。别名规则为: 首字母小写的包名, 只支持当前包下的类, 不支持包递归。
+     * 如果该包下的类使用了别名注解@Alias, 则优先使用@Alias中定义的别名。
+     * @return 包集合
+     */
+    default Set<String> typeAliasesPackage(){
+        return null;
+    }
+
 
 }

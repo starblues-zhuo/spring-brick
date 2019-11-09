@@ -1,11 +1,14 @@
 package com.mybatis.plugin1.entity;
 
+import org.apache.ibatis.type.Alias;
+
 /**
  * description
  *
  * @author zhangzhuo
  * @version 1.0
  */
+@Alias("plugin1")
 public class Plugin1 {
 
     private String id;

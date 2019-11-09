@@ -33,13 +33,20 @@ public class YamlConfigurationParser extends AbstractConfigurationParser {
     @Override
     protected Object parse(Resource resource, Class<?> pluginConfigClass)
             throws Exception{
-        InputStream input = new FileInputStream(resource.getFile());
-        YAMLParser yamlParser = yamlFactory.createParser(input);
-        final JsonNode node = objectMapper.readTree(yamlParser);
-        if(node == null){
-            return pluginConfigClass.newInstance();
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(resource.getFile());
+            YAMLParser yamlParser = yamlFactory.createParser(inputStream);
+            final JsonNode node = objectMapper.readTree(yamlParser);
+            if(node == null){
+                return pluginConfigClass.newInstance();
+            }
+            TreeTraversingParser treeTraversingParser = new TreeTraversingParser(node);
+            return objectMapper.readValue(treeTraversingParser, pluginConfigClass);
+        } finally {
+            if(inputStream != null){
+                inputStream.close();
+            }
         }
-        TreeTraversingParser treeTraversingParser = new TreeTraversingParser(node);
-        return objectMapper.readValue(treeTraversingParser, pluginConfigClass);
     }
 }

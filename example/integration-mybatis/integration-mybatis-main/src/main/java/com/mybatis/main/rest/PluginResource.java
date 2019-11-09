@@ -3,10 +3,15 @@ package com.mybatis.main.rest;
 import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
+import org.pf4j.ManifestPluginDescriptorFinder;
+import org.pf4j.PluginDescriptor;
+import org.pf4j.PluginDescriptorFinder;
+import org.pf4j.PluginState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +27,7 @@ public class PluginResource {
 
 
     private final PluginOperator pluginOperator;
+    private final PluginDescriptorFinder pluginDescriptorFinder = new ManifestPluginDescriptorFinder();
 
     @Autowired
     public PluginResource(PluginApplication pluginApplication) {
@@ -48,6 +54,29 @@ public class PluginResource {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+
+    /**
+     * 获取插件jar文件名
+     * @return 获取插件文件名。只在生产环境显示
+     */
+    @PostMapping("/test")
+    public String test(@RequestParam("path") String path)  {
+        try {
+            Path pluginPath = Paths.get(path);
+            PluginDescriptor pluginDescriptor = pluginDescriptorFinder.find(pluginPath);
+            String pluginId = pluginDescriptor.getPluginId();
+            PluginInfo pluginInfo = pluginOperator.getPluginInfo(pluginId);
+            if(pluginInfo.getPluginState() == PluginState.STARTED){
+                pluginOperator.uninstall(pluginId, true);
+            }
+            pluginOperator.install(pluginPath);
+            return "ok";
+        } catch (Exception e){
+            e.printStackTrace();
+            return e.getMessage();
         }
     }
 

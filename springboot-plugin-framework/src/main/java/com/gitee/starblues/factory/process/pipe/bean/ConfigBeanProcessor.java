@@ -41,9 +41,14 @@ public class ConfigBeanProcessor implements PluginPipeProcessor {
 
 
     @Override
+    public void initialize() throws Exception {
+
+    }
+
+    @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         List<Class<?>> configDefinitions =
-                pluginRegistryInfo.getGroupClasses(ConfigDefinitionGroup.CONFIG_DEFINITION);
+                pluginRegistryInfo.getGroupClasses(ConfigDefinitionGroup.GROUP_ID);
         if(configDefinitions == null || configDefinitions.isEmpty()){
             return;
         }
@@ -92,7 +97,8 @@ public class ConfigBeanProcessor implements PluginPipeProcessor {
         }
         PluginConfigDefinition pluginConfigDefinition =
                 new PluginConfigDefinition(fileName, aClass);
-        Object parseObject = configurationParser.parse(pluginRegistryInfo.getBasePlugin(), pluginConfigDefinition);
+        Object parseObject = configurationParser.parse(pluginRegistryInfo.getBasePlugin(),
+                pluginConfigDefinition);
         String name = configDefinition.name();
         if(StringUtils.isEmpty(name)){
             name = aClass.getName();

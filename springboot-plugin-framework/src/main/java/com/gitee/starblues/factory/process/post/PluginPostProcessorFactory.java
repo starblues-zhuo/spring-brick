@@ -1,13 +1,11 @@
 package com.gitee.starblues.factory.process.post;
 
-import com.gitee.starblues.extension.ExtensionFactory;
+import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.post.bean.PluginConfigurationPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.PluginControllerPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.PluginInvokePostProcessor;
-import com.gitee.starblues.utils.AopUtils;
-import com.gitee.starblues.utils.CommonUtils;
-import com.gitee.starblues.utils.OrderPriority;
+import com.gitee.starblues.factory.process.post.bean.PluginOneselfStartEventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -25,44 +23,34 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private List<PluginPostProcessor> pluginPostProcessors = new ArrayList<>();
+    private final List<PluginPostProcessor> pluginPostProcessors = new ArrayList<>();
+    private final ApplicationContext applicationContext;
 
     public PluginPostProcessorFactory(ApplicationContext applicationContext){
-        pluginPostProcessors.add(new PluginConfigurationPostProcessor(applicationContext));
-        pluginPostProcessors.add(new PluginInvokePostProcessor(applicationContext));
-        pluginPostProcessors.add(new PluginControllerPostProcessor(applicationContext));
-        addExtension(applicationContext);
+       this.applicationContext = applicationContext;
     }
 
-    /**
-     * 添加扩展
-     * @param mainApplicationContext mainApplicationContext
-     */
-    private void addExtension(ApplicationContext mainApplicationContext) {
-        ExtensionFactory extensionFactory = ExtensionFactory.getSingleton();
-        List<PluginPostProcessorExtend> pluginPostProcessorExtends = new ArrayList<>();
-        extensionFactory.iteration(abstractExtension -> {
-            List<PluginPostProcessorExtend> pluginPostProcessors =
-                    abstractExtension.getPluginPostProcessor(mainApplicationContext);
-            extensionFactory.iteration(pluginPostProcessors, pluginPipeProcessorExtend->{
-                pluginPostProcessorExtends.add(pluginPipeProcessorExtend);
-            });
-        });
-        if(pluginPostProcessorExtends.isEmpty()){
-            return;
-        }
-        CommonUtils.order(pluginPostProcessorExtends, (pluginPipeProcessorExtend -> {
-            OrderPriority order = pluginPipeProcessorExtend.order();
-            if(order == null){
-                order = OrderPriority.getMiddlePriority();
-            }
-            return order.getPriority();
-        }));
-        for (PluginPostProcessorExtend pluginPostProcessorExtend : pluginPostProcessorExtends) {
-            pluginPostProcessors.add(pluginPostProcessorExtend);
-            log.info("Register Extension PluginPostProcessor : {}", pluginPostProcessorExtend.getClass());
+    @Override
+    public void initialize() throws Exception{
+
+        // 添加扩展
+        pluginPostProcessors.addAll(ExtensionInitializer.getPostProcessorExtends());
+
+        // 以下顺序不能更改。
+        pluginPostProcessors.add(new PluginConfigurationPostProcessor(applicationContext));
+        pluginPostProcessors.add(new PluginInvokePostProcessor(applicationContext));
+
+        pluginPostProcessors.add(new PluginControllerPostProcessor(applicationContext));
+        // 主要触发启动监听事件，因此在最后一个执行。配合 OneselfListenerStopEventProcessor 该类触发启动、停止事件。
+        pluginPostProcessors.add(new PluginOneselfStartEventProcessor(applicationContext));
+
+
+        // 进行初始化
+        for (PluginPostProcessor pluginPostProcessor : pluginPostProcessors) {
+            pluginPostProcessor.initialize();
         }
     }
+
 
     @Override
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception{

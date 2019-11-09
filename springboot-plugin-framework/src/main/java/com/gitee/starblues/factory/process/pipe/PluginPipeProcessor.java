@@ -12,6 +12,13 @@ public interface PluginPipeProcessor {
 
 
     /**
+     * 初始化
+     * @throws Exception 初始化异常
+     */
+    void initialize() throws Exception;
+
+
+    /**
      * 处理该插件的注册
      * @param pluginRegistryInfo 插件注册的信息
      * @throws Exception 处理异常

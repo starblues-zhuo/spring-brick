@@ -1,7 +1,9 @@
 package com.basic.example.main.config;
 
+import com.gitee.starblues.integration.application.DefaultPluginApplication;
 import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.application.AutoPluginApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,8 +22,11 @@ public class PluginBeanConfig {
      * @return PluginApplication
      */
     @Bean
-    public PluginApplication pluginApplication(){
-        // 实例化自动初始化插件的PluginApplication
-        return new AutoPluginApplication();
+    public PluginApplication pluginApplication(PluginListener pluginListener){
+        AutoPluginApplication autoPluginApplication = new AutoPluginApplication();
+        autoPluginApplication.setPluginInitializerListener(pluginListener);
+        autoPluginApplication.addListener(ExamplePluginListener.class);
+        return autoPluginApplication;
     }
+
 }

@@ -1,6 +1,7 @@
 package com.gitee.starblues.factory.process.pipe.classs.group;
 
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroup;
+import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.AnnotationsUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,16 @@ public class ComponentGroup implements PluginClassGroup {
      * spring 组件bean.
      * 包括Component、Service
      */
-    public static final String SPRING_COMPONENT= "spring_component";
+    public static final String GROUP_ID= "spring_component";
 
     @Override
     public String groupId() {
-        return SPRING_COMPONENT;
+        return GROUP_ID;
+    }
+
+    @Override
+    public void initialize(BasePlugin basePlugin) {
+
     }
 
     @Override

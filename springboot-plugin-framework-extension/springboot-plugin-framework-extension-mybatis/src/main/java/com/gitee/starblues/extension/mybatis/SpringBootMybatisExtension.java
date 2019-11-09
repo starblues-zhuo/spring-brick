@@ -1,6 +1,7 @@
 package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.extension.AbstractExtension;
+import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.loader.PluginResourceLoader;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
@@ -25,6 +26,8 @@ public class SpringBootMybatisExtension extends AbstractExtension {
         return KEY;
     }
 
+
+
     @Override
     public List<PluginResourceLoader> getPluginResourceLoader() {
         final List<PluginResourceLoader> pluginResourceLoaders = new ArrayList<>();
@@ -36,6 +39,7 @@ public class SpringBootMybatisExtension extends AbstractExtension {
     public List<PluginClassGroupExtend> getPluginClassGroup(ApplicationContext mainApplicationContext) {
         final List<PluginClassGroupExtend> pluginClassGroups = new ArrayList<>();
         pluginClassGroups.add(new PluginMapperGroup());
+        pluginClassGroups.add(new PluginEntityAliasesGroup());
         return pluginClassGroups;
     }
 
@@ -44,6 +48,7 @@ public class SpringBootMybatisExtension extends AbstractExtension {
         final List<PluginPipeProcessorExtend> pluginPipeProcessorExtends = new ArrayList<>();
         pluginPipeProcessorExtends.add(new PluginMybatisMapperProcessor(applicationContext));
         pluginPipeProcessorExtends.add(new PluginMybatisXmlProcessor(applicationContext));
+        pluginPipeProcessorExtends.add(new PluginMybatisEntityProcessor(applicationContext));
         return pluginPipeProcessorExtends;
     }
 

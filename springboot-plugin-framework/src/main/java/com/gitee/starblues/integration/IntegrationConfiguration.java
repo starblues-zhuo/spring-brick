@@ -1,6 +1,9 @@
 package com.gitee.starblues.integration;
 
 import org.pf4j.RuntimeMode;
+import org.springframework.http.CacheControl;
+
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -55,5 +58,6 @@ public interface IntegrationConfiguration {
      * @return boolean
      */
     boolean enablePluginIdRestControllerPathPrefix();
+
 
 }

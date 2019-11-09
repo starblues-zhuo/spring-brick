@@ -30,7 +30,7 @@ public class DefaultPluginFactory implements PluginFactory {
      */
     private final Map<String, PluginRegistryInfo> registerPluginInfoMap = new HashMap<>();
     private final GenericApplicationContext applicationContext;
-    private final PluginPipeProcessor pluginProcessor;
+    private final PluginPipeProcessor pluginPipeProcessor;
     private final PluginPostProcessor pluginPostProcessor;
     private final PluginListenerFactory pluginListenerFactory;
 
@@ -47,7 +47,7 @@ public class DefaultPluginFactory implements PluginFactory {
 
     public DefaultPluginFactory(ApplicationContext applicationContext,
                                 PluginListenerFactory pluginListenerFactory) {
-        this.pluginProcessor = new PluginPipeProcessorFactory(applicationContext);
+        this.pluginPipeProcessor = new PluginPipeProcessorFactory(applicationContext);
         this.pluginPostProcessor = new PluginPostProcessorFactory(applicationContext);
         this.applicationContext = (GenericApplicationContext) applicationContext;
         if(pluginListenerFactory == null){
@@ -59,6 +59,11 @@ public class DefaultPluginFactory implements PluginFactory {
     }
 
 
+    @Override
+    public void initialize() throws Exception{
+        pluginPipeProcessor.initialize();
+        pluginPostProcessor.initialize();
+    }
 
     @Override
     public synchronized PluginFactory registry(PluginWrapper pluginWrapper) throws Exception {
@@ -75,7 +80,7 @@ public class DefaultPluginFactory implements PluginFactory {
         PluginRegistryInfo registerPluginInfo = new PluginRegistryInfo(pluginWrapper);
         AopUtils.resolveAop(pluginWrapper);
         try {
-            pluginProcessor.registry(registerPluginInfo);
+            pluginPipeProcessor.registry(registerPluginInfo);
             registerPluginInfoMap.put(pluginWrapper.getPluginId(), registerPluginInfo);
             buildContainer.add(registerPluginInfo);
             return this;
@@ -98,7 +103,7 @@ public class DefaultPluginFactory implements PluginFactory {
             throw new Exception("Unable to UnRegistry operate. Because there's no build");
         }
         try {
-            pluginProcessor.unRegistry(registerPluginInfo);
+            pluginPipeProcessor.unRegistry(registerPluginInfo);
             buildContainer.add(registerPluginInfo);
             return this;
         } catch (Exception e) {

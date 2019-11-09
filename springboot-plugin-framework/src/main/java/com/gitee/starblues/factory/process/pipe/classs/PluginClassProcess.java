@@ -1,6 +1,7 @@
 package com.gitee.starblues.factory.process.pipe.classs;
 
 import com.gitee.starblues.extension.ExtensionFactory;
+import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.group.*;
@@ -38,7 +39,11 @@ public class PluginClassProcess implements PluginPipeProcessor {
     private final List<PluginClassGroup> pluginClassGroups = new ArrayList<>();
 
 
-    public PluginClassProcess(ApplicationContext applicationContext){
+    public PluginClassProcess(){}
+
+
+    @Override
+    public void initialize() {
         pluginClassGroups.add(new ComponentGroup());
         pluginClassGroups.add(new ControllerGroup());
         pluginClassGroups.add(new RepositoryGroup());
@@ -46,29 +51,16 @@ public class PluginClassProcess implements PluginPipeProcessor {
         pluginClassGroups.add(new ConfigDefinitionGroup());
         pluginClassGroups.add(new SupplierGroup());
         pluginClassGroups.add(new CallerGroup());
-        addExtension(applicationContext);
+        pluginClassGroups.add(new OneselfListenerGroup());
+        // 添加扩展
+        pluginClassGroups.addAll(ExtensionInitializer.getClassGroupExtends());
     }
-
-    /**
-     * 添加扩展
-     * @param applicationContext applicationContext
-     */
-    private void addExtension(ApplicationContext applicationContext) {
-        ExtensionFactory extensionFactory = ExtensionFactory.getSingleton();
-        extensionFactory.iteration(abstractExtension -> {
-            List<PluginClassGroupExtend> pluginClassGroups = abstractExtension.getPluginClassGroup(applicationContext);
-            extensionFactory.iteration(pluginClassGroups, pluginClassGroup -> {
-                this.pluginClassGroups.add(pluginClassGroup);
-                log.info("Register Extension PluginClassGroup : {}", pluginClassGroup.key());
-            });
-        });
-    }
-
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
-        PluginResourceLoadFactory pluginResourceLoadFactory = basePlugin.getPluginResourceLoadFactory();
+        PluginResourceLoadFactory pluginResourceLoadFactory = basePlugin.getBasePluginExtend()
+                .getPluginResourceLoadFactory();
         ResourceWrapper resourceWrapper = pluginResourceLoadFactory.getPluginResources(PluginClassLoader.KEY);
         if(resourceWrapper == null){
             return;
@@ -77,6 +69,14 @@ public class PluginClassProcess implements PluginPipeProcessor {
         if(pluginResources == null){
             return;
         }
+        for (PluginClassGroup pluginClassGroup : pluginClassGroups) {
+            try {
+                pluginClassGroup.initialize(basePlugin);
+            } catch (Exception e){
+                log.error("PluginClassGroup {} initialize exception. {}", pluginClassGroup.getClass(),
+                        e.getMessage(), e);
+            }
+        }
         for (Resource pluginResource : pluginResources) {
             String path = pluginResource.getURL().getPath();
             String packageName = path.substring(0, path.indexOf(".class"))
@@ -84,6 +84,9 @@ public class PluginClassProcess implements PluginPipeProcessor {
             packageName = packageName.substring(packageName.indexOf(basePlugin.scanPackage()));
             Class<?> aClass = Class.forName(packageName, false,
                     basePlugin.getWrapper().getPluginClassLoader());
+            if(aClass == null){
+                continue;
+            }
             boolean findGroup = false;
             for (PluginClassGroup pluginClassGroup : pluginClassGroups) {
                 if(pluginClassGroup == null || StringUtils.isEmpty(pluginClassGroup.groupId())){

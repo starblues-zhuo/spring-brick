@@ -30,6 +30,11 @@ public class PluginConfigurationPostProcessor implements PluginPostProcessor {
 
 
     @Override
+    public void initialize() throws Exception {
+
+    }
+
+    @Override
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
         ConfigurationClassPostProcessor configurationClassPostProcessor =
                 applicationContext.getBean(ConfigurationClassPostProcessor.class);

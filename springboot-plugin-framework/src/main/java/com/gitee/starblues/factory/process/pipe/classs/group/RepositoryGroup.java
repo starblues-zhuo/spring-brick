@@ -1,6 +1,7 @@
 package com.gitee.starblues.factory.process.pipe.classs.group;
 
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroup;
+import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.AnnotationsUtils;
 import org.springframework.stereotype.Repository;
 
@@ -15,12 +16,17 @@ public class RepositoryGroup implements PluginClassGroup {
     /**
      * spring @Repository 注解bean
      */
-    public static final String SPRING_REPOSITORY= "spring_repository";
+    public static final String GROUP_ID = "spring_repository";
 
 
     @Override
     public String groupId() {
-        return SPRING_REPOSITORY;
+        return GROUP_ID;
+    }
+
+    @Override
+    public void initialize(BasePlugin basePlugin) {
+
     }
 
     @Override

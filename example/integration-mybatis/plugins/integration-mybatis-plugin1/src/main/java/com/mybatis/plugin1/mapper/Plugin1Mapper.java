@@ -30,6 +30,9 @@ public interface Plugin1Mapper {
      */
     Plugin1 getById(@Param("id") String id);
 
+
+    List<Plugin1> getByCondition(Plugin1 plugin1);
+
     @Insert("INSERT INTO plugin1 VALUES (#{id}, #{name})")
     void insert(@Param("id") String id, @Param("name") String name);
 

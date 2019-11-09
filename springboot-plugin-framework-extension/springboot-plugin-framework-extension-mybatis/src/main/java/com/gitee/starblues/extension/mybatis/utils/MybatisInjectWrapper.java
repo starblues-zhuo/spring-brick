@@ -1,10 +1,10 @@
 package com.gitee.starblues.extension.mybatis.utils;
 
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.logging.Logger;
-import org.mybatis.logging.LoggerFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.mapper.MapperFactoryBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -84,7 +84,7 @@ public class MybatisInjectWrapper {
     public void processBeanDefinitions(BeanDefinitionHolder holder, Class a) {
         GenericBeanDefinition definition = (GenericBeanDefinition) holder.getBeanDefinition();
         String beanClassName = definition.getBeanClassName();
-        LOGGER.debug(() -> "Creating MapperFactoryBean with name '" + holder.getBeanName()
+        LOGGER.debug("Creating MapperFactoryBean with name '" + holder.getBeanName()
                 + "' and '" + beanClassName + "' mapperInterface");
 
         definition.getConstructorArgumentValues().addGenericArgumentValue(a);
@@ -114,7 +114,7 @@ public class MybatisInjectWrapper {
         }
 
         if (!explicitFactoryUsed) {
-            LOGGER.debug(() -> "Enabling autowire by type for MapperFactoryBean with name '" +
+            LOGGER.debug("Enabling autowire by type for MapperFactoryBean with name '" +
                     holder.getBeanName() + "'.");
             definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
         }

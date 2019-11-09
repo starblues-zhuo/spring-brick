@@ -1,6 +1,7 @@
 package com.mybatis.main.config;
 
 import com.gitee.starblues.extension.mybatis.SpringBootMybatisExtension;
+import com.gitee.starblues.extension.resources.StaticResourceExtension;
 import com.gitee.starblues.integration.*;
 import com.gitee.starblues.integration.application.AutoPluginApplication;
 import com.gitee.starblues.integration.application.PluginApplication;
@@ -8,7 +9,10 @@ import org.pf4j.RuntimeMode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.CacheControl;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description: 插件集成配置
@@ -67,6 +71,11 @@ public class PluginBeanConfig {
         // 实例化自动初始化插件的PluginApplication
         PluginApplication pluginApplication = new AutoPluginApplication();
         pluginApplication.addExtension(new SpringBootMybatisExtension());
+        // 新增静态资源扩展
+        StaticResourceExtension staticResourceExtension = new StaticResourceExtension();
+        staticResourceExtension.setPathPrefix("static");
+        staticResourceExtension.setCacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic());
+        pluginApplication.addExtension(staticResourceExtension);
         return pluginApplication;
     }
 
