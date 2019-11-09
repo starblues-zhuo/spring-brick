@@ -16,7 +16,7 @@
     <version>2.2.1-RELEASE</version>
     <packaging>jar</packaging>
 
-    <description>插件扩展-通过url读取加载插件中的静态资源</description>
+    <description>插件扩展-通过url读取插件中的静态资源</description>
 
     <licenses>
         <license>

@@ -35,7 +35,7 @@ public class MybatisXmlProcess {
     /**
      * 得到单例
      * @param sqlSessionFactory sqlSessionFactory
-     * @return
+     * @return MybatisXmlProcess
      */
     public static MybatisXmlProcess getInstance(SqlSessionFactory sqlSessionFactory){
         Objects.requireNonNull(sqlSessionFactory);
