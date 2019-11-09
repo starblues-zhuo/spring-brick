@@ -18,11 +18,11 @@ public class ComponentGroup implements PluginClassGroup {
      * spring 组件bean.
      * 包括Component、Service
      */
-    public static final String SPRING_COMPONENT= "spring_component";
+    public static final String GROUP_ID= "spring_component";
 
     @Override
     public String groupId() {
-        return SPRING_COMPONENT;
+        return GROUP_ID;
     }
 
     @Override

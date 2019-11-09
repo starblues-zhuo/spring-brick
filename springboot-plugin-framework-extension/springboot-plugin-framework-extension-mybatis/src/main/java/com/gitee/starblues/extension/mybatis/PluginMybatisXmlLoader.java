@@ -4,7 +4,6 @@ import com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConf
 import com.gitee.starblues.loader.PluginResourceLoader;
 import com.gitee.starblues.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
-import com.gitee.starblues.utils.OrderExecution;
 import com.gitee.starblues.utils.OrderPriority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +44,8 @@ public class PluginMybatisXmlLoader implements PluginResourceLoader {
     @Override
     public ResourceWrapper load(BasePlugin basePlugin) throws Exception {
         if(!(basePlugin instanceof SpringBootMybatisConfig)){
-            LOG.warn("Plugin <{}> not implements SpringBootMybatisConfig, If you need to use mybatis in the plugin," +
-                    "Please implements SpringBootMybatisConfig interface", basePlugin.getClass().getName());
+            LOG.warn("Plugin '{}' not implements SpringBootMybatisConfig, If you need to use mybatis in the plugin," +
+                    "Please implements SpringBootMybatisConfig interface", basePlugin.getWrapper().getPluginId());
             return null;
         }
         SpringBootMybatisConfig springBootMybatisConfig = (SpringBootMybatisConfig) basePlugin;

@@ -5,6 +5,7 @@ import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.post.bean.PluginConfigurationPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.PluginControllerPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.PluginInvokePostProcessor;
+import com.gitee.starblues.factory.process.post.bean.PluginOneselfStartEventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -31,11 +32,17 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
 
     @Override
     public void initialize() throws Exception{
-        pluginPostProcessors.add(new PluginConfigurationPostProcessor(applicationContext));
-        pluginPostProcessors.add(new PluginInvokePostProcessor(applicationContext));
-        pluginPostProcessors.add(new PluginControllerPostProcessor(applicationContext));
+
         // 添加扩展
         pluginPostProcessors.addAll(ExtensionInitializer.getPostProcessorExtends());
+
+        // 以下顺序不能更改。
+        pluginPostProcessors.add(new PluginConfigurationPostProcessor(applicationContext));
+        pluginPostProcessors.add(new PluginInvokePostProcessor(applicationContext));
+
+        pluginPostProcessors.add(new PluginControllerPostProcessor(applicationContext));
+        // 主要触发启动监听事件，因此在最后一个执行。配合 OneselfListenerStopEventProcessor 该类触发启动、停止事件。
+        pluginPostProcessors.add(new PluginOneselfStartEventProcessor(applicationContext));
 
 
         // 进行初始化

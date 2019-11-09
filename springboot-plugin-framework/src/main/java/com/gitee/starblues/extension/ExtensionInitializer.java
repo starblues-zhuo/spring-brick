@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  * 静态的扩展初始化器
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.1
  */
 public class ExtensionInitializer {
 
@@ -75,14 +75,14 @@ public class ExtensionInitializer {
             debug.append(pluginResourceLoader.key()).append("、");
         }, bean -> bean.order());
 
-        iteration(abstractExtension.getPluginPipeProcessor(applicationContext), pluginResourceLoader->{
-            PIPE_PROCESSOR_EXTENDS.add(pluginResourceLoader);
-            debug.append(pluginResourceLoader.key()).append("、");
+        iteration(abstractExtension.getPluginPipeProcessor(applicationContext), pluginPipeProcessorExtend->{
+            PIPE_PROCESSOR_EXTENDS.add(pluginPipeProcessorExtend);
+            debug.append(pluginPipeProcessorExtend.key()).append("、");
         }, bean -> bean.order());
 
-        iteration(abstractExtension.getPluginClassGroup(applicationContext), pluginResourceLoader->{
-            CLASS_GROUP_EXTENDS.add(pluginResourceLoader);
-            debug.append(pluginResourceLoader.key()).append("、");
+        iteration(abstractExtension.getPluginClassGroup(applicationContext), pluginClassGroupExtend->{
+            CLASS_GROUP_EXTENDS.add(pluginClassGroupExtend);
+            debug.append(pluginClassGroupExtend.key()).append("、");
         }, null);
 
         iteration(abstractExtension.getPluginPostProcessor(applicationContext), pluginResourceLoader->{
@@ -125,13 +125,7 @@ public class ExtensionInitializer {
         if(order != null){
             list.stream()
                     .filter(t -> t != null)
-                    .sorted(Comparator.comparing(t -> {
-                        OrderPriority orderPriority = order.apply(t);
-                        if(orderPriority == null){
-                            orderPriority = OrderPriority.getLowPriority();
-                        }
-                        return orderPriority.getPriority();
-                    }, Comparator.nullsLast(Comparator.reverseOrder())))
+                    .sorted(CommonUtils.orderPriority(order))
                     .forEach(consumer);
             ;
         } else {

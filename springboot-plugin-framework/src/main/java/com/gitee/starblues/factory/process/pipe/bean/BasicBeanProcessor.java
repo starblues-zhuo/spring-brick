@@ -5,6 +5,7 @@ import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.group.ComponentGroup;
 import com.gitee.starblues.factory.process.pipe.classs.group.ConfigurationGroup;
+import com.gitee.starblues.factory.process.pipe.classs.group.OneselfListenerGroup;
 import com.gitee.starblues.factory.process.pipe.classs.group.RepositoryGroup;
 import com.gitee.starblues.utils.GlobalRegistryInfo;
 import com.gitee.starblues.utils.PluginOperatorInfo;
@@ -52,14 +53,17 @@ public class BasicBeanProcessor implements PluginPipeProcessor {
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         Set<String> beanNames = new HashSet<>();
         List<Class<?>> springComponents = pluginRegistryInfo
-                .getGroupClasses(ComponentGroup.SPRING_COMPONENT);
+                .getGroupClasses(ComponentGroup.GROUP_ID);
         List<Class<?>> springConfigurations = pluginRegistryInfo
-                .getGroupClasses(ConfigurationGroup.SPRING_CONFIGURATION);
+                .getGroupClasses(ConfigurationGroup.GROUP_ID);
         List<Class<?>> springRepository = pluginRegistryInfo
-                .getGroupClasses(RepositoryGroup.SPRING_REPOSITORY);
+                .getGroupClasses(RepositoryGroup.GROUP_ID);
+        List<Class<?>> oneselfListener = pluginRegistryInfo.getGroupClasses(OneselfListenerGroup.GROUP_ID);
+
         register(pluginRegistryInfo, springComponents, beanNames);
         register(pluginRegistryInfo, springConfigurations, beanNames);
         register(pluginRegistryInfo, springRepository, beanNames);
+        register(pluginRegistryInfo, oneselfListener, beanNames);
         pluginRegistryInfo.addProcessorInfo(KEY, beanNames);
     }
 
@@ -83,7 +87,7 @@ public class BasicBeanProcessor implements PluginPipeProcessor {
     private void register(PluginRegistryInfo pluginRegistryInfo,
                           List<Class<?>> classes,
                           Set<String> beanNames){
-        if(classes == null){
+        if(classes == null || classes.isEmpty()){
             return;
         }
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();

@@ -8,19 +8,20 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.3.RELEASE</version>
+        <version>2.1.7.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>com.gitee.starblues</groupId>
     <artifactId>integration-mybatis-main</artifactId>
-    <version>2.2.0-RELEASE</version>
+    <version>2.2.1-RELEASE</version>
     <packaging>jar</packaging>
     <description>主程序模块</description>
 
     <properties>
-        <springboot-plugin-framework.version>2.2.0-RELEASE</springboot-plugin-framework.version>
-        <extension-mybatis.version>2.2.0-RELEASE</extension-mybatis.version>
+        <springboot-plugin-framework.version>2.2.1-RELEASE</springboot-plugin-framework.version>
+        <extension-mybatis.version>2.2.1-RELEASE</extension-mybatis.version>
+        <extension-resources.version>2.2.1-RELEASE</extension-resources.version>
         <mybatis-spring-boot-starter.version>2.0.1</mybatis-spring-boot-starter.version>
         <springfox-swagger2.version>2.7.0</springfox-swagger2.version>
         <swagger-bootstrap-ui.version>1.6</swagger-bootstrap-ui.version>
@@ -44,7 +45,7 @@
         <dependency>
             <groupId>com.gitee.starblues</groupId>
             <artifactId>springboot-plugin-framework-extension-resources</artifactId>
-            <version>${extension-mybatis.version}</version>
+            <version>${extension-resources.version}</version>
         </dependency>
 
         <dependency>

@@ -16,12 +16,12 @@ public class ConfigDefinitionGroup implements PluginClassGroup {
     /**
      * 自定义插件配置文件bean @ConfigDefinition
      */
-    public static final String CONFIG_DEFINITION= "config_definition";
+    public static final String GROUP_ID= "config_definition";
 
 
     @Override
     public String groupId() {
-        return CONFIG_DEFINITION;
+        return GROUP_ID;
     }
 
     @Override

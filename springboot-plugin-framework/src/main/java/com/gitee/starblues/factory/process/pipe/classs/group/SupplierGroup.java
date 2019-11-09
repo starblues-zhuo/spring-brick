@@ -17,12 +17,12 @@ public class SupplierGroup implements PluginClassGroup {
     /**
      * 自定义 @Supplier
      */
-    public static final String SUPPLIER = "supplier";
+    public static final String GROUP_ID = "supplier";
 
 
     @Override
     public String groupId() {
-        return SUPPLIER;
+        return GROUP_ID;
     }
 
     @Override

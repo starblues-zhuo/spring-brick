@@ -9,7 +9,7 @@ import java.util.function.Function;
  * 通用工具
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.1
  */
 public class CommonUtils {
 
@@ -28,6 +28,23 @@ public class CommonUtils {
         }
         Collections.sort(list, Comparator.comparing(orderImpl, Comparator.nullsLast(Comparator.reverseOrder())));
         return list;
+    }
+
+
+    /**
+     * 对 OrderPriority 进行排序操作
+     * @param order OrderPriority
+     * @param <T> 当前操作要被排序的bean
+     * @return Comparator
+     */
+    public static <T> Comparator<T> orderPriority(final Function<T, OrderPriority> order){
+        return Comparator.comparing(t -> {
+            OrderPriority orderPriority = order.apply(t);
+            if(orderPriority == null){
+                orderPriority = OrderPriority.getLowPriority();
+            }
+            return orderPriority.getPriority();
+        }, Comparator.nullsLast(Comparator.reverseOrder()));
     }
 
 

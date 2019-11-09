@@ -39,7 +39,6 @@ public class ExamplePlugin1 extends BasePlugin
 
     @Override
     protected void startEvent() {
-
     }
 
     @Override

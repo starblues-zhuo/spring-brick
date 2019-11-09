@@ -13,11 +13,11 @@ import com.gitee.starblues.utils.AnnotationsUtils;
  */
 public class PluginMapperGroup implements PluginClassGroupExtend {
 
-    public static final String KEY = "plugin_mybatis_mapper";
+    public static final String GROUP_ID = "plugin_mybatis_mapper";
 
     @Override
     public String groupId() {
-        return KEY;
+        return GROUP_ID;
     }
 
     @Override

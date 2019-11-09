@@ -59,7 +59,7 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
             AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
             try {
-                List<Class<?>> suppers = pluginRegistryInfo.getGroupClasses(SupplierGroup.SUPPLIER);
+                List<Class<?>> suppers = pluginRegistryInfo.getGroupClasses(SupplierGroup.GROUP_ID);
                 if(suppers == null){
                     continue;
                 }
@@ -71,7 +71,7 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
             AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
             try {
-                List<Class<?>> callers = pluginRegistryInfo.getGroupClasses(CallerGroup.CALLER);
+                List<Class<?>> callers = pluginRegistryInfo.getGroupClasses(CallerGroup.GROUP_ID);
                 if(callers == null){
                     continue;
                 }

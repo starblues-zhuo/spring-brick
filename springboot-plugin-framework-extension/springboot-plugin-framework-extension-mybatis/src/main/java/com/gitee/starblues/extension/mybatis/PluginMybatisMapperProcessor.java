@@ -74,7 +74,7 @@ public class PluginMybatisMapperProcessor implements PluginPipeProcessorExtend {
         if(!mybatisExist()){
             return;
         }
-        List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(PluginMapperGroup.KEY);
+        List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(PluginMapperGroup.GROUP_ID);
         if(groupClasses == null || groupClasses.isEmpty()){
             return;
         }

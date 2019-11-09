@@ -18,12 +18,12 @@ public class ControllerGroup implements PluginClassGroup {
     /**
      * spring @Controller @RestController 注解bean
      */
-    public static final String SPRING_CONTROLLER= "spring_controller";
+    public static final String GROUP_ID= "spring_controller";
 
 
     @Override
     public String groupId() {
-        return SPRING_CONTROLLER;
+        return GROUP_ID;
     }
 
     @Override

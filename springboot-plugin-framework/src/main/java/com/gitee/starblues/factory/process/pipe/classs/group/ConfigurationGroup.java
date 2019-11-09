@@ -16,12 +16,12 @@ public class ConfigurationGroup implements PluginClassGroup {
     /**
      * spring @CONFIGURATION 注解bean
      */
-    public static final String SPRING_CONFIGURATION = "spring_configuration";
+    public static final String GROUP_ID = "spring_configuration";
 
 
     @Override
     public String groupId() {
-        return SPRING_CONFIGURATION;
+        return GROUP_ID;
     }
 
     @Override

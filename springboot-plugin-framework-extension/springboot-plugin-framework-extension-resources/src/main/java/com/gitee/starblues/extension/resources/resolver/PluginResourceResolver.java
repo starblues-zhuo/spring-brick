@@ -3,20 +3,17 @@ package com.gitee.starblues.extension.resources.resolver;
 import com.gitee.starblues.extension.resources.StaticResourceConfig;
 import com.gitee.starblues.loader.PluginResource;
 import com.gitee.starblues.realize.BasePlugin;
-import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.resource.AbstractResourceResolver;
 import org.springframework.web.servlet.resource.ResourceResolverChain;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,12 +25,13 @@ import java.util.stream.Collectors;
  * 插件资源发现者
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.1
  */
 public class PluginResourceResolver extends AbstractResourceResolver {
 
     private final static Logger logger = LoggerFactory.getLogger(PluginResourceResolver.class);
-    public static final String RESOLVED_RESOURCE_CACHE_KEY_PREFIX = "resolvedResource:";
+
+    private final static String RESOLVED_RESOURCE_CACHE_KEY_PREFIX = "resolvedPluginResource:";
 
     private final static Map<String, PluginStaticResource> PLUGIN_RESOURCE_MAP = new ConcurrentHashMap<>();
 
@@ -59,17 +57,20 @@ public class PluginResourceResolver extends AbstractResourceResolver {
             }
 
             String key = computeKey(request, requestPath);
+            // 先判断缓存中是否存在。
             Resource resource = pluginResource.getCacheResource(key);
             if(resource != null){
                 return resource;
             }
 
+            // 从classpath 获取资源
             resource = resolveClassPath(pluginResource, partialPath);
             if(resource != null){
                 pluginResource.putCacheResource(key, resource);
                 return resource;
             }
 
+            // 从外置文件路径获取资源
             resource = resolveFilePath(pluginResource, partialPath);
             if(resource != null){
                 pluginResource.putCacheResource(key, resource);
@@ -107,8 +108,7 @@ public class PluginResourceResolver extends AbstractResourceResolver {
                     return resource;
                 }
             } catch (Exception e){
-                e.printStackTrace();
-                logger.debug(e.getMessage(), e);
+                logger.debug("Get static resources of classpath '{}' error.", classPath, e);
             }
         }
         return null;
@@ -127,27 +127,21 @@ public class PluginResourceResolver extends AbstractResourceResolver {
         }
 
         for (String filePath : filePaths) {
-            Path path = Paths.get(filePath + partialPath);
-            if(!Files.exists(path)){
+            Path fullPath = Paths.get(filePath + partialPath);
+            if(!Files.exists(fullPath)){
                 continue;
             }
             try {
-                FileUrlResource fileUrlResource = new FileUrlResource(path.toString());
+                FileUrlResource fileUrlResource = new FileUrlResource(fullPath.toString());
                 if(fileUrlResource.exists()){
                     return fileUrlResource;
-                } else {
-                    return null;
                 }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                logger.debug("Get static resources of path '{}' error.", fullPath, e);
             }
         }
-
         return null;
-
     }
-
-
 
 
     @Override
@@ -157,7 +151,13 @@ public class PluginResourceResolver extends AbstractResourceResolver {
         return null;
     }
 
-    protected String computeKey(@Nullable HttpServletRequest request, String requestPath) {
+    /**
+     * 计算key
+     * @param request request
+     * @param requestPath 请求路径
+     * @return 返回key
+     */
+    protected String computeKey(HttpServletRequest request, String requestPath) {
         StringBuilder key = new StringBuilder(RESOLVED_RESOURCE_CACHE_KEY_PREFIX);
         key.append(requestPath);
         if (request != null) {
@@ -169,6 +169,11 @@ public class PluginResourceResolver extends AbstractResourceResolver {
         return key.toString();
     }
 
+    /**
+     * 根据请求获取内容code key
+     * @param request request
+     * @return key
+     */
     private String getContentCodingKey(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.ACCEPT_ENCODING);
         if (!StringUtils.hasText(header)) {
@@ -184,21 +189,9 @@ public class PluginResourceResolver extends AbstractResourceResolver {
     }
 
 
-    /**
-     * 全局移除插件时调用。主要删除
-     * @param pluginId 插件id
-     */
-    public static synchronized void remove(String pluginId){
-        PluginStaticResource pluginResource = PLUGIN_RESOURCE_MAP.get(pluginId);
-        if(pluginResource == null){
-            return;
-        }
-        PLUGIN_RESOURCE_MAP.remove(pluginId);
-    }
-
 
     /**
-     * 新增插件时，解析该插件的 StaticResourceConfig 配置。并将其保存到 StaticResourceConfig bean 中。
+     * 每新增一个插件, 都需要调用该方法，来解析该插件的 StaticResourceConfig 配置。并将其保存到 StaticResourceConfig bean 中。
      * @param basePlugin 插件信息
      */
     public static synchronized void parse(BasePlugin basePlugin){
@@ -264,14 +257,44 @@ public class PluginResourceResolver extends AbstractResourceResolver {
     }
 
 
+
+    /**
+     * 卸载插件时。调用该方法移除插件的资源信息
+     * @param pluginId 插件id
+     */
+    public static synchronized void remove(String pluginId){
+        PluginStaticResource pluginResource = PLUGIN_RESOURCE_MAP.get(pluginId);
+        if(pluginResource == null){
+            return;
+        }
+        PLUGIN_RESOURCE_MAP.remove(pluginId);
+    }
+
+
+
     /**
      * 插件资源解析后的信息
      */
     private static class PluginStaticResource {
 
+        /**
+         * basePlugin bean
+         */
         private BasePlugin basePlugin;
+
+        /**
+         * 定义的classpath集合
+         */
         private Set<String> classPaths;
+
+        /**
+         * 定义的文件路径集合
+         */
         private Set<String> filePaths;
+
+        /**
+         * 缓存的资源。key 为资源的可以。值为资源
+         */
         private Map<String, Resource> cacheResourceMaps = new ConcurrentHashMap<>();
 
 

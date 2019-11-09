@@ -128,7 +128,7 @@ public class PluginResource {
     @PostMapping("/uninstall/{id}")
     public String uninstall(@PathVariable("id") String id){
         try {
-            if(pluginOperator.uninstall(id, false)){
+            if(pluginOperator.uninstall(id, true)){
                 return "plugin '" + id +"' uninstall success";
             } else {
                 return "plugin '" + id +"' uninstall failure";

@@ -18,12 +18,12 @@ public class CallerGroup implements PluginClassGroup {
     /**
      * 自定义 @Caller
      */
-    public static final String CALLER = "caller";
+    public static final String GROUP_ID = "caller";
 
 
     @Override
     public String groupId() {
-        return CALLER;
+        return GROUP_ID;
     }
 
     @Override

@@ -60,7 +60,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
             AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
             try {
-                List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(ControllerGroup.SPRING_CONTROLLER);
+                List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(ControllerGroup.GROUP_ID);
                 if(groupClasses == null || groupClasses.isEmpty()){
                     continue;
                 }

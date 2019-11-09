@@ -16,12 +16,12 @@ public class RepositoryGroup implements PluginClassGroup {
     /**
      * spring @Repository 注解bean
      */
-    public static final String SPRING_REPOSITORY= "spring_repository";
+    public static final String GROUP_ID = "spring_repository";
 
 
     @Override
     public String groupId() {
-        return SPRING_REPOSITORY;
+        return GROUP_ID;
     }
 
     @Override

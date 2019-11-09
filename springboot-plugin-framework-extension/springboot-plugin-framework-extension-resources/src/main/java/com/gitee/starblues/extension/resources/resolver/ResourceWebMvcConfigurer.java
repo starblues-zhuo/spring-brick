@@ -1,8 +1,6 @@
 package com.gitee.starblues.extension.resources.resolver;
 
 import com.gitee.starblues.extension.resources.StaticResourceExtension;
-import com.gitee.starblues.integration.IntegrationConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.CacheControl;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

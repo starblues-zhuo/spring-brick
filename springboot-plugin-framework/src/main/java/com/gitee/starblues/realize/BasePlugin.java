@@ -4,7 +4,8 @@ import org.pf4j.Plugin;
 import org.pf4j.PluginWrapper;
 
 /**
- * 插件包要继承的抽象类
+ * 插件包要继承的抽象类。
+ * 注意: 实现该类的子类无法使用依赖注入
  * @author zhangzhuo
  * @version 2.2.0
  */
@@ -73,16 +74,22 @@ public abstract class BasePlugin extends Plugin {
     /**
      * 启动事件. Spring 容器都没有准备。无法使用注入。
      */
-    protected abstract void startEvent();
+    protected void startEvent(){
+
+    }
 
     /**
      * 删除事件. 在插件删除时触发。
      */
-    protected abstract void deleteEvent();
+    protected void deleteEvent(){
+
+    }
 
     /**
      * 停止事件. 在插件停止时触发。
      */
-    protected abstract void stopEvent();
+    protected void stopEvent(){
+
+    }
 
 }

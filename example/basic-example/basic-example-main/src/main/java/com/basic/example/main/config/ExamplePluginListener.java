@@ -5,6 +5,7 @@ import com.gitee.starblues.integration.listener.PluginListener;
 import com.gitee.starblues.integration.user.PluginUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -13,7 +14,6 @@ import org.slf4j.LoggerFactory;
  * @author zhangzhuo
  * @version 1.0
  */
-
 public class ExamplePluginListener implements PluginListener {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

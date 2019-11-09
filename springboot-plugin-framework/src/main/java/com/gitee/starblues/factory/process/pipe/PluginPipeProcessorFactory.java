@@ -4,6 +4,7 @@ import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.bean.BasicBeanProcessor;
 import com.gitee.starblues.factory.process.pipe.bean.ConfigBeanProcessor;
+import com.gitee.starblues.factory.process.pipe.bean.OneselfListenerStopEventProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,8 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
 
     @Override
     public void initialize() throws Exception{
+        // OneselfListenerStopEventProcessor 触发停止事件, 必须第一个执行
+        pluginPipeProcessors.add(new OneselfListenerStopEventProcessor(applicationContext));
         pluginPipeProcessors.add(new PluginClassProcess());
         pluginPipeProcessors.add(new BasicBeanProcessor(applicationContext));
         pluginPipeProcessors.add(new ConfigBeanProcessor(applicationContext));
