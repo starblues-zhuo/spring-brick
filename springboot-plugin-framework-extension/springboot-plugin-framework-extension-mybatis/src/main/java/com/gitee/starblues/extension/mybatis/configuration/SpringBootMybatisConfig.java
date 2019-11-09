@@ -38,8 +38,8 @@ public interface SpringBootMybatisConfig {
     }
 
     /**
-     * 别名类型包集合。别名规则为包名首字母小写。只支持当前包下的类, 不支持包递归。
-     * 如果从该包下的类使用了别名注解@Alias. 则优先使用@Alias中定义的别名。
+     * 要统一定义别名的包集合。别名规则为: 首字母小写的包名, 只支持当前包下的类, 不支持包递归。
+     * 如果该包下的类使用了别名注解@Alias, 则优先使用@Alias中定义的别名。
      * @return 包集合
      */
     default Set<String> typeAliasesPackage(){

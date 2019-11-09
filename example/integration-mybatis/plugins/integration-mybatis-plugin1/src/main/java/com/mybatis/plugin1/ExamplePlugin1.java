@@ -37,19 +37,6 @@ public class ExamplePlugin1 extends BasePlugin
         locations.add("file:D:\\aa");
     }
 
-    @Override
-    protected void startEvent() {
-    }
-
-    @Override
-    protected void deleteEvent() {
-
-    }
-
-    @Override
-    protected void stopEvent() {
-
-    }
 
     @Override
     public Set<String> mybatisMapperXmlLocationsMatch() {
