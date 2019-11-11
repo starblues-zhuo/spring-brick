@@ -16,10 +16,26 @@
 10. 可以遵循主程序提供的插件接口开发任意扩展功能。
 11. 插件可以自定义配置文件。目前只支持yml文件。
 12. 支持自定义扩展开发接口, 使用者可以在预留接口上扩展额外功能。
-13. 利用扩展机制, 定制了SpringBoot-Mybatis扩展包。使用该扩展包, 使用者可以在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean。并且支持集成Mybatis-Plus。
-14. 支持插件之间的通信。
-15. 支持插件中使用事务注解。
-16. 支持Swagger。(仅支持首次启动初始化的插件)
+13. 支持插件之间的通信。
+14. 支持插件中使用事务注解。
+15. 支持Swagger。(仅支持首次启动初始化的插件)
+
+### 扩展包功能
+1. SpringBoot-Mybatis扩展包 静态资源访问扩展包
+
+- 支持在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean。
+
+- 支持实体bean的别名。
+
+- 支持集成Mybatis-Plus。
+
+详见: [https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages?sort_id=1693493&doc_id=343010](插件 SpringBoot Mybatis 扩展)
+
+2. 静态资源访问扩展包(详见 `springboot-plugin-framework-extension-resources`)
+
+支持通过http访问插件中静态资源。
+
+详见: [https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages?sort_id=1719990&doc_id=343010](插件静态资源访问扩展)
 
 ### 运行环境
 1. jdk1.8+
