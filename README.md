@@ -21,7 +21,7 @@
 15. 支持Swagger。(仅支持首次启动初始化的插件)
 
 ### 扩展包功能
-1. SpringBoot-Mybatis扩展包 静态资源访问扩展包
+1. SpringBoot-Mybatis扩展包
 
 - 支持在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean。
 
@@ -29,13 +29,13 @@
 
 - 支持集成Mybatis-Plus。
 
-详见: [https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages?sort_id=1693493&doc_id=343010](插件 SpringBoot Mybatis 扩展)
+详见 [插件SpringBoot Mybatis扩展](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages?sort_id=1693493&doc_id=343010)
 
-2. 静态资源访问扩展包(详见 `springboot-plugin-framework-extension-resources`)
+2. 静态资源访问扩展包
 
 支持通过http访问插件中静态资源。
 
-详见: [https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages?sort_id=1719990&doc_id=343010](插件静态资源访问扩展)
+详见 [插件静态资源访问扩展](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages?sort_id=1719990&doc_id=343010)
 
 ### 运行环境
 1. jdk1.8+
