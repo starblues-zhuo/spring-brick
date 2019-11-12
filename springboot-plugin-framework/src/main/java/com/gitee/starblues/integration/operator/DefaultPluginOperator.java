@@ -6,7 +6,7 @@ import com.gitee.starblues.integration.listener.PluginInitializerListenerFactory
 import com.gitee.starblues.integration.listener.PluginListenerFactory;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
 import com.gitee.starblues.integration.operator.verify.PluginLegalVerify;
-import com.gitee.starblues.integration.operator.verify.PluginUploadVerify;
+import com.gitee.starblues.integration.operator.verify.DefaultPluginVerify;
 import com.gitee.starblues.factory.DefaultPluginFactory;
 import com.gitee.starblues.factory.PluginFactory;
 import com.gitee.starblues.utils.GlobalRegistryInfo;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * 默认的插件操作者
  * @author zhangzhuo
- * @version 2.2.0
+ * @version 2.2.2
  */
 public class DefaultPluginOperator implements PluginOperator {
 
@@ -48,8 +48,8 @@ public class DefaultPluginOperator implements PluginOperator {
     protected final PluginManager pluginManager;
     protected final PluginFactory pluginFactory;
     protected final PluginInitializerListenerFactory pluginInitializerListenerFactory;
-    protected final PluginDescriptorFinder pluginDescriptorFinder;
-    protected final PluginLegalVerify uploadPluginVerify;
+
+    protected PluginLegalVerify pluginLegalVerify;
 
 
     public DefaultPluginOperator(ApplicationContext applicationContext,
@@ -63,10 +63,18 @@ public class DefaultPluginOperator implements PluginOperator {
         this.pluginFactory = new DefaultPluginFactory(applicationContext, pluginListenerFactory);
         this.pluginInitializerListenerFactory = new PluginInitializerListenerFactory(applicationContext);
 
-        this.pluginDescriptorFinder = new ManifestPluginDescriptorFinder();
-        this.uploadPluginVerify = new PluginUploadVerify(this.pluginDescriptorFinder, pluginManager);
+        this.pluginLegalVerify = new DefaultPluginVerify(pluginManager);
     }
 
+    /**
+     * 设置插件校验器
+     * @param uploadPluginVerify uploadPluginVerify
+     */
+    public void setUploadPluginVerify(PluginLegalVerify uploadPluginVerify) {
+        if(uploadPluginVerify != null){
+            this.pluginLegalVerify = uploadPluginVerify;
+        }
+    }
 
     @Override
     public synchronized boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws Exception {
@@ -132,7 +140,7 @@ public class DefaultPluginOperator implements PluginOperator {
                 throw new FileNotFoundException("Not found this path " + path);
             }
             // 校验插件文件
-            uploadPluginVerify.verify(path);
+            pluginLegalVerify.verify(path);
             Path pluginsRoot = pluginManager.getPluginsRoot();
             if(path.getParent().compareTo(pluginsRoot) == 0){
                 // 说明该插件文件存在于插件root目录下。直接加载该插件
@@ -425,7 +433,7 @@ public class DefaultPluginOperator implements PluginOperator {
         Path tempPath = PluginFileUtils.createExistFile(Paths.get(tempPathString));
         Files.write(tempPath, pluginFile.getBytes());
         try {
-            Path verifyPath = uploadPluginVerify.verify(tempPath);
+            Path verifyPath = pluginLegalVerify.verify(tempPath);
             if(verifyPath != null){
                 String targetPathString = pluginManager.getPluginsRoot().toString() +
                         File.separator + fileName;

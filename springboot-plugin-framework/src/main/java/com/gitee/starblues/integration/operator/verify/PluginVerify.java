@@ -7,7 +7,7 @@ import java.nio.file.Path;
  * 插件合法校验接口
  * @author zhangzhuo
  * @version 1.0
- * @see PluginUploadVerify
+ * @see DefaultPluginVerify
  * @see PluginLegalVerify
  */
 public interface PluginVerify {
