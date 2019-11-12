@@ -27,7 +27,6 @@ public class PluginResource {
 
 
     private final PluginOperator pluginOperator;
-    private final PluginDescriptorFinder pluginDescriptorFinder = new ManifestPluginDescriptorFinder();
 
     @Autowired
     public PluginResource(PluginApplication pluginApplication) {
@@ -57,28 +56,6 @@ public class PluginResource {
         }
     }
 
-
-    /**
-     * 获取插件jar文件名
-     * @return 获取插件文件名。只在生产环境显示
-     */
-    @PostMapping("/test")
-    public String test(@RequestParam("path") String path)  {
-        try {
-            Path pluginPath = Paths.get(path);
-            PluginDescriptor pluginDescriptor = pluginDescriptorFinder.find(pluginPath);
-            String pluginId = pluginDescriptor.getPluginId();
-            PluginInfo pluginInfo = pluginOperator.getPluginInfo(pluginId);
-            if(pluginInfo.getPluginState() == PluginState.STARTED){
-                pluginOperator.uninstall(pluginId, true);
-            }
-            pluginOperator.install(pluginPath);
-            return "ok";
-        } catch (Exception e){
-            e.printStackTrace();
-            return e.getMessage();
-        }
-    }
 
 
     /**
