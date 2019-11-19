@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public class DefaultPluginOperator implements PluginOperator {
 
     private boolean isInit = false;
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final static DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
@@ -113,13 +113,13 @@ public class DefaultPluginOperator implements PluginOperator {
                 }
             }
             pluginFactory.build();
+            isInit = true;
             if(isFoundException){
                 log.error("Plugins initialize failure");
                 return false;
             } else {
                 log.info("Plugins initialize success");
                 pluginInitializerListenerFactory.complete();
-                isInit = true;
                 return true;
             }
         }  catch (Exception e){
@@ -415,7 +415,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * @return 返回上传的插件路径
      * @throws Exception 异常信息
      */
-    private Path uploadPlugin(MultipartFile pluginFile) throws Exception {
+    protected Path uploadPlugin(MultipartFile pluginFile) throws Exception {
         if(pluginFile == null){
             throw new IllegalArgumentException("Method:uploadPlugin param 'pluginFile' can not be null");
         }
@@ -467,7 +467,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * @return PluginWrapper
      * @throws Exception 插件装配异常
      */
-    private PluginWrapper getPluginWrapper(String pluginId, String errorMsg) throws Exception {
+    protected PluginWrapper getPluginWrapper(String pluginId, String errorMsg) throws Exception {
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
         if (pluginWrapper == null) {
             throw new Exception(errorMsg + " -> Not found plugin " + pluginId);
@@ -483,7 +483,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * @param e 异常信息
      * @throws Exception Exception
      */
-    private void verifyFailureDelete(Path tempPluginFile, Exception e) throws Exception {
+    protected void verifyFailureDelete(Path tempPluginFile, Exception e) throws Exception {
         try {
             Files.deleteIfExists(tempPluginFile);
         }catch (IOException e1){
@@ -498,7 +498,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * @param type 类型 1移动 2拷贝
      * @return 结果
      */
-    private boolean backup(Path sourcePath, String sign, int type) {
+    protected boolean backup(Path sourcePath, String sign, int type) {
         try {
             if(isDev()){
                 // 如果是开发环境, 则不进行备份
@@ -544,7 +544,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * 获取现在的时间
      * @return String
      */
-    private String getNowTimeByFormat(){
+    protected String getNowTimeByFormat(){
         LocalDateTime localDateTime = LocalDateTime.now();
         return FORMAT.format(localDateTime);
     }
@@ -553,7 +553,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * 是否是开发环境
      * @return bolean
      */
-    private boolean isDev(){
+    protected boolean isDev(){
         return integrationConfiguration.environment() == RuntimeMode.DEVELOPMENT;
     }
 

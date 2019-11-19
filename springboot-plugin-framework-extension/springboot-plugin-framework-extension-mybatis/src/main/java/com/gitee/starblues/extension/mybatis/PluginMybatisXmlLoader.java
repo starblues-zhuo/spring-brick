@@ -67,7 +67,9 @@ public class PluginMybatisXmlLoader implements PluginResourceLoader {
                 resources.addAll(loadResources);
             }
         }
-        return new ResourceWrapper(resources);
+        ResourceWrapper resourceWrapper = new ResourceWrapper();
+        resourceWrapper.addResources(resources);
+        return resourceWrapper;
     }
 
     @Override

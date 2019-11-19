@@ -87,6 +87,15 @@ public interface PluginUser {
     <T> List<T> getPluginBeans(String pluginId, Class<T> aClass);
 
     /**
+     * 生成一个新的实例
+     * @param object 元实例对象
+     * @param <T> 实例泛型
+     * @return 新实例对象
+     */
+    <T> T generateNewInstance(T object);
+
+
+    /**
      * 使用场景:
      * 1. 在主程序定义接口(该接口需要继承 ExtensionPoint 接口)。
      * 2. 插件包中实现该接口

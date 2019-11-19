@@ -2,6 +2,8 @@ package com.gitee.starblues.integration.user;
 
 import com.gitee.starblues.factory.PluginInfoContainer;
 import org.pf4j.PluginManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
@@ -15,8 +17,10 @@ import java.util.stream.Collectors;
  */
 public class DefaultPluginUser implements PluginUser{
 
-    private final GenericApplicationContext applicationContext;
-    private final PluginManager pluginManager;
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    protected final GenericApplicationContext applicationContext;
+    protected final PluginManager pluginManager;
 
     public DefaultPluginUser(ApplicationContext applicationContext, PluginManager pluginManager) {
         Objects.requireNonNull(applicationContext, "ApplicationContext can't be null");
@@ -122,6 +126,20 @@ public class DefaultPluginUser implements PluginUser{
         return beans;
     }
 
+    @Override
+    public <T> T generateNewInstance(T object) {
+        if(object == null){
+            return null;
+        }
+        try {
+            Object newObject = applicationContext.getDefaultListableBeanFactory()
+                    .createBean(object.getClass());
+            return (T) newObject;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /**
      * 得到插件扩展接口实现的bean。（非Spring管理）
@@ -139,7 +157,7 @@ public class DefaultPluginUser implements PluginUser{
      * @param beanName bean名称
      * @return boolean
      */
-    private boolean isPluginBean(String beanName){
+    protected boolean isPluginBean(String beanName){
         if(beanName == null){
             return false;
         }

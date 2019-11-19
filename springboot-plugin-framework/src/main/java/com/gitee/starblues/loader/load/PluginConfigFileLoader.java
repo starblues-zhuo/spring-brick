@@ -55,7 +55,9 @@ public class PluginConfigFileLoader implements PluginResourceLoader {
         }
         List<Resource> resources = new ArrayList<>();
         resources.add(resource);
-        return new ResourceWrapper(resources);
+        ResourceWrapper resourceWrapper = new ResourceWrapper();
+        resourceWrapper.addResources(resources);
+        return resourceWrapper;
     }
 
     @Override

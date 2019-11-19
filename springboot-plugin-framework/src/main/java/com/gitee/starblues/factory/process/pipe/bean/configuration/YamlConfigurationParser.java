@@ -26,7 +26,7 @@ public class YamlConfigurationParser extends AbstractConfigurationParser {
         super(configuration);
         this.yamlFactory = new YAMLFactory();
         this.objectMapper = new ObjectMapper();
-        objectMapper.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
 

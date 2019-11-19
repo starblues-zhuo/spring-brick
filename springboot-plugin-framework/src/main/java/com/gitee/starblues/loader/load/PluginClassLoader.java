@@ -3,16 +3,14 @@ package com.gitee.starblues.loader.load;
 import com.gitee.starblues.loader.PluginResourceLoader;
 import com.gitee.starblues.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
-import com.gitee.starblues.utils.OrderExecution;
+import com.gitee.starblues.utils.ScanUtils;
 import com.gitee.starblues.utils.OrderPriority;
+import org.pf4j.RuntimeMode;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.util.ClassUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 /**
  * 插件类文件加载者
@@ -31,17 +29,21 @@ public class PluginClassLoader implements PluginResourceLoader {
 
     @Override
     public ResourceWrapper load(BasePlugin basePlugin) throws Exception{
-        String scanPackage = basePlugin.scanPackage();
-        String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
-                ClassUtils.convertClassNameToResourcePath(scanPackage) +
-                "/**/*.class";
-        ResourcePatternResolver resourcePatternResolver =
-                new PathMatchingResourcePatternResolver(basePlugin.getWrapper().getPluginClassLoader());
-        Resource[] resources = resourcePatternResolver.getResources(packageSearchPath);
-        if(resources == null){
-            return new ResourceWrapper();
+        RuntimeMode runtimeMode = basePlugin.getWrapper().getRuntimeMode();
+        Set<String> classPackageName = null;
+        if(runtimeMode == RuntimeMode.DEPLOYMENT){
+            // 生产环境
+            classPackageName = ScanUtils.scanClassPackageName(
+                    basePlugin.scanPackage(), basePlugin.getWrapper().getPluginClassLoader());
+
+        } else if(runtimeMode == RuntimeMode.DEVELOPMENT){
+            // 开发环境
+            classPackageName = ScanUtils.scanClassPackageName(
+                    basePlugin.scanPackage(), basePlugin.getClass());
         }
-        return new ResourceWrapper(resources);
+        ResourceWrapper resourceWrapper = new ResourceWrapper();
+        resourceWrapper.addClassPackageNames(classPackageName);
+        return resourceWrapper;
     }
 
     @Override

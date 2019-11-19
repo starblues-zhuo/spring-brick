@@ -39,6 +39,13 @@ public class DefaultPf4JFactory implements Pf4jFactory {
                     System.setProperty("pf4j.mode", RuntimeMode.DEVELOPMENT.toString());
                     return RuntimeMode.DEVELOPMENT;
                 }
+
+                @Override
+                protected PluginDescriptorFinder createPluginDescriptorFinder() {
+                    return new CompoundPluginDescriptorFinder()
+                            .add(new ResolvePropertiesPluginDescriptorFinder())
+                            .add(new ManifestPluginDescriptorFinder());
+                }
             };
         } else if(RuntimeMode.DEPLOYMENT == environment){
             // 运行环境下的插件管理者
