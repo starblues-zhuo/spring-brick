@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DefaultPluginApplication extends AbstractPluginApplication {
 
-    private final static Logger log = LoggerFactory.getLogger(DefaultPluginApplication.class);
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     protected Pf4jFactory integrationFactory;
 
