@@ -37,12 +37,11 @@ public abstract class AbstractConfigurationParser implements ConfigurationParser
                     "fileName can not be empty");
         }
 
-        PluginResourceLoader pluginResourceLoader = new PluginConfigFileLoader(
+        PluginResourceLoader resourceLoader = new PluginConfigFileLoader(
                 configuration.pluginConfigFilePath(),
-                fileName,
-                configuration.environment()
+                fileName
         );
-        ResourceWrapper resourceWrapper = pluginResourceLoader.load(basePlugin);
+        ResourceWrapper resourceWrapper = resourceLoader.load(basePlugin);
         if(resourceWrapper == null){
             return null;
         }

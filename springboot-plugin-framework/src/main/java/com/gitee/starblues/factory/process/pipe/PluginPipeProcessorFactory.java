@@ -4,6 +4,7 @@ import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.bean.BasicBeanProcessor;
 import com.gitee.starblues.factory.process.pipe.bean.ConfigBeanProcessor;
+import com.gitee.starblues.factory.process.pipe.bean.ConfigFileBeanProcessor;
 import com.gitee.starblues.factory.process.pipe.bean.OneselfListenerStopEventProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassProcess;
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ import java.util.List;
  * 插件的pipe处理者工厂
  *
  * @author zhangzhuo
- * @version 2.1.0
+ * @version 2.2.2
  */
 public class PluginPipeProcessorFactory implements PluginPipeProcessor {
 
@@ -37,8 +38,11 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
         // OneselfListenerStopEventProcessor 触发停止事件, 必须第一个执行
         pluginPipeProcessors.add(new OneselfListenerStopEventProcessor(applicationContext));
         pluginPipeProcessors.add(new PluginClassProcess());
-        pluginPipeProcessors.add(new BasicBeanProcessor(applicationContext));
+        // 配置文件在所有bean中第一个初始化。
+        pluginPipeProcessors.add(new ConfigFileBeanProcessor(applicationContext));
+        // 接下来初始化插件中配置bean的初始化
         pluginPipeProcessors.add(new ConfigBeanProcessor(applicationContext));
+        pluginPipeProcessors.add(new BasicBeanProcessor(applicationContext));
         // 添加扩展
         pluginPipeProcessors.addAll(ExtensionInitializer.getPipeProcessorExtends());
 

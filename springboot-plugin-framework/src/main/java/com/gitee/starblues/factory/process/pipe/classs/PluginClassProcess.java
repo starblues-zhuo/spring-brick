@@ -21,7 +21,7 @@ import java.util.Set;
  * 插件类加载处理者
  *
  * @author zhangzhuo
- * @version 2.1.0
+ * @version 2.2.2
  */
 public class PluginClassProcess implements PluginPipeProcessor {
 
@@ -47,6 +47,7 @@ public class PluginClassProcess implements PluginPipeProcessor {
         pluginClassGroups.add(new RepositoryGroup());
         pluginClassGroups.add(new ConfigurationGroup());
         pluginClassGroups.add(new ConfigDefinitionGroup());
+        pluginClassGroups.add(new ConfigBeanGroup());
         pluginClassGroups.add(new SupplierGroup());
         pluginClassGroups.add(new CallerGroup());
         pluginClassGroups.add(new OneselfListenerGroup());

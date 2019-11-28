@@ -12,11 +12,11 @@ import java.util.Objects;
  * @author zhangzhuo
  * @version 2.2.0
  */
-public class DefaultPf4JFactory implements Pf4jFactory {
+public class DefaultPf4jFactory implements Pf4jFactory {
 
     private final IntegrationConfiguration configuration;
 
-    public DefaultPf4JFactory(IntegrationConfiguration configuration) {
+    public DefaultPf4jFactory(IntegrationConfiguration configuration) {
         this.configuration = configuration;
     }
 

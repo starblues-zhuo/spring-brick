@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * 默认插件使用者
  * @author zhangzhuo
- * @version 2.0.2
+ * @version 2.2.2
  */
 public class DefaultPluginUser implements PluginUser{
 

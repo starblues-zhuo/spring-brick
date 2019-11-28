@@ -154,6 +154,7 @@ public class DefaultPluginOperator implements PluginOperator {
                     // 如果存在该文件, 则移动备份
                     backup(targetPath, "install-backup", 1);
                 }
+                PluginFileUtils.createExistFile(targetPath);
                 Files.copy(path, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 pluginId = pluginManager.loadPlugin(targetPath);
             }
@@ -171,18 +172,19 @@ public class DefaultPluginOperator implements PluginOperator {
             }
         } catch (Exception e){
             // 说明load成功, 但是没有启动成功, 则卸载该插件
-            log.error("Plugin '{}' install failure. {}", pluginId, e.getMessage());
-            log.info("Start uninstall plugin '{}' failure", pluginId);
-            try {
-                if(!StringUtils.isEmpty(pluginId)){
+            if(!StringUtils.isEmpty(pluginId)){
+                log.error("Plugin '{}' install failure. {}", pluginId, e.getMessage());
+                log.info("Start uninstall plugin '{}' failure", pluginId);
+                try {
                     uninstall(pluginId, false);
+                } catch (Exception uninstallException){
+                    log.error("Plugin '{}' uninstall failure. {}", pluginId, uninstallException.getMessage());
                 }
-            } catch (Exception uninstallException){
-                log.error("Plugin '{}' uninstall failure. {}", pluginId, e.getMessage());
             }
+
             throw e;
         } finally {
-            if(pluginId != null){
+            if(!StringUtils.isEmpty(pluginId)){
                 GlobalRegistryInfo.setOperatorPluginInfo(pluginId, false);
             }
         }
@@ -196,6 +198,9 @@ public class DefaultPluginOperator implements PluginOperator {
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
         if(pluginWrapper == null){
             throw new Exception("Plugin uninstall failure, Not found plugin '" + pluginId + "'");
+        }
+        if(pluginWrapper.getPluginState() != PluginState.STARTED){
+            throw new Exception("This plugin '" + pluginId + "' is not started");
         }
         Exception exception = null;
         try {
@@ -244,7 +249,7 @@ public class DefaultPluginOperator implements PluginOperator {
         }
         try {
             PluginState pluginState = pluginManager.startPlugin(pluginId);
-            if(pluginState == PluginState.STARTED){
+            if(pluginState != null && pluginState == PluginState.STARTED){
                 GlobalRegistryInfo.addOperatorPluginInfo(pluginId, PluginOperatorInfo.OperatorType.START, false);
                 pluginFactory.registry(pluginWrapper);
                 pluginFactory.build();

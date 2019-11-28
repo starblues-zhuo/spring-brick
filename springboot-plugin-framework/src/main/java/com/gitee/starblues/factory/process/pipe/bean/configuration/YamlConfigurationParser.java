@@ -35,7 +35,7 @@ public class YamlConfigurationParser extends AbstractConfigurationParser {
             throws Exception{
         InputStream inputStream = null;
         try {
-            inputStream = new FileInputStream(resource.getFile());
+            inputStream = resource.getInputStream();
             YAMLParser yamlParser = yamlFactory.createParser(inputStream);
             final JsonNode node = objectMapper.readTree(yamlParser);
             if(node == null){

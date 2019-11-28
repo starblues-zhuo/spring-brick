@@ -3,12 +3,9 @@ package com.gitee.starblues.loader.load;
 import com.gitee.starblues.loader.PluginResourceLoader;
 import com.gitee.starblues.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
-import com.gitee.starblues.utils.ScanUtils;
 import com.gitee.starblues.utils.OrderPriority;
+import com.gitee.starblues.utils.ScanUtils;
 import org.pf4j.RuntimeMode;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
 import java.util.Set;
 
@@ -16,7 +13,7 @@ import java.util.Set;
  * 插件类文件加载者
  *
  * @author zhangzhuo
- * @version 2.2.0
+ * @version 2.2.2
  */
 public class PluginClassLoader implements PluginResourceLoader {
 

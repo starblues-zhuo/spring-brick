@@ -1,6 +1,6 @@
 package com.gitee.starblues.integration.application;
 
-import com.gitee.starblues.integration.pf4j.DefaultPf4JFactory;
+import com.gitee.starblues.integration.pf4j.DefaultPf4jFactory;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.pf4j.Pf4jFactory;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
@@ -50,7 +50,7 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
         }
         IntegrationConfiguration configuration = getConfiguration(applicationContext);
         if(integrationFactory == null){
-            integrationFactory = new DefaultPf4JFactory(configuration);
+            integrationFactory = new DefaultPf4jFactory(configuration);
         }
         PluginManager pluginManager = integrationFactory.getPluginManager();
         pluginUser = createPluginUser(applicationContext, pluginManager);
