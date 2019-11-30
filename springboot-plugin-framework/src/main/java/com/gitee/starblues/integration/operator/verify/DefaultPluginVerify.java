@@ -6,17 +6,18 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * 校验上传的插件包
+ * 默认的插件校验器
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.2.2
  */
-public class PluginUploadVerify extends PluginLegalVerify{
+public class DefaultPluginVerify extends PluginLegalVerify{
 
     private final PluginManager pluginManager;
 
-    public PluginUploadVerify(PluginDescriptorFinder pluginDescriptorFinder,
-                              PluginManager pluginManager) {
-        super(pluginDescriptorFinder);
+    public DefaultPluginVerify(PluginManager pluginManager) {
+        super(new CompoundPluginDescriptorFinder()
+                .add(new ManifestPluginDescriptorFinder())
+                .add(new PropertiesPluginDescriptorFinder()));
         Objects.requireNonNull(pluginManager);
         this.pluginManager = pluginManager;
     }

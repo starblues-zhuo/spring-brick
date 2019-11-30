@@ -1,6 +1,5 @@
 package com.gitee.starblues.factory.process.pipe.classs;
 
-import com.gitee.starblues.extension.ExtensionFactory;
 import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
@@ -11,19 +10,18 @@ import com.gitee.starblues.loader.load.PluginClassLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 插件类加载处理者
  *
  * @author zhangzhuo
- * @version 2.1.0
+ * @version 2.2.2
  */
 public class PluginClassProcess implements PluginPipeProcessor {
 
@@ -49,6 +47,7 @@ public class PluginClassProcess implements PluginPipeProcessor {
         pluginClassGroups.add(new RepositoryGroup());
         pluginClassGroups.add(new ConfigurationGroup());
         pluginClassGroups.add(new ConfigDefinitionGroup());
+        pluginClassGroups.add(new ConfigBeanGroup());
         pluginClassGroups.add(new SupplierGroup());
         pluginClassGroups.add(new CallerGroup());
         pluginClassGroups.add(new OneselfListenerGroup());
@@ -77,12 +76,9 @@ public class PluginClassProcess implements PluginPipeProcessor {
                         e.getMessage(), e);
             }
         }
-        for (Resource pluginResource : pluginResources) {
-            String path = pluginResource.getURL().getPath();
-            String packageName = path.substring(0, path.indexOf(".class"))
-                    .replace("/", ".");
-            packageName = packageName.substring(packageName.indexOf(basePlugin.scanPackage()));
-            Class<?> aClass = Class.forName(packageName, false,
+        Set<String> classPackageNames = resourceWrapper.getClassPackageNames();
+        for (String classPackageName : classPackageNames) {
+            Class<?> aClass = Class.forName(classPackageName, false,
                     basePlugin.getWrapper().getPluginClassLoader());
             if(aClass == null){
                 continue;

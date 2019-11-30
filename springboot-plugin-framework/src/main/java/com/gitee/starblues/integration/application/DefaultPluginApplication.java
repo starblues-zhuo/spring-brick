@@ -1,6 +1,6 @@
 package com.gitee.starblues.integration.application;
 
-import com.gitee.starblues.integration.pf4j.DefaultPf4JFactory;
+import com.gitee.starblues.integration.pf4j.DefaultPf4jFactory;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.pf4j.Pf4jFactory;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
@@ -24,9 +24,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DefaultPluginApplication extends AbstractPluginApplication {
 
-    private final Logger log = LoggerFactory.getLogger(DefaultPluginApplication.class);
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Pf4jFactory integrationFactory;
+    protected Pf4jFactory integrationFactory;
+
     private PluginUser pluginUser;
     private PluginOperator pluginOperator;
 
@@ -49,22 +50,46 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
         }
         IntegrationConfiguration configuration = getConfiguration(applicationContext);
         if(integrationFactory == null){
-            integrationFactory = new DefaultPf4JFactory(configuration);
+            integrationFactory = new DefaultPf4jFactory(configuration);
         }
         PluginManager pluginManager = integrationFactory.getPluginManager();
-        pluginUser = new DefaultPluginUser(applicationContext, pluginManager);
-        pluginOperator = new DefaultPluginOperator(
-                applicationContext,
-                configuration,
-                pluginManager,
-                this.listenerFactory
-        );
+        pluginUser = createPluginUser(applicationContext, pluginManager);
+        pluginOperator = createPluginOperator(applicationContext, pluginManager, configuration);
         try {
             pluginOperator.initPlugins(listener);
             beInitialized.set(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 创建插件使用者。子类可扩展
+     * @param applicationContext Spring ApplicationContext
+     * @param pluginManager 插件管理器
+     * @return PluginUser
+     */
+    protected PluginUser createPluginUser(ApplicationContext applicationContext,
+                                          PluginManager pluginManager){
+        return new DefaultPluginUser(applicationContext, pluginManager);
+    }
+
+    /**
+     * 创建插件操作者。子类可扩展
+     * @param applicationContext Spring ApplicationContext
+     * @param pluginManager 插件管理器
+     * @param configuration 当前集成的配置
+     * @return PluginOperator
+     */
+    protected PluginOperator createPluginOperator(ApplicationContext applicationContext,
+                                                  PluginManager pluginManager,
+                                                  IntegrationConfiguration configuration){
+        return new DefaultPluginOperator(
+                applicationContext,
+                configuration,
+                pluginManager,
+                this.listenerFactory
+        );
     }
 
 

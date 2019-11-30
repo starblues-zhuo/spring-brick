@@ -22,8 +22,8 @@ public class AutoPluginApplication extends DefaultPluginApplication
         super();
     }
 
-    public AutoPluginApplication(Pf4jFactory integrationFactory) {
-        super(integrationFactory);
+    public AutoPluginApplication(Pf4jFactory pf4jFactory) {
+        super(pf4jFactory);
     }
 
     /**

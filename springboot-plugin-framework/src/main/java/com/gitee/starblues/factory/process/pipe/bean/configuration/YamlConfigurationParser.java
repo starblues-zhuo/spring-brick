@@ -26,7 +26,7 @@ public class YamlConfigurationParser extends AbstractConfigurationParser {
         super(configuration);
         this.yamlFactory = new YAMLFactory();
         this.objectMapper = new ObjectMapper();
-        objectMapper.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
 
@@ -35,7 +35,7 @@ public class YamlConfigurationParser extends AbstractConfigurationParser {
             throws Exception{
         InputStream inputStream = null;
         try {
-            inputStream = new FileInputStream(resource.getFile());
+            inputStream = resource.getInputStream();
             YAMLParser yamlParser = yamlFactory.createParser(inputStream);
             final JsonNode node = objectMapper.readTree(yamlParser);
             if(node == null){

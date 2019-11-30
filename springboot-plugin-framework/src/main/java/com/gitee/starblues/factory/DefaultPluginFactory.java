@@ -20,7 +20,7 @@ import java.util.Map;
  * 默认的插件处理者
  *
  * @author zhangzhuo
- * @version 2.1.0
+ * @version 2.2.2
  */
 public class DefaultPluginFactory implements PluginFactory {
 
@@ -71,8 +71,8 @@ public class DefaultPluginFactory implements PluginFactory {
             throw new IllegalArgumentException("Parameter:pluginWrapper cannot be null");
         }
         if(registerPluginInfoMap.containsKey(pluginWrapper.getPluginId())){
-            throw new IllegalAccessException("The plugin "
-                    + pluginWrapper.getPluginId() +"already exists, Can't register");
+            throw new IllegalAccessException("The plugin '"
+                    + pluginWrapper.getPluginId() +"' already exists, Can't register");
         }
         if(!buildContainer.isEmpty() && buildType == 2){
             throw new IllegalAccessException("Unable to Registry operate. Because there's no build");
@@ -97,7 +97,7 @@ public class DefaultPluginFactory implements PluginFactory {
     public synchronized PluginFactory unRegistry(String pluginId) throws Exception {
         PluginRegistryInfo registerPluginInfo = registerPluginInfoMap.get(pluginId);
         if(registerPluginInfo == null){
-            throw new Exception("Not found plugin " + pluginId + " registered");
+            throw new Exception("Not found plugin '" + pluginId + "' registered");
         }
         if(!buildContainer.isEmpty() && buildType == 1){
             throw new Exception("Unable to UnRegistry operate. Because there's no build");

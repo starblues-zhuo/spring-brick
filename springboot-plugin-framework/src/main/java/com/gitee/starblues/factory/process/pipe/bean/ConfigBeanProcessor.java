@@ -1,42 +1,33 @@
 package com.gitee.starblues.factory.process.pipe.bean;
 
-import com.gitee.starblues.annotation.ConfigDefinition;
-import com.gitee.starblues.factory.PluginInfoContainer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
-import com.gitee.starblues.factory.process.pipe.bean.configuration.ConfigurationParser;
-import com.gitee.starblues.factory.process.pipe.bean.configuration.PluginConfigDefinition;
-import com.gitee.starblues.factory.process.pipe.bean.configuration.YamlConfigurationParser;
-import com.gitee.starblues.factory.process.pipe.classs.group.ConfigDefinitionGroup;
-import com.gitee.starblues.integration.IntegrationConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import com.gitee.starblues.factory.process.pipe.classs.group.ConfigBeanGroup;
+import com.gitee.starblues.realize.ConfigBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * 插件Controller bean注册者
+ * 插件中实现 ConfigBean 接口的的处理者
+ * @see ConfigBean
+ *
  * @author zhangzhuo
- * @version 2.1.0
+ * @version 2.2.2
  */
 public class ConfigBeanProcessor implements PluginPipeProcessor {
 
     private static final String KEY = "ConfigBeanProcessor";
 
-    private final ConfigurationParser configurationParser;
-    private final DefaultListableBeanFactory defaultListableBeanFactory;
+    private final SpringBeanRegister springBeanRegister;
+    private final ApplicationContext applicationContext;
 
-    public ConfigBeanProcessor(ApplicationContext mainApplicationContext) {
-        IntegrationConfiguration integrationConfiguration =
-                mainApplicationContext.getBean(IntegrationConfiguration.class);
-        this.configurationParser = new YamlConfigurationParser(integrationConfiguration);
-        this.defaultListableBeanFactory = (DefaultListableBeanFactory)
-                mainApplicationContext.getAutowireCapableBeanFactory();
+    public ConfigBeanProcessor(ApplicationContext applicationContext) {
+        this.springBeanRegister = new SpringBeanRegister(applicationContext);
+        this.applicationContext = applicationContext;
     }
 
 
@@ -47,18 +38,22 @@ public class ConfigBeanProcessor implements PluginPipeProcessor {
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        List<Class<?>> configDefinitions =
-                pluginRegistryInfo.getGroupClasses(ConfigDefinitionGroup.GROUP_ID);
-        if(configDefinitions == null || configDefinitions.isEmpty()){
+        List<Class<?>> configBeans =
+                pluginRegistryInfo.getGroupClasses(ConfigBeanGroup.GROUP_ID);
+        if(configBeans == null || configBeans.isEmpty()){
             return;
         }
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         Set<String> beanNames = new HashSet<>();
-        for (Class<?> aClass : configDefinitions) {
-            String beanName = registry(pluginRegistryInfo, aClass);
-            if(!StringUtils.isEmpty(beanName)){
-                beanNames.add(beanName);
-                PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
+        for (Class<?> aClass : configBeans) {
+            if(aClass == null){
+                continue;
+            }
+            String name = springBeanRegister.register(pluginId, aClass);
+            beanNames.add(name);
+            Object bean = applicationContext.getBean(name);
+            if(bean instanceof ConfigBean){
+                ((ConfigBean)bean).initialize();
             }
         }
         pluginRegistryInfo.addProcessorInfo(KEY, beanNames);
@@ -70,43 +65,13 @@ public class ConfigBeanProcessor implements PluginPipeProcessor {
         if(beanNames == null){
             return;
         }
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         for (String beanName : beanNames) {
-            if(defaultListableBeanFactory.containsSingleton(beanName)){
-                defaultListableBeanFactory.destroySingleton(beanName);
-                PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
+            Object bean = applicationContext.getBean(beanName);
+            if(bean instanceof ConfigBean){
+                ((ConfigBean)bean).destroy();
             }
         }
     }
 
-    /**
-     * 注册配置文件
-     * @param pluginRegistryInfo 插件注册的信息
-     * @param aClass 配置文件类
-     * @return 注册的bean名称
-     * @throws Exception Exception
-     */
-    private String registry(PluginRegistryInfo pluginRegistryInfo, Class<?> aClass) throws Exception{
-        ConfigDefinition configDefinition = aClass.getAnnotation(ConfigDefinition.class);
-        if(configDefinition == null){
-            return null;
-        }
-        String fileName = configDefinition.value();
-        if(StringUtils.isEmpty(fileName)){
-            throw new IllegalArgumentException(aClass.getName() + " configDefinition value is null");
-        }
-        PluginConfigDefinition pluginConfigDefinition =
-                new PluginConfigDefinition(fileName, aClass);
-        Object parseObject = configurationParser.parse(pluginRegistryInfo.getBasePlugin(),
-                pluginConfigDefinition);
-        String name = configDefinition.name();
-        if(StringUtils.isEmpty(name)){
-            name = aClass.getName();
-        }
-        if(!defaultListableBeanFactory.containsSingleton(name)){
-            defaultListableBeanFactory.registerSingleton(name, parseObject);
-        }
-        return name;
-    }
 
 }

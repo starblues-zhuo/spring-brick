@@ -6,7 +6,7 @@ import com.gitee.starblues.integration.listener.PluginInitializerListenerFactory
 import com.gitee.starblues.integration.listener.PluginListenerFactory;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
 import com.gitee.starblues.integration.operator.verify.PluginLegalVerify;
-import com.gitee.starblues.integration.operator.verify.PluginUploadVerify;
+import com.gitee.starblues.integration.operator.verify.DefaultPluginVerify;
 import com.gitee.starblues.factory.DefaultPluginFactory;
 import com.gitee.starblues.factory.PluginFactory;
 import com.gitee.starblues.utils.GlobalRegistryInfo;
@@ -34,12 +34,12 @@ import java.util.stream.Collectors;
 /**
  * 默认的插件操作者
  * @author zhangzhuo
- * @version 2.2.0
+ * @version 2.2.2
  */
 public class DefaultPluginOperator implements PluginOperator {
 
     private boolean isInit = false;
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final static DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
@@ -48,8 +48,8 @@ public class DefaultPluginOperator implements PluginOperator {
     protected final PluginManager pluginManager;
     protected final PluginFactory pluginFactory;
     protected final PluginInitializerListenerFactory pluginInitializerListenerFactory;
-    protected final PluginDescriptorFinder pluginDescriptorFinder;
-    protected final PluginLegalVerify uploadPluginVerify;
+
+    protected PluginLegalVerify pluginLegalVerify;
 
 
     public DefaultPluginOperator(ApplicationContext applicationContext,
@@ -63,10 +63,18 @@ public class DefaultPluginOperator implements PluginOperator {
         this.pluginFactory = new DefaultPluginFactory(applicationContext, pluginListenerFactory);
         this.pluginInitializerListenerFactory = new PluginInitializerListenerFactory(applicationContext);
 
-        this.pluginDescriptorFinder = new ManifestPluginDescriptorFinder();
-        this.uploadPluginVerify = new PluginUploadVerify(this.pluginDescriptorFinder, pluginManager);
+        this.pluginLegalVerify = new DefaultPluginVerify(pluginManager);
     }
 
+    /**
+     * 设置插件校验器
+     * @param uploadPluginVerify uploadPluginVerify
+     */
+    public void setUploadPluginVerify(PluginLegalVerify uploadPluginVerify) {
+        if(uploadPluginVerify != null){
+            this.pluginLegalVerify = uploadPluginVerify;
+        }
+    }
 
     @Override
     public synchronized boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws Exception {
@@ -105,13 +113,13 @@ public class DefaultPluginOperator implements PluginOperator {
                 }
             }
             pluginFactory.build();
+            isInit = true;
             if(isFoundException){
                 log.error("Plugins initialize failure");
                 return false;
             } else {
                 log.info("Plugins initialize success");
                 pluginInitializerListenerFactory.complete();
-                isInit = true;
                 return true;
             }
         }  catch (Exception e){
@@ -132,7 +140,7 @@ public class DefaultPluginOperator implements PluginOperator {
                 throw new FileNotFoundException("Not found this path " + path);
             }
             // 校验插件文件
-            uploadPluginVerify.verify(path);
+            pluginLegalVerify.verify(path);
             Path pluginsRoot = pluginManager.getPluginsRoot();
             if(path.getParent().compareTo(pluginsRoot) == 0){
                 // 说明该插件文件存在于插件root目录下。直接加载该插件
@@ -146,6 +154,7 @@ public class DefaultPluginOperator implements PluginOperator {
                     // 如果存在该文件, 则移动备份
                     backup(targetPath, "install-backup", 1);
                 }
+                PluginFileUtils.createExistFile(targetPath);
                 Files.copy(path, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 pluginId = pluginManager.loadPlugin(targetPath);
             }
@@ -163,18 +172,19 @@ public class DefaultPluginOperator implements PluginOperator {
             }
         } catch (Exception e){
             // 说明load成功, 但是没有启动成功, 则卸载该插件
-            log.error("Plugin '{}' install failure. {}", pluginId, e.getMessage());
-            log.info("Start uninstall plugin '{}' failure", pluginId);
-            try {
-                if(!StringUtils.isEmpty(pluginId)){
+            if(!StringUtils.isEmpty(pluginId)){
+                log.error("Plugin '{}' install failure. {}", pluginId, e.getMessage());
+                log.info("Start uninstall plugin '{}' failure", pluginId);
+                try {
                     uninstall(pluginId, false);
+                } catch (Exception uninstallException){
+                    log.error("Plugin '{}' uninstall failure. {}", pluginId, uninstallException.getMessage());
                 }
-            } catch (Exception uninstallException){
-                log.error("Plugin '{}' uninstall failure. {}", pluginId, e.getMessage());
             }
+
             throw e;
         } finally {
-            if(pluginId != null){
+            if(!StringUtils.isEmpty(pluginId)){
                 GlobalRegistryInfo.setOperatorPluginInfo(pluginId, false);
             }
         }
@@ -188,6 +198,9 @@ public class DefaultPluginOperator implements PluginOperator {
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
         if(pluginWrapper == null){
             throw new Exception("Plugin uninstall failure, Not found plugin '" + pluginId + "'");
+        }
+        if(pluginWrapper.getPluginState() != PluginState.STARTED){
+            throw new Exception("This plugin '" + pluginId + "' is not started");
         }
         Exception exception = null;
         try {
@@ -236,7 +249,7 @@ public class DefaultPluginOperator implements PluginOperator {
         }
         try {
             PluginState pluginState = pluginManager.startPlugin(pluginId);
-            if(pluginState == PluginState.STARTED){
+            if(pluginState != null && pluginState == PluginState.STARTED){
                 GlobalRegistryInfo.addOperatorPluginInfo(pluginId, PluginOperatorInfo.OperatorType.START, false);
                 pluginFactory.registry(pluginWrapper);
                 pluginFactory.build();
@@ -407,7 +420,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * @return 返回上传的插件路径
      * @throws Exception 异常信息
      */
-    private Path uploadPlugin(MultipartFile pluginFile) throws Exception {
+    protected Path uploadPlugin(MultipartFile pluginFile) throws Exception {
         if(pluginFile == null){
             throw new IllegalArgumentException("Method:uploadPlugin param 'pluginFile' can not be null");
         }
@@ -425,7 +438,7 @@ public class DefaultPluginOperator implements PluginOperator {
         Path tempPath = PluginFileUtils.createExistFile(Paths.get(tempPathString));
         Files.write(tempPath, pluginFile.getBytes());
         try {
-            Path verifyPath = uploadPluginVerify.verify(tempPath);
+            Path verifyPath = pluginLegalVerify.verify(tempPath);
             if(verifyPath != null){
                 String targetPathString = pluginManager.getPluginsRoot().toString() +
                         File.separator + fileName;
@@ -459,7 +472,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * @return PluginWrapper
      * @throws Exception 插件装配异常
      */
-    private PluginWrapper getPluginWrapper(String pluginId, String errorMsg) throws Exception {
+    protected PluginWrapper getPluginWrapper(String pluginId, String errorMsg) throws Exception {
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
         if (pluginWrapper == null) {
             throw new Exception(errorMsg + " -> Not found plugin " + pluginId);
@@ -475,7 +488,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * @param e 异常信息
      * @throws Exception Exception
      */
-    private void verifyFailureDelete(Path tempPluginFile, Exception e) throws Exception {
+    protected void verifyFailureDelete(Path tempPluginFile, Exception e) throws Exception {
         try {
             Files.deleteIfExists(tempPluginFile);
         }catch (IOException e1){
@@ -490,7 +503,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * @param type 类型 1移动 2拷贝
      * @return 结果
      */
-    private boolean backup(Path sourcePath, String sign, int type) {
+    protected boolean backup(Path sourcePath, String sign, int type) {
         try {
             if(isDev()){
                 // 如果是开发环境, 则不进行备份
@@ -536,7 +549,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * 获取现在的时间
      * @return String
      */
-    private String getNowTimeByFormat(){
+    protected String getNowTimeByFormat(){
         LocalDateTime localDateTime = LocalDateTime.now();
         return FORMAT.format(localDateTime);
     }
@@ -545,7 +558,7 @@ public class DefaultPluginOperator implements PluginOperator {
      * 是否是开发环境
      * @return bolean
      */
-    private boolean isDev(){
+    protected boolean isDev(){
         return integrationConfiguration.environment() == RuntimeMode.DEVELOPMENT;
     }
 
