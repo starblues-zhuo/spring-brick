@@ -79,8 +79,8 @@ public class SpringBeanRegister {
         if(PluginInfoContainer.existRegisterBeanName((beanName))){
             String error = MessageFormat.format("Bean name {0} already exist of {1}",
                     beanName, aClass.getName());
-            logger.error(error);
-            return null;
+            logger.debug(error);
+            return beanName;
         }
         if(consumer != null){
             consumer.accept(beanDefinition);
@@ -133,8 +133,8 @@ public class SpringBeanRegister {
      * @param beanName bean名称
      */
     public void unregister(String pluginId, String beanName){
-        applicationContext.removeBeanDefinition(beanName);
         PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
+        applicationContext.removeBeanDefinition(beanName);
     }
 
 

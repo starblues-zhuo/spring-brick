@@ -26,10 +26,20 @@ public class PluginInfo {
      */
     private String path;
 
-    public PluginInfo(PluginDescriptor pluginDescriptor, PluginState pluginState, String path) {
+    /**
+     * 允许模式
+     */
+    private String runMode;
+
+
+    public PluginInfo(PluginDescriptor pluginDescriptor,
+                      PluginState pluginState,
+                      String path,
+                      String runMode) {
         this.pluginDescriptor = pluginDescriptor;
         this.pluginState = pluginState;
         this.path = path;
+        this.runMode = runMode;
     }
 
     public PluginDescriptor getPluginDescriptor() {
@@ -46,5 +56,9 @@ public class PluginInfo {
 
     public String getPath() {
         return path;
+    }
+
+    public String getRunMode() {
+        return runMode;
     }
 }

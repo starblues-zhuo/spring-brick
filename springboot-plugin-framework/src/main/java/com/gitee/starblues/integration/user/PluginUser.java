@@ -86,9 +86,11 @@ public interface PluginUser {
      */
     <T> List<T> getPluginBeans(String pluginId, Class<T> aClass);
 
+
     /**
-     * 生成一个新的实例
-     * @param object 元实例对象
+     * 生成一个新的Spring实例Bean.
+     * 使用场景：主要用于非单例对象的生成。
+     * @param object 旧实例对象
      * @param <T> 实例泛型
      * @return 新实例对象
      */

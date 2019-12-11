@@ -25,13 +25,14 @@ public abstract class AbstractExtension {
     }
 
     /**
-     * 扩展key
+     * 扩展唯一的key
      * @return String
      */
     public abstract String key();
 
     /**
      * 该扩展初始化的操作
+     * 主要是在插件初始化阶段被调用
      * @throws Exception 初始化异常
      */
     public void initialize(ApplicationContext applicationContext) throws Exception{
@@ -39,7 +40,8 @@ public abstract class AbstractExtension {
 
 
     /**
-     * 得到插件的资源加载者
+     * 返回插件的资源加载者。
+     * 主要是加载插件中的某些资源，比如文件、图片等。
      * @return List PluginResourceLoader
      */
     public List<PluginResourceLoader> getPluginResourceLoader(){
@@ -47,7 +49,8 @@ public abstract class AbstractExtension {
     }
 
     /**
-     * 得到扩展的插件中的类分组器
+     * 返回扩展的插件中的类分组器。
+     * 该扩展主要是对插件中的Class文件分组，然后供 PluginPipeProcessor、PluginPostProcessor 阶段使用。
      * @param applicationContext 主程序ApplicationContext
      * @return List PluginPipeProcessorExtend
      */
@@ -57,7 +60,8 @@ public abstract class AbstractExtension {
 
 
     /**
-     * 得到扩展的流插件处理者
+     * 返回扩展的流插件处理者。
+     * 该扩展主要是对每一个插件进行处理
      * @param applicationContext 主程序ApplicationContext
      * @return List PluginPipeProcessorExtend
      */
@@ -66,7 +70,8 @@ public abstract class AbstractExtension {
     }
 
     /**
-     * 得到扩展的插件后置处理者
+     * 返回扩展的插件后置处理者。
+     * 该扩展主要是对全部插件进行处理。
      * @param applicationContext 主程序ApplicationContext
      * @return List PluginPostProcessorExtend
      */
