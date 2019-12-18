@@ -1,5 +1,6 @@
 package com.basic.example.main.config;
 
+import com.basic.example.main.quartz.QuartzJobManager;
 import com.gitee.starblues.integration.application.DefaultPluginApplication;
 import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.application.AutoPluginApplication;
@@ -26,6 +27,7 @@ public class PluginBeanConfig {
         AutoPluginApplication autoPluginApplication = new AutoPluginApplication();
         autoPluginApplication.setPluginInitializerListener(pluginListener);
         autoPluginApplication.addListener(ExamplePluginListener.class);
+        autoPluginApplication.addListener(QuartzJobManager.class);
         return autoPluginApplication;
     }
 

@@ -18,6 +18,7 @@
 
     <properties>
         <springfox-swagger2.version>2.7.0</springfox-swagger2.version>
+        <quartz.version>2.3.2</quartz.version>
         <swagger-bootstrap-ui.version>1.6</swagger-bootstrap-ui.version>
         <springboot-plugin-framework.version>2.2.2-RELEASE</springboot-plugin-framework.version>
     </properties>
@@ -37,6 +38,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz.version}</version>
         </dependency>
 
 
