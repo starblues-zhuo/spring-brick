@@ -39,7 +39,8 @@
 
 ### 运行环境
 1. jdk1.8+
-2. apache maven 3.6
+2. apache maven 3.6+
+3. spring-boot 2.0.0+
 
 ### maven 仓库地址
 
