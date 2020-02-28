@@ -61,10 +61,7 @@ public class PluginResource implements Resource {
     }
 
 
-    @Override
-    public ReadableByteChannel readableChannel() throws IOException {
-        throw new RuntimeException("This method is not supported");
-    }
+
 
     @Override
     public long contentLength() throws IOException {
@@ -143,16 +140,7 @@ public class PluginResource implements Resource {
         return false;
     }
 
-    @Override
-    public boolean isFile() {
-        try {
-            URL url = getURL();
-            return ResourceUtils.URL_PROTOCOL_FILE.equals(url.getProtocol());
-        } catch (IOException e) {
-            log.debug(e.getMessage(), e);
-            return false;
-        }
-    }
+
 
     @Override
     public File getFile() throws IOException {

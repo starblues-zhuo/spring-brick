@@ -39,7 +39,8 @@
 
 ### 运行环境
 1. jdk1.8+
-2. apache maven 3.6
+2. apache maven 3.6+
+3. spring-boot 2.0.0+
 
 ### maven 仓库地址
 
@@ -50,5 +51,6 @@
 [https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages)
 
 
-### QQ交流群
-859570617
+### 使用案例
+
+1、[Rope-ETL系统](https://gitee.com/starblues/rope)
