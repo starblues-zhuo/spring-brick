@@ -49,3 +49,8 @@
 ### 文档地址
 
 [https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages)
+
+
+### 使用案例
+
+1、[ETL系统](https://gitee.com/starblues/rope)
