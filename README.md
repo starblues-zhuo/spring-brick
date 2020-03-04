@@ -54,3 +54,8 @@
 ### 使用案例
 
 1、[Rope-ETL系统](https://gitee.com/starblues/rope)
+
+### QQ交流群
+859570617( **点赞框架后可进群, 进群前请备注gitee昵称。** )
+
+
