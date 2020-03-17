@@ -288,11 +288,11 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
                 return null;
             }
             Class<?> returnType = method.getReturnType();
-            if(returnType == invokeReturn.getClass()){
+            if(ClassUtils.isAssignable(invokeReturn.getClass(),returnType)){
                 return invokeReturn;
             } else {
                 String json = OBJECT_MAPPER.writeValueAsString(invokeReturn);
-                return OBJECT_MAPPER.readValue(json, returnType);
+                return OBJECT_MAPPER.readValue(json, OBJECT_MAPPER.getTypeFactory().constructType(method.getGenericReturnType()) );
             }
         }
 
