@@ -33,6 +33,7 @@ public abstract class AbstractExtension {
     /**
      * 该扩展初始化的操作
      * 主要是在插件初始化阶段被调用
+     * @param applicationContext applicationContext
      * @throws Exception 初始化异常
      */
     public void initialize(ApplicationContext applicationContext) throws Exception{

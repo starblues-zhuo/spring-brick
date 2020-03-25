@@ -486,6 +486,7 @@ public class DefaultPluginOperator implements PluginOperator {
     /**
      * 得到插件包装类
      * @param pluginId 插件id
+     * @param errorMsg 错误信息
      * @return PluginWrapper
      * @throws Exception 插件装配异常
      */
