@@ -27,4 +27,3 @@ cd dist
 REM run main
 rename basic-example-main-*-exec.jar basic-example-start.jar
 rename application-prod.yml application.yml
-java -jar basic-example-start.jar --spring.config.location=application.yml

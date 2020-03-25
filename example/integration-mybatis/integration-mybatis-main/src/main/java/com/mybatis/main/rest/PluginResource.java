@@ -103,9 +103,13 @@ public class PluginResource {
      * @return 返回操作结果
      */
     @PostMapping("/uninstall/{id}")
-    public String uninstall(@PathVariable("id") String id){
+    public String uninstall(@PathVariable("id") String id,
+                            @RequestParam(value = "isBack", required = false) Boolean isBack){
         try {
-            if(pluginOperator.uninstall(id, true)){
+            if(isBack == null){
+                isBack = true;
+            }
+            if(pluginOperator.uninstall(id, isBack)){
                 return "plugin '" + id +"' uninstall success";
             } else {
                 return "plugin '" + id +"' uninstall failure";
