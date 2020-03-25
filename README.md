@@ -1,7 +1,7 @@
 # springboot插件式开发框架
 
 ### 介绍
-该框架主要是集成于springboot项目，用于开发插件式应用的集成框架。
+此框架可在springboot项目上开发出用于扩展项目的插件，可在插件模块中单独定义接口、静态文件、mybatis-xml等扩展功能。
 
 ### 核心功能
 1. 插件配置式插拔于springboot项目。
@@ -54,3 +54,8 @@
 ### 使用案例
 
 1、[Rope-ETL系统](https://gitee.com/starblues/rope)
+
+### QQ交流群
+859570617(**点赞框架后可进群, 进群前请备注gitee昵称**)
+
+
