@@ -26,6 +26,8 @@ public class ResourceWebMvcConfigurer implements WebMvcConfigurer {
         CacheControl cacheControl = StaticResourceExtension.getPluginStaticResourcesCacheControl();
         if(cacheControl != null){
             resourceHandlerRegistration.setCacheControl(cacheControl);
+        } else {
+            resourceHandlerRegistration.setCacheControl(CacheControl.noStore());
         }
         resourceHandlerRegistration
                 .resourceChain(false)

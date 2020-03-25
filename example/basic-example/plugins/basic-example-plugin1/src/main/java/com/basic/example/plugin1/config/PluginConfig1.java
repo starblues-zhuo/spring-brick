@@ -16,13 +16,14 @@ public class PluginConfig1 {
 
     private String name;
     private String plugin;
+    private Boolean jobEnable;
+    private String jobCron;
     private Set<String> setString;
     private List<Integer> listInteger;
 
     private String defaultValue = "defaultValue";
 
     private SubConfig subConfig;
-
 
 
 
@@ -40,6 +41,22 @@ public class PluginConfig1 {
 
     public void setPlugin(String plugin) {
         this.plugin = plugin;
+    }
+
+    public Boolean getJobEnable() {
+        return jobEnable;
+    }
+
+    public void setJobEnable(Boolean jobEnable) {
+        this.jobEnable = jobEnable;
+    }
+
+    public String getJobCron() {
+        return jobCron;
+    }
+
+    public void setJobCron(String jobCron) {
+        this.jobCron = jobCron;
     }
 
     public Set<String> getSetString() {
@@ -76,13 +93,17 @@ public class PluginConfig1 {
 
     @Override
     public String toString() {
-        return "BasePluginExtension{" +
+        return "PluginConfig1{" +
                 "name='" + name + '\'' +
                 ", plugin='" + plugin + '\'' +
+                ", jobEnable=" + jobEnable +
+                ", jobCron='" + jobCron + '\'' +
                 ", setString=" + setString +
                 ", listInteger=" + listInteger +
                 ", defaultValue='" + defaultValue + '\'' +
+                ", subConfig=" + subConfig +
                 '}';
     }
+
 
 }

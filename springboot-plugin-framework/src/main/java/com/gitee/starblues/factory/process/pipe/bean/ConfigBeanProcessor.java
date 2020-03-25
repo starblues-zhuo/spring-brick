@@ -5,11 +5,11 @@ import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.group.ConfigBeanGroup;
 import com.gitee.starblues.realize.ConfigBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 插件中实现 ConfigBean 接口的的处理者
@@ -19,6 +19,8 @@ import java.util.Set;
  * @version 2.2.2
  */
 public class ConfigBeanProcessor implements PluginPipeProcessor {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private static final String KEY = "ConfigBeanProcessor";
 
@@ -44,33 +46,41 @@ public class ConfigBeanProcessor implements PluginPipeProcessor {
             return;
         }
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-        Set<String> beanNames = new HashSet<>();
+        Map<String, ConfigBean> configBeanMap = new HashMap<>();
         for (Class<?> aClass : configBeans) {
             if(aClass == null){
                 continue;
             }
             String name = springBeanRegister.register(pluginId, aClass);
-            beanNames.add(name);
             Object bean = applicationContext.getBean(name);
             if(bean instanceof ConfigBean){
-                ((ConfigBean)bean).initialize();
+                ConfigBean configBean = (ConfigBean) bean;
+                configBean.initialize();
+                configBeanMap.put(name, configBean);
             }
         }
-        pluginRegistryInfo.addProcessorInfo(KEY, beanNames);
+        pluginRegistryInfo.addProcessorInfo(KEY, configBeanMap);
     }
 
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        Set<String> beanNames = pluginRegistryInfo.getProcessorInfo(KEY);
-        if(beanNames == null){
+        Map<String, ConfigBean> configBeanMap = pluginRegistryInfo.getProcessorInfo(KEY);
+        if(configBeanMap == null){
             return;
         }
-        for (String beanName : beanNames) {
-            Object bean = applicationContext.getBean(beanName);
-            if(bean instanceof ConfigBean){
-                ((ConfigBean)bean).destroy();
+        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
+        configBeanMap.forEach((beanName, configBean)->{
+            if(configBean == null){
+                return;
             }
-        }
+            try {
+                configBean.destroy();
+            } catch (Exception e) {
+                log.error("ConfigBean '' destroy exception. {}", e.getMessage(), e);
+            }
+            springBeanRegister.unregister(pluginId, beanName);
+        });
+
     }
 
 

@@ -131,6 +131,9 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public boolean install(Path path) throws Exception {
+        if(isDev()){
+            throw new RuntimeException("Plugin cannot be installed in 'dev' environment");
+        }
         if(path == null){
             throw new IllegalArgumentException("Method:install param 'pluginId' can not be empty");
         }
@@ -199,19 +202,19 @@ public class DefaultPluginOperator implements PluginOperator {
         if(pluginWrapper == null){
             throw new Exception("Plugin uninstall failure, Not found plugin '" + pluginId + "'");
         }
-        if(pluginWrapper.getPluginState() != PluginState.STARTED){
-            throw new Exception("This plugin '" + pluginId + "' is not started");
-        }
-        Exception exception = null;
-        try {
-            pluginFactory.unRegistry(pluginId);
-            pluginFactory.build();
-        } catch (Exception e){
-            log.error("Plugin '{}' uninstall failure, {}", pluginId, e.getMessage());
-            exception = e;
-        }
-        try {
 
+        Exception exception = null;
+        if(pluginWrapper.getPluginState() == PluginState.STARTED){
+            try {
+                pluginFactory.unRegistry(pluginId);
+                pluginFactory.build();
+            } catch (Exception e){
+                log.error("Plugin '{}' uninstall failure, {}", pluginId, e.getMessage());
+                exception = e;
+            }
+        }
+
+        try {
             if (pluginManager.unloadPlugin(pluginId)) {
                 Path pluginPath = pluginWrapper.getPluginPath();
                 if(isBackup){
@@ -301,6 +304,9 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public boolean uploadPluginAndStart(MultipartFile pluginFile) throws Exception {
+        if(isDev()){
+            throw new RuntimeException("Plugin cannot be installed in the 'dev' environment");
+        }
         if(pluginFile == null){
             throw new IllegalArgumentException("Method:uploadPluginAndStart param 'pluginFile' can not be null");
         }
@@ -372,11 +378,12 @@ public class DefaultPluginOperator implements PluginOperator {
         return startedPlugins.stream()
                 .filter(pluginWrapper -> pluginWrapper != null)
                 .map(pw -> {
-                    return new PluginInfo(pw.getDescriptor(), pw.getPluginState(),
-                            pw.getPluginPath().toAbsolutePath().toString());
+                    return getPluginInfo(pw);
                 })
                 .collect(Collectors.toList());
     }
+
+
 
     @Override
     public PluginInfo getPluginInfo(String pluginId) {
@@ -384,8 +391,18 @@ public class DefaultPluginOperator implements PluginOperator {
         if(pluginWrapper == null){
             throw new RuntimeException("Not found plugin '" + pluginId + "'");
         }
+        return getPluginInfo(pluginWrapper);
+    }
+
+    /**
+     * 通过PluginWrapper得到插件信息
+     * @param pluginWrapper pluginWrapper
+     * @return PluginInfo
+     */
+    private PluginInfo getPluginInfo(PluginWrapper pluginWrapper) {
         return new PluginInfo(pluginWrapper.getDescriptor(), pluginWrapper.getPluginState(),
-                pluginWrapper.getPluginPath().toAbsolutePath().toString());
+                pluginWrapper.getPluginPath().toAbsolutePath().toString(),
+                pluginManager.getRuntimeMode().toString());
     }
 
 
@@ -469,6 +486,7 @@ public class DefaultPluginOperator implements PluginOperator {
     /**
      * 得到插件包装类
      * @param pluginId 插件id
+     * @param errorMsg 错误信息
      * @return PluginWrapper
      * @throws Exception 插件装配异常
      */

@@ -1,8 +1,10 @@
 package com.basic.example.main.config;
 
+import com.basic.example.main.quartz.QuartzJobManager;
 import com.gitee.starblues.integration.application.DefaultPluginApplication;
 import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.application.AutoPluginApplication;
+import org.quartz.SchedulerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +24,8 @@ public class PluginBeanConfig {
      * @return PluginApplication
      */
     @Bean
-    public PluginApplication pluginApplication(PluginListener pluginListener){
+    public PluginApplication pluginApplication(PluginListener pluginListener,
+                                               SchedulerFactory schedulerFactory){
         AutoPluginApplication autoPluginApplication = new AutoPluginApplication();
         autoPluginApplication.setPluginInitializerListener(pluginListener);
         autoPluginApplication.addListener(ExamplePluginListener.class);

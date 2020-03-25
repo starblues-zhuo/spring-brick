@@ -1,5 +1,7 @@
 name: plugin1
 plugin: examplePlugin1
+jobEnable: true
+jobCron: "*/5 * * * * ?"
 setString:
   - set1
   - set2
