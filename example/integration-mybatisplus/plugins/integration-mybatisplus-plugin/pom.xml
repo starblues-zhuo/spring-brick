@@ -10,7 +10,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <!-- 子类覆盖该配置 -->
         <plugin.id>integration-mybatisplus-plugin</plugin.id>
         <plugin.class>com.mybatisplus.plugin.MybatisPlusPlugin</plugin.class>
         <plugin.version>${project.version}</plugin.version>
