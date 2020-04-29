@@ -4,6 +4,7 @@ import com.gitee.starblues.extension.mybatis.annotation.PluginMapper;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.AnnotationsUtils;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 插件中的Mapper接口分组
@@ -27,7 +28,8 @@ public class PluginMapperGroup implements PluginClassGroupExtend {
 
     @Override
     public boolean filter(Class<?> aClass) {
-        return AnnotationsUtils.haveAnnotations(aClass, false, PluginMapper.class);
+        return AnnotationsUtils.haveAnnotations(aClass, false, PluginMapper.class) ||
+                AnnotationsUtils.haveAnnotations(aClass, false, Mapper.class);
     }
 
     @Override

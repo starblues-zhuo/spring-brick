@@ -6,8 +6,10 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeException;
 
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 插件 xmlMapper 构造者
@@ -17,7 +19,9 @@ import java.util.Map;
  */
 public class PluginMybatisXmlMapperBuilder extends XMLMapperBuilder {
 
+
     private final ClassLoader pluginClassLoader;
+    private final Set<String> typeAliasRegistryClassKeys = new HashSet<>();
 
     public PluginMybatisXmlMapperBuilder(InputStream inputStream,
                                          Configuration configuration,
@@ -43,16 +47,42 @@ public class PluginMybatisXmlMapperBuilder extends XMLMapperBuilder {
         if (alias == null) {
             return null;
         }
-        Map<String, Class<?>> typeAliases = typeAliasRegistry.getTypeAliases();
-        String key = alias.toLowerCase(Locale.ENGLISH);
-        if (typeAliases.containsKey(key)) {
-            return typeAliasRegistry.resolveAlias(alias);
-        } else {
-            try {
-                return (Class<T>) Class.forName(alias, false, pluginClassLoader);
-            } catch (ClassNotFoundException e) {
-                throw new TypeException("Could not resolve type alias '" + alias + "'.  Cause: " + e, e);
+        try {
+            Map<String, Class<?>> typeAliases = TypeAliasRegistryUtils.getTypeAliases(typeAliasRegistry);
+            String key = alias.toLowerCase(Locale.ENGLISH);
+            if (typeAliases.containsKey(key)) {
+                return typeAliasRegistry.resolveAlias(alias);
+            } else {
+                try {
+                    Class<T> aClass = (Class<T>) Class.forName(alias, false, pluginClassLoader);
+                    typeAliasRegistryClassKeys.add(key);
+                    typeAliases.put(key, aClass);
+                    return aClass;
+                } catch (ClassNotFoundException e) {
+                    throw new TypeException("Could not resolve type alias '" + alias + "'.  Cause: " + e, e);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
+
+
+    /**
+     * 卸载时调用，主要是删除typeAliasRegistry中typeAliases所缓存的Class对象
+     */
+     void unRegistry(){
+         try {
+             Map<String, Class<?>> typeAliases = TypeAliasRegistryUtils.getTypeAliases(typeAliasRegistry);
+             for (String typeAliasRegistryClassKey : typeAliasRegistryClassKeys) {
+                 typeAliases.remove(typeAliasRegistryClassKey);
+             }
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+    }
+
+
+
 }
