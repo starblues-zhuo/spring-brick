@@ -1,6 +1,5 @@
 package com.gitee.starblues.integration.listener;
 
-import com.gitee.starblues.extension.ExtensionFactory;
 import com.gitee.starblues.extension.ExtensionInitializer;
 import org.springframework.context.ApplicationContext;
 

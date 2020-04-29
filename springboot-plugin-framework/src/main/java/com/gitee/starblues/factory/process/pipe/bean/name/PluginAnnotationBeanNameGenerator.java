@@ -15,11 +15,21 @@ import org.springframework.util.StringUtils;
 public class PluginAnnotationBeanNameGenerator extends AnnotationBeanNameGenerator {
 
     /**
+     * 插件id
+     */
+    private final String pluginId;
+
+    /**
      * 后缀名称
      */
     private final String suffixName;
 
-    public PluginAnnotationBeanNameGenerator(String suffixName) {
+    public PluginAnnotationBeanNameGenerator(String pluginId, String suffixName) {
+        if(StringUtils.isEmpty(pluginId)){
+            this.pluginId = "";
+        } else {
+            this.pluginId = pluginId + "@";
+        }
         if(StringUtils.isEmpty(suffixName)){
             this.suffixName = "";
         } else {
@@ -35,7 +45,7 @@ public class PluginAnnotationBeanNameGenerator extends AnnotationBeanNameGenerat
                 return beanName;
             }
         }
-        return buildDefaultBeanName(definition, registry) + suffixName;
+        return pluginId + buildDefaultBeanName(definition, registry) + suffixName;
     }
 
 
