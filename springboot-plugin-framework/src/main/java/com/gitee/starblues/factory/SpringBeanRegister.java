@@ -74,7 +74,7 @@ public class SpringBeanRegister {
                 AnnotatedGenericBeanDefinition(aClass);
 
         BeanNameGenerator beanNameGenerator =
-                new PluginAnnotationBeanNameGenerator(suffixName);
+                new PluginAnnotationBeanNameGenerator(pluginId, suffixName);
         String beanName = beanNameGenerator.generateBeanName(beanDefinition, applicationContext);
         if(PluginInfoContainer.existRegisterBeanName((beanName))){
             String error = MessageFormat.format("Bean name {0} already exist of {1}",

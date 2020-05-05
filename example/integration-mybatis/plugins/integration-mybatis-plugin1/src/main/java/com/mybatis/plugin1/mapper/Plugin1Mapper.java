@@ -3,6 +3,7 @@ package com.mybatis.plugin1.mapper;
 import com.gitee.starblues.extension.mybatis.annotation.PluginMapper;
 import com.mybatis.plugin1.entity.Plugin1;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * @author zhangzhuo
  * @version 1.0
  */
-@PluginMapper
+@Mapper
 public interface Plugin1Mapper {
 
 

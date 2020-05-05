@@ -3,6 +3,7 @@ package com.mybatisplus.plugin.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import org.apache.ibatis.type.Alias;
 
 /**
  * description
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
  * @version 1.0
  */
 @TableName("plugin_data")
+@Alias("pluginData")
 public class PluginData {
 
     @TableId(type = IdType.UUID)

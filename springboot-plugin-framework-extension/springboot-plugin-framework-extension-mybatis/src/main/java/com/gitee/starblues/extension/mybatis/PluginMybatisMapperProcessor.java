@@ -85,7 +85,7 @@ public class PluginMybatisMapperProcessor implements PluginPipeProcessorExtend {
             if (groupClass == null) {
                 continue;
             }
-            BeanNameGenerator beanNameGenerator = new PluginAnnotationBeanNameGenerator(basePlugin.getWrapper().getPluginId());
+            BeanNameGenerator beanNameGenerator = new PluginAnnotationBeanNameGenerator(pluginId, basePlugin.getWrapper().getPluginId());
             AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(groupClass);
             ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
             abd.setScope(scopeMetadata.getScopeName());

@@ -68,7 +68,9 @@ public class PluginMybatisXmlProcessor implements PluginPipeProcessorExtend {
         if(pluginResources == null || pluginResources.isEmpty()){
             return;
         }
-        mybatisXmlProcess.loadXmlResource(pluginResources, pluginWrapper.getPluginClassLoader());
+        mybatisXmlProcess.loadXmlResource(
+                pluginRegistryInfo.getPluginWrapper().getPluginId(),
+                pluginResources, pluginWrapper.getPluginClassLoader());
     }
 
     private void processAliases(PluginRegistryInfo pluginRegistryInfo) {
@@ -77,7 +79,7 @@ public class PluginMybatisXmlProcessor implements PluginPipeProcessorExtend {
 
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        // not thing
+        mybatisXmlProcess.unRegistry(pluginRegistryInfo.getPluginWrapper().getPluginId());
     }
 
 }

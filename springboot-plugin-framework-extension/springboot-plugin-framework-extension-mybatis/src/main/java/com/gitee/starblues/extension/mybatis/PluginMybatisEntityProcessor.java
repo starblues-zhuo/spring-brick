@@ -1,6 +1,7 @@
 package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConfig;
+import com.gitee.starblues.extension.mybatis.utils.TypeAliasRegistryUtils;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.realize.BasePlugin;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -69,8 +69,13 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
             mybatisAliasNames = new HashSet<>();
             pluginRegistryInfo.addExtension(ALIAS_NAME_KEY, mybatisAliasNames);
         }
-        processEntityClass(pluginRegistryInfo, typeAliasRegistry, mybatisAliasNames);
-        processAliasMapping(pluginRegistryInfo, typeAliasRegistry, mybatisAliasNames);
+        Map<String, Class<?>> typeAliases = TypeAliasRegistryUtils.getTypeAliases(typeAliasRegistry);
+        if(typeAliases == null){
+            LOG.warn("Not found mybatis typeAliases Map");
+            return;
+        }
+        processEntityClass(pluginRegistryInfo, typeAliases, mybatisAliasNames);
+        processAliasMapping(pluginRegistryInfo, typeAliases, mybatisAliasNames);
     }
 
     private TypeAliasRegistry getTypeAliasRegistry() {
@@ -93,10 +98,10 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
         if(typeAliasRegistry == null){
             return;
         }
+        Map<String, Class<?>> typeAliases = TypeAliasRegistryUtils.getTypeAliases(typeAliasRegistry);
         Set<String> mybatisAliasNames = pluginRegistryInfo.getExtension(ALIAS_NAME_KEY);
         if(mybatisAliasNames != null && !mybatisAliasNames.isEmpty()){
             for (String mybatisAliasName : mybatisAliasNames) {
-                Map<String, Class<?>> typeAliases = getTypeAliases(typeAliasRegistry);
                 typeAliases.remove(mybatisAliasName);
             }
         }
@@ -106,16 +111,14 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
     /**
      * 处理别名的实体类
      * @param pluginRegistryInfo 注册的插件信息
-     * @param typeAliasRegistry 别名注册器
+     * @param typeAliases mybatis 中内置的别名 Map集合
+     * @param mybatisAliasNames 插件中别名存储集合, 用于卸载时使用
      */
     private void processEntityClass(PluginRegistryInfo pluginRegistryInfo,
-                                    TypeAliasRegistry typeAliasRegistry,
+                                    Map<String, Class<?>> typeAliases,
                                     Set<String> mybatisAliasNames){
         List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(PluginEntityAliasesGroup.KEY);
         if(groupClasses == null || groupClasses.isEmpty()){
-            return;
-        }
-        if(typeAliasRegistry == null){
             return;
         }
         for (Class<?> groupClass : groupClasses) {
@@ -130,7 +133,7 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
             if(StringUtils.isEmpty(aliasName)){
                 continue;
             }
-            registerAlias(typeAliasRegistry, aliasName, groupClass);
+            registerAlias(typeAliases, aliasName, groupClass);
             mybatisAliasNames.add(aliasName);
         }
     }
@@ -138,10 +141,11 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
     /**
      * 注册自定义配置的 aliasMapping 的别名
      * @param pluginRegistryInfo 注册的插件信息
-     * @param typeAliasRegistry 别名注册器
+     * @param typeAliases mybatis 中内置的别名 Map集合
+     * @param mybatisAliasNames 插件中别名存储集合, 用于卸载时使用
      */
     private void processAliasMapping(PluginRegistryInfo pluginRegistryInfo,
-                                     TypeAliasRegistry typeAliasRegistry,
+                                     Map<String, Class<?>> typeAliases,
                                      Set<String> mybatisAliasNames){
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
         if(basePlugin instanceof SpringBootMybatisConfig){
@@ -151,7 +155,7 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
                 return;
             }
             aliasMapping.forEach((k, v)->{
-                registerAlias(typeAliasRegistry, k, v);
+                registerAlias(typeAliases, k, v);
                 mybatisAliasNames.add(k);
             });
         }
@@ -160,46 +164,19 @@ public class PluginMybatisEntityProcessor implements PluginPipeProcessorExtend {
 
     /**
      * 注册别名。
-     * @param typeAliasRegistry 别名注册器
+     * @param typeAliases  mybatis 中内置的别名 Map集合
      * @param alias 别名名称
      * @param value 别名对应的class类
      */
-    private void registerAlias(TypeAliasRegistry typeAliasRegistry,
+    private void registerAlias(Map<String, Class<?>> typeAliases,
                                String alias,
                                Class<?> value){
         if(StringUtils.isEmpty(alias)){
             return;
         }
-        Map<String, Class<?>> typeAliases = getTypeAliases(typeAliasRegistry);
         typeAliases.put(alias, value);
     }
 
-    /**
-     *
-     * 通过反射获取别名注册器 TypeAliasRegistry 中存储别名的 typeAliases Map集合。
-     * @param typeAliasRegistry 别名注册器
-     * @return typeAliases Map集合。
-     */
-    private Map<String, Class<?>> getTypeAliases(TypeAliasRegistry typeAliasRegistry) {
-        if(typeAliasRegistry == null){
-            return null;
-        }
-        try {
-            Field field = typeAliasRegistry.getClass().getDeclaredField("typeAliases");
-            //设置对象的访问权限，保证对private的属性的访问
-            field.setAccessible(true);
-            Object fieldObject = field.get(typeAliasRegistry);
-            if(fieldObject instanceof Map){
-                return (Map<String, Class<?>>)fieldObject;
-            } else {
-                LOG.warn("Not found TypeAliasRegistry typeAliases");
-                return null;
-            }
-        } catch (Exception e) {
-            LOG.error("Found TypeAliasRegistry typeAliases exception. {}", e.getMessage(), e);
-            return null;
-        }
-    }
 
     /**
      * 首字母小写
