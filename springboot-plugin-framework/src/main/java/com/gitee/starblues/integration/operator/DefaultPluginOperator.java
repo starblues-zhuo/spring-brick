@@ -389,7 +389,8 @@ public class DefaultPluginOperator implements PluginOperator {
     public PluginInfo getPluginInfo(String pluginId) {
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
         if(pluginWrapper == null){
-            throw new RuntimeException("Not found plugin '" + pluginId + "'");
+            log.warn("Not found plugin '{}'", pluginId);
+            return null;
         }
         return getPluginInfo(pluginWrapper);
     }
