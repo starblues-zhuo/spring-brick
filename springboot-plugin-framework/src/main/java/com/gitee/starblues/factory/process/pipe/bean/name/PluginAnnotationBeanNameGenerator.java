@@ -19,22 +19,8 @@ public class PluginAnnotationBeanNameGenerator extends AnnotationBeanNameGenerat
      */
     private final String pluginId;
 
-    /**
-     * 后缀名称
-     */
-    private final String suffixName;
-
-    public PluginAnnotationBeanNameGenerator(String pluginId, String suffixName) {
-        if(StringUtils.isEmpty(pluginId)){
-            this.pluginId = "";
-        } else {
-            this.pluginId = pluginId + "@";
-        }
-        if(StringUtils.isEmpty(suffixName)){
-            this.suffixName = "";
-        } else {
-            this.suffixName =  "@" + suffixName;
-        }
+    public PluginAnnotationBeanNameGenerator(String pluginId) {
+        this.pluginId = pluginId;
     }
 
     @Override
@@ -42,10 +28,10 @@ public class PluginAnnotationBeanNameGenerator extends AnnotationBeanNameGenerat
         if (definition instanceof AnnotatedBeanDefinition) {
             String beanName = determineBeanNameFromAnnotation((AnnotatedBeanDefinition) definition);
             if (StringUtils.hasText(beanName)) {
-                return beanName;
+                return beanName.concat("@").concat(pluginId);
             }
         }
-        return pluginId + buildDefaultBeanName(definition, registry) + suffixName;
+        return buildDefaultBeanName(definition, registry).concat("@").concat(pluginId);
     }
 
 
