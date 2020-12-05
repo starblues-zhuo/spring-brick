@@ -1,12 +1,11 @@
 package com.gitee.starblues.utils;
 
 
+import org.pf4j.PluginWrapper;
 import org.springframework.util.ClassUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -120,38 +119,20 @@ public class ScanUtils {
      * 扫描jar包中的类。
      *
      * @param basePackage 包名
-     * @param classLoader jar的ClassLoader
+     * @param pluginWrapper jar的PluginWrapper
      * @return 类全路径
      * @throws IOException 扫描异常
      */
-    public static Set<String> scanClassPackageName(String basePackage, ClassLoader classLoader) throws IOException {
-        Enumeration<URL> urlEnumeration = classLoader.getResources(basePackage.replace(".", "/"));
+    public static Set<String> scanClassPackageName(String basePackage, PluginWrapper pluginWrapper) throws IOException {
+        String pluginPath = pluginWrapper.getPluginPath().toString();
         Set<String> classPackageNames = new HashSet<>();
-        while (urlEnumeration.hasMoreElements()) {
-            URL url = urlEnumeration.nextElement();
-            String protocol = url.getProtocol();
-            if (!"jar".equalsIgnoreCase(protocol)) {
-                // 不是jar协议
-                return classPackageNames;
-            }
-            JarURLConnection connection = (JarURLConnection) url.openConnection();
-            if (connection == null) {
-                return classPackageNames;
-            }
-            JarFile jarFile = connection.getJarFile();
-            if (jarFile == null) {
-                return classPackageNames;
-            }
-            Enumeration<JarEntry> jarEntryEnumeration = jarFile.entries();
-            // 迭代
-            while (jarEntryEnumeration.hasMoreElements()) {
-                JarEntry entry = jarEntryEnumeration.nextElement();
+        try (JarFile jarFile = new JarFile(pluginPath)) {
+            Enumeration<JarEntry> jarEntries = jarFile.entries();
+            while (jarEntries.hasMoreElements()) {
+                JarEntry entry = jarEntries.nextElement();
                 String jarEntryName = entry.getName();
-                if (jarEntryName.contains(".class") &&
-                        jarEntryName.replaceAll("/", ".").startsWith(basePackage)) {
-                    String className = jarEntryName
-                            .substring(0, jarEntryName.lastIndexOf("."))
-                            .replace("/", ".");
+                if (jarEntryName.contains(".class") && jarEntryName.replaceAll("/", ".").startsWith(basePackage)) {
+                    String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replace("/", ".");
                     classPackageNames.add(className);
                 }
             }
