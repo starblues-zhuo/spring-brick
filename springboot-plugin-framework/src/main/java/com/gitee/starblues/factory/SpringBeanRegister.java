@@ -3,6 +3,7 @@ package com.gitee.starblues.factory;
 import com.gitee.starblues.factory.process.pipe.bean.name.PluginAnnotationBeanNameGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.ApplicationContext;
@@ -29,52 +30,29 @@ public class SpringBeanRegister {
 
     /**
      * 默认注册
-     * @param pluginId 插件id
-     * @param aClass 类名
+     *
+     * @param pluginId   插件id
+     * @param aClass     类名
      * @return 注册的bean名称
      */
     public String register(String pluginId, Class<?> aClass) {
-        return register(pluginId, null, aClass, null);
+        return register(pluginId, aClass, null);
     }
 
     /**
      * 默认注册
      * @param pluginId 插件id
-     * @param suffixName bean 后缀名称
-     * @param aClass 类名
-     * @return 注册的bean名称
-     */
-    public String register(String pluginId, String suffixName, Class<?> aClass) {
-        return register(pluginId, suffixName, aClass, null);
-    }
-
-
-    /**
-     * 默认注册
-     * @param pluginId 插件id
-     * @param aClass 类名
-     * @param consumer 自定义处理AnnotatedGenericBeanDefinition
-     * @return 注册的bean名称
-     */
-    public String register(String pluginId, Class<?> aClass, Consumer<AnnotatedGenericBeanDefinition> consumer) {
-        return register(pluginId, null, aClass, consumer);
-    }
-
-    /**
-     * 默认注册
-     * @param pluginId 插件id
-     * @param suffixName bean 后缀名称
      * @param aClass 注册的类
      * @param consumer 自定义处理AnnotatedGenericBeanDefinition
      * @return 注册的bean名称
      */
-    public String register(String pluginId, String suffixName, Class<?> aClass,
+    public String register(String pluginId, Class<?> aClass,
                            Consumer<AnnotatedGenericBeanDefinition> consumer) {
         AnnotatedGenericBeanDefinition beanDefinition = new
                 AnnotatedGenericBeanDefinition(aClass);
 
         BeanNameGenerator beanNameGenerator =
-                new PluginAnnotationBeanNameGenerator(pluginId, suffixName);
+                new PluginAnnotationBeanNameGenerator(pluginId);
         String beanName = beanNameGenerator.generateBeanName(beanDefinition, applicationContext);
         if(PluginInfoContainer.existRegisterBeanName((beanName))){
             String error = MessageFormat.format("Bean name {0} already exist of {1}",
@@ -87,6 +65,11 @@ public class SpringBeanRegister {
         }
         applicationContext.registerBeanDefinition(beanName, beanDefinition);
         PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
+        try {
+            applicationContext.getBean(beanName);
+        } catch (BeansException e) {
+            logger.warn(e.getMessage());
+        }
         return beanName;
     }
 
