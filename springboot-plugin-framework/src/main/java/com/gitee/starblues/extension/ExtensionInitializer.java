@@ -1,6 +1,7 @@
 package com.gitee.starblues.extension;
 
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
+import com.gitee.starblues.factory.process.pipe.PluginPreProcessorExtend;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
 import com.gitee.starblues.factory.process.post.PluginPostProcessorExtend;
 import com.gitee.starblues.loader.PluginResourceLoader;
@@ -11,13 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 /**
  * 静态的扩展初始化器
@@ -35,6 +34,7 @@ public class ExtensionInitializer {
     private static final List<PluginResourceLoader> RESOURCE_LOADERS_EXTENDS  = new ArrayList<>();
     private static final List<PluginPipeProcessorExtend> PIPE_PROCESSOR_EXTENDS  = new ArrayList<>();
     private static final List<PluginClassGroupExtend> CLASS_GROUP_EXTENDS  = new ArrayList<>();
+    private static final List<PluginPreProcessorExtend> PRE_PROCESSOR_EXTENDS  = new ArrayList<>();
     private static final List<PluginPostProcessorExtend> POST_PROCESSOR_EXTENDS  = new ArrayList<>();
 
     private ExtensionInitializer(){
@@ -75,6 +75,11 @@ public class ExtensionInitializer {
             debug.append(pluginResourceLoader.key()).append("、");
         }, bean -> bean.order());
 
+        iteration(abstractExtension.getPluginPreProcessor(applicationContext), pluginPreProcessorExtend->{
+            PRE_PROCESSOR_EXTENDS.add(pluginPreProcessorExtend);
+            debug.append(pluginPreProcessorExtend.key()).append("、");
+        }, bean -> bean.order());
+
         iteration(abstractExtension.getPluginPipeProcessor(applicationContext), pluginPipeProcessorExtend->{
             PIPE_PROCESSOR_EXTENDS.add(pluginPipeProcessorExtend);
             debug.append(pluginPipeProcessorExtend.key()).append("、");
@@ -98,6 +103,10 @@ public class ExtensionInitializer {
 
     public static List<PluginResourceLoader> getResourceLoadersExtends() {
         return RESOURCE_LOADERS_EXTENDS;
+    }
+
+    public static List<PluginPreProcessorExtend> getPreProcessorExtends() {
+        return PRE_PROCESSOR_EXTENDS;
     }
 
     public static List<PluginPipeProcessorExtend> getPipeProcessorExtends() {
