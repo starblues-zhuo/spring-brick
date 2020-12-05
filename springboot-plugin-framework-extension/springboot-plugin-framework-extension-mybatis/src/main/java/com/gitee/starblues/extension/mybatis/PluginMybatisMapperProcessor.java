@@ -1,11 +1,10 @@
 package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.extension.mybatis.utils.MybatisInjectWrapper;
-import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.factory.PluginInfoContainer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.SpringBeanRegister;
-import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
+import com.gitee.starblues.factory.process.pipe.PluginPreProcessorExtend;
 import com.gitee.starblues.factory.process.pipe.bean.name.PluginAnnotationBeanNameGenerator;
 import com.gitee.starblues.utils.OrderPriority;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -32,7 +31,7 @@ import java.util.Set;
  * @author zhangzhuo
  * @version 1.0
  */
-public class PluginMybatisMapperProcessor implements PluginPipeProcessorExtend {
+public class PluginMybatisMapperProcessor implements PluginPreProcessorExtend {
 
     private final static Logger LOG = LoggerFactory.getLogger(PluginMybatisMapperProcessor.class);
 
@@ -78,14 +77,13 @@ public class PluginMybatisMapperProcessor implements PluginPipeProcessorExtend {
         if(groupClasses == null || groupClasses.isEmpty()){
             return;
         }
-        BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         Set<String> beanNames = new HashSet<>();
         for (Class<?> groupClass : groupClasses) {
             if (groupClass == null) {
                 continue;
             }
-            BeanNameGenerator beanNameGenerator = new PluginAnnotationBeanNameGenerator(pluginId, basePlugin.getWrapper().getPluginId());
+            BeanNameGenerator beanNameGenerator = new PluginAnnotationBeanNameGenerator(pluginId);
             AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(groupClass);
             ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
             abd.setScope(scopeMetadata.getScopeName());
@@ -122,4 +120,5 @@ public class PluginMybatisMapperProcessor implements PluginPipeProcessorExtend {
     public OrderPriority order() {
         return OrderPriority.getHighPriority();
     }
+
 }
