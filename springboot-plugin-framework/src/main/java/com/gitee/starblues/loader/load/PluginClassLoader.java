@@ -31,7 +31,7 @@ public class PluginClassLoader implements PluginResourceLoader {
         if(runtimeMode == RuntimeMode.DEPLOYMENT){
             // 生产环境
             classPackageName = ScanUtils.scanClassPackageName(
-                    basePlugin.scanPackage(), basePlugin.getWrapper().getPluginClassLoader());
+                    basePlugin.scanPackage(), basePlugin.getWrapper());
 
         } else if(runtimeMode == RuntimeMode.DEVELOPMENT){
             // 开发环境
