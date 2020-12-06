@@ -19,4 +19,8 @@
         select * from plugin_data
     </select>
 
+    <select id="selectList" resultType="com.mybatisplus.plugin.entity.PluginData">
+        select <include refid="Base_Column_List"/> from plugin_data
+    </select>
+
 </mapper>
