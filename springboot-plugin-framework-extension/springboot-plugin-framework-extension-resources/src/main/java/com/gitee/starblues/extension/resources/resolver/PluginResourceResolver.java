@@ -1,10 +1,12 @@
 package com.gitee.starblues.extension.resources.resolver;
 
+import com.gitee.starblues.extension.ExtensionConfigUtils;
 import com.gitee.starblues.extension.resources.StaticResourceConfig;
 import com.gitee.starblues.loader.PluginResource;
 import com.gitee.starblues.realize.BasePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -194,16 +196,12 @@ public class PluginResourceResolver extends AbstractResourceResolver {
      * 每新增一个插件, 都需要调用该方法，来解析该插件的 StaticResourceConfig 配置。并将其保存到 StaticResourceConfig bean 中。
      * @param basePlugin 插件信息
      */
-    public static synchronized void parse(BasePlugin basePlugin){
-        if(basePlugin == null){
+    public static synchronized void parse(BasePlugin basePlugin,
+                                          StaticResourceConfig staticResourceConfig){
+        if(basePlugin == null || staticResourceConfig == null){
             return;
         }
 
-        if(!(basePlugin instanceof StaticResourceConfig)){
-            return;
-        }
-
-        StaticResourceConfig staticResourceConfig = (StaticResourceConfig) basePlugin;
         String pluginId = basePlugin.getWrapper().getPluginId();
 
         Set<String> locations = staticResourceConfig.locations();

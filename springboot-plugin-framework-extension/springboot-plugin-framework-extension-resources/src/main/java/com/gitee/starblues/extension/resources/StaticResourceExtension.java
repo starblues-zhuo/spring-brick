@@ -54,7 +54,7 @@ public class StaticResourceExtension extends AbstractExtension {
     @Override
     public List<PluginPostProcessorExtend> getPluginPostProcessor(ApplicationContext applicationContext) {
         final List<PluginPostProcessorExtend> pluginPostProcessorExtends = new ArrayList<>();
-        pluginPostProcessorExtends.add(new PluginResourceResolverProcess());
+        pluginPostProcessorExtends.add(new PluginResourceResolverProcess(applicationContext));
         return pluginPostProcessorExtends;
     }
 
