@@ -8,15 +8,11 @@ import com.gitee.starblues.factory.process.pipe.classs.group.ConfigurationGroup;
 import com.gitee.starblues.factory.process.pipe.classs.group.OneselfListenerGroup;
 import com.gitee.starblues.factory.process.pipe.classs.group.RepositoryGroup;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
+
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.context.ApplicationContext;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * 基础bean注册
@@ -69,7 +65,7 @@ public class BasicBeanProcessor implements PluginPipeProcessor {
             for (String beanName : beanNames) {
                 springBeanRegister.unregister(pluginId, beanName);
             }
-            removeService(new ArrayList<>(beanNames));
+            removeService(new ArrayList<>(beanNames), pluginId);
         }
     }
 
@@ -96,29 +92,28 @@ public class BasicBeanProcessor implements PluginPipeProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    private void removeService(List<String> beanNames) {
+    private void removeService(List<String> beanNames, String pluginId) {
         AbstractAutoProxyCreator proxyCreator = applicationContext.getBean(AbstractAutoProxyCreator.class);
-        Map<Object, Class<?>> proxyTypes;
-        Map<Object, Boolean> advisedBeans;
         try {
-            Field proxyTypesField = proxyCreator.getClass().getDeclaredField("proxyTypes");
+            Class<? extends AbstractAutoProxyCreator> aClass = proxyCreator.getClass();
+            Field proxyTypesField = ReflectionUtils.findField(aClass, "proxyTypes");
             if (!proxyTypesField.isAccessible()) {
                 proxyTypesField.setAccessible(true);
             }
-            proxyTypes = (Map<Object, Class<?>>) proxyTypesField.get(proxyCreator);
+            Map<Object, Class<?>> proxyTypes = (Map<Object, Class<?>>) proxyTypesField.get(proxyCreator);
 
-            Field advisedBeansField = proxyCreator.getClass().getDeclaredField("advisedBeans");
+            Field advisedBeansField = ReflectionUtils.findField(aClass, "advisedBeans");
             if (!advisedBeansField.isAccessible()) {
                 advisedBeansField.setAccessible(true);
             }
-            advisedBeans = (Map<Object, Boolean>) advisedBeansField.get(proxyCreator);
+            Map<Object, Boolean> advisedBeans = (Map<Object, Boolean>) advisedBeansField.get(proxyCreator);
+            beanNames.forEach(beanName -> {
+                proxyTypes.remove(beanName);
+                advisedBeans.remove(beanName);
+            });
         } catch (Exception e) {
-            return;
+            e.printStackTrace();
         }
-        beanNames.forEach(beanName -> {
-            proxyTypes.remove(beanName);
-            advisedBeans.remove(beanName);
-        });
     }
 
 }

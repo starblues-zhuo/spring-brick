@@ -116,8 +116,12 @@ public class SpringBeanRegister {
      * @param beanName bean名称
      */
     public void unregister(String pluginId, String beanName){
-        PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
-        applicationContext.removeBeanDefinition(beanName);
+        try {
+            PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
+            applicationContext.removeBeanDefinition(beanName);
+        } catch (Exception e){
+            logger.error("Remove plugin '{}' bean {} error. {}", pluginId, beanName, e.getMessage());
+        }
     }
 
 

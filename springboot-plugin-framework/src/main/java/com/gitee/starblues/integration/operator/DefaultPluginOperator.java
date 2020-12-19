@@ -177,7 +177,7 @@ public class DefaultPluginOperator implements PluginOperator {
             // 说明load成功, 但是没有启动成功, 则卸载该插件
             if(!StringUtils.isEmpty(pluginId)){
                 log.error("Plugin '{}' install failure. {}", pluginId, e.getMessage());
-                log.info("Start uninstall plugin '{}' failure", pluginId);
+                log.info("Start uninstall failure plugin '{}'", pluginId);
                 try {
                     uninstall(pluginId, false);
                 } catch (Exception uninstallException){
@@ -252,7 +252,7 @@ public class DefaultPluginOperator implements PluginOperator {
         }
         try {
             PluginState pluginState = pluginManager.startPlugin(pluginId);
-            if(pluginState != null && pluginState == PluginState.STARTED){
+            if(pluginState == PluginState.STARTED){
                 GlobalRegistryInfo.addOperatorPluginInfo(pluginId, PluginOperatorInfo.OperatorType.START, false);
                 pluginFactory.registry(pluginWrapper);
                 pluginFactory.build();
@@ -261,17 +261,16 @@ public class DefaultPluginOperator implements PluginOperator {
             }
             log.error("Plugin '{}' start failure, plugin state is not start. Current plugin state is '{}'",
                     pluginId, pluginState.toString());
+
         } catch (Exception e){
-            log.error("Plugin '{}' start failure. {}", pluginId, e.getMessage());
+            log.error("Plugin '{}' start failure. {}", pluginId, e.getMessage(), e);
             log.info("Start stop plugin {}", pluginId);
             try {
                 stop(pluginId);
             } catch (Exception stopException){
                 log.error("Plugin '{}' stop failure. {}", pluginId, e.getMessage());
             }
-            throw e;
         }
-
         return false;
     }
 

@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class PluginPipeProcessorFactory implements PluginPipeProcessor {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ApplicationContext applicationContext;
     private final List<PluginPipeProcessor> pluginPipeProcessors = new ArrayList<>();
@@ -64,7 +64,12 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         for (PluginPipeProcessor pluginPipeProcessor : pluginPipeProcessors) {
-            pluginPipeProcessor.unRegistry(pluginRegistryInfo);
+            try {
+                pluginPipeProcessor.unRegistry(pluginRegistryInfo);
+            } catch (Exception e){
+                logger.error("unRegistry plugin '{}' failure by {}", pluginRegistryInfo.getPluginWrapper().getPluginId(),
+                        pluginPipeProcessor.getClass().getName(), e);
+            }
         }
     }
 }
