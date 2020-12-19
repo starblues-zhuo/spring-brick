@@ -46,11 +46,18 @@ https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framewo
 @Bean
 public PluginApplication pluginApplication(){
     DefaultPluginApplication defaultPluginApplication = new DefaultPluginApplication();
+    // 根据当前环境所集成的框架来选择类型
     pluginApplication.addExtension(new SpringBootMybatisExtension(
                    SpringBootMybatisExtension.Type.MYBATIS));
     return defaultPluginApplication;
 }
 ```
+
+注意：根据当前环境所集成的框架来选择类型
+- Mybatis类型为：`SpringBootMybatisExtension.Type.MYBATIS`
+- Mybatis-Plus类型为：`SpringBootMybatisExtension.Type.MYBATIS_PLUS`
+- Tk-Mybatis类型为：`SpringBootMybatisExtension.Type.TK_MYBATIS`
+
 
 #### 插件程序配置
 

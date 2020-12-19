@@ -25,6 +25,10 @@ public class SpringBootMybatisExtension extends AbstractExtension {
 
     private final Type type;
 
+    /**
+     * 初始化扩展
+     * @param type 根据当前环境所集成的框架来选择Type类型
+     */
     public SpringBootMybatisExtension(Type type) {
         if(type == null){
             this.type = Type.MYBATIS;
