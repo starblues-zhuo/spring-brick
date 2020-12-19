@@ -62,7 +62,11 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
     @Override
     public void unRegistry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception{
         for (PluginPostProcessor pluginPostProcessor : pluginPostProcessors) {
-            pluginPostProcessor.unRegistry(pluginRegistryInfos);
+            try {
+                pluginPostProcessor.unRegistry(pluginRegistryInfos);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 }

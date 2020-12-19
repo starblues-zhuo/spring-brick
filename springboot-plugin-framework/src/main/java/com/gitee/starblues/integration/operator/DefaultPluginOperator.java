@@ -170,21 +170,23 @@ public class DefaultPluginOperator implements PluginOperator {
                 log.info("Plugin '{}' install success", pluginId);
                 return true;
             } else {
-                log.error("Plugin '{}' install failure", pluginId);
+                try {
+                    uninstall(pluginId, false);
+                } catch (Exception uninstallException){
+                    log.error("Plugin '{}' uninstall failure. {}", pluginId, uninstallException.getMessage());
+                }
                 return false;
             }
         } catch (Exception e){
             // 说明load成功, 但是没有启动成功, 则卸载该插件
+            log.error("Plugin '{}' install failure. {}", pluginId, e.getMessage());
             if(!StringUtils.isEmpty(pluginId)){
-                log.error("Plugin '{}' install failure. {}", pluginId, e.getMessage());
-                log.info("Start uninstall failure plugin '{}'", pluginId);
                 try {
                     uninstall(pluginId, false);
                 } catch (Exception uninstallException){
                     log.error("Plugin '{}' uninstall failure. {}", pluginId, uninstallException.getMessage());
                 }
             }
-
             throw e;
         } finally {
             if(!StringUtils.isEmpty(pluginId)){
@@ -192,6 +194,7 @@ public class DefaultPluginOperator implements PluginOperator {
             }
         }
     }
+
 
     @Override
     public boolean uninstall(String pluginId, boolean isBackup) throws Exception {
@@ -264,7 +267,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
         } catch (Exception e){
             log.error("Plugin '{}' start failure. {}", pluginId, e.getMessage(), e);
-            log.info("Start stop plugin {}", pluginId);
+            log.info("Start stop plugin '{}'", pluginId);
             try {
                 stop(pluginId);
             } catch (Exception stopException){
@@ -286,9 +289,9 @@ public class DefaultPluginOperator implements PluginOperator {
         try {
             pluginFactory.unRegistry(pluginId);
             pluginFactory.build();
+            log.info("Plugin '{}' unRegistry success", pluginId);
         } catch (Exception e){
-            log.error("Plugin '{}' stop failure. {}", pluginId, e.getMessage());
-            e.printStackTrace();
+            log.error("Plugin '{}' stop failure. {}", pluginId, e.getMessage(), e);
         }
         try {
             pluginManager.stopPlugin(pluginId);
@@ -314,7 +317,6 @@ public class DefaultPluginOperator implements PluginOperator {
             log.info("Plugin upload and start success");
             return true;
         } else {
-            log.error("Plugin upload and start failure");
             return false;
         }
     }

@@ -59,6 +59,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
             AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
+
             try {
                 List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(ControllerGroup.GROUP_ID);
                 if(groupClasses == null || groupClasses.isEmpty()){
@@ -69,10 +70,16 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
                     if(groupClass == null){
                         continue;
                     }
-                    ControllerBeanWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
-                    controllerBeanWrappers.add(controllerBeanWrapper);
-                    process(1, pluginRegistryInfo.getPluginWrapper().getPluginId(), groupClass);
+                    try {
+                        ControllerBeanWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
+                        process(1, pluginRegistryInfo.getPluginWrapper().getPluginId(), groupClass);
+                        controllerBeanWrappers.add(controllerBeanWrapper);
+                    } catch (Exception e){
+                        pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
+                        throw e;
+                    }
                 }
+
                 pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
             } finally {
                 AopUtils.recoverAop();
