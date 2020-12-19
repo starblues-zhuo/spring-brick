@@ -1,13 +1,10 @@
-package com.gitee.starblues.extension.mybatis.support.mybatisplus;
+package com.gitee.starblues.extension.mybatis.mybatisplus;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -23,9 +20,8 @@ import java.util.function.Function;
  * @author zhangzhuo
  * @version 1.0
  */
-public class ServiceImplWrapper <M extends BaseMapper<T>, T> implements IService<T> {
+public class ServiceImplWrapper<M extends BaseMapper<T>, T> implements IService<T> {
 
-    protected Log log = LogFactory.getLog(this.getClass());
     private final ServiceImpl<M, T> serviceImpl;
 
     protected M baseMapper;

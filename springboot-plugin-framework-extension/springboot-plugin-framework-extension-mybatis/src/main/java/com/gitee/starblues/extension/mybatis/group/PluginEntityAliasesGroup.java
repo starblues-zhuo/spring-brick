@@ -1,6 +1,6 @@
-package com.gitee.starblues.extension.mybatis;
+package com.gitee.starblues.extension.mybatis.group;
 
-import com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConfig;
+import com.gitee.starblues.extension.mybatis.mybatisplus.SpringBootMybatisPlusConfig;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.AnnotationsUtils;
@@ -30,9 +30,9 @@ public class PluginEntityAliasesGroup implements PluginClassGroupExtend {
 
     @Override
     public void initialize(BasePlugin basePlugin) {
-        if(basePlugin instanceof SpringBootMybatisConfig){
-            SpringBootMybatisConfig config = (SpringBootMybatisConfig) basePlugin;
-            typeAliasesPackage = config.typeAliasesPackage();
+        if(basePlugin instanceof SpringBootMybatisPlusConfig){
+            SpringBootMybatisPlusConfig mybatisPlusConfig = (SpringBootMybatisPlusConfig) basePlugin;
+            typeAliasesPackage = null;
         }
     }
 

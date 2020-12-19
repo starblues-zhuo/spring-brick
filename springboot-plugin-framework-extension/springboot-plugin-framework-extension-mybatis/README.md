@@ -16,11 +16,25 @@ https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framewo
     <version>${springboot-plugin-framework-extension-mybatis.version}</version>
 </dependency>
 
-<!--  自行引入 mybatis-spring-boot-starter 依赖 -->
- <dependency>
+<!--  如果使用mybatis, 则自行引入如下依赖 -->
+<dependency>
     <groupId>org.mybatis.spring.boot</groupId>
     <artifactId>mybatis-spring-boot-starter</artifactId>
-    <version>${mybatis-spring-boot-starter.version}</version>
+    <version>${version}</version>
+</dependency>
+
+<!--  如果使用mybatis-plus, 则自行引入如下依赖 -->
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-boot-starter</artifactId>
+    <version>${version}</version>
+</dependency>
+
+<!--  如果使用tk-mybatis, 则自行引入如下依赖 -->
+<dependency>
+    <groupId>tk.mybatis</groupId>
+    <artifactId>mapper-spring-boot-starter</artifactId>
+    <version>${version}</version>
 </dependency>
 
 ```
@@ -32,70 +46,49 @@ https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framewo
 @Bean
 public PluginApplication pluginApplication(){
     DefaultPluginApplication defaultPluginApplication = new DefaultPluginApplication();
-    defaultPluginApplication.addExtension(new SpringBootMybatisExtension());
+    pluginApplication.addExtension(new SpringBootMybatisExtension(
+                   SpringBootMybatisExtension.Type.MYBATIS));
     return defaultPluginApplication;
 }
 ```
 
 #### 插件程序配置
 
-1. 引入依赖
-```xmml
+1. 以provided方式引入主程序依赖, 例如：
+```xml
 <dependency>
     <groupId>com.gitee.starblues</groupId>
-    <artifactId>springboot-plugin-framework-extension-mybatis</artifactId>
-    <version>${springboot-plugin-framework-extension-mybatis.version}</version>
+    <artifactId>integration-mybatis-main</artifactId>
+    <version>${project.version}</version>
+    <scope>provided</scope>
 </dependency>
-
-<!-- 自行引入 mybatis-spring-boot-starter 依赖。可用于自定义注解Sql。该依赖非必须 -->
-<dependency>
-    <groupId>org.mybatis.spring.boot</groupId>
-    <artifactId>mybatis-spring-boot-starter</artifactId>
-    <version>${mybatis-spring-boot-starter.version}</version>
-</dependency>
-
 ```
 
-2. 继承BasePlugin的类, 实现接口 com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConfig 
+2. 进行配置
 
-例如:
+- 如果集成`mybatis`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootMybatisConfig`
+- 如果集成`mybatis-plus`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootMybatisPlusConfig`
+- 如果集成`tkmybatis`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootTkMybatisConfig`
+
+
+例如集成mybatis-plus:
 ```java
-import com.gitee.starblues.extension.mybatis.configuration.SpringBootMybatisConfig;
-import com.gitee.starblues.realize.BasePlugin;
-import org.pf4j.PluginException;
-import org.pf4j.PluginWrapper;
 
-import java.util.HashSet;
-import java.util.Set;
+@Component
+public class MybatisConfig implements SpringBootMybatisConfig {
 
-public class PersistenceExamplePlugin1 extends BasePlugin implements SpringBootMybatisConfig {
-
-    private final Set<String> mybatisMapperXmlLocationsMatch = new HashSet<>();
-
-
-    public PersistenceExamplePlugin1(PluginWrapper wrapper) {
-        super(wrapper);
-        mybatisMapperXmlLocationsMatch.add("classpath:mapper/*PluginMapper.xml");
+    @Override
+    public Set<String> entityPackage() {
+        Set<String> typeAliasesPackage = new HashSet<>();
+        typeAliasesPackage.add("com.mybatis.plugin1.entity");
+        return typeAliasesPackage;
     }
 
     @Override
-    protected void startEvent() throws PluginException {
-
-    }
-
-    @Override
-    protected void deleteEvent() throws PluginException {
-
-    }
-
-    @Override
-    protected void stopEvent() {
-
-    }
-
-    @Override
-    public Set<String> mybatisMapperXmlLocationsMatch() {
-        return mybatisMapperXmlLocationsMatch;
+    public Set<String> xmlLocationsMatch() {
+        Set<String> xmlLocationsMatch = new HashSet<>();
+        xmlLocationsMatch.add("classpath:mapper/*Mapper.xml");
+        return xmlLocationsMatch;
     }
 }
 
@@ -104,6 +97,7 @@ public class PersistenceExamplePlugin1 extends BasePlugin implements SpringBootM
 该步骤主要定义插件中的Mapper xml的位置。该位置的定义规则如下:
 
 ``` text
+xmlLocationsMatch:
 ? 匹配一个字符
 * 匹配零个或多个字符
 ** 匹配路径中的零或多个目录
@@ -115,9 +109,9 @@ classpath路径-> classpath: xml/mapper/*PluginMapper.xml
 
 ```
 
-3. 定义的Mapper 接口需要加上注解 @PluginMapper
+3. 定义的Mapper 接口需要加上注解 @Mapper
 
-注解位置: com.gitee.starblues.extension.mybatis.annotation.PluginMapper
+注解位置: org.apache.ibatis.annotations.Mapper
 
 例如:
 ```java
@@ -127,7 +121,7 @@ import Plugin1;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-@PluginMapper
+@Mapper
 public interface Plugin1Mapper {
 
 
@@ -147,8 +141,56 @@ public interface Plugin1Mapper {
 }
 
 ```
+### 如果插件不想使用主程序的配置或者数据源, 插件可自定义配置, 配置说明如下: 
+1. 实现`enableOneselfConfig`方法, 并设置返回值为true
+2. 实现`oneselfConfig(xx)`方法进行独立配置
+- Mybatis独立配置:
+```java
+/**
+ * 插件自主配置Mybatis的 SqlSessionFactoryBean
+ * SqlSessionFactoryBean 具体配置说明参考 Mybatis 官网
+ */
+@Override
+public void oneselfConfig(SqlSessionFactoryBean sqlSessionFactoryBean) {
+    MysqlDataSource mysqlDataSource = new MysqlDataSource();
+    mysqlDataSource.setURL("jdbc:mysql://127.0.0.1:3306/xxx?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=UTC");
+    mysqlDataSource.setUser("root");
+    mysqlDataSource.setPassword("root");
+    sqlSessionFactoryBean.setDataSource(mysqlDataSource);
+}
+```
 
-具体案例参考: example/integration-mybatis 模块。
+- Mybatis-Plus独立配置:
+```java
+/**
+ * 插件自主配置Mybatis的 SqlSessionFactoryBean
+ * MybatisSqlSessionFactoryBean 具体配置说明参考 Mybatis-plus 官网
+ */
+@Override
+public void oneselfConfig(MybatisSqlSessionFactoryBean sqlSessionFactoryBean) {
+    ...
+}
+```
+
+- TkMybatis独立配置:
+```java
+/**
+ * 插件自主配置Mybatis的 SqlSessionFactoryBean
+ * SqlSessionFactoryBean 具体配置说明参考 Mybatis 官网
+ */
+@Override
+public void oneselfConfig(SqlSessionFactoryBean sqlSessionFactoryBean) {
+    ...
+}
+/**
+ * 插件自主配置tk的 Config
+ * Config 具体配置说明参考 https://gitee.com/free/Mapper/wikis/1.1-java?sort_id=208196
+ * @param config Config
+ */
+public void oneselfConfig(Config config){
+}
+
+```
 
 #### 集成Mybatis-Plus说明
 
@@ -163,7 +205,6 @@ public interface Plugin1Mapper {
 public class PluginDataServiceImpl extends ServiceImplWrapper<PluginDataMapper, PluginData>
         implements PluginDataService{
 
-
     public PluginDataServiceImpl(PluginDataMapper baseMapper) {
         super(baseMapper);
     }
@@ -172,9 +213,15 @@ public class PluginDataServiceImpl extends ServiceImplWrapper<PluginDataMapper, 
 
 ```
 
-集成Mybatis-plus案例见 `example/integration-mybatisplus` 模块。集成的 mybatis-plus 版本为: 3.2.0
 
 ### 版本升级
+
+#### 2.2.5 版本
+全新升级该扩展
+1. 对 `Mybatis`、`Mybatis-Plus`、`Tk-Mybatis` 进行支持
+2. 支持动态卸载和安装
+3. 支持插件可独立进行配置, 与主程序和其他插件进行环境隔离
+
 
 #### 2.1.3 版本
 跟随 springboot-plugin-framework 版本的部分类修改。升级到 2.1.3
