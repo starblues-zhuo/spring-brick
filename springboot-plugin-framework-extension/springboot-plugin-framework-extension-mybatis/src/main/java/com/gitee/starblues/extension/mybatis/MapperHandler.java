@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Mapper 接口处理者
  * @author zhangzhuo
  * @version 1.0
  * @since 2020-12-17
@@ -81,7 +82,13 @@ public class MapperHandler {
     }
 
 
-
+    /**
+     * 公共注册生成代理Mapper接口
+     * @param holder ignore
+     * @param mapperClass ignore
+     * @param sqlSessionFactory ignore
+     * @param sqlSessionTemplate ignore
+     */
     public void commonProcessMapper(BeanDefinitionHolder holder,
                                     Class<?> mapperClass,
                                     SqlSessionFactory sqlSessionFactory,
@@ -96,7 +103,7 @@ public class MapperHandler {
     }
 
     /**
-     * 卸载Mapper
+     * 公共卸载Mapper
      * @param pluginRegistryInfo 插件信息
      * @throws Exception 卸载异常
      */

@@ -82,6 +82,41 @@ public class PluginResourceFinder {
         return resources.toArray(new Resource[0]);
     }
 
+
+
+    /**
+     * 获取插件的实体类及其别名
+     * @param packagePatterns 实体类包名
+     * @return Class<?>[]
+     * @throws IOException 获取医院异常
+     */
+    public Class<?>[] getAliasesClasses(Set<String> packagePatterns) throws IOException {
+        if(packagePatterns == null || packagePatterns.isEmpty()){
+            return null;
+        }
+        Set<Class<?>> aliasesClasses = new HashSet<>();
+        for (String packagePattern : packagePatterns) {
+            Resource[] resources = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
+                    + ClassUtils.convertClassNameToResourcePath(packagePattern) + "/**/*.class");
+            for (Resource resource : resources) {
+                try {
+                    ClassMetadata classMetadata = metadataReaderFactory.getMetadataReader(resource).getClassMetadata();
+                    Class<?> clazz = classLoader.loadClass(classMetadata.getClassName());
+                    aliasesClasses.add(clazz);
+                } catch (Throwable e) {
+                    LOGGER.warn("Cannot load the '{}'. Cause by {}", resource, e.toString());
+                }
+            }
+        }
+        return aliasesClasses.toArray(new Class<?>[0]);
+    }
+
+    /**
+     * 得到Xml资源
+     * @param mybatisMapperXmlLocationMatch mybatis xml 批量规则
+     * @return 匹配到的xml资源
+     * @throws IOException IO 异常
+     */
     private List<Resource> getXmlResources(String mybatisMapperXmlLocationMatch) throws IOException {
         String[] split = mybatisMapperXmlLocationMatch.split(":");
         if(split.length != 2){
@@ -112,36 +147,6 @@ public class PluginResourceFinder {
             throw e;
         }
     }
-
-    /**
-     * 获取插件的实体类及其别名
-     * @param packagePatterns 实体类包名
-     * @return Class<?>[]
-     * @throws IOException 获取医院异常
-     */
-    public Class<?>[] getAliasesClasses(Set<String> packagePatterns) throws IOException {
-        if(packagePatterns == null || packagePatterns.isEmpty()){
-            return null;
-        }
-        Set<Class<?>> aliasesClasses = new HashSet<>();
-        for (String packagePattern : packagePatterns) {
-            Resource[] resources = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
-                    + ClassUtils.convertClassNameToResourcePath(packagePattern) + "/**/*.class");
-            for (Resource resource : resources) {
-                try {
-                    ClassMetadata classMetadata = metadataReaderFactory.getMetadataReader(resource).getClassMetadata();
-                    Class<?> clazz = classLoader.loadClass(classMetadata.getClassName());
-                    aliasesClasses.add(clazz);
-                } catch (Throwable e) {
-                    LOGGER.warn("Cannot load the '{}'. Cause by {}", resource, e.toString());
-                }
-            }
-        }
-        return aliasesClasses.toArray(new Class<?>[0]);
-    }
-
-
-
 
 
 }

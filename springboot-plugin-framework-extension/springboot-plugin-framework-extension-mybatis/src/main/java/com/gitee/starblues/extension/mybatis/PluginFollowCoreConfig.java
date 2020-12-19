@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * 插件跟随主程序配置
+ * 插件跟随主程序时, 获取主程序的Mybatis定义的一些配置
  * @author zhangzhuo
  * @version 1.0
  * @since 2020-12-17

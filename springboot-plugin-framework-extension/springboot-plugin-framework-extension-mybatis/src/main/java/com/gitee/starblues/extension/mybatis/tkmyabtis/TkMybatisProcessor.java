@@ -1,9 +1,9 @@
 package com.gitee.starblues.extension.mybatis.tkmyabtis;
 
+import com.gitee.starblues.extension.ExtensionConfigUtils;
 import com.gitee.starblues.extension.mybatis.MapperHandler;
 import com.gitee.starblues.extension.mybatis.PluginFollowCoreConfig;
 import com.gitee.starblues.extension.mybatis.PluginResourceFinder;
-import com.gitee.starblues.extension.mybatis.utils.ConfigUtils;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.utils.OrderPriority;
@@ -27,6 +27,7 @@ import tk.mybatis.mapper.mapperhelper.MapperHelper;
 import tk.mybatis.spring.mapper.MapperFactoryBean;
 
 /**
+ * tk-mybatis处理者
  * @author zhangzhuo
  * @version 1.0
  * @since 2020-12-16
@@ -63,7 +64,7 @@ public class TkMybatisProcessor implements PluginPipeProcessorExtend {
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
 
-        SpringBootTkMybatisConfig config = ConfigUtils.getConfig(applicationContext,
+        SpringBootTkMybatisConfig config = ExtensionConfigUtils.getConfig(applicationContext,
                 pluginWrapper.getPluginId(),
                 SpringBootTkMybatisConfig.class);
         if(config == null){
@@ -71,7 +72,6 @@ public class TkMybatisProcessor implements PluginPipeProcessorExtend {
         }
 
         SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
-
 
         Config tkConfig = null;
         if(config.enableOneselfConfig()){
@@ -137,6 +137,14 @@ public class TkMybatisProcessor implements PluginPipeProcessorExtend {
 
     }
 
+    /**
+     * 处理Mapper接口
+     * @param holder ignore
+     * @param mapperClass ignore
+     * @param mapperHelper ignore
+     * @param sqlSessionFactory ignore
+     * @param sqlSessionTemplate ignore
+     */
     private void processMapper(BeanDefinitionHolder holder,
                                Class<?> mapperClass,
                                MapperHelper mapperHelper,

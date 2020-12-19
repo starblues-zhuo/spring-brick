@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.incrementer.IKeyGenerator;
 import com.baomidou.mybatisplus.core.injector.ISqlInjector;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import com.gitee.starblues.extension.ExtensionConfigUtils;
 import com.gitee.starblues.extension.mybatis.MapperHandler;
 import com.gitee.starblues.extension.mybatis.PluginFollowCoreConfig;
 import com.gitee.starblues.extension.mybatis.PluginResourceFinder;
-import com.gitee.starblues.extension.mybatis.utils.ConfigUtils;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.utils.OrderPriority;
@@ -64,7 +64,7 @@ public class MybatisPlusProcessor implements PluginPipeProcessorExtend {
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
 
-        SpringBootMybatisPlusConfig config = ConfigUtils.getConfig(applicationContext,
+        SpringBootMybatisPlusConfig config = ExtensionConfigUtils.getConfig(applicationContext,
                 pluginWrapper.getPluginId(),
                 SpringBootMybatisPlusConfig.class);
         if(config == null){

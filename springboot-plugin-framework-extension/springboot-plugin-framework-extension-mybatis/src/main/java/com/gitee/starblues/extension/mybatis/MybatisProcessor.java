@@ -1,6 +1,6 @@
 package com.gitee.starblues.extension.mybatis;
 
-import com.gitee.starblues.extension.mybatis.utils.ConfigUtils;
+import com.gitee.starblues.extension.ExtensionConfigUtils;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.utils.OrderPriority;
@@ -20,6 +20,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 
 /**
+ * mybatis 处理者
  * @author zhangzhuo
  * @version 1.0
  * @since 2020-12-16
@@ -55,7 +56,7 @@ public class MybatisProcessor implements PluginPipeProcessorExtend {
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
 
-        SpringBootMybatisConfig config = ConfigUtils.getConfig(applicationContext, pluginWrapper.getPluginId(),
+        SpringBootMybatisConfig config = ExtensionConfigUtils.getConfig(applicationContext, pluginWrapper.getPluginId(),
                 SpringBootMybatisConfig.class);
         if(config == null){
             return;
