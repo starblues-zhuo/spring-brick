@@ -70,6 +70,7 @@
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
 
         <springboot-plugin-framework.version>2.2.5-RELEASE</springboot-plugin-framework.version>
+        <spring-boot-starter-thymeleaf.version>2.0.3.RELEASE</spring-boot-starter-thymeleaf.version>
         <spring-boot-starter-web.version>2.1.1.RELEASE</spring-boot-starter-web.version>
     </properties>
 
@@ -80,6 +81,14 @@
             <groupId>com.gitee.starblues</groupId>
             <artifactId>springboot-plugin-framework</artifactId>
             <version>${springboot-plugin-framework.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <version>${spring-boot-starter-thymeleaf.version}</version>
             <scope>provided</scope>
         </dependency>
 

@@ -2,6 +2,8 @@ package com.gitee.starblues.extension.resources;
 
 import com.gitee.starblues.extension.AbstractExtension;
 import com.gitee.starblues.extension.resources.resolver.ResourceWebMvcConfigurer;
+import com.gitee.starblues.extension.resources.thymeleaf.ThymeleafProcessor;
+import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.factory.process.post.PluginPostProcessorExtend;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.CacheControl;
@@ -50,6 +52,12 @@ public class StaticResourceExtension extends AbstractExtension {
         support.setConfigurers(webMvcConfigurers);
     }
 
+    @Override
+    public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext applicationContext) {
+        final List<PluginPipeProcessorExtend> pluginPipeProcessorExtends = new ArrayList<>();
+        pluginPipeProcessorExtends.add(new ThymeleafProcessor(applicationContext));
+        return pluginPipeProcessorExtends;
+    }
 
     @Override
     public List<PluginPostProcessorExtend> getPluginPostProcessor(ApplicationContext applicationContext) {
