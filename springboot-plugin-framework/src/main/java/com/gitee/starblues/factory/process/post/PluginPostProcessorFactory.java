@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class PluginPostProcessorFactory implements PluginPostProcessor {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private final List<PluginPostProcessor> pluginPostProcessors = new ArrayList<>();
     private final ApplicationContext applicationContext;
@@ -65,7 +65,8 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
             try {
                 pluginPostProcessor.unRegistry(pluginRegistryInfos);
             } catch (Exception e){
-                e.printStackTrace();
+                LOGGER.error("PluginPostProcessor '{}' unRegistry process exception",
+                        pluginPostProcessor.getClass().getName(), e);
             }
         }
     }
