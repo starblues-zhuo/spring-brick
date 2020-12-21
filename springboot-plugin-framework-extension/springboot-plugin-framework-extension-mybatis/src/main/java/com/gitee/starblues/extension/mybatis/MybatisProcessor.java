@@ -69,7 +69,7 @@ public class MybatisProcessor implements PluginPipeProcessorExtend {
         } else {
             PluginFollowCoreConfig followCoreConfig = new PluginFollowCoreConfig(applicationContext);
             factory.setDataSource(followCoreConfig.getDataSource());
-            Configuration configuration = followCoreConfig.getConfiguration();
+            Configuration configuration = followCoreConfig.getConfiguration(SpringBootMybatisExtension.Type.MYBATIS);
             factory.setConfiguration(configuration);
             Interceptor[] interceptor = followCoreConfig.getInterceptor();
             if(interceptor != null && interceptor.length > 0){

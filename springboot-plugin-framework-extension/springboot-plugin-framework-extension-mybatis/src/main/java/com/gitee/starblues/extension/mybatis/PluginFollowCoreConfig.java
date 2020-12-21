@@ -21,7 +21,6 @@ public class PluginFollowCoreConfig {
 
     private final ApplicationContext applicationContext;
 
-
     public PluginFollowCoreConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
@@ -31,12 +30,18 @@ public class PluginFollowCoreConfig {
         return applicationContext.getBean(DataSource.class);
     }
 
-    public Configuration getConfiguration(){
+    public Configuration getConfiguration(SpringBootMybatisExtension.Type type){
         Configuration configuration = new Configuration();
-        Map<String, ConfigurationCustomizer> customizerMap = applicationContext.getBeansOfType(ConfigurationCustomizer.class);
-        if(!customizerMap.isEmpty()){
-            for (ConfigurationCustomizer customizer : customizerMap.values()) {
-                customizer.customize(configuration);
+        if(type == SpringBootMybatisExtension.Type.MYBATIS){
+            try {
+                Map<String, ConfigurationCustomizer> customizerMap = applicationContext.getBeansOfType(ConfigurationCustomizer.class);
+                if(!customizerMap.isEmpty()){
+                    for (ConfigurationCustomizer customizer : customizerMap.values()) {
+                        customizer.customize(configuration);
+                    }
+                }
+            } catch (Exception e){
+                // ignore
             }
         }
         return configuration;
@@ -44,11 +49,16 @@ public class PluginFollowCoreConfig {
 
     public MybatisConfiguration getMybatisPlusConfiguration(){
         MybatisConfiguration configuration = new MybatisConfiguration();
-        Map<String, ConfigurationCustomizer> customizerMap = applicationContext.getBeansOfType(ConfigurationCustomizer.class);
-        if(!customizerMap.isEmpty()){
-            for (ConfigurationCustomizer customizer : customizerMap.values()) {
-                customizer.customize(configuration);
+        try {
+            Map<String, com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer> customizerMap =
+                    applicationContext.getBeansOfType(com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer.class);
+            if(!customizerMap.isEmpty()){
+                for (com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer customizer : customizerMap.values()) {
+                    customizer.customize(configuration);
+                }
             }
+        } catch (Exception e){
+            // ignore
         }
         return configuration;
     }

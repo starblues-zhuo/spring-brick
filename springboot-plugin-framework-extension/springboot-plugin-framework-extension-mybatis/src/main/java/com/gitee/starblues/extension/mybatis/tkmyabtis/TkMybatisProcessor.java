@@ -4,6 +4,7 @@ import com.gitee.starblues.extension.ExtensionConfigUtils;
 import com.gitee.starblues.extension.mybatis.MapperHandler;
 import com.gitee.starblues.extension.mybatis.PluginFollowCoreConfig;
 import com.gitee.starblues.extension.mybatis.PluginResourceFinder;
+import com.gitee.starblues.extension.mybatis.SpringBootMybatisExtension;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.utils.OrderPriority;
@@ -81,7 +82,7 @@ public class TkMybatisProcessor implements PluginPipeProcessorExtend {
         } else {
             PluginFollowCoreConfig followCoreConfig = new PluginFollowCoreConfig(applicationContext);
             factory.setDataSource(followCoreConfig.getDataSource());
-            factory.setConfiguration(followCoreConfig.getConfiguration());
+            factory.setConfiguration(followCoreConfig.getConfiguration(SpringBootMybatisExtension.Type.TK_MYBATIS));
             Interceptor[] interceptor = followCoreConfig.getInterceptor();
             if(interceptor != null && interceptor.length > 0){
                 factory.setPlugins(interceptor);
