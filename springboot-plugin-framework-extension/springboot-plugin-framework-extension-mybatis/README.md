@@ -6,14 +6,14 @@ https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framewo
 
 ### 集成步骤
 
-#### 主程序配置
+#### 主程序集成步骤
 
-1. 引入依赖
+一. 引入依赖
 ```xmml
 <dependency>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework-extension-mybatis</artifactId>
-    <version>${springboot-plugin-framework-extension-mybatis.version}</version>
+    <version>${latest.version}</version>
 </dependency>
 
 <!--  如果使用mybatis, 则自行引入如下依赖 -->
@@ -39,13 +39,13 @@ https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framewo
 
 ```
 
-2. 集成
+二. 配置扩展
 
 定义PluginApplication bean时, 新增该扩展。
 ```java
 @Bean
 public PluginApplication pluginApplication(){
-    DefaultPluginApplication defaultPluginApplication = new DefaultPluginApplication();
+    PluginApplication pluginApplication = new AutoPluginApplication();
     // 根据当前环境所集成的框架来选择类型
     pluginApplication.addExtension(new SpringBootMybatisExtension(
                    SpringBootMybatisExtension.Type.MYBATIS));
@@ -59,9 +59,9 @@ public PluginApplication pluginApplication(){
 - Tk-Mybatis类型为：`SpringBootMybatisExtension.Type.TK_MYBATIS`
 
 
-#### 插件程序配置
+#### 插件程序集成步骤
 
-1. 以provided方式引入主程序依赖, 例如：
+一. 以provided方式引入主程序依赖, 例如：
 ```xml
 <dependency>
     <groupId>com.gitee.starblues</groupId>
@@ -71,7 +71,7 @@ public PluginApplication pluginApplication(){
 </dependency>
 ```
 
-2. 进行配置
+二. 进行配置
 
 - 如果集成`mybatis`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootMybatisConfig`
 - 如果集成`mybatis-plus`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootMybatisPlusConfig`
@@ -116,7 +116,7 @@ classpath路径-> classpath: xml/mapper/*PluginMapper.xml
 
 ```
 
-3. 定义的Mapper 接口需要加上注解 @Mapper
+三. 定义的Mapper 接口需要加上注解 @Mapper
 
 注解位置: org.apache.ibatis.annotations.Mapper
 

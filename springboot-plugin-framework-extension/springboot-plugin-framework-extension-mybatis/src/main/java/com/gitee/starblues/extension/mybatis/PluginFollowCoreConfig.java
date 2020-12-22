@@ -4,12 +4,16 @@ import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.scripting.LanguageDriver;
+import org.apache.ibatis.scripting.LanguageDriverRegistry;
 import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.boot.autoconfigure.ConfigurationCustomizer;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ReflectionUtils;
 
 import javax.sql.DataSource;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * 插件跟随主程序时, 获取主程序的Mybatis定义的一些配置
@@ -64,11 +68,35 @@ public class PluginFollowCoreConfig {
     }
 
     public Interceptor[] getInterceptor(){
-        Map<String, Interceptor> interceptorMap = applicationContext.getBeansOfType(Interceptor.class);
-        if(interceptorMap.isEmpty()){
-            return null;
+        Map<Class<? extends Interceptor>, Interceptor> interceptorMap = new HashMap<>();
+        try {
+            SqlSessionFactory sqlSessionFactory = applicationContext.getBean(SqlSessionFactory.class);
+            // 先从 SqlSessionFactory 工厂中获取拦截器
+            List<Interceptor> interceptors = sqlSessionFactory.getConfiguration().getInterceptors();
+            if(interceptors != null){
+                for (Interceptor interceptor : interceptors) {
+                    if(interceptor == null){
+                        continue;
+                    }
+                    interceptorMap.put(interceptor.getClass(), interceptor);
+                }
+            }
+        } catch (Exception e){
+            // ignore
         }
-        return interceptorMap.values().toArray(new Interceptor[0]);
+        // 再从定义Bean中获取拦截器
+        Map<String, Interceptor> beanInterceptorMap = applicationContext.getBeansOfType(Interceptor.class);
+        if(!beanInterceptorMap.isEmpty()){
+            beanInterceptorMap.forEach((k, v)->{
+                // 如果Class一致, 则会覆盖
+                interceptorMap.put(v.getClass(), v);
+            });
+        }
+        if(interceptorMap.isEmpty()) {
+            return null;
+        } else {
+            return interceptorMap.values().toArray(new Interceptor[0]);
+        }
     }
 
     public DatabaseIdProvider getDatabaseIdProvider(){
@@ -79,9 +107,35 @@ public class PluginFollowCoreConfig {
         return null;
     }
 
-
+    @SuppressWarnings("unchecked")
     public LanguageDriver[] getLanguageDriver(){
-        Map<String, LanguageDriver> languageDriverMap = applicationContext.getBeansOfType(LanguageDriver.class);
+        Map<Class<? extends LanguageDriver>, LanguageDriver> languageDriverMap = new HashMap<>();
+        try {
+            SqlSessionFactory sqlSessionFactory = applicationContext.getBean(SqlSessionFactory.class);
+            LanguageDriverRegistry languageRegistry = sqlSessionFactory.getConfiguration()
+                    .getLanguageRegistry();
+            // 先从 SqlSessionFactory 工厂中获取LanguageDriver
+            Field proxyTypesField = ReflectionUtils.findField(languageRegistry.getClass(), "LANGUAGE_DRIVER_MAP");
+            Map<Class<? extends LanguageDriver>, LanguageDriver> driverMap = null;
+            if(proxyTypesField != null){
+                if (!proxyTypesField.isAccessible()) {
+                    proxyTypesField.setAccessible(true);
+                }
+                driverMap = (Map<Class<? extends LanguageDriver>, LanguageDriver>) proxyTypesField.get(languageRegistry);
+            }
+            if(driverMap != null){
+                languageDriverMap.putAll(driverMap);
+            }
+        } catch (Exception e){
+            // ignore
+        }
+        Map<String, LanguageDriver> beansLanguageDriver = applicationContext.getBeansOfType(LanguageDriver.class);
+        if(!beansLanguageDriver.isEmpty()){
+            beansLanguageDriver.forEach((k, v)->{
+                // 如果Class一致, 则会覆盖
+                languageDriverMap.put(v.getClass(), v);
+            });
+        }
         if(languageDriverMap.isEmpty()){
             return null;
         }

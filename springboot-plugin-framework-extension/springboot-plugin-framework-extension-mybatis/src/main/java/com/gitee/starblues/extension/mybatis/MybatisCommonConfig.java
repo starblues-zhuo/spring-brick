@@ -30,8 +30,8 @@ public interface MybatisCommonConfig {
     Set<String> xmlLocationsMatch();
 
     /**
-     * 是否启用插件自主配置Mybatis-Plus. 默认进行禁用, 使用主程序的配置
-     * @return 返回true, 表示进行自主配置, 使用独立的Mybatis-Plus及其数据源
+     * 插件是否自主启用配置. 默认进行禁用, 使用主程序的配置
+     * @return 返回true, 表示进行插件自主进行Mybatis相关配置
      */
     default boolean enableOneselfConfig(){
         return false;
