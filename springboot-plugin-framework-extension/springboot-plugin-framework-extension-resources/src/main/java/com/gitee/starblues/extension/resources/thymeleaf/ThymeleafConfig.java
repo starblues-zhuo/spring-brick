@@ -20,34 +20,33 @@ public class ThymeleafConfig {
     public static final String DEFAULT_SUFFIX = ".html";
 
     /**
-     * Prefix that gets prepended to view names when building a URL.
+     * 存放模板引擎的前缀
      */
     private String prefix = DEFAULT_PREFIX;
 
     /**
-     * Suffix that gets appended to view names when building a URL.
+     * 模板引擎文件的后缀
      */
     private String suffix = DEFAULT_SUFFIX;
 
     /**
-     * Template mode to be applied to templates. See also Thymeleaf's TemplateMode enum.
+     * 模型引入的模型
+     * @see TemplateMode
      */
     private TemplateMode mode = TemplateMode.HTML;
 
     /**
-     * Template files encoding.
+     * 模板引擎的编码
      */
     private Charset encoding = DEFAULT_ENCODING;
 
     /**
-     * Whether to enable template caching.
+     * 是否启用模板引擎的缓存
      */
     private boolean cache = true;
 
     /**
-     * Order of the template resolver in the chain. By default, the template resolver is
-     * first in the chain. Order start at 1 and should only be set if you have defined
-     * additional "TemplateResolver" beans.
+     * 模板解析器的执行顺序, 数字越小越先执行
      */
     private Integer templateResolverOrder;
 

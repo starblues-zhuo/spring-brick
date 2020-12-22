@@ -13,7 +13,7 @@ public interface StaticResourceConfig {
 
     /**
      * 静态文件路径
-     *  classpath: /static/
+     *  classpath: static/
      *  file: D://path/test
      * @return 路径集合
      */
