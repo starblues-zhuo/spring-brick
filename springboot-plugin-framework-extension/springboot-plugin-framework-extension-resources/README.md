@@ -35,6 +35,7 @@ public PluginApplication pluginApplication(){
 }
 ```
 
+**插件的镜头资源访问规则为: /pathPrefix(上述说明配置的值)/插件id/具体插件的资源路径**
 
 #### 插件程序集成步骤
 
