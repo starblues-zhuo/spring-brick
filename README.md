@@ -21,13 +21,11 @@
 15. 支持Swagger。(仅支持首次启动初始化的插件)
 
 ### 扩展包功能
-1. SpringBoot-Mybatis扩展包
+1. `SpringBoot-Mybatis`扩展包
 
-- 支持在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean
+- 支持在插件中自定义`Mapper`接口、`Mapper xml` 以及对应的实体`bean`
 
-- 支持实体bean的别名
-
-- 支持集成Mybatis-Plus、Tk-Mybatis
+- 支持集成`Mybatis-Plus`、`Tk-Mybatis`
 
 - 支持可在插件中独立配置数据源
 
