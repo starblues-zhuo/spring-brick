@@ -46,6 +46,11 @@ public class DefaultPf4jFactory implements Pf4jFactory {
                             .add(new ResolvePropertiesPluginDescriptorFinder())
                             .add(new ManifestPluginDescriptorFinder());
                 }
+
+                @Override
+                protected PluginStatusProvider createPluginStatusProvider() {
+                    return new ConfigPluginStatusProvider(configuration.disablePluginIds());
+                }
             };
         } else if(RuntimeMode.DEPLOYMENT == environment){
             // 运行环境下的插件管理者
@@ -55,6 +60,11 @@ public class DefaultPf4jFactory implements Pf4jFactory {
                 protected PluginRepository createPluginRepository() {
                     return new CompoundPluginRepository()
                             .add(new JarPluginRepository(getPluginsRoot()));
+                }
+
+                @Override
+                protected PluginStatusProvider createPluginStatusProvider() {
+                    return new ConfigPluginStatusProvider(configuration.disablePluginIds());
                 }
             };
         } else {

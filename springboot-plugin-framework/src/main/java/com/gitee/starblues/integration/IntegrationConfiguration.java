@@ -3,6 +3,7 @@ package com.gitee.starblues.integration;
 import org.pf4j.RuntimeMode;
 import org.springframework.http.CacheControl;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
@@ -59,5 +60,13 @@ public interface IntegrationConfiguration {
      */
     boolean enablePluginIdRestControllerPathPrefix();
 
+    /**
+     * 禁用的插件id, 禁用后系统不会启动该插件
+     * 如果禁用所有插件, 则Set集合中返回一个字符: *
+     * @return Set
+     */
+    default Set<String> disablePluginIds(){
+        return null;
+    }
 
 }
