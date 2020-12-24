@@ -1,4 +1,4 @@
-package com.mybatisplus.main.config;
+package com.tkmybatis.main.config;
 
 import com.gitee.starblues.integration.DefaultIntegrationConfiguration;
 import org.pf4j.RuntimeMode;

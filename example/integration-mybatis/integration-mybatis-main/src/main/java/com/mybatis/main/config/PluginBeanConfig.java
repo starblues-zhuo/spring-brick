@@ -70,7 +70,9 @@ public class PluginBeanConfig {
     public PluginApplication pluginApplication(){
         // 实例化自动初始化插件的PluginApplication
         PluginApplication pluginApplication = new AutoPluginApplication();
-        pluginApplication.addExtension(new SpringBootMybatisExtension());
+        pluginApplication.addExtension(new SpringBootMybatisExtension(
+                SpringBootMybatisExtension.Type.MYBATIS
+        ));
         // 新增静态资源扩展
         StaticResourceExtension staticResourceExtension = new StaticResourceExtension();
         staticResourceExtension.setPathPrefix("static");

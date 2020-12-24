@@ -8,19 +8,32 @@
         <result column="name" property="name" />
         <result column="type" property="type" />
         <result column="description" property="description" />
+        <result column="enable" property="enable" />
+        <result column="test" property="test" />
+        <result column="t2" property="t2" />
+        <result column="ok" property="ok" />
+        <result column="zhangzhuo" property="zhangzhuo" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        plugin_id, name, type, description
+        plugin_id, name, type, description, enable, test, t2, ok, zhangzhuo
     </sql>
 
     <select id="getAll" resultType="com.mybatisplus.plugin.entity.PluginData">
-        select * from plugin_data
+        select <include refid="Base_Column_List"/> from plugin_data
     </select>
 
     <select id="selectList" resultType="com.mybatisplus.plugin.entity.PluginData">
         select <include refid="Base_Column_List"/> from plugin_data
+    </select>
+
+    <select id="getTestAll" resultType="com.mybatisplus.plugin.entity.PluginData">
+        select <include refid="Base_Column_List"/> from plugin_data
+    </select>
+
+    <select id="getTestOne" resultType="com.mybatisplus.plugin.entity.PluginData">
+        select <include refid="Base_Column_List"/> from plugin_data limit 0,1
     </select>
 
 </mapper>

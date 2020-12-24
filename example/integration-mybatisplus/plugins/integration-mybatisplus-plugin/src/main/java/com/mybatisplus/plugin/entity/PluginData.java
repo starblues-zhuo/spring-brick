@@ -12,7 +12,6 @@ import org.apache.ibatis.type.Alias;
  * @version 1.0
  */
 @TableName("plugin_data")
-@Alias("pluginData")
 public class PluginData {
 
     @TableId(type = IdType.UUID)
@@ -20,7 +19,12 @@ public class PluginData {
     private String name;
     private Integer type;
     private String description;
-
+    private Integer enable;
+    private String test;
+    private String t2;
+    private Integer ok;
+    private String zhangzhuo;
+    private String lijing;
 
     public String getPluginId() {
         return pluginId;
@@ -52,5 +56,53 @@ public class PluginData {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getEnable() {
+        return enable;
+    }
+
+    public void setEnable(Integer enable) {
+        this.enable = enable;
+    }
+
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
+
+    public String getT2() {
+        return t2;
+    }
+
+    public void setT2(String t2) {
+        this.t2 = t2;
+    }
+
+    public Integer getOk() {
+        return ok;
+    }
+
+    public void setOk(Integer ok) {
+        this.ok = ok;
+    }
+
+    public String getZhangzhuo() {
+        return zhangzhuo;
+    }
+
+    public void setZhangzhuo(String zhangzhuo) {
+        this.zhangzhuo = zhangzhuo;
+    }
+
+    public String getLijing() {
+        return lijing;
+    }
+
+    public void setLijing(String lijing) {
+        this.lijing = lijing;
     }
 }

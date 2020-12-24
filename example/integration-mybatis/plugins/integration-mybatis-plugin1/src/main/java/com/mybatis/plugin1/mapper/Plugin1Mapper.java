@@ -1,6 +1,5 @@
 package com.mybatis.plugin1.mapper;
 
-import com.gitee.starblues.extension.mybatis.annotation.PluginMapper;
 import com.mybatis.plugin1.entity.Plugin1;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;

@@ -1,8 +1,8 @@
 package com.mybatisplus.plugin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.gitee.starblues.extension.mybatis.annotation.PluginMapper;
 import com.mybatisplus.plugin.entity.Test;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * description
@@ -10,6 +10,6 @@ import com.mybatisplus.plugin.entity.Test;
  * @author zhangzhuo
  * @version 1.0
  */
-@PluginMapper
+@Mapper
 public interface TestMapper extends BaseMapper<Test> {
 }

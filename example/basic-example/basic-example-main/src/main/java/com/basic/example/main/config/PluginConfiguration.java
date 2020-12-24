@@ -1,10 +1,13 @@
 package com.basic.example.main.config;
 
 import com.gitee.starblues.integration.DefaultIntegrationConfiguration;
+import com.google.common.collect.Sets;
 import org.pf4j.RuntimeMode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 
 /**
@@ -89,9 +92,6 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
     public boolean enablePluginIdRestControllerPathPrefix() {
         return true;
     }
-
-
-
 
 
     public String getRunMode() {

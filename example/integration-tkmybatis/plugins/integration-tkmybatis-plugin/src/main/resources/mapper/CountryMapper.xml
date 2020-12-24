@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tkmybatis.plugin.mapper.CountryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.tkmybatis.plugin.entity.Country">
+        <id column="id" property="id" />
+        <result column="countryname" property="countryname" />
+        <result column="countrycode" property="countrycode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, countryname, countrycode
+    </sql>
+
+    <select id="getAll" resultType="com.tkmybatis.plugin.entity.Country">
+        select * from country
+    </select>
+
+</mapper>

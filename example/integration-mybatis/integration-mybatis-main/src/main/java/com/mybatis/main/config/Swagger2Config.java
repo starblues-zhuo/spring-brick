@@ -32,10 +32,6 @@ public class Swagger2Config {
     }
 
 
-
-
-
-
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Integration Mybatis Plugin Example RESTful APIs")

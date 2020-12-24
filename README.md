@@ -23,17 +23,20 @@
 ### 扩展包功能
 1. SpringBoot-Mybatis扩展包
 
-- 支持在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean。
+- 支持在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean
 
-- 支持实体bean的别名。
+- 支持实体bean的别名
 
-- 支持集成Mybatis-Plus。
+- 支持集成Mybatis-Plus、Tk-Mybatis
+
+- 支持可在插件中独立配置数据源
 
 详见 [插件SpringBoot Mybatis扩展](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages?sort_id=1693493&doc_id=343010)
 
 2. 静态资源访问扩展包
 
-支持通过http访问插件中静态资源。
+- 支持通过http访问插件中静态资源
+- 支持`Thymeleaf`模板引擎进行界面插件式开发
 
 详见 [插件静态资源访问扩展](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages?sort_id=1719990&doc_id=343010)
 

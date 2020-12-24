@@ -32,6 +32,16 @@ public class PluginDataController {
         return pluginDataService.getByPage(size, currentPage);
     }
 
+    @GetMapping("all")
+    public List<PluginData> getPage(){
+        return pluginDataService.getTestAll();
+    }
+
+    @GetMapping("one")
+    public PluginData getOne(){
+        return pluginDataService.getTestOne();
+    }
+
     @GetMapping("name/{name}")
     public List<PluginData> getByName(@PathVariable("name") String name){
         return pluginDataService.getByName(name);

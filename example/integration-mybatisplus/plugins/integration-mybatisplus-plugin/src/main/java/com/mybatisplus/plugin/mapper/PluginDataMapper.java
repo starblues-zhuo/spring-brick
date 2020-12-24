@@ -1,8 +1,8 @@
 package com.mybatisplus.plugin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.gitee.starblues.extension.mybatis.annotation.PluginMapper;
 import com.mybatisplus.plugin.entity.PluginData;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
@@ -12,9 +12,12 @@ import java.util.List;
  * @author zhangzhuo
  * @version 1.0
  */
-@PluginMapper
+@Mapper
 public interface PluginDataMapper extends BaseMapper<PluginData> {
 
     List<PluginData> getAll();
 
+    List<PluginData> getTestAll();
+
+    PluginData getTestOne();
 }

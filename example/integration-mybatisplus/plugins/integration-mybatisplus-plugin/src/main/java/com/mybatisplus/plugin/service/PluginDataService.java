@@ -28,4 +28,6 @@ public interface PluginDataService extends IService<PluginData> {
      */
     List<PluginData> getByPage(Long size, Long currentPage);
 
+    List<PluginData> getTestAll();
+    PluginData getTestOne();
 }

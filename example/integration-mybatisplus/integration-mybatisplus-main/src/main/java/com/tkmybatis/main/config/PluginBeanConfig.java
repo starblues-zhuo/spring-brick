@@ -1,4 +1,4 @@
-package com.mybatisplus.main.config;
+package com.tkmybatis.main.config;
 
 import com.gitee.starblues.extension.mybatis.SpringBootMybatisExtension;
 import com.gitee.starblues.integration.application.PluginApplication;
@@ -26,7 +26,9 @@ public class PluginBeanConfig {
     public PluginApplication pluginApplication(){
         // 实例化自动初始化插件的PluginApplication
         PluginApplication pluginApplication = new AutoPluginApplication();
-        pluginApplication.addExtension(new SpringBootMybatisExtension());
+        pluginApplication.addExtension(new SpringBootMybatisExtension(
+                SpringBootMybatisExtension.Type.MYBATIS_PLUS
+        ));
         return pluginApplication;
     }
 

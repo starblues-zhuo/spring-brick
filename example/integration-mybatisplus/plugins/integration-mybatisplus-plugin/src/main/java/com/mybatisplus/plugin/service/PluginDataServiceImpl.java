@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.gitee.starblues.extension.mybatis.support.mybatisplus.ServiceImplWrapper;
+import com.gitee.starblues.extension.mybatis.mybatisplus.ServiceImplWrapper;
 import com.mybatisplus.plugin.entity.PluginData;
 import com.mybatisplus.plugin.mapper.PluginDataMapper;
 import org.springframework.stereotype.Component;
@@ -40,6 +40,16 @@ public class PluginDataServiceImpl extends ServiceImplWrapper<PluginDataMapper, 
         page.setCurrent(currentPage);
         IPage<PluginData> page1 = page(page);
         return page1.getRecords();
+    }
+
+    @Override
+    public List<PluginData> getTestAll() {
+        return baseMapper.getTestAll();
+    }
+
+    @Override
+    public PluginData getTestOne() {
+        return baseMapper.getTestOne();
     }
 
 }
