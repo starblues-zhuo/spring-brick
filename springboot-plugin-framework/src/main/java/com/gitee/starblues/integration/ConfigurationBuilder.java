@@ -4,6 +4,7 @@ import org.pf4j.RuntimeMode;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * 通过构造者进行配置插件初始化配置
@@ -22,6 +23,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     private String pluginRestControllerPathPrefix;
     private Boolean enablePluginIdRestControllerPathPrefix;
 
+    private Set<String> disablePluginIds;
 
     public ConfigurationBuilder(Builder builder) {
         this.runtimeMode = Objects.requireNonNull(builder.runtimeMode, "runtimeMode can't be empty");
@@ -32,6 +34,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         this.backupPath = builder.backupPath;
         this.pluginRestControllerPathPrefix = builder.pluginRestControllerPathPrefix;
         this.enablePluginIdRestControllerPathPrefix = builder.enablePluginIdRestControllerPathPrefix;
+        this.disablePluginIds = builder.disablePluginIds;
     }
 
     public static Builder toBuilder(){
@@ -47,6 +50,8 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         private String backupPath;
         private String pluginRestControllerPathPrefix;
         private Boolean enablePluginIdRestControllerPathPrefix;
+
+        private Set<String> disablePluginIds;
 
         public Builder runtimeMode(RuntimeMode runtimeMode){
             this.runtimeMode = runtimeMode;
@@ -80,6 +85,11 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
         public Builder enablePluginIdRestControllerPathPrefix(Boolean enablePluginIdRestControllerPathPrefix){
             this.enablePluginIdRestControllerPathPrefix = enablePluginIdRestControllerPathPrefix;
+            return this;
+        }
+
+        public Builder disablePluginIds(Set<String> disablePluginIds){
+            this.disablePluginIds = disablePluginIds;
             return this;
         }
 
@@ -143,4 +153,8 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         }
     }
 
+    @Override
+    public Set<String> disablePluginIds() {
+        return disablePluginIds;
+    }
 }
