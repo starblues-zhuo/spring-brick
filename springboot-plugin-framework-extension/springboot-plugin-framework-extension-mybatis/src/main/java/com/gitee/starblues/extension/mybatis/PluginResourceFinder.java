@@ -87,7 +87,7 @@ public class PluginResourceFinder {
     /**
      * 获取插件的实体类及其别名
      * @param packagePatterns 实体类包名
-     * @return Class<?>[]
+     * @return class 数组
      * @throws IOException 获取医院异常
      */
     public Class<?>[] getAliasesClasses(Set<String> packagePatterns) throws IOException {

@@ -16,6 +16,7 @@ public interface SpringBootMybatisPlusConfig extends MybatisCommonConfig {
     /**
      * 插件自主配置Mybatis-Plus的MybatisSqlSessionFactoryBean
      * MybatisSqlSessionFactoryBean 具体配置说明参考 Mybatis-plus 官网
+     * @param sqlSessionFactoryBean MybatisSqlSessionFactoryBean
      */
     default void oneselfConfig(MybatisSqlSessionFactoryBean sqlSessionFactoryBean){
     }
