@@ -128,28 +128,34 @@ public class DefaultPluginOperator implements PluginOperator {
         }
     }
 
+    @Override
+    public boolean verify(Path jarPath) throws Exception {
+        pluginLegalVerify.verify(jarPath);
+        return true;
+    }
+
 
     @Override
-    public boolean install(Path path) throws Exception {
+    public boolean install(Path jarPath) throws Exception {
         if(isDev()){
             throw new RuntimeException("Plugin cannot be installed in 'dev' environment");
         }
-        if(path == null){
+        if(jarPath == null){
             throw new IllegalArgumentException("Method:install param 'pluginId' can not be empty");
         }
         String pluginId = null;
         try {
-            if(!Files.exists(path)){
-                throw new FileNotFoundException("Not found this path " + path);
+            if(!Files.exists(jarPath)){
+                throw new FileNotFoundException("Not found this path " + jarPath);
             }
             // 校验插件文件
-            pluginLegalVerify.verify(path);
+            pluginLegalVerify.verify(jarPath);
             Path pluginsRoot = pluginManager.getPluginsRoot();
-            if(path.getParent().compareTo(pluginsRoot) == 0){
+            if(jarPath.getParent().compareTo(pluginsRoot) == 0){
                 // 说明该插件文件存在于插件root目录下。直接加载该插件
-                pluginId = pluginManager.loadPlugin(path);
+                pluginId = pluginManager.loadPlugin(jarPath);
             } else {
-                File sourceFile = path.toFile();
+                File sourceFile = jarPath.toFile();
                 String targetPathString = pluginsRoot.toString() + File.separator +
                         sourceFile.getName();
                 Path targetPath = Paths.get(targetPathString);
@@ -158,7 +164,7 @@ public class DefaultPluginOperator implements PluginOperator {
                     backup(targetPath, "install-backup", 1);
                 }
                 PluginFileUtils.createExistFile(targetPath);
-                Files.copy(path, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(jarPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 pluginId = pluginManager.loadPlugin(targetPath);
             }
             if(StringUtils.isEmpty(pluginId)){
@@ -322,11 +328,11 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
     @Override
-    public boolean installConfigFile(Path path) throws Exception {
-        if(!Files.exists(path)){
-            throw new FileNotFoundException("path ' " + path + "'  does not exist!");
+    public boolean installConfigFile(Path configFilePath) throws Exception {
+        if(!Files.exists(configFilePath)){
+            throw new FileNotFoundException("configFilePath '" + configFilePath + "'  does not exist!");
         }
-        File sourceFile = path.toFile();
+        File sourceFile = configFilePath.toFile();
         String configPath = integrationConfiguration.pluginConfigFilePath() +
                 File.separator + sourceFile.getName();
         Path targetPath = PluginFileUtils.createExistFile(Paths.get(configPath));
@@ -334,7 +340,7 @@ public class DefaultPluginOperator implements PluginOperator {
             // 如果文件存在, 则移动备份
             backup(targetPath, "install-config-backup",1);
         }
-        Files.copy(path, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(configFilePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
         return true;
     }
 
@@ -357,9 +363,9 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
     @Override
-    public boolean backupPlugin(Path path, String sign) throws Exception {
-        Objects.requireNonNull(path);
-        return backup(path, sign, 2);
+    public boolean backupPlugin(Path backDirPath, String sign) throws Exception {
+        Objects.requireNonNull(backDirPath);
+        return backup(backDirPath, sign, 2);
     }
 
 
@@ -384,8 +390,6 @@ public class DefaultPluginOperator implements PluginOperator {
                 .collect(Collectors.toList());
     }
 
-
-
     @Override
     public PluginInfo getPluginInfo(String pluginId) {
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
@@ -395,9 +399,6 @@ public class DefaultPluginOperator implements PluginOperator {
         }
         return getPluginInfo(pluginWrapper);
     }
-
-
-
 
     @Override
     public Set<String> getPluginFilePaths() throws Exception {

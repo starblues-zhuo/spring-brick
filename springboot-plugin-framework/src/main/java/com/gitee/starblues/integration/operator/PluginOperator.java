@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * 操作插件的接口
  * @author zhangzhuo
- * @version 2.2.0
+ * @version 2.3.1
  * @see DefaultPluginOperator
  */
 public interface PluginOperator {
@@ -20,27 +20,34 @@ public interface PluginOperator {
     /**
      * 初始化插件。该方法只能执行一次。
      * @param pluginInitializerListener 插件初始化监听者
-     * @return 成功返回true.不成功抛出异常或者返回false
+     * @return 成功: 返回true; 失败: 抛出异常或者返回false
      * @throws Exception 异常信息
      */
     boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws Exception;
-    
+
+    /**
+     * 校验插件jar包
+     * @param jarPath 插件包的路径
+     * @return  成功: 返回true; 失败: 抛出异常或者返回false
+     * @throws Exception 校验异常
+     */
+    boolean verify(Path jarPath) throws Exception;
 
     /**
      * 通过路径安装插件(会启用), 该插件文件必须存在于服务器 [适用于生产环境]
      * 如果在插件目录存在同名的插件包, 系统会自动备份该插件包。备份文件命名规则为；[install-backup][时间]_原jar名.jar
-     * @param path 插件路径
-     * @return 成功返回true.不成功抛出异常或者返回false
+     * @param jarPath 插件路径
+     * @return 成功: 返回true; 失败: 抛出异常或者返回false
      * @throws Exception 异常信息
      */
-    boolean install(Path path) throws Exception;
+    boolean install(Path jarPath) throws Exception;
 
 
     /**
      * 卸载插件 [适用于生产环境]
      * @param pluginId 插件id
      * @param isBackup 是否备份原来的插件。备份文件命名规则为；[uninstall][时间]_原jar名.jar
-     * @return 成功返回true.不成功抛出异常或者返回false
+     * @return 成功: 返回true; 失败: 抛出异常或者返回false
      * @throws Exception 异常信息
      */
     boolean uninstall(String pluginId, boolean isBackup) throws Exception;
@@ -57,7 +64,7 @@ public interface PluginOperator {
     /**
      * 停止插件 [适用于生产环境、开发环境]
      * @param pluginId 插件id
-     * @return 成功返回true.不成功抛出异常或者返回false
+     * @return 成功: 返回true; 失败: 抛出异常或者返回false
      * @throws Exception 异常信息
      */
     boolean stop(String pluginId) throws Exception;
@@ -67,7 +74,7 @@ public interface PluginOperator {
      * 上传插件并启用插件。[适用于生产环境]
      * 如果在插件目录存在同名的插件包, 系统会自动备份该插件包。备份文件命名规则为；[install-backup][时间]_原jar名.jar
      * @param pluginFile 配置文件
-     * @return 成功返回true.不成功返回false, 或者抛出异常
+     * @return 成功: 返回true; 失败: 抛出异常或者返回false
      * @throws Exception 异常信息
      */
     boolean uploadPluginAndStart(MultipartFile pluginFile) throws Exception;
@@ -75,36 +82,36 @@ public interface PluginOperator {
     /**
      * 通过路径安装插件的配置文件。该文件必须存在于服务器。[适用于生产环境]
      * 如果配置文件目录存在同名的配置文件, 系统会自动备份该配置文件。备份文件命名规则为；[install-config-backup][时间]_原jar名.jar
-     * @param path 配置文件路径。
-     * @return 成功返回true.不成功返回false, 或者抛出异常
+     * @param configFilePath 配置文件路径。
+     * @return 成功: 返回true; 失败: 抛出异常或者返回false
      * @throws Exception 安装异常
      */
-    boolean installConfigFile(Path path) throws Exception;
+    boolean installConfigFile(Path configFilePath) throws Exception;
     
     
     /**
      * 上传配置文件。[适用于生产环境]
      * 如果配置文件目录存在同名的配置文件, 系统会自动备份该配置文件。备份文件命名规则为；[upload-config-backup][时间]_原jar名.jar
      * @param configFile 配置文件
-     * @return 成功返回true.不成功返回false, 或者抛出异常
+     * @return 成功: 返回true; 失败: 抛出异常或者返回false
      * @throws Exception 异常信息
      */
     boolean uploadConfigFile(MultipartFile configFile) throws Exception;
 
     /**
      * 通过路径备份文件。可备份插件和插件的配置文件。[适用于生产环境]
-     * @param path 路径
+     * @param backDirPath 备份的目录路径
      * @param sign 备份文件的自定义标识
-     * @return 成功返回true.不成功返回false, 或者抛出异常
+     * @return 成功: 返回true; 失败: 抛出异常或者返回false
      * @throws Exception 异常信息
      */
-    boolean backupPlugin(Path path, String sign) throws Exception;
+    boolean backupPlugin(Path backDirPath, String sign) throws Exception;
 
     /**
      * 通过插件id备份插件。[适用于生产环境]
      * @param pluginId 插件id
      * @param sign 备份文件的自定义标识
-     * @return 成功返回true.不成功返回false, 或者抛出异常
+     * @return 成功: 返回true; 失败: 抛出异常或者返回false
      * @throws Exception 异常信息
      */
     boolean backupPlugin(String pluginId, String sign) throws Exception;

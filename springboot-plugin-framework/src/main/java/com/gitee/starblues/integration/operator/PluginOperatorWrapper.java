@@ -40,11 +40,19 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean install(Path path) throws Exception {
+    public boolean verify(Path jarPath) throws Exception {
         if(isDisable()){
             return false;
         }
-        return pluginOperator.install(path);
+        return pluginOperator.verify(jarPath);
+    }
+
+    @Override
+    public boolean install(Path jarPath) throws Exception {
+        if(isDisable()){
+            return false;
+        }
+        return pluginOperator.install(jarPath);
     }
 
     @Override
@@ -80,11 +88,11 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean installConfigFile(Path path) throws Exception {
+    public boolean installConfigFile(Path configFilePath) throws Exception {
         if(isDisable()){
             return false;
         }
-        return pluginOperator.installConfigFile(path);
+        return pluginOperator.installConfigFile(configFilePath);
     }
 
     @Override
@@ -96,11 +104,11 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean backupPlugin(Path path, String sign) throws Exception {
+    public boolean backupPlugin(Path backDirPath, String sign) throws Exception {
         if(isDisable()){
             return false;
         }
-        return pluginOperator.backupPlugin(path, sign);
+        return pluginOperator.backupPlugin(backDirPath, sign);
     }
 
     @Override
