@@ -1,22 +1,8 @@
 package com.gitee.starblues.extension.mybatis;
 
-import com.gitee.starblues.extension.mybatis.group.PluginMapperGroup;
-import com.gitee.starblues.extension.mybatis.mybatisplus.MybatisPlusProcessor;
-import com.gitee.starblues.factory.PluginInfoContainer;
-import com.gitee.starblues.factory.PluginRegistryInfo;
-import com.gitee.starblues.factory.process.pipe.bean.name.PluginAnnotationBeanNameGenerator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-import org.springframework.beans.factory.support.BeanNameGenerator;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigUtils;
-import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
-import org.springframework.context.annotation.ScopeMetadata;
-import org.springframework.context.annotation.ScopeMetadataResolver;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -32,8 +18,7 @@ import java.util.*;
 /**
  * 插件资源发现者
  * @author zhangzhuo
- * @version 1.0
- * @since 2020-12-17
+ * @version 2.3
  */
 public class PluginResourceFinder {
 

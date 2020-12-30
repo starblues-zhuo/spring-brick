@@ -16,8 +16,7 @@ import java.util.List;
 /**
  * mybatis 扩展
  * @author zhangzhuo
- * @version 1.0
- * @since 2020-12-11
+ * @version 2.3
  */
 public class SpringBootMybatisExtension extends AbstractExtension {
 

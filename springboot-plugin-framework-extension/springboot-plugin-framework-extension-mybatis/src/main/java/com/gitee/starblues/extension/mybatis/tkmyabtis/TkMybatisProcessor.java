@@ -30,8 +30,7 @@ import tk.mybatis.spring.mapper.MapperFactoryBean;
 /**
  * tk-mybatis处理者
  * @author zhangzhuo
- * @version 1.0
- * @since 2020-12-16
+ * @version 2.3
  */
 public class TkMybatisProcessor implements PluginPipeProcessorExtend {
 

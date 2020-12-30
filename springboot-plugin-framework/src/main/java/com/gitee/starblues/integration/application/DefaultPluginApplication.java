@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 默认的插件 PluginApplication
  * @author zhangzhuo
- * @version 2.2.0
+ * @version 2.3.1
  */
 public class DefaultPluginApplication extends AbstractPluginApplication {
 

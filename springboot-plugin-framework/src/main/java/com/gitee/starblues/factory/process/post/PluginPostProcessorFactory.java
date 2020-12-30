@@ -17,7 +17,7 @@ import java.util.List;
  * 插件后置处理工厂
  *
  * @author zhangzhuo
- * @version 2.1.0
+ * @version 2.3
  */
 public class PluginPostProcessorFactory implements PluginPostProcessor {
 

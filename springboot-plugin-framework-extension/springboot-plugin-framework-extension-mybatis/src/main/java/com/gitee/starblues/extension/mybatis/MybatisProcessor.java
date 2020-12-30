@@ -22,8 +22,7 @@ import org.springframework.core.io.Resource;
 /**
  * mybatis 处理者
  * @author zhangzhuo
- * @version 1.0
- * @since 2020-12-16
+ * @version 2.3
  */
 public class MybatisProcessor implements PluginPipeProcessorExtend {
 

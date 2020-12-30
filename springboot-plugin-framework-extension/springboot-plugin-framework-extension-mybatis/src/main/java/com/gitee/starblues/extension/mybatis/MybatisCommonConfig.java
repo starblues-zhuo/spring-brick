@@ -5,8 +5,7 @@ import java.util.Set;
 /**
  * Springboot mybatis 公用的配置
  * @author zhangzhuo
- * @version 1.0
- * @since 2020-12-16
+ * @version 2.3
  */
 public interface MybatisCommonConfig {
 

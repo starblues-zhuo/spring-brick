@@ -19,8 +19,7 @@ import java.util.Set;
 /**
  * Thymeleaf 处理者
  * @author zhangzhuo
- * @version 1.0
- * @since 2020-12-20
+ * @version 2.3
  */
 public class ThymeleafProcessor implements PluginPipeProcessorExtend {
 

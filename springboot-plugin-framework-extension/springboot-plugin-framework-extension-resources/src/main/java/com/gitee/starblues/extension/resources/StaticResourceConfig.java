@@ -6,7 +6,7 @@ import java.util.Set;
  * 插件静态资源的配置
  *
  * @author zhangzhuo
- * @version 2.2.1
+ * @version 2.3
  */
 public interface StaticResourceConfig {
 

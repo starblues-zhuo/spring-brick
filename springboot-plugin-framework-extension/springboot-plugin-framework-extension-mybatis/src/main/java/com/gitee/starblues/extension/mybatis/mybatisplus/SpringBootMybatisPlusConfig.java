@@ -6,8 +6,7 @@ import com.gitee.starblues.extension.mybatis.MybatisCommonConfig;
 /**
  * springboot mybatis plus 配置接口
  * @author zhangzhuo
- * @version 1.0
- * @since 2020-12-11
+ * @version 2.3
  */
 public interface SpringBootMybatisPlusConfig extends MybatisCommonConfig {
 

@@ -12,7 +12,7 @@ import java.util.Set;
  * 插件中的实体类别名
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.3
  */
 public class PluginEntityAliasesGroup implements PluginClassGroupExtend {
 

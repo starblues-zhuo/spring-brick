@@ -18,8 +18,7 @@ import java.util.*;
 /**
  * 插件跟随主程序时, 获取主程序的Mybatis定义的一些配置
  * @author zhangzhuo
- * @version 1.0
- * @since 2020-12-17
+ * @version 2.3
  */
 public class PluginFollowCoreConfig {
 

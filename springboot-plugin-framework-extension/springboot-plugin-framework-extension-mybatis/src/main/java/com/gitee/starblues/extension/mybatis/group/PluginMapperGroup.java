@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
  * 插件中的Mapper接口分组
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.3
  */
 public class PluginMapperGroup implements PluginClassGroupExtend {
 

@@ -11,8 +11,7 @@ import java.util.Set;
 /**
  * mybatis 配置分组
  * @author zhangzhuo
- * @version 1.0
- * @since 2020-12-11
+ * @version 2.3
  */
 public class MybatisConfigGroup implements PluginClassGroupExtend {
 

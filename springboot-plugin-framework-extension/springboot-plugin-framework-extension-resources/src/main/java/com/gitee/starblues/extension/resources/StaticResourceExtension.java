@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * 插件静态资源访问的扩展插件
  *
  * @author zhangzhuo
- * @version 2.2.1
+ * @version 2.3
  */
 public class StaticResourceExtension extends AbstractExtension {
 

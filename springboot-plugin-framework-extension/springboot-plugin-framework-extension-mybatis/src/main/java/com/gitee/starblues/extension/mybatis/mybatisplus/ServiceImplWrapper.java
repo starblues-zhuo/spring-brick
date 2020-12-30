@@ -18,7 +18,7 @@ import java.util.function.Function;
  * mybatis plus ServiceImpl 的包装。解决原生mybatis plus 中ServiceImpl Mapper无法注入的问题
  *
  * @author zhangzhuo
- * @version 1.0
+ * @version 2.3
  */
 public class ServiceImplWrapper<M extends BaseMapper<T>, T> implements IService<T> {
 

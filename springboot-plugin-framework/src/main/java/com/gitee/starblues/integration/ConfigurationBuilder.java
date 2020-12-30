@@ -10,7 +10,7 @@ import java.util.Set;
  * 通过构造者进行配置插件初始化配置
  *
  * @author zhangzhuo
- * @version 2.2.0
+ * @version 2.3.1
  */
 public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
