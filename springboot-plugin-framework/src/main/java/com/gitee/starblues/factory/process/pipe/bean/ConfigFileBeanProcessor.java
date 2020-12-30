@@ -20,7 +20,7 @@ import java.util.Set;
 /**
  * 插件中配置文件 bean 的处理者。包括配置文件
  * @author zhangzhuo
- * @version 2.2.2
+ * @version 2.3.1
  */
 public class ConfigFileBeanProcessor implements PluginPipeProcessor {
 
@@ -101,6 +101,7 @@ public class ConfigFileBeanProcessor implements PluginPipeProcessor {
         if(StringUtils.isEmpty(name)){
             name = aClass.getName();
         }
+        name = name + "@" + pluginRegistryInfo.getPluginWrapper().getPluginId();
         if(!defaultListableBeanFactory.containsSingleton(name)){
             defaultListableBeanFactory.registerSingleton(name, parseObject);
         }

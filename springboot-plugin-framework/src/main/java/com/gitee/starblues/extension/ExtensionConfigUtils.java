@@ -9,8 +9,7 @@ import java.util.Objects;
 /**
  * 扩展配置文件工具
  * @author zhangzhuo
- * @version 1.0
- * @since 2020-12-19
+ * @version 2.3.1
  */
 public class ExtensionConfigUtils {
 
@@ -28,7 +27,6 @@ public class ExtensionConfigUtils {
                                   String pluginId,
                                   Class<T> tClass){
         try {
-
 
             String[] beanNamesForType = applicationContext.getBeanNamesForType(tClass,
                     false, false);
