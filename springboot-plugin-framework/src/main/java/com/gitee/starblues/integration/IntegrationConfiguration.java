@@ -61,6 +61,14 @@ public interface IntegrationConfiguration {
     boolean enablePluginIdRestControllerPathPrefix();
 
     /**
+     * 是否启用该插件框架
+     * @return true 启用, false 禁用
+     */
+    default boolean enable(){
+        return true;
+    }
+
+    /**
      * 禁用的插件id, 禁用后系统不会启动该插件
      * 如果禁用所有插件, 则Set集合中返回一个字符: *
      * @return Set
@@ -68,5 +76,6 @@ public interface IntegrationConfiguration {
     default Set<String> disablePluginIds(){
         return null;
     }
+
 
 }

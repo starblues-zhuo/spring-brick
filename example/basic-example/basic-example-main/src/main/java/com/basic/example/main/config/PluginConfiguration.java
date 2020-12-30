@@ -93,6 +93,10 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
         return true;
     }
 
+    @Override
+    public boolean enable() {
+        return true;
+    }
 
     public String getRunMode() {
         return runMode;
@@ -118,6 +122,8 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
     public void setPluginConfigFilePath(String pluginConfigFilePath) {
         this.pluginConfigFilePath = pluginConfigFilePath;
     }
+
+
 
     @Override
     public String toString() {

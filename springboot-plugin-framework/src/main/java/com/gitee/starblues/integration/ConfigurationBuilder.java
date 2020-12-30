@@ -14,6 +14,8 @@ import java.util.Set;
  */
 public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
+    private boolean enable;
+
     private RuntimeMode runtimeMode = RuntimeMode.DEVELOPMENT;
     private String pluginPath = "";
     private String pluginConfigFilePath = "";
@@ -35,6 +37,11 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         this.pluginRestControllerPathPrefix = builder.pluginRestControllerPathPrefix;
         this.enablePluginIdRestControllerPathPrefix = builder.enablePluginIdRestControllerPathPrefix;
         this.disablePluginIds = builder.disablePluginIds;
+        if(builder.enable == null){
+            this.enable = true;
+        } else {
+            this.enable = builder.enable;
+        }
     }
 
     public static Builder toBuilder(){
@@ -42,6 +49,9 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     }
 
     public static class Builder{
+
+        private Boolean enable;
+
         private RuntimeMode runtimeMode = RuntimeMode.DEVELOPMENT;
         private String pluginPath = "";
         private String pluginConfigFilePath = "";
@@ -93,12 +103,17 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             return this;
         }
 
+        public Builder enable(Boolean enable){
+            this.enable = enable;
+            return this;
+        }
+
+
         public ConfigurationBuilder build(){
             return new ConfigurationBuilder(this);
         }
 
     }
-
 
 
     @Override
@@ -151,6 +166,11 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         } else {
             return enablePluginIdRestControllerPathPrefix;
         }
+    }
+
+    @Override
+    public boolean enable() {
+        return enable;
     }
 
     @Override

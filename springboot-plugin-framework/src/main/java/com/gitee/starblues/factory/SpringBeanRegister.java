@@ -13,7 +13,7 @@ import java.text.MessageFormat;
 import java.util.function.Consumer;
 
 /**
- * Spring bean注册者
+ * Spring bean注册者, 向Spring注册Bean时, 必须使用该对象进行注册
  *
  * @author zhangzhuo
  * @version 2.1.0
@@ -63,8 +63,8 @@ public class SpringBeanRegister {
         if(consumer != null){
             consumer.accept(beanDefinition);
         }
-        applicationContext.registerBeanDefinition(beanName, beanDefinition);
         PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
+        applicationContext.registerBeanDefinition(beanName, beanDefinition);
         try {
             applicationContext.getBean(beanName);
         } catch (BeansException e) {
@@ -104,8 +104,8 @@ public class SpringBeanRegister {
         if(consumer != null){
             consumer.accept(beanDefinition);
         }
-        PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
         applicationContext.registerBeanDefinition(beanName, beanDefinition);
+        PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
     }
 
 
@@ -117,10 +117,11 @@ public class SpringBeanRegister {
      */
     public void unregister(String pluginId, String beanName){
         try {
-            PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
             applicationContext.removeBeanDefinition(beanName);
         } catch (Exception e){
             logger.error("Remove plugin '{}' bean {} error. {}", pluginId, beanName, e.getMessage());
+        } finally {
+            PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
         }
     }
 

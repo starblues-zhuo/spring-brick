@@ -396,16 +396,7 @@ public class DefaultPluginOperator implements PluginOperator {
         return getPluginInfo(pluginWrapper);
     }
 
-    /**
-     * 通过PluginWrapper得到插件信息
-     * @param pluginWrapper pluginWrapper
-     * @return PluginInfo
-     */
-    private PluginInfo getPluginInfo(PluginWrapper pluginWrapper) {
-        return new PluginInfo(pluginWrapper.getDescriptor(), pluginWrapper.getPluginState(),
-                pluginWrapper.getPluginPath().toAbsolutePath().toString(),
-                pluginManager.getRuntimeMode().toString());
-    }
+
 
 
     @Override
@@ -581,5 +572,18 @@ public class DefaultPluginOperator implements PluginOperator {
     protected boolean isDev(){
         return integrationConfiguration.environment() == RuntimeMode.DEVELOPMENT;
     }
+
+    /**
+     * 通过PluginWrapper得到插件信息
+     * @param pluginWrapper pluginWrapper
+     * @return PluginInfo
+     */
+    private PluginInfo getPluginInfo(PluginWrapper pluginWrapper) {
+        return new PluginInfo(pluginWrapper.getDescriptor(), pluginWrapper.getPluginState(),
+                pluginWrapper.getPluginPath().toAbsolutePath().toString(),
+                pluginManager.getRuntimeMode().toString());
+    }
+
+
 
 }

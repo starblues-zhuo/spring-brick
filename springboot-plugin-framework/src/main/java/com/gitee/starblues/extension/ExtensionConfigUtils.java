@@ -1,7 +1,10 @@
 package com.gitee.starblues.extension;
 
+import com.gitee.starblues.factory.PluginInfoContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
+
+import java.util.Objects;
 
 /**
  * 扩展配置文件工具
@@ -25,6 +28,8 @@ public class ExtensionConfigUtils {
                                   String pluginId,
                                   Class<T> tClass){
         try {
+
+
             String[] beanNamesForType = applicationContext.getBeanNamesForType(tClass,
                     false, false);
             if(beanNamesForType.length == 0){
@@ -34,7 +39,7 @@ public class ExtensionConfigUtils {
                 if(StringUtils.isEmpty(beanName)){
                     continue;
                 }
-                if(beanName.contains(pluginId)){
+                if(PluginInfoContainer.existRegisterBeanName(pluginId, beanName)){
                     return applicationContext.getBean(beanName, tClass);
                 }
             }

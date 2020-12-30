@@ -34,7 +34,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final String KEY = "PluginControllerPostProcessor";
+    private static final String KEY = "PluginControllerPostProcessor";
 
     private final SpringBeanRegister springBeanRegister;
     private final GenericApplicationContext applicationContext;

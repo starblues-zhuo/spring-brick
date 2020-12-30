@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 插件信息共享容器
@@ -21,7 +22,7 @@ public class PluginInfoContainer {
     /**
      * 全局插件中定义的BaneName
      */
-    private static Map<String, Set<String>> springRegisterBeanNames = new HashMap<>();
+    private final static Map<String, Set<String>> REGISTER_BEAN_NAMES = new ConcurrentHashMap<>();
 
     /**
      * 添加注册的bean名称
@@ -30,10 +31,10 @@ public class PluginInfoContainer {
      */
     public static synchronized void addRegisterBeanName(String pluginId, String beanName){
         if(!StringUtils.isEmpty(beanName)){
-            Set<String> beanNames = springRegisterBeanNames.get(pluginId);
+            Set<String> beanNames = REGISTER_BEAN_NAMES.get(pluginId);
             if(beanNames == null){
                 beanNames = new HashSet<>();
-                springRegisterBeanNames.put(pluginId, beanNames);
+                REGISTER_BEAN_NAMES.put(pluginId, beanNames);
             }
             beanNames.add(beanName);
         }
@@ -45,7 +46,7 @@ public class PluginInfoContainer {
      * @param beanName 注册的bean名称
      */
     public static synchronized void removeRegisterBeanName(String pluginId, String beanName){
-        Set<String> beanNames = springRegisterBeanNames.get(pluginId);
+        Set<String> beanNames = REGISTER_BEAN_NAMES.get(pluginId);
         if(beanNames != null){
             beanNames.remove(beanName);
         }
@@ -58,7 +59,7 @@ public class PluginInfoContainer {
      * @return true 存在。false不存在
      */
     public static synchronized boolean existRegisterBeanName(String pluginId, String beanName){
-        Set<String> beanNames = springRegisterBeanNames.get(pluginId);
+        Set<String> beanNames = REGISTER_BEAN_NAMES.get(pluginId);
         if(beanNames != null){
             return beanNames.contains(beanName);
         } else {
@@ -72,7 +73,7 @@ public class PluginInfoContainer {
      * @return true 存在。false不存在
      */
     public static synchronized boolean existRegisterBeanName(String beanName){
-        for (Set<String> beanNames : springRegisterBeanNames.values()){
+        for (Set<String> beanNames : REGISTER_BEAN_NAMES.values()){
             if(beanNames.contains(beanName)){
                 return true;
             }

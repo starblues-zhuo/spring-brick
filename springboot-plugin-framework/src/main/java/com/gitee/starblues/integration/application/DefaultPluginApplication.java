@@ -1,5 +1,6 @@
 package com.gitee.starblues.integration.application;
 
+import com.gitee.starblues.integration.operator.PluginOperatorWrapper;
 import com.gitee.starblues.integration.pf4j.DefaultPf4jFactory;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.pf4j.Pf4jFactory;
@@ -84,12 +85,13 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
     protected PluginOperator createPluginOperator(ApplicationContext applicationContext,
                                                   PluginManager pluginManager,
                                                   IntegrationConfiguration configuration){
-        return new DefaultPluginOperator(
+        PluginOperator pluginOperator = new DefaultPluginOperator(
                 applicationContext,
                 configuration,
                 pluginManager,
                 this.listenerFactory
         );
+        return new PluginOperatorWrapper(pluginOperator, configuration);
     }
 
 
