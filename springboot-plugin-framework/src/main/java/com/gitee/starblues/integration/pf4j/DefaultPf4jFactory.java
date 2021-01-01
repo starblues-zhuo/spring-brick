@@ -43,6 +43,7 @@ public class DefaultPf4jFactory implements Pf4jFactory {
                 @Override
                 protected PluginDescriptorFinder createPluginDescriptorFinder() {
                     return new CompoundPluginDescriptorFinder()
+                            .add(new ResourcesPluginDescriptorFinder(RuntimeMode.DEVELOPMENT))
                             .add(new ResolvePropertiesPluginDescriptorFinder())
                             .add(new ManifestPluginDescriptorFinder());
                 }
@@ -60,6 +61,13 @@ public class DefaultPf4jFactory implements Pf4jFactory {
                 protected PluginRepository createPluginRepository() {
                     return new CompoundPluginRepository()
                             .add(new JarPluginRepository(getPluginsRoot()));
+                }
+
+                @Override
+                protected PluginDescriptorFinder createPluginDescriptorFinder() {
+                    return new CompoundPluginDescriptorFinder()
+                            .add(new ResourcesPluginDescriptorFinder(RuntimeMode.DEPLOYMENT))
+                            .add(new ManifestPluginDescriptorFinder());
                 }
 
                 @Override
