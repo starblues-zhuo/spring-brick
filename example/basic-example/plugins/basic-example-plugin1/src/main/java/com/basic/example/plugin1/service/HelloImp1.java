@@ -5,7 +5,7 @@ import com.basic.example.main.plugin.Hello;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class HelloImp1 implements Hello {

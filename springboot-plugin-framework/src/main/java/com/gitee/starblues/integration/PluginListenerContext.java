@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 插件bean监听者上下文。
  *  注意: 监听者必须在初始化插件前添加，否则在初始化阶段可能无法触发添加的监听者。
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.0
  */
 public interface PluginListenerContext {

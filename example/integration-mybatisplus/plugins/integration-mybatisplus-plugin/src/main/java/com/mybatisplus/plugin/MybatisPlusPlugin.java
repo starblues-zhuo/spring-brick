@@ -6,7 +6,7 @@ import org.pf4j.PluginWrapper;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class MybatisPlusPlugin extends BasePlugin {

@@ -6,7 +6,7 @@ import tk.mybatis.mapper.entity.Config;
 
 /**
  * springboot tk-mybatis 配置接口
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3
  */
 public interface SpringBootTkMybatisConfig extends MybatisCommonConfig {

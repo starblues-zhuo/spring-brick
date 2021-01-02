@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * 主启动程序
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @SpringBootApplication(scanBasePackages = {  "com.mybatisplus.main" })

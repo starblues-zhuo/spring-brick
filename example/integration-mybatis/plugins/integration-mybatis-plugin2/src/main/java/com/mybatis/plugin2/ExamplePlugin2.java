@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class ExamplePlugin2 extends BasePlugin

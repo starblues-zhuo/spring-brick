@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  * mybatis 配置分组
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3
  */
 public class MybatisConfigGroup implements PluginClassGroupExtend {

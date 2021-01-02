@@ -8,7 +8,7 @@ import java.util.function.Function;
 /**
  * 通用工具
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.1
  */
 public class CommonUtils {

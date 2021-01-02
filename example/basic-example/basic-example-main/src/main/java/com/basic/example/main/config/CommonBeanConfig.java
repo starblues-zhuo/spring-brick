@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * 公用bean的配置
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @Configuration

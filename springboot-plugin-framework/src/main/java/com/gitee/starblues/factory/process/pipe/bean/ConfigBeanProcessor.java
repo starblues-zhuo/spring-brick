@@ -15,7 +15,7 @@ import java.util.*;
  * 插件中实现 ConfigBean 接口的的处理者
  * @see ConfigBean
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.2
  */
 public class ConfigBeanProcessor implements PluginPipeProcessor {

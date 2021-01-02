@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 /**
  * 主程序定义接口的实现类: ConsoleName
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @Component

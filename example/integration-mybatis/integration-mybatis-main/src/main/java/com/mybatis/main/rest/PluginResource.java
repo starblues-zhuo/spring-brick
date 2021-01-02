@@ -18,7 +18,7 @@ import java.util.Set;
 
 /**
  * 插件jar 包测试功能
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @RestController

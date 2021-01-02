@@ -14,7 +14,7 @@ import java.util.Properties;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 class ResolvePropertiesPluginDescriptorFinder extends PropertiesPluginDescriptorFinder {

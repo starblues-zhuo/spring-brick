@@ -5,7 +5,7 @@ package com.gitee.starblues.realize;
  * 注意：该实现类只能注入插件中的配置文件和主程序bean. 不能注入插件中其他的组件bean。
  * bean 指的是Spring 容器中管理的bean
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.2
  */
 public interface ConfigBean {

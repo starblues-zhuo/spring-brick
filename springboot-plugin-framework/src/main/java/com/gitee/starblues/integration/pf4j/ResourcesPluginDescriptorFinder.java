@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 
 /**
  * 读取 resources 目录下的 plugin.properties 文件
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3.1
  */
 public class ResourcesPluginDescriptorFinder extends PropertiesPluginDescriptorFinder {

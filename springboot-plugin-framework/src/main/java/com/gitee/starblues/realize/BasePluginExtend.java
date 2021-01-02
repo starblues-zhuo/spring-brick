@@ -5,7 +5,7 @@ import com.gitee.starblues.loader.PluginResourceLoadFactory;
 /**
  * 扩展的BasePlugin信息
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public final class BasePluginExtend {

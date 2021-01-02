@@ -8,7 +8,7 @@ import com.gitee.starblues.utils.AnnotationsUtils;
 /**
  * 分组存在注解: @ConfigDefinition
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public class ConfigDefinitionGroup implements PluginClassGroup {

@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * 插件中配置文件 bean 的处理者。包括配置文件
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3.1
  */
 public class ConfigFileBeanProcessor implements PluginPipeProcessor {

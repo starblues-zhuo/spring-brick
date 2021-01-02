@@ -17,7 +17,7 @@ import java.util.*;
 
 /**
  * 插件资源发现者
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3
  */
 public class PluginResourceFinder {

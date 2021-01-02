@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 插件初始化监听者工厂
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class PluginInitializerListenerFactory implements PluginInitializerListener {

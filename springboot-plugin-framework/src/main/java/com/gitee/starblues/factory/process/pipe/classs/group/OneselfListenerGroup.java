@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * 插件自己的监听器分组
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.1
  */
 public class OneselfListenerGroup implements PluginClassGroup {

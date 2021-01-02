@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3
  */
 public class ConfigPluginStatusProvider implements PluginStatusProvider {

@@ -4,7 +4,7 @@ package com.gitee.starblues.extension;
 /**
  * controller 处理者
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public interface PluginControllerProcessor {

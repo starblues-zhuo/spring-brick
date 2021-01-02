@@ -21,7 +21,7 @@ import java.nio.channels.ReadableByteChannel;
 /**
  * 插件资源实现类.主要是对Spring中的抽象的Resource实现.
  * 功能: 主要是获取插件包中的文件资源。
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.1
  */
 public class PluginResource implements Resource {

@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * 插件资源处理器
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.1
  */
 public class PluginResourceResolverProcess implements PluginPostProcessorExtend {

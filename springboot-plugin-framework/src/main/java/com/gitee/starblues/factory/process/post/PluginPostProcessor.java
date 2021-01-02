@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * 插件后置处理者接口
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public interface PluginPostProcessor {

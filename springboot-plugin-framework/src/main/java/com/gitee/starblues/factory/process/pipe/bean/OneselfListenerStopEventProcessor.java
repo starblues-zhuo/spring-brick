@@ -19,7 +19,7 @@ import java.util.Objects;
  * 执行插件自监听器的停止事件的处理者。必须在所有处理者中第一个执行。否则会导致所依赖的bean被卸载。
  *
  * @see PluginOneselfStartEventProcessor 触发启动事件
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.1
  */
 public class OneselfListenerStopEventProcessor implements PluginPipeProcessor {

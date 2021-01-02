@@ -8,7 +8,7 @@ import org.apache.ibatis.type.Alias;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @TableName("plugin_data")
@@ -23,8 +23,6 @@ public class PluginData {
     private String test;
     private String t2;
     private Integer ok;
-    private String zhangzhuo;
-    private String lijing;
 
     public String getPluginId() {
         return pluginId;
@@ -88,21 +86,5 @@ public class PluginData {
 
     public void setOk(Integer ok) {
         this.ok = ok;
-    }
-
-    public String getZhangzhuo() {
-        return zhangzhuo;
-    }
-
-    public void setZhangzhuo(String zhangzhuo) {
-        this.zhangzhuo = zhangzhuo;
-    }
-
-    public String getLijing() {
-        return lijing;
-    }
-
-    public void setLijing(String lijing) {
-        this.lijing = lijing;
     }
 }

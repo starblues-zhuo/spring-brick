@@ -7,7 +7,7 @@ import java.util.Objects;
 
 /**
  * 默认的插件校验器
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.2
  */
 public class DefaultPluginVerify extends PluginLegalVerify{

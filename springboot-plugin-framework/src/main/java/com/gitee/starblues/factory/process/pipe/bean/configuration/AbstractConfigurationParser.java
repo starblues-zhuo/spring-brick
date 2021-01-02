@@ -12,7 +12,7 @@ import java.util.Objects;
 
 /**
  * 抽象的插件配置文件解析者
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public abstract class AbstractConfigurationParser implements ConfigurationParser {

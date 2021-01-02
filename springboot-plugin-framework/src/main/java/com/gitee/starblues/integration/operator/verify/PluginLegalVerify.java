@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  * 插件包合法校验
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class PluginLegalVerify implements PluginVerify{

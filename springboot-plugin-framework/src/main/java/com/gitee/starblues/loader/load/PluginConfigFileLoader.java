@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 /**
  * 插件配置文件加载者
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.2
  */
 public class PluginConfigFileLoader implements PluginResourceLoader {

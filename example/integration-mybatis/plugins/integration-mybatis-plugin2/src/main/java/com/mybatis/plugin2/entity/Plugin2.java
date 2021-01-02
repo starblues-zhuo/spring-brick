@@ -3,7 +3,7 @@ package com.mybatis.plugin2.entity;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class Plugin2 {

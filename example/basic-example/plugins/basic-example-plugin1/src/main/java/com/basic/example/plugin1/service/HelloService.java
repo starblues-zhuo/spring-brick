@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * hello 服务类
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @Component("plugin2HelloService")

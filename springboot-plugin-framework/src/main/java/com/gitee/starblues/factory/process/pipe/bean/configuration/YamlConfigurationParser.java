@@ -14,7 +14,7 @@ import java.io.InputStream;
 
 /**
  * yaml 配置解析者
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class YamlConfigurationParser extends AbstractConfigurationParser {

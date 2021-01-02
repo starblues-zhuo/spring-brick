@@ -6,7 +6,7 @@ import com.mybatisplus.main.entity.User;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public interface UserService extends IService<User> {

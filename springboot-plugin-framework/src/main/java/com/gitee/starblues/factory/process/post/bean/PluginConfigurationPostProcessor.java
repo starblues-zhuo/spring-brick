@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * 插件中Configuration处理者
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public class PluginConfigurationPostProcessor implements PluginPostProcessor {

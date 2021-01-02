@@ -4,7 +4,7 @@ import com.gitee.starblues.realize.BasePlugin;
 
 /**
  * 配置解析者
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public interface ConfigurationParser {

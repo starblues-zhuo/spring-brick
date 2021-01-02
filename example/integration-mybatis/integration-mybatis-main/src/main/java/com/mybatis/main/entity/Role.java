@@ -3,7 +3,7 @@ package com.mybatis.main.entity;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class Role {

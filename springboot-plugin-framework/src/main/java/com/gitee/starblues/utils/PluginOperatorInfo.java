@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 操作插件信息。为了解决连续上传安装后, 停止后, 无法启动的问题。
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.0
  */
 public class PluginOperatorInfo {

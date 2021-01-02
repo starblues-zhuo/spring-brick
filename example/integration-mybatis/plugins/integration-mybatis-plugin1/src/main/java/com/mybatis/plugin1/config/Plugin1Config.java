@@ -5,7 +5,7 @@ import com.gitee.starblues.annotation.ConfigDefinition;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @ConfigDefinition("plugin1.yml")

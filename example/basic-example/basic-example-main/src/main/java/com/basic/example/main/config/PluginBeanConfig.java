@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * 插件集成配置
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @Configuration

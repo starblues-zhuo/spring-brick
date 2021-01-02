@@ -4,7 +4,7 @@ package com.basic.example.plugin2.config;
 /**
  * 插件2配置文件子bean映射类
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class Sub2Config {

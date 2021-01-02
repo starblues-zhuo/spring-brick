@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public interface PluginDataService extends IService<PluginData> {

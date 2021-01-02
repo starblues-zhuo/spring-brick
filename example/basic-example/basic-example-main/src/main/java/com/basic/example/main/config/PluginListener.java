@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 /**
  * 插件监听者
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @Component

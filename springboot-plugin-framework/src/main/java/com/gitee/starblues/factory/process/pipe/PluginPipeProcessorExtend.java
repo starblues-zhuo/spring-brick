@@ -5,7 +5,7 @@ import com.gitee.starblues.utils.OrderPriority;
 /**
  * 单插件处理者扩展接口
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public interface PluginPipeProcessorExtend extends PluginPipeProcessor{

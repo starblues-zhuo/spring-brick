@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * 输出名称工厂
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @Component

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 /**
  * 默认的插件操作者
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.2
  */
 public class DefaultPluginOperator implements PluginOperator {

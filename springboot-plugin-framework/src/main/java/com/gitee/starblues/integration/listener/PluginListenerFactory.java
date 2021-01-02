@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 插件监听工厂
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class PluginListenerFactory implements PluginListener {

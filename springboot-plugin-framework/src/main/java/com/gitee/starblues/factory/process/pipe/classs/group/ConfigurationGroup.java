@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * 分组存在注解: @Configuration
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public class ConfigurationGroup implements PluginClassGroup {

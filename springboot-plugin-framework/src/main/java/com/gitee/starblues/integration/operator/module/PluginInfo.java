@@ -6,7 +6,7 @@ import org.pf4j.PluginState;
 
 /**
  * 插件信息
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class PluginInfo {

@@ -2,7 +2,7 @@ package com.gitee.starblues.extension.resources.thymeleaf;
 
 
 /**
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3
  */
 public interface SpringBootThymeleafConfig {

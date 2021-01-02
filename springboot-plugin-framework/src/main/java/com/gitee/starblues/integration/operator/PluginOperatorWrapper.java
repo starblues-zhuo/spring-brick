@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  * 插件操作包装者
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3.1
  */
 public class PluginOperatorWrapper implements PluginOperator{

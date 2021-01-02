@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class PluginListener2 implements OneselfListener {

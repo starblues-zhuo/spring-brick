@@ -3,7 +3,7 @@ package com.tkmybatis.plugin.entity;
 import javax.persistence.Id;
 
 /**
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  * @since 2020-12-18
  */

@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3
  */
 public class ThymeleafConfig {

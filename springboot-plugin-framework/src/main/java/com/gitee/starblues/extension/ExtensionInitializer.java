@@ -21,7 +21,7 @@ import java.util.function.Function;
 /**
  * 静态的扩展初始化器
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.1
  */
 public class ExtensionInitializer {

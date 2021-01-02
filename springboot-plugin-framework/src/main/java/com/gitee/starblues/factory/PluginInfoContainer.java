@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 插件信息共享容器
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public class PluginInfoContainer {

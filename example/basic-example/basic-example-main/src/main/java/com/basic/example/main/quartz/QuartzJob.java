@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Quartz框架job定义的统一接口
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public interface QuartzJob {

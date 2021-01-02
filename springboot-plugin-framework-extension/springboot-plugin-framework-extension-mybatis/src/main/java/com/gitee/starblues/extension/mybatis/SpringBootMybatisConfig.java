@@ -4,7 +4,7 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 
 /**
  * Springboot mybatis 的配置接口
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3
  */
 public interface SpringBootMybatisConfig extends MybatisCommonConfig{

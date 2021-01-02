@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * 插件配置文件定义。
  * 必须存在ConfigDefinition注解
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @ConfigDefinition("plugin1.yml")

@@ -3,7 +3,7 @@ package com.basic.example.main.invokeapi;
 /**
  * 插件之间互相调用的类
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class CommonParam {

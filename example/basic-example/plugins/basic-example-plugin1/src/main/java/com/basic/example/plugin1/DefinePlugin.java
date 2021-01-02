@@ -6,7 +6,7 @@ import org.pf4j.PluginWrapper;
 /**
  * 插件定义类
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class DefinePlugin extends BasePlugin {

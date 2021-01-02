@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * 插件配置文件对应的bean定义注解
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @Target(ElementType.TYPE)

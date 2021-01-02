@@ -10,7 +10,7 @@ import tk.mybatis.mapper.entity.Config;
 import java.util.Set;
 
 /**
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  * @since 2020-12-14
  */

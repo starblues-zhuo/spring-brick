@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  * 扩展配置文件工具
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3.1
  */
 public class ExtensionConfigUtils {

@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * 默认的初始化监听者。内置注册
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class DefaultInitializerListener implements PluginInitializerListener{

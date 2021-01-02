@@ -10,7 +10,7 @@ import java.util.List;
  * 抽象的SpringBean刷新类监听类.
  * 继承该类。在插件动态的注册卸载时, refresh方法被触发, 可以获取到当前环境所有T实现的所有beans(包括主程序中的beans)
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.0.2
  */
 public abstract class AbstractSpringBeanRefresh<T> implements PluginListener {

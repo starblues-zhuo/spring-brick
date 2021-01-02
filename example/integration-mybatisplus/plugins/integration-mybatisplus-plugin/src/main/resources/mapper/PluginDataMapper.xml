@@ -12,12 +12,11 @@
         <result column="test" property="test" />
         <result column="t2" property="t2" />
         <result column="ok" property="ok" />
-        <result column="zhangzhuo" property="zhangzhuo" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        plugin_id, name, type, description, enable, test, t2, ok, zhangzhuo
+        plugin_id, name, type, description, enable, test, t2, ok
     </sql>
 
     <select id="getAll" resultType="com.mybatisplus.plugin.entity.PluginData">

@@ -19,7 +19,7 @@ import java.util.Objects;
 /**
  * 插件中 OneselfListener 监听者处理者。主要执行监听器的启动事件。
  * @see OneselfListenerStopEventProcessor 触发停止事件
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public class PluginOneselfStartEventProcessor implements PluginPostProcessor {

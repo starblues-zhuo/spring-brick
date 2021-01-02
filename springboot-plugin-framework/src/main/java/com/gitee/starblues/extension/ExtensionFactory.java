@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 /**
  * 静态的扩展工厂
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public class ExtensionFactory {

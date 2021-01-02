@@ -27,7 +27,7 @@ import java.util.Set;
 
 /**
  * Mapper 接口处理者
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3
  */
 public class MapperHandler {

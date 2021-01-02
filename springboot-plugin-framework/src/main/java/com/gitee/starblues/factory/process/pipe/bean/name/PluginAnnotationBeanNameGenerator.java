@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 /**
  *  插件注解名称生成者
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class PluginAnnotationBeanNameGenerator extends AnnotationBeanNameGenerator {

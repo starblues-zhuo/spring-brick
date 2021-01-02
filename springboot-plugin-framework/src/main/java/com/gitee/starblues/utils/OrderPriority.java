@@ -3,7 +3,7 @@ package com.gitee.starblues.utils;
 /**
  * 顺序优先级
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class OrderPriority {

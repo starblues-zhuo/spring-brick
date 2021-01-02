@@ -7,7 +7,7 @@ import com.gitee.starblues.annotation.Caller;
 /**
  * 调用插件plugin1中的 com.plugin.example.plugin1.service.SupplierService 接口定义
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @Caller("SupplierService")

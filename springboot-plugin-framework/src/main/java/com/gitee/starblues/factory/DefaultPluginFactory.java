@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * 默认的插件处理者
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.2
  */
 public class DefaultPluginFactory implements PluginFactory {

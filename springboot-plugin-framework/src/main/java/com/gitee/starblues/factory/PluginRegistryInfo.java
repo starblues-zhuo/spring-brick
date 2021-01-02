@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 注册的插件信息
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public class PluginRegistryInfo {

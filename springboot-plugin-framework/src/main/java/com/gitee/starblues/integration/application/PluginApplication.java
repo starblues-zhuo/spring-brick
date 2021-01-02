@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * 插件应用。
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.0
  */
 public interface PluginApplication extends PluginListenerContext {

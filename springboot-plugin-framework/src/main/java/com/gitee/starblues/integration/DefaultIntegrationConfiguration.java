@@ -3,7 +3,7 @@ package com.gitee.starblues.integration;
 /**
  * 默认的插件集成配置。给非必须配置设置了默认值
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public abstract class DefaultIntegrationConfiguration implements IntegrationConfiguration{

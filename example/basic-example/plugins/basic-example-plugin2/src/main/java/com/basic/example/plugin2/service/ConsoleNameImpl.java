@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 /**
  * 插件实现
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @Component("plugin2ConsoleNameImpl")

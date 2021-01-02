@@ -8,7 +8,7 @@ import java.io.Serializable;
  * 用户(登录aiops的账户)
  * </p>
  *
- * @author zhangzhuo
+ * @author starBlues
  * @since 2019-04-18
  */
 public class User implements Serializable {

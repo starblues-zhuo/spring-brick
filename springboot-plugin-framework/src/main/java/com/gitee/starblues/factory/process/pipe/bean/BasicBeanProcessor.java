@@ -19,7 +19,7 @@ import org.springframework.util.ReflectionUtils;
 /**
  * 基础bean注册
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3
  */
 public class BasicBeanProcessor implements PluginPipeProcessor {

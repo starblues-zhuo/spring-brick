@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * 抽象的扩展工厂
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public abstract class AbstractExtension {

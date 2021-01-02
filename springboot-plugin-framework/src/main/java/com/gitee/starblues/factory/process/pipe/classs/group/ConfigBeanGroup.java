@@ -11,7 +11,7 @@ import java.util.Set;
  * 对接口ConfigBean实现的类分组
  * @see ConfigBean
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.2
  */
 public class ConfigBeanGroup implements PluginClassGroup {

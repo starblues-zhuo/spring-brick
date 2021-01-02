@@ -5,7 +5,7 @@ import org.apache.ibatis.type.Alias;
 /**
  * description
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @Alias("plugin1")

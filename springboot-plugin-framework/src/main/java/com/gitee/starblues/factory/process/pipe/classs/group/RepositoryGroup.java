@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 /**
  * 分组存在注解: @Repository
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public class RepositoryGroup implements PluginClassGroup {

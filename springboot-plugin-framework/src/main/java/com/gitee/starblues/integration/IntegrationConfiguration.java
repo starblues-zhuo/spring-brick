@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 插件集成时的配置接口。插件集成的配置接口
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3.1
  */
 public interface IntegrationConfiguration {

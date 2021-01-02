@@ -14,7 +14,7 @@ import java.security.MessageDigest;
 /**
  * 插件文件工具类
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public final class PluginFileUtils {

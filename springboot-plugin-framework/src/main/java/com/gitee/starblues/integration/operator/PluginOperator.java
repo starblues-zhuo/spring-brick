@@ -11,7 +11,7 @@ import java.util.Set;
 
 /**
  * 操作插件的接口
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.3.1
  * @see DefaultPluginOperator
  */

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * 插件案例启动类
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 @SpringBootApplication

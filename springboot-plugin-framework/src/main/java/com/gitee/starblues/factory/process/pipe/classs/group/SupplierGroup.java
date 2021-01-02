@@ -9,7 +9,7 @@ import com.gitee.starblues.utils.AnnotationsUtils;
 /**
  * 分组存在注解: @Supplier
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public class SupplierGroup implements PluginClassGroup {

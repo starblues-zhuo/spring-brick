@@ -30,7 +30,7 @@ import java.util.Set;
 /**
  * 处理插件中类之间相互调用的的功能
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public class PluginInvokePostProcessor implements PluginPostProcessor {

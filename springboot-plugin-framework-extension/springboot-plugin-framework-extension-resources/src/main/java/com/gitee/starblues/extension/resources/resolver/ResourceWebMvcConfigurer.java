@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * 注册插件的WebMvc的配置
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.1
  */
 public class ResourceWebMvcConfigurer implements WebMvcConfigurer {
