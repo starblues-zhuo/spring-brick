@@ -22,10 +22,12 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     private String uploadTempPath;
     private String backupPath;
-    private String pluginRestControllerPathPrefix;
-    private Boolean enablePluginIdRestControllerPathPrefix;
+    private String pluginRestPathPrefix;
+
+    private Boolean enablePluginIdRestPathPrefix;
 
     private Set<String> disablePluginIds;
+    private Boolean enableSwaggerRefresh;
 
     public ConfigurationBuilder(Builder builder) {
         this.runtimeMode = Objects.requireNonNull(builder.runtimeMode, "runtimeMode can't be empty");
@@ -34,13 +36,18 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
                 "pluginConfigFilePath can't be empty");
         this.uploadTempPath = builder.uploadTempPath;
         this.backupPath = builder.backupPath;
-        this.pluginRestControllerPathPrefix = builder.pluginRestControllerPathPrefix;
-        this.enablePluginIdRestControllerPathPrefix = builder.enablePluginIdRestControllerPathPrefix;
+        this.pluginRestPathPrefix = builder.pluginRestPathPrefix;
+        this.enablePluginIdRestPathPrefix = builder.enablePluginIdRestPathPrefix;
         this.disablePluginIds = builder.disablePluginIds;
         if(builder.enable == null){
             this.enable = true;
         } else {
             this.enable = builder.enable;
+        }
+        if(builder.enableSwaggerRefresh == null){
+            this.enableSwaggerRefresh = true;
+        } else {
+            this.enableSwaggerRefresh = builder.enableSwaggerRefresh;
         }
     }
 
@@ -58,13 +65,19 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
         private String uploadTempPath;
         private String backupPath;
-        private String pluginRestControllerPathPrefix;
-        private Boolean enablePluginIdRestControllerPathPrefix;
+        private String pluginRestPathPrefix;
+        private Boolean enablePluginIdRestPathPrefix;
 
         private Set<String> disablePluginIds;
+        private Boolean enableSwaggerRefresh;
 
         public Builder runtimeMode(RuntimeMode runtimeMode){
             this.runtimeMode = runtimeMode;
+            return this;
+        }
+
+        public Builder enable(Boolean enable){
+            this.enable = enable;
             return this;
         }
 
@@ -88,13 +101,13 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             return this;
         }
 
-        public Builder pluginRestControllerPathPrefix(String pluginRestControllerPathPrefix){
-            this.pluginRestControllerPathPrefix = pluginRestControllerPathPrefix;
+        public Builder pluginRestPathPrefix(String pluginRestPathPrefix){
+            this.pluginRestPathPrefix = pluginRestPathPrefix;
             return this;
         }
 
-        public Builder enablePluginIdRestControllerPathPrefix(Boolean enablePluginIdRestControllerPathPrefix){
-            this.enablePluginIdRestControllerPathPrefix = enablePluginIdRestControllerPathPrefix;
+        public Builder enablePluginIdRestPathPrefix(Boolean enablePluginIdRestPathPrefix){
+            this.enablePluginIdRestPathPrefix = enablePluginIdRestPathPrefix;
             return this;
         }
 
@@ -102,12 +115,10 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             this.disablePluginIds = disablePluginIds;
             return this;
         }
-
-        public Builder enable(Boolean enable){
-            this.enable = enable;
+        public Builder enableSwaggerRefresh(Boolean enableSwaggerRefresh){
+            this.enableSwaggerRefresh = enableSwaggerRefresh;
             return this;
         }
-
 
         public ConfigurationBuilder build(){
             return new ConfigurationBuilder(this);
@@ -151,20 +162,20 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     }
 
     @Override
-    public String pluginRestControllerPathPrefix() {
-        if(StringUtils.isEmpty(pluginRestControllerPathPrefix)){
-            return super.pluginRestControllerPathPrefix();
+    public String pluginRestPathPrefix() {
+        if(StringUtils.isEmpty(pluginRestPathPrefix)){
+            return super.pluginRestPathPrefix();
         } else {
-            return pluginRestControllerPathPrefix;
+            return pluginRestPathPrefix;
         }
     }
 
     @Override
-    public boolean enablePluginIdRestControllerPathPrefix() {
-        if(enablePluginIdRestControllerPathPrefix == null){
-            return super.enablePluginIdRestControllerPathPrefix();
+    public boolean enablePluginIdRestPathPrefix() {
+        if(enablePluginIdRestPathPrefix == null){
+            return super.enablePluginIdRestPathPrefix();
         } else {
-            return enablePluginIdRestControllerPathPrefix;
+            return enablePluginIdRestPathPrefix;
         }
     }
 

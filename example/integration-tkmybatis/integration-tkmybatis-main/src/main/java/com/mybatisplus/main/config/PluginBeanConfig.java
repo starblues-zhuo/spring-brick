@@ -1,10 +1,13 @@
-package com.tkmybatis.main.config;
+package com.mybatisplus.main.config;
 
 import com.gitee.starblues.extension.mybatis.SpringBootMybatisExtension;
 import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.application.AutoPluginApplication;
+import com.github.pagehelper.PageInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Properties;
 
 /**
  * @Description: 插件集成配置
@@ -27,9 +30,20 @@ public class PluginBeanConfig {
         // 实例化自动初始化插件的PluginApplication
         PluginApplication pluginApplication = new AutoPluginApplication();
         pluginApplication.addExtension(new SpringBootMybatisExtension(
-                SpringBootMybatisExtension.Type.MYBATIS_PLUS
-        ));
+                SpringBootMybatisExtension.Type.TK_MYBATIS));
         return pluginApplication;
+    }
+
+    @Bean
+    public PageInterceptor pageInterceptor(){
+        PageInterceptor pageHelper=new PageInterceptor();
+        Properties properties=new Properties();
+        properties.setProperty("helperDialect","mysql");
+        properties.setProperty("reasonable","true");
+        properties.setProperty("supportMethodsArguments","true");
+        properties.setProperty("params","count=countSql");
+        pageHelper.setProperties(properties);
+        return pageHelper;
     }
 
 }

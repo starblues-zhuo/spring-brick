@@ -69,6 +69,7 @@
         <slf4j.version>1.7.7</slf4j.version>
 
         <spring-version>5.0.7.RELEASE</spring-version>
+        <swagger-spring-web.version>2.10.5</swagger-spring-web.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <junit.version>4.11</junit.version>
     </properties>
@@ -116,6 +117,13 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${spring-version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-spring-web</artifactId>
+            <version>${swagger-spring-web.version}</version>
             <scope>provided</scope>
         </dependency>
 

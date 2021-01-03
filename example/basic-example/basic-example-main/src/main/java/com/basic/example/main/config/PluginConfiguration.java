@@ -79,7 +79,7 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
      * @return String
      */
     @Override
-    public String pluginRestControllerPathPrefix() {
+    public String pluginRestPathPrefix() {
         return "/api/plugins";
     }
 
@@ -89,7 +89,7 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
      * @return String
      */
     @Override
-    public boolean enablePluginIdRestControllerPathPrefix() {
+    public boolean enablePluginIdRestPathPrefix() {
         return true;
     }
 

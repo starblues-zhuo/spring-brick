@@ -1,4 +1,4 @@
-package com.tkmybatis.main.config;
+package com.mybatisplus.main.config;
 
 import com.gitee.starblues.integration.DefaultIntegrationConfiguration;
 import org.pf4j.RuntimeMode;
@@ -78,7 +78,7 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
      * @return String
      */
     @Override
-    public String pluginRestControllerPathPrefix() {
+    public String pluginRestPathPrefix() {
         return "/api/plugin";
     }
 
@@ -88,7 +88,7 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
      * @return String
      */
     @Override
-    public boolean enablePluginIdRestControllerPathPrefix() {
+    public boolean enablePluginIdRestPathPrefix() {
         return true;
     }
 

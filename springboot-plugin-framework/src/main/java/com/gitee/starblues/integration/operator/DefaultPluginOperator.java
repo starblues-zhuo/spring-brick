@@ -91,6 +91,7 @@ public class DefaultPluginOperator implements PluginOperator {
                 pluginInitializerListenerFactory.complete();
                 return false;
             }
+
             // 启动前, 清除空文件
             PluginFileUtils.cleanEmptyFile(pluginManager.getPluginsRoot());
 

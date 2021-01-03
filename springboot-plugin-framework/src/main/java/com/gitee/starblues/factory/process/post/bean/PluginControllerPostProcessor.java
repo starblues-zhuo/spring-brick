@@ -39,14 +39,14 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
     private final SpringBeanRegister springBeanRegister;
     private final GenericApplicationContext applicationContext;
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
-    private final IntegrationConfiguration integrationConfiguration;
+    private final IntegrationConfiguration configuration;
 
     public PluginControllerPostProcessor(ApplicationContext applicationContext){
         Objects.requireNonNull(applicationContext);
         this.springBeanRegister = new SpringBeanRegister(applicationContext);
         this.applicationContext = (GenericApplicationContext) applicationContext;
         this.requestMappingHandlerMapping = applicationContext.getBean(RequestMappingHandlerMapping.class);
-        this.integrationConfiguration = applicationContext.getBean(IntegrationConfiguration.class);
+        this.configuration = applicationContext.getBean(IntegrationConfiguration.class);
     }
 
 
@@ -199,8 +199,8 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         if(requestMapping == null){
             return;
         }
-        String pathPrefix = integrationConfiguration.pluginRestControllerPathPrefix();
-        if(integrationConfiguration.enablePluginIdRestControllerPathPrefix()){
+        String pathPrefix = configuration.pluginRestPathPrefix();
+        if(configuration.enablePluginIdRestPathPrefix()){
             if(pathPrefix != null && !"".equals(pathPrefix)){
                 pathPrefix = joiningPath(pathPrefix, pluginId);
             } else {

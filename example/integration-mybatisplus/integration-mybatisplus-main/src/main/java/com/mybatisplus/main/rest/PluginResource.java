@@ -1,4 +1,4 @@
-package com.tkmybatis.main.rest;
+package com.mybatisplus.main.rest;
 
 import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.operator.PluginOperator;

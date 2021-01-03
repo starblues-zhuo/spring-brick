@@ -4,8 +4,10 @@ import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorFactory;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
 import com.gitee.starblues.factory.process.post.PluginPostProcessorFactory;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginListener;
 import com.gitee.starblues.integration.listener.PluginListenerFactory;
+import com.gitee.starblues.integration.listener.SwaggerListeningListener;
 import com.gitee.starblues.utils.AopUtils;
 import org.pf4j.PluginWrapper;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +35,7 @@ public class DefaultPluginFactory implements PluginFactory {
     private final PluginPipeProcessor pluginPipeProcessor;
     private final PluginPostProcessor pluginPostProcessor;
     private final PluginListenerFactory pluginListenerFactory;
+    private final IntegrationConfiguration configuration;
 
     /**
      *  0表示build、1 表示注册、2表示卸载
@@ -55,12 +58,15 @@ public class DefaultPluginFactory implements PluginFactory {
         } else {
             this.pluginListenerFactory = pluginListenerFactory;
         }
+        configuration = applicationContext.getBean(IntegrationConfiguration.class);
         AopUtils.registered(applicationContext);
     }
 
 
     @Override
     public void initialize() throws Exception{
+        // 新增默认监听者
+        addDefaultPluginListener();
         pluginPipeProcessor.initialize();
         pluginPostProcessor.initialize();
     }
@@ -137,25 +143,6 @@ public class DefaultPluginFactory implements PluginFactory {
         }
     }
 
-    /**
-     * 注册build
-     */
-    private void registryBuild() throws Exception {
-        pluginPostProcessor.registry(buildContainer);
-        for (PluginRegistryInfo pluginRegistryInfo : buildContainer) {
-            pluginListenerFactory.registry(pluginRegistryInfo.getPluginWrapper().getPluginId());
-        }
-    }
-
-    /**
-     * 卸载build
-     */
-    private void unRegistryBuild() throws Exception {
-        pluginPostProcessor.unRegistry(buildContainer);
-        for (PluginRegistryInfo pluginRegistryInfo : buildContainer) {
-            pluginListenerFactory.unRegistry(pluginRegistryInfo.getPluginWrapper().getPluginId());
-        }
-    }
 
 
     @Override
@@ -177,7 +164,34 @@ public class DefaultPluginFactory implements PluginFactory {
         }
     }
 
+    /**
+     * 注册build
+     */
+    private void registryBuild() throws Exception {
+        pluginPostProcessor.registry(buildContainer);
+        for (PluginRegistryInfo pluginRegistryInfo : buildContainer) {
+            pluginListenerFactory.registry(pluginRegistryInfo.getPluginWrapper().getPluginId());
+        }
+    }
 
+    /**
+     * 卸载build
+     */
+    private void unRegistryBuild() throws Exception {
+        pluginPostProcessor.unRegistry(buildContainer);
+        for (PluginRegistryInfo pluginRegistryInfo : buildContainer) {
+            pluginListenerFactory.unRegistry(pluginRegistryInfo.getPluginWrapper().getPluginId());
+        }
+    }
+
+    /**
+     * 添加默认插件监听者
+     */
+    private void addDefaultPluginListener(){
+        if(configuration.enableSwaggerRefresh()){
+            pluginListenerFactory.addPluginListener(new SwaggerListeningListener(applicationContext));
+        }
+    }
 
 
 }

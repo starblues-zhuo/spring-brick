@@ -56,8 +56,9 @@ public class PluginBeanConfig {
                 .pluginConfigFilePath(pluginConfigFilePath)
                 .uploadTempPath("temp")
                 .backupPath("backupPlugin")
-                .pluginRestControllerPathPrefix("/api/plugin")
-                .enablePluginIdRestControllerPathPrefix(true)
+                .pluginRestPathPrefix("/api/plugin")
+                .enablePluginIdRestPathPrefix(true)
+                .enableSwaggerRefresh(true)
                 .build();
     }
 

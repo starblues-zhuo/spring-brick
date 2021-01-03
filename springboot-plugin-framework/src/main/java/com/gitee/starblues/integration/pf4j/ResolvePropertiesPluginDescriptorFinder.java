@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 /**
- * description
+ * 解决乱码问题
  *
  * @author starBlues
  * @version 1.0
@@ -23,6 +23,10 @@ class ResolvePropertiesPluginDescriptorFinder extends PropertiesPluginDescriptor
     @Override
     protected Properties readProperties(Path pluginPath) {
         Path propertiesPath = getPropertiesPath(pluginPath, propertiesFileName);
+        return getProperties(propertiesPath);
+    }
+
+    public static Properties getProperties(Path propertiesPath){
         if (propertiesPath == null) {
             throw new PluginRuntimeException("Cannot find the properties path");
         }

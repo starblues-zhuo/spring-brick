@@ -1,11 +1,18 @@
 package com.gitee.starblues.integration.pf4j;
 
 import org.pf4j.PluginDescriptor;
+import org.pf4j.PluginRuntimeException;
 import org.pf4j.PropertiesPluginDescriptorFinder;
 import org.pf4j.RuntimeMode;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 /**
  * 读取 resources 目录下的 plugin.properties 文件
@@ -33,6 +40,10 @@ public class ResourcesPluginDescriptorFinder extends PropertiesPluginDescriptorF
         return super.find(propFilePath);
     }
 
+    protected Properties readProperties(Path pluginPath) {
+        Path propertiesPath = getPropertiesPath(pluginPath, propertiesFileName);
+        return ResolvePropertiesPluginDescriptorFinder.getProperties(propertiesPath);
+    }
 
     private Path getPropFilePath(Path pluginPath){
         if(runtimeMode == RuntimeMode.DEPLOYMENT){

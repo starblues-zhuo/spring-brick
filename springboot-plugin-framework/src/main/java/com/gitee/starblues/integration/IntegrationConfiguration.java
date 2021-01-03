@@ -47,35 +47,37 @@ public interface IntegrationConfiguration {
     String backupPath();
 
     /**
-     * 插件 RestController 统一请求的路径前缀。只有 pluginRestControllerPathPrefix
+     * 插件 RestController 统一请求的路径前缀
      * @return path
      */
-    String pluginRestControllerPathPrefix();
+    String pluginRestPathPrefix();
 
     /**
-     * 启用插件id作为RestController的路径前缀。
-     * 如果启用。则路径前缀为 pluginRestControllerPathPrefix() 返回的路径拼接插件id,
+     * 是否启用插件id作为RestController的路径前缀。
+     * 如果启用。则路径前缀为 pluginRestPathPrefix() 返回的路径拼接插件id,
      * 即为: /pathPrefix/pluginId/**
      * @return boolean
      */
-    boolean enablePluginIdRestControllerPathPrefix();
+    boolean enablePluginIdRestPathPrefix();
+
 
     /**
      * 是否启用该插件框架
      * @return true 启用, false 禁用
      */
-    default boolean enable(){
-        return true;
-    }
+    boolean enable();
 
     /**
      * 禁用的插件id, 禁用后系统不会启动该插件
      * 如果禁用所有插件, 则Set集合中返回一个字符: *
      * @return Set
      */
-    default Set<String> disablePluginIds(){
-        return null;
-    }
+    Set<String> disablePluginIds();
 
+    /**
+     * 是否启用Swagger刷新机制
+     * @return 启用返回true, 不启用返回 false
+     */
+    boolean enableSwaggerRefresh();
 
 }
