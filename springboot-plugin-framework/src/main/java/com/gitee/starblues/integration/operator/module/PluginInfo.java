@@ -27,7 +27,7 @@ public class PluginInfo {
     private String path;
 
     /**
-     * 允许模式
+     * 运行模式
      */
     private String runMode;
 

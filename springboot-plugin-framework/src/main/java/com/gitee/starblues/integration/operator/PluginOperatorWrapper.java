@@ -33,9 +33,6 @@ public class PluginOperatorWrapper implements PluginOperator{
 
     @Override
     public boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws Exception {
-        if(isDisable()){
-            return false;
-        }
         return pluginOperator.initPlugins(pluginInitializerListener);
     }
 

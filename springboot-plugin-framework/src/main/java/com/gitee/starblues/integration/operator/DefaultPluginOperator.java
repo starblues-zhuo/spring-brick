@@ -82,13 +82,18 @@ public class DefaultPluginOperator implements PluginOperator {
             throw new RuntimeException("Plugins Already initialized. Cannot be initialized again");
         }
         try {
-            // 启动前, 清除空文件
-            PluginFileUtils.cleanEmptyFile(pluginManager.getPluginsRoot());
-
             pluginInitializerListenerFactory.addPluginInitializerListeners(pluginInitializerListener);
             log.info("Plugins start initialize of root path '{}'", pluginManager.getPluginsRoot().toString());
             // 触发插件初始化监听器
             pluginInitializerListenerFactory.before();
+            if(!integrationConfiguration.enable()){
+                // 如果禁用的话, 直接返回
+                pluginInitializerListenerFactory.complete();
+                return false;
+            }
+            // 启动前, 清除空文件
+            PluginFileUtils.cleanEmptyFile(pluginManager.getPluginsRoot());
+
             // 开始初始化插件工厂
             pluginFactory.initialize();
             // 开始加载插件
@@ -247,8 +252,6 @@ public class DefaultPluginOperator implements PluginOperator {
             throw e;
         }
     }
-
-
 
     @Override
     public boolean start(String pluginId) throws Exception {
