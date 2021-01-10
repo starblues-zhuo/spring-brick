@@ -95,7 +95,14 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
             resolver.setOrder(order);
         }
         resolver.setCheckExistence(true);
-        springTemplateEngine.addTemplateResolver(resolver);
+        Set<ITemplateResolver> templateResolvers = getITemplateResolvers(springTemplateEngine);
+        if(templateResolvers != null){
+            springTemplateEngine.addTemplateResolver(resolver);
+        } else {
+            LOGGER.error("You can't use Thymeleaf, because not fount 'Set<ITemplateResolver>' " +
+                    "from Bean:SpringTemplateEngine by reflect");
+            return;
+        }
         pluginRegistryInfo.addExtension(TEMPLATE_RESOLVER_BEAN, resolver);
     }
 
@@ -108,18 +115,10 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
         }
         try {
             SpringTemplateEngine springTemplateEngine = getSpringTemplateEngine();
-            if(springTemplateEngine == null){
-                return;
+            Set<ITemplateResolver> templateResolvers = getITemplateResolvers(springTemplateEngine);
+            if(templateResolvers != null){
+                templateResolvers.remove(resolver);
             }
-            Field templateResolversField = ReflectionUtils.findField(springTemplateEngine.getClass(), "templateResolvers");
-            if (templateResolversField == null) {
-                return;
-            }
-            if(!templateResolversField.isAccessible()){
-                templateResolversField.setAccessible(true);
-            }
-            Set<ITemplateResolver> templateResolvers = (Set<ITemplateResolver>) templateResolversField.get(springTemplateEngine);
-            templateResolvers.remove(resolver);
         } catch (Exception e){
             LOGGER.error("unRegistry plugin '{}' templateResolver failure",
                     pluginRegistryInfo.getPluginWrapper().getPluginId(),e);
@@ -139,5 +138,18 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
         }
     }
 
+    private Set<ITemplateResolver> getITemplateResolvers (SpringTemplateEngine springTemplateEngine) throws IllegalAccessException {
+        if(springTemplateEngine == null){
+            return null;
+        }
+        Field templateResolversField = ReflectionUtils.findField(springTemplateEngine.getClass(), "templateResolvers");
+        if (templateResolversField == null) {
+            return null;
+        }
+        if(!templateResolversField.isAccessible()){
+            templateResolversField.setAccessible(true);
+        }
+        return (Set<ITemplateResolver>) templateResolversField.get(springTemplateEngine);
+    }
 
 }

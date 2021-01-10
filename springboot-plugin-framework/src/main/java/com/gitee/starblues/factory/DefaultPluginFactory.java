@@ -22,7 +22,7 @@ import java.util.Map;
  * 默认的插件处理者
  *
  * @author starBlues
- * @version 2.2.2
+ * @version 2.3.1
  */
 public class DefaultPluginFactory implements PluginFactory {
 
@@ -72,10 +72,11 @@ public class DefaultPluginFactory implements PluginFactory {
     }
 
     @Override
-    public synchronized PluginFactory registry(PluginWrapper pluginWrapper) throws Exception {
-        if(pluginWrapper == null){
-            throw new IllegalArgumentException("Parameter:pluginWrapper cannot be null");
+    public synchronized PluginFactory registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
+        if(pluginRegistryInfo == null){
+            throw new IllegalArgumentException("Parameter:pluginRegistryInfo cannot be null");
         }
+        PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
         if(registerPluginInfoMap.containsKey(pluginWrapper.getPluginId())){
             throw new IllegalAccessException("The plugin '"
                     + pluginWrapper.getPluginId() +"' already exists, Can't register");
@@ -83,12 +84,11 @@ public class DefaultPluginFactory implements PluginFactory {
         if(!buildContainer.isEmpty() && buildType == 2){
             throw new IllegalAccessException("Unable to Registry operate. Because there's no build");
         }
-        PluginRegistryInfo registerPluginInfo = new PluginRegistryInfo(pluginWrapper);
         AopUtils.resolveAop(pluginWrapper);
         try {
-            pluginPipeProcessor.registry(registerPluginInfo);
-            registerPluginInfoMap.put(pluginWrapper.getPluginId(), registerPluginInfo);
-            buildContainer.add(registerPluginInfo);
+            pluginPipeProcessor.registry(pluginRegistryInfo);
+            registerPluginInfoMap.put(pluginWrapper.getPluginId(), pluginRegistryInfo);
+            buildContainer.add(pluginRegistryInfo);
             return this;
         } catch (Exception e) {
             pluginListenerFactory.failure(pluginWrapper.getPluginId(), e);
@@ -170,7 +170,9 @@ public class DefaultPluginFactory implements PluginFactory {
     private void registryBuild() throws Exception {
         pluginPostProcessor.registry(buildContainer);
         for (PluginRegistryInfo pluginRegistryInfo : buildContainer) {
-            pluginListenerFactory.registry(pluginRegistryInfo.getPluginWrapper().getPluginId());
+            pluginListenerFactory.registry(
+                    pluginRegistryInfo.getPluginWrapper().getPluginId(),
+                    pluginRegistryInfo.isFollowingInitial());
         }
     }
 

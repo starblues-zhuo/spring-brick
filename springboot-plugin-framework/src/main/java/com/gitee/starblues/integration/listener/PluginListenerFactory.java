@@ -10,7 +10,7 @@ import java.util.List;
  * 插件监听工厂
  *
  * @author starBlues
- * @version 1.0
+ * @version 2.3.1
  */
 public class PluginListenerFactory implements PluginListener {
 
@@ -18,10 +18,10 @@ public class PluginListenerFactory implements PluginListener {
     private final List<Class> listenerClasses = new ArrayList<>();
 
     @Override
-    public void registry(String pluginId) {
+    public void registry(String pluginId, boolean isInitialize) {
         for (PluginListener listener : listeners) {
             try {
-                listener.registry(pluginId);
+                listener.registry(pluginId, isInitialize);
             } catch (Exception e) {
                 e.printStackTrace();
             }

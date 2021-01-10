@@ -8,7 +8,7 @@ import springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapp
 /**
  * Swagger 监听事件
  * @author starBlues
- * @version 1.0
+ * @version 2.3.1
  */
 public class SwaggerListeningListener implements PluginListener{
 
@@ -20,7 +20,10 @@ public class SwaggerListeningListener implements PluginListener{
     }
 
     @Override
-    public void registry(String pluginId) {
+    public void registry(String pluginId, boolean isInitialize) {
+        if(isInitialize){
+            return;
+        }
         refresh();
     }
 

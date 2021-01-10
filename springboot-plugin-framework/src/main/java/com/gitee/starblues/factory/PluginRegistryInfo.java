@@ -12,35 +12,44 @@ import java.util.concurrent.ConcurrentHashMap;
  * 注册的插件信息
  *
  * @author starBlues
- * @version 2.1.0
+ * @version 2.3.1
  */
 public class PluginRegistryInfo {
-
-
 
     /**
      * 扩展存储项
      */
-    private Map<String, Object> extensionMap = new ConcurrentHashMap<>();
+    private final Map<String, Object> extensionMap = new ConcurrentHashMap<>();
 
-    private PluginWrapper pluginWrapper;
-    private BasePlugin basePlugin;
+    private final PluginWrapper pluginWrapper;
+    /**
+     * 是否跟随主程序启动而初始化
+     */
+    private final boolean followingInitial;
+    private final BasePlugin basePlugin;
 
     /**
      * 插件中的Class
      */
-    private List<Class<?>> classes = new ArrayList<>();
+    private final List<Class<?>> classes = new ArrayList<>();
     /**
      * 插件中分类的Class
      */
-    private Map<String, List<Class<?>>> groupClasses = new HashMap<>();
-    private Map<String, Object> processorInfo = new HashMap<>();
+    private final Map<String, List<Class<?>>> groupClasses = new HashMap<>();
+    private final Map<String, Object> processorInfo = new HashMap<>();
 
 
-    public PluginRegistryInfo(PluginWrapper pluginWrapper) {
+    private PluginRegistryInfo(PluginWrapper pluginWrapper, boolean followingInitial) {
         this.pluginWrapper = pluginWrapper;
         this.basePlugin = (BasePlugin) pluginWrapper.getPlugin();
+        this.followingInitial = followingInitial;
     }
+
+    public static PluginRegistryInfo build(PluginWrapper pluginWrapper, boolean followingInitial){
+        Objects.requireNonNull(pluginWrapper, "PluginWrapper can't is null");
+        return new PluginRegistryInfo(pluginWrapper, followingInitial);
+    }
+
 
     public PluginWrapper getPluginWrapper() {
         return pluginWrapper;
@@ -165,6 +174,7 @@ public class PluginRegistryInfo {
         }
     }
 
-
-
+    public boolean isFollowingInitial() {
+        return followingInitial;
+    }
 }

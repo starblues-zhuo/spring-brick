@@ -1,5 +1,6 @@
 package com.gitee.starblues.integration.operator;
 
+import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.listener.PluginInitializerListenerFactory;
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * 默认的插件操作者
  * @author starBlues
- * @version 2.2.2
+ * @version 2.3.1
  */
 public class DefaultPluginOperator implements PluginOperator {
 
@@ -112,7 +113,7 @@ public class DefaultPluginOperator implements PluginOperator {
                         PluginOperatorInfo.OperatorType.INSTALL, false);
                 try {
                     // 依次注册插件信息到Spring boot
-                    pluginFactory.registry(pluginWrapper);
+                    pluginFactory.registry(PluginRegistryInfo.build(pluginWrapper, true));
                 } catch (Exception e){
                     log.error("Plugin '{}' registry failure. Reason : {}", pluginId, e.getMessage(), e);
                     isFoundException = true;
@@ -267,7 +268,7 @@ public class DefaultPluginOperator implements PluginOperator {
             PluginState pluginState = pluginManager.startPlugin(pluginId);
             if(pluginState == PluginState.STARTED){
                 GlobalRegistryInfo.addOperatorPluginInfo(pluginId, PluginOperatorInfo.OperatorType.START, false);
-                pluginFactory.registry(pluginWrapper);
+                pluginFactory.registry(PluginRegistryInfo.build(pluginWrapper, false));
                 pluginFactory.build();
                 log.info("Plugin '{}' start success", pluginId);
                 return true;
