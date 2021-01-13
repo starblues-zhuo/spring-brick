@@ -130,12 +130,6 @@ public class MybatisPlusProcessor implements PluginPipeProcessorExtend {
     }
 
     private void mybatisPlusFollowCoreConfig(MybatisSqlSessionFactoryBean factory){
-
-        if(this.applicationContext.getBeanNamesForType(IKeyGenerator.class, false,
-                false).length == 0){
-            return;
-        }
-
         MybatisPlusProperties plusProperties = applicationContext.getBean(MybatisPlusProperties.class);
 
         GlobalConfig globalConfig = plusProperties.getGlobalConfig();
