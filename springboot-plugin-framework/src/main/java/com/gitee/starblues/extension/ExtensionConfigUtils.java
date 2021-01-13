@@ -1,15 +1,14 @@
 package com.gitee.starblues.extension;
 
 import com.gitee.starblues.factory.PluginInfoContainer;
+import org.pf4j.util.StringUtils;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.StringUtils;
 
-import java.util.Objects;
 
 /**
  * 扩展配置文件工具
  * @author starBlues
- * @version 2.3.1
+ * @version 2.4.0
  */
 public class ExtensionConfigUtils {
 
@@ -27,14 +26,13 @@ public class ExtensionConfigUtils {
                                   String pluginId,
                                   Class<T> tClass){
         try {
-
             String[] beanNamesForType = applicationContext.getBeanNamesForType(tClass,
                     false, false);
             if(beanNamesForType.length == 0){
                 return null;
             }
             for (String beanName : beanNamesForType) {
-                if(StringUtils.isEmpty(beanName)){
+                if(StringUtils.isNullOrEmpty(beanName)){
                     continue;
                 }
                 if(PluginInfoContainer.existRegisterBeanName(pluginId, beanName)){

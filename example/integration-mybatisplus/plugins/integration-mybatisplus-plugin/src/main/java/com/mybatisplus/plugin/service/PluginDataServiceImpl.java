@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gitee.starblues.extension.mybatis.mybatisplus.ServiceImplWrapper;
 import com.mybatisplus.plugin.entity.PluginData;
 import com.mybatisplus.plugin.mapper.PluginDataMapper;
@@ -18,14 +19,8 @@ import java.util.List;
  * @version 1.0
  */
 @Component
-public class PluginDataServiceImpl extends ServiceImplWrapper<PluginDataMapper, PluginData>
+public class PluginDataServiceImpl extends ServiceImpl<PluginDataMapper, PluginData>
         implements PluginDataService{
-
-
-    public PluginDataServiceImpl(PluginDataMapper baseMapper) {
-        super(baseMapper);
-    }
-
     @Override
     public List<PluginData> getByName(String name){
         Wrapper<PluginData> wrapper = Wrappers.<PluginData>query()

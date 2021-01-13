@@ -5,7 +5,7 @@ package com.gitee.starblues.integration.listener;
  * 插件bean监听者
  *
  * @author starBlues
- * @version 2.3.1
+ * @version 2.4.0
  */
 public interface PluginListener {
 

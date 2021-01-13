@@ -10,12 +10,13 @@ import java.util.List;
  * 插件监听工厂
  *
  * @author starBlues
- * @version 2.3.1
+ * @version 2.4.0
  */
 public class PluginListenerFactory implements PluginListener {
 
     private final List<PluginListener> listeners = new ArrayList<>();
     private final List<Class> listenerClasses = new ArrayList<>();
+    private boolean isBuildListenerClass = false;
 
     @Override
     public void registry(String pluginId, boolean isInitialize) {
@@ -81,6 +82,9 @@ public class PluginListenerFactory implements PluginListener {
             return;
         }
         synchronized (listenerClasses) {
+            if(isBuildListenerClass){
+                return;
+            }
             for (Class<T> listenerClass : listenerClasses) {
                 // 兼容 spring 4.x
                 applicationContext.registerBeanDefinition(listenerClass.getName(), BeanDefinitionBuilder.genericBeanDefinition(listenerClass).getBeanDefinition());
@@ -88,6 +92,7 @@ public class PluginListenerFactory implements PluginListener {
                 listeners.add(bean);
             }
             listenerClasses.clear();
+            isBuildListenerClass = true;
         }
     }
 

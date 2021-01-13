@@ -1,5 +1,6 @@
 package com.gitee.starblues.factory;
 
+import com.gitee.starblues.extension.ExtensionConfigUtils;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorFactory;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
@@ -8,6 +9,7 @@ import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginListener;
 import com.gitee.starblues.integration.listener.PluginListenerFactory;
 import com.gitee.starblues.integration.listener.SwaggerListeningListener;
+import com.gitee.starblues.realize.UnRegistryValidator;
 import com.gitee.starblues.utils.AopUtils;
 import org.pf4j.PluginWrapper;
 import org.springframework.context.ApplicationContext;
@@ -22,7 +24,7 @@ import java.util.Map;
  * 默认的插件处理者
  *
  * @author starBlues
- * @version 2.3.1
+ * @version 2.4.0
  */
 public class DefaultPluginFactory implements PluginFactory {
 
@@ -124,7 +126,7 @@ public class DefaultPluginFactory implements PluginFactory {
     @Override
     public synchronized void build() throws Exception {
         if(buildContainer.isEmpty()){
-            throw new Exception("No Found registered or unRegistry plugin. Unable to build");
+            return;
         }
         // 构建注册的Class插件监听者
         pluginListenerFactory.buildListenerClass(applicationContext);

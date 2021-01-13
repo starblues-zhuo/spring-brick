@@ -9,6 +9,7 @@ import com.gitee.starblues.factory.process.pipe.bean.configuration.PluginConfigD
 import com.gitee.starblues.factory.process.pipe.bean.configuration.YamlConfigurationParser;
 import com.gitee.starblues.factory.process.pipe.classs.group.ConfigDefinitionGroup;
 import com.gitee.starblues.integration.IntegrationConfiguration;
+import org.pf4j.RuntimeMode;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
@@ -20,7 +21,7 @@ import java.util.Set;
 /**
  * 插件中配置文件 bean 的处理者。包括配置文件
  * @author starBlues
- * @version 2.3.1
+ * @version 2.4.0
  */
 public class ConfigFileBeanProcessor implements PluginPipeProcessor {
 
@@ -28,9 +29,10 @@ public class ConfigFileBeanProcessor implements PluginPipeProcessor {
 
     private final ConfigurationParser configurationParser;
     private final DefaultListableBeanFactory defaultListableBeanFactory;
+    private final IntegrationConfiguration integrationConfiguration;
 
     public ConfigFileBeanProcessor(ApplicationContext mainApplicationContext) {
-        IntegrationConfiguration integrationConfiguration =
+        integrationConfiguration =
                 mainApplicationContext.getBean(IntegrationConfiguration.class);
         this.configurationParser = new YamlConfigurationParser(integrationConfiguration);
         this.defaultListableBeanFactory = (DefaultListableBeanFactory)
@@ -89,15 +91,12 @@ public class ConfigFileBeanProcessor implements PluginPipeProcessor {
         if(configDefinition == null){
             return null;
         }
-        String fileName = configDefinition.value();
-        if(StringUtils.isEmpty(fileName)){
-            throw new IllegalArgumentException(aClass.getName() + " configDefinition value is null");
-        }
+        String fileName = getConfigFileName(configDefinition, aClass);
         PluginConfigDefinition pluginConfigDefinition =
                 new PluginConfigDefinition(fileName, aClass);
         Object parseObject = configurationParser.parse(pluginRegistryInfo.getBasePlugin(),
                 pluginConfigDefinition);
-        String name = configDefinition.name();
+        String name = configDefinition.beanName();
         if(StringUtils.isEmpty(name)){
             name = aClass.getName();
         }
@@ -106,6 +105,41 @@ public class ConfigFileBeanProcessor implements PluginPipeProcessor {
             defaultListableBeanFactory.registerSingleton(name, parseObject);
         }
         return name;
+    }
+
+    /**
+     * 根据项目运行环境模式来获取配置文件
+     * @param configDefinition 配置的注解
+     * @param aClass 当前配置类
+     * @return 文件名称
+     */
+    private String getConfigFileName(ConfigDefinition configDefinition, Class<?> aClass){
+        String fileName = configDefinition.value();
+        if(StringUtils.isEmpty(fileName)){
+            throw new IllegalArgumentException(aClass.getName() + " configDefinition value is null");
+        }
+
+        String fileNamePrefix;
+        String fileNamePrefixSuffix;
+
+        if(fileName.lastIndexOf(".") == -1) {
+            fileNamePrefix = fileName;
+            fileNamePrefixSuffix = "";
+        } else {
+            int index = fileName.lastIndexOf(".");
+            fileNamePrefix = fileName.substring(0, index);
+            fileNamePrefixSuffix = fileName.substring(index);
+        }
+
+        RuntimeMode environment = integrationConfiguration.environment();
+        if(environment == RuntimeMode.DEPLOYMENT){
+            // 生产环境
+            fileNamePrefix = fileNamePrefix + configDefinition.prodSuffix();
+        } else if(environment == RuntimeMode.DEVELOPMENT){
+            // 开发环境
+            fileNamePrefix = fileNamePrefix + configDefinition.devSuffix();
+        }
+        return fileNamePrefix + fileNamePrefixSuffix;
     }
 
 }

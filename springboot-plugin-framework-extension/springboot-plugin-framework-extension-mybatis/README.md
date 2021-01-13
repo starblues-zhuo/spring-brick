@@ -201,24 +201,7 @@ public void oneselfConfig(Config config){
 
 #### 集成Mybatis-Plus说明
 
-由于原生 Mybatis-Plus Service 层集成的 ServiceImpl<M, T> 无法在插件中注入 BaseMapper。
-
-因此针对此问题, 该扩展新增 ServiceImpl<M, T> 的包装类
-`com.gitee.starblues.extension.mybatis.support.mybatisplus.ServiceImplWrapper` 来解决该问题, 该包装类的功能和 ServiceImpl<M, T> 功能一模一样。
-
-用法如下:
-```java
-@Component
-public class PluginDataServiceImpl extends ServiceImplWrapper<PluginDataMapper, PluginData>
-        implements PluginDataService{
-
-    public PluginDataServiceImpl(PluginDataMapper baseMapper) {
-        super(baseMapper);
-    }
-
-}
-
-```
+- 集成mybatis-plus后，在插件中无法使用 `LambdaQueryWrapper` 条件构造器
 
 
 ### 版本升级

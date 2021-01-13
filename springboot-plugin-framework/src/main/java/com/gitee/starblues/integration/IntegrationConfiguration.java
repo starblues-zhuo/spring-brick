@@ -1,16 +1,14 @@
 package com.gitee.starblues.integration;
 
 import org.pf4j.RuntimeMode;
-import org.springframework.http.CacheControl;
 
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 
 /**
  * 插件集成时的配置接口。插件集成的配置接口
  * @author starBlues
- * @version 2.3.1
+ * @version 2.4.0
  */
 public interface IntegrationConfiguration {
 

@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 注册的插件信息
  *
  * @author starBlues
- * @version 2.3.1
+ * @version 2.4.0
  */
 public class PluginRegistryInfo {
 

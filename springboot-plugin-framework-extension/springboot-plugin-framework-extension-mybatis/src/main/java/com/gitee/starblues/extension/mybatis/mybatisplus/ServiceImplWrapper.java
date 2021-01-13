@@ -2,7 +2,6 @@ package com.gitee.starblues.extension.mybatis.mybatisplus;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
@@ -16,9 +15,9 @@ import java.util.function.Function;
 
 /**
  * mybatis plus ServiceImpl 的包装。解决原生mybatis plus 中ServiceImpl Mapper无法注入的问题
- *
+ * 升级mybatis-plus到3.4.1
  * @author starBlues
- * @version 2.3
+ * @version 2.4.0
  */
 public class ServiceImplWrapper<M extends BaseMapper<T>, T> implements IService<T> {
 
@@ -114,16 +113,6 @@ public class ServiceImplWrapper<M extends BaseMapper<T>, T> implements IService<
     }
 
     @Override
-    public Collection<T> listByIds(Collection<? extends Serializable> idList) {
-        return serviceImpl.listByIds(idList);
-    }
-
-    @Override
-    public Collection<T> listByMap(Map<String, Object> columnMap) {
-        return serviceImpl.listByMap(columnMap);
-    }
-
-    @Override
     public T getOne(Wrapper<T> queryWrapper, boolean throwEx) {
         return serviceImpl.getOne(queryWrapper, throwEx);
     }
@@ -148,10 +137,6 @@ public class ServiceImplWrapper<M extends BaseMapper<T>, T> implements IService<
         return serviceImpl.list(queryWrapper);
     }
 
-    @Override
-    public IPage<T> page(IPage<T> page, Wrapper<T> queryWrapper) {
-        return serviceImpl.page(page, queryWrapper);
-    }
 
     @Override
     public List<Map<String, Object>> listMaps(Wrapper<T> queryWrapper) {
@@ -164,13 +149,13 @@ public class ServiceImplWrapper<M extends BaseMapper<T>, T> implements IService<
     }
 
     @Override
-    public IPage<Map<String, Object>> pageMaps(IPage<T> page, Wrapper<T> queryWrapper) {
-        return serviceImpl.pageMaps(page, queryWrapper);
+    public M getBaseMapper() {
+        return this.baseMapper;
     }
 
     @Override
-    public M getBaseMapper() {
-        return this.baseMapper;
+    public Class<T> getEntityClass() {
+        return serviceImpl.getEntityClass();
     }
 
 }

@@ -12,7 +12,7 @@ import java.util.Properties;
 /**
  * 读取 resources 目录下的 plugin.properties 文件
  * @author starBlues
- * @version 2.3.1
+ * @version 2.4.0
  */
 public class ResourcesPluginDescriptorFinder extends PropertiesPluginDescriptorFinder {
 

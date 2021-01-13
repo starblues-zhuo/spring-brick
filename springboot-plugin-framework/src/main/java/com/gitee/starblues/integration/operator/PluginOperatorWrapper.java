@@ -1,11 +1,15 @@
 package com.gitee.starblues.integration.operator;
 
+import com.gitee.starblues.extension.ExtensionConfigUtils;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
+import com.gitee.starblues.realize.UnRegistryValidator;
 import org.pf4j.PluginWrapper;
+import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -16,7 +20,7 @@ import java.util.Set;
 /**
  * 插件操作包装者
  * @author starBlues
- * @version 2.3.1
+ * @version 2.4.0
  */
 public class PluginOperatorWrapper implements PluginOperator{
 
@@ -24,11 +28,14 @@ public class PluginOperatorWrapper implements PluginOperator{
 
     private final PluginOperator pluginOperator;
     private final IntegrationConfiguration integrationConfiguration;
+    private final ApplicationContext applicationContext;
 
     public PluginOperatorWrapper(PluginOperator pluginOperator,
-                                 IntegrationConfiguration integrationConfiguration) {
+                                 IntegrationConfiguration integrationConfiguration,
+                                 ApplicationContext applicationContext) {
         this.pluginOperator = pluginOperator;
         this.integrationConfiguration = integrationConfiguration;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -57,6 +64,7 @@ public class PluginOperatorWrapper implements PluginOperator{
         if(isDisable()){
             return false;
         }
+        checkIsUnRegistry(pluginId);
         return pluginOperator.uninstall(pluginId, isBackup);
     }
 
@@ -73,6 +81,7 @@ public class PluginOperatorWrapper implements PluginOperator{
         if(isDisable()){
             return false;
         }
+        checkIsUnRegistry(pluginId);
         return pluginOperator.stop(pluginId);
     }
 
@@ -167,6 +176,28 @@ public class PluginOperatorWrapper implements PluginOperator{
         // 如果禁用的话, 直接返回
         log.info("The Plugin module is disabled!");
         return true;
+    }
+
+    /**
+     * 检查是否可卸载
+     * @param pluginId 插件id
+     * @throws Exception 检查异常
+     */
+    private void checkIsUnRegistry(String pluginId) throws Exception{
+        UnRegistryValidator unRegistryValidator = ExtensionConfigUtils
+                .getConfig(applicationContext, pluginId, UnRegistryValidator.class);
+        if(unRegistryValidator == null){
+            return;
+        }
+        UnRegistryValidator.Result result = unRegistryValidator.verify();
+        if(result.isVerify()){
+            return;
+        }
+        String message = result.getMessage();
+        if(StringUtils.isNullOrEmpty(message)){
+            message = "Plugin [" + pluginId + "] Stop or Uninstall be banned";
+        }
+        throw new Exception(message);
     }
 
 

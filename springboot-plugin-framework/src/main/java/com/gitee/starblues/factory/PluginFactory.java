@@ -8,7 +8,7 @@ import org.pf4j.PluginWrapper;
  * 插件注册者接口
  *
  * @author starBlues
- * @version 2.3.1
+ * @version 2.4.0
  */
 public interface PluginFactory extends PluginListenerContext {
 

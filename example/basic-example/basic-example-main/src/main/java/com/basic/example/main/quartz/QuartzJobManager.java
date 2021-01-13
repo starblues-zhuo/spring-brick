@@ -37,7 +37,7 @@ public class QuartzJobManager implements PluginListener {
 
 
     @Override
-    public void registry(String pluginId) {
+    public void registry(String pluginId,  boolean isStartInitial) {
         List<QuartzJob> quartzJobs = pluginApplication.getPluginUser().getPluginBeans(pluginId, QuartzJob.class);
         if(quartzJobs == null || quartzJobs.isEmpty()){
             return;

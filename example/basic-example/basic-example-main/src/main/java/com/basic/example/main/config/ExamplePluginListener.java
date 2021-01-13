@@ -26,7 +26,7 @@ public class ExamplePluginListener implements PluginListener {
 
 
     @Override
-    public void registry(String pluginId) {
+    public void registry(String pluginId, boolean isStartInitial) {
         logger.info("Listener: registry pluginId {}", pluginId);
     }
 
