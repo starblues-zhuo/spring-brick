@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * 默认的插件集成工厂
  * @author starBlues
- * @version 2.3
+ * @version 2.4.0
  */
 public class DefaultPf4jFactory implements Pf4jFactory {
 
@@ -49,6 +49,12 @@ public class DefaultPf4jFactory implements Pf4jFactory {
                 }
 
                 @Override
+                protected PluginLoader createPluginLoader() {
+                    return new CompoundPluginLoader()
+                            .add(new DevelopmentPluginLoader(this), this::isDevelopment);
+                }
+
+                @Override
                 protected PluginStatusProvider createPluginStatusProvider() {
                     return new ConfigPluginStatusProvider(configuration.disablePluginIds());
                 }
@@ -74,6 +80,13 @@ public class DefaultPf4jFactory implements Pf4jFactory {
                 protected PluginStatusProvider createPluginStatusProvider() {
                     return new ConfigPluginStatusProvider(configuration.disablePluginIds());
                 }
+
+                @Override
+                protected PluginLoader createPluginLoader() {
+                    return new CompoundPluginLoader()
+                            .add(new JarPluginLoader(this), this::isNotDevelopment);
+                }
+
             };
         } else {
             throw new RuntimeException("Not found run environment " + configuration.environment());

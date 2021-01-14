@@ -68,7 +68,7 @@ public class SpringBeanRegister {
         try {
             applicationContext.getBean(beanName);
         } catch (BeansException e) {
-            logger.warn(e.getMessage());
+            logger.debug(e.getMessage());
         }
         return beanName;
     }
