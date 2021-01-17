@@ -61,8 +61,6 @@ public class PluginResource implements Resource {
     }
 
 
-
-
     @Override
     public long contentLength() throws IOException {
         URL url = getURL();

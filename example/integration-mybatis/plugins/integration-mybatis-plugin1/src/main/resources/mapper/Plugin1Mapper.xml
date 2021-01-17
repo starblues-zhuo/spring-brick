@@ -3,7 +3,7 @@
 <mapper namespace="com.mybatis.plugin1.mapper.Plugin1Mapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="plugin1">
+    <resultMap id="BaseResultMap" type="com.mybatis.plugin1.entity.Plugin1">
         <id column="id" property="id" />
         <result column="name" property="name" />
     </resultMap>
@@ -13,9 +13,6 @@
         id, name
     </sql>
 
-    <select id="getList" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List" /> from plugin1
-    </select>
 
     <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.String">
         select <include refid="Base_Column_List" /> from plugin1

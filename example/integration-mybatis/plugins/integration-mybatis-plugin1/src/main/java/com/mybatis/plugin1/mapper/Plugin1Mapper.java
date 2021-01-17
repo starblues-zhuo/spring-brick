@@ -18,12 +18,6 @@ public interface Plugin1Mapper {
 
 
     /**
-     * 得到角色列表
-     * @return List
-     */
-    List<Plugin1> getList();
-
-    /**
      * 通过id获取数据
      * @param id id
      * @return Plugin2

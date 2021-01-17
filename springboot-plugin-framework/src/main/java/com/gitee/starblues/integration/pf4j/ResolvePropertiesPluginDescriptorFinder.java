@@ -2,9 +2,9 @@ package com.gitee.starblues.integration.pf4j;
 
 import org.pf4j.PluginRuntimeException;
 import org.pf4j.PropertiesPluginDescriptorFinder;
+import org.pf4j.util.FileUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -39,10 +39,12 @@ class ResolvePropertiesPluginDescriptorFinder extends PropertiesPluginDescriptor
         Properties properties = new Properties();
 
         try (InputStreamReader input = new InputStreamReader(Files.newInputStream(propertiesPath),
-                StandardCharsets.UTF_8);) {
+                StandardCharsets.UTF_8)) {
             properties.load(input);
         } catch (IOException e) {
             throw new PluginRuntimeException(e);
+        } finally {
+            FileUtils.closePath(propertiesPath);
         }
 
         return properties;

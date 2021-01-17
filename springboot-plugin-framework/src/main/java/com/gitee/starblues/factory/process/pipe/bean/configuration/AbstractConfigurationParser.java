@@ -46,7 +46,7 @@ public abstract class AbstractConfigurationParser implements ConfigurationParser
             return null;
         }
         List<Resource> resources = resourceWrapper.getResources();
-        if(resources.isEmpty() || resources.size() != 1){
+        if(resources.size() != 1){
             return null;
         }
         Object o = parse(resources.get(0), configClass);

@@ -1,12 +1,10 @@
 package com.gitee.starblues.extension.resources.resolver;
 
-import com.gitee.starblues.extension.ExtensionConfigUtils;
 import com.gitee.starblues.extension.resources.StaticResourceConfig;
 import com.gitee.starblues.loader.PluginResource;
 import com.gitee.starblues.realize.BasePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -246,6 +244,9 @@ public class PluginResourceResolver extends AbstractResourceResolver {
         pluginResource.setClassPaths(classPaths);
         pluginResource.setFilePaths(filePaths);
         pluginResource.setBasePlugin(basePlugin);
+
+        logger.info("PluginResources '{}' set classpath resources: {}, set file resources: {}", pluginId,
+                classPaths, filePaths);
 
         if(PLUGIN_RESOURCE_MAP.containsKey(pluginId)){
             // 如果存在该插件id的插件资源信息, 则先移除它

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.springframework.core.io.Resource;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 /**
@@ -34,16 +33,24 @@ public class YamlConfigurationParser extends AbstractConfigurationParser {
     protected Object parse(Resource resource, Class<?> pluginConfigClass)
             throws Exception{
         InputStream inputStream = null;
+        YAMLParser yamlParser = null;
+        TreeTraversingParser treeTraversingParser = null;
         try {
             inputStream = resource.getInputStream();
-            YAMLParser yamlParser = yamlFactory.createParser(inputStream);
+            yamlParser = yamlFactory.createParser(inputStream);
             final JsonNode node = objectMapper.readTree(yamlParser);
             if(node == null){
                 return pluginConfigClass.newInstance();
             }
-            TreeTraversingParser treeTraversingParser = new TreeTraversingParser(node);
+            treeTraversingParser = new TreeTraversingParser(node);
             return objectMapper.readValue(treeTraversingParser, pluginConfigClass);
         } finally {
+            if(treeTraversingParser != null){
+                treeTraversingParser.close();
+            }
+            if(yamlParser != null){
+                yamlParser.close();
+            }
             if(inputStream != null){
                 inputStream.close();
             }

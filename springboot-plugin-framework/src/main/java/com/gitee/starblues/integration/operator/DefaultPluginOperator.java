@@ -233,15 +233,20 @@ public class DefaultPluginOperator implements PluginOperator {
         try {
             if (pluginManager.unloadPlugin(pluginId)) {
                 Path pluginPath = pluginWrapper.getPluginPath();
+                boolean opPluginFile;
                 if(isBackup){
                     // 将插件文件移到备份文件中
-                    backup(pluginPath, "uninstall", 1);
+                    opPluginFile = backup(pluginPath, "uninstall", 1);
                 } else {
                     // 不备份的话。直接删除该文件
-                    Files.deleteIfExists(pluginPath);
+                    opPluginFile = Files.deleteIfExists(pluginPath);
                 }
-                log.info("Plugin '{}' uninstall success", pluginId);
-                return true;
+                if(opPluginFile){
+                    log.info("Plugin '{}' uninstall success", pluginId);
+                } else {
+                    log.error("Plugin '{}' uninstall failure. process plugin file failure", pluginId);
+                }
+                return opPluginFile;
             } else {
                 log.error("Plugin '{}' uninstall failure", pluginId);
                 return false;
