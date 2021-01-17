@@ -1,5 +1,6 @@
 package com.gitee.starblues.integration.operator.verify;
 
+import com.gitee.starblues.integration.pf4j.DefaultPf4jFactory;
 import org.pf4j.*;
 
 import java.nio.file.Path;
@@ -15,9 +16,7 @@ public class DefaultPluginVerify extends PluginLegalVerify{
     private final PluginManager pluginManager;
 
     public DefaultPluginVerify(PluginManager pluginManager) {
-        super(new CompoundPluginDescriptorFinder()
-                .add(new ManifestPluginDescriptorFinder())
-                .add(new PropertiesPluginDescriptorFinder()));
+        super(DefaultPf4jFactory.getPluginDescriptorFinder(pluginManager.getRuntimeMode()));
         Objects.requireNonNull(pluginManager);
         this.pluginManager = pluginManager;
     }

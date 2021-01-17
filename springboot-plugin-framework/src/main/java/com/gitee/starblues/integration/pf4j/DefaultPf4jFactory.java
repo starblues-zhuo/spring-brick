@@ -42,10 +42,7 @@ public class DefaultPf4jFactory implements Pf4jFactory {
 
                 @Override
                 protected PluginDescriptorFinder createPluginDescriptorFinder() {
-                    return new CompoundPluginDescriptorFinder()
-                            .add(new ResourcesPluginDescriptorFinder(RuntimeMode.DEVELOPMENT))
-                            .add(new ResolvePropertiesPluginDescriptorFinder())
-                            .add(new ManifestPluginDescriptorFinder());
+                    return DefaultPf4jFactory.getPluginDescriptorFinder(RuntimeMode.DEVELOPMENT);
                 }
 
                 @Override
@@ -71,9 +68,7 @@ public class DefaultPf4jFactory implements Pf4jFactory {
 
                 @Override
                 protected PluginDescriptorFinder createPluginDescriptorFinder() {
-                    return new CompoundPluginDescriptorFinder()
-                            .add(new ResourcesPluginDescriptorFinder(RuntimeMode.DEPLOYMENT))
-                            .add(new ManifestPluginDescriptorFinder());
+                    return DefaultPf4jFactory.getPluginDescriptorFinder(RuntimeMode.DEPLOYMENT);
                 }
 
                 @Override
@@ -109,6 +104,21 @@ public class DefaultPf4jFactory implements Pf4jFactory {
             pluginDir = "plugins";
         }
         return pluginDir;
+    }
+
+    public static PluginDescriptorFinder getPluginDescriptorFinder(RuntimeMode runtimeMode){
+        if(runtimeMode == RuntimeMode.DEPLOYMENT){
+            // 生产
+            return new CompoundPluginDescriptorFinder()
+                    .add(new ResourcesPluginDescriptorFinder(RuntimeMode.DEPLOYMENT))
+                    .add(new ManifestPluginDescriptorFinder());
+        } else {
+            // 开发
+            return new CompoundPluginDescriptorFinder()
+                    .add(new ResourcesPluginDescriptorFinder(RuntimeMode.DEVELOPMENT))
+                    .add(new ResolvePropertiesPluginDescriptorFinder())
+                    .add(new ManifestPluginDescriptorFinder());
+        }
     }
 
 }
