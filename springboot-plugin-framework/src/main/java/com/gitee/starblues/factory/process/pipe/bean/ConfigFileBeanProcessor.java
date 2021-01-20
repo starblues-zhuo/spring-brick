@@ -94,7 +94,7 @@ public class ConfigFileBeanProcessor implements PluginPipeProcessor {
         String fileName = getConfigFileName(configDefinition, aClass);
         PluginConfigDefinition pluginConfigDefinition =
                 new PluginConfigDefinition(fileName, aClass);
-        Object parseObject = configurationParser.parse(pluginRegistryInfo.getBasePlugin(),
+        Object parseObject = configurationParser.parse(pluginRegistryInfo,
                 pluginConfigDefinition);
         String name = configDefinition.beanName();
         if(StringUtils.isEmpty(name)){

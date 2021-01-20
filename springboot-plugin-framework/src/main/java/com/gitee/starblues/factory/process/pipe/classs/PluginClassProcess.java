@@ -77,8 +77,7 @@ public class PluginClassProcess implements PluginPipeProcessor {
             }
         }
         Set<String> classPackageNames = resourceWrapper.getClassPackageNames();
-        ClassLoader classLoader = pluginRegistryInfo.getPluginClassLoader(
-                PluginRegistryInfo.ClassLoaderStrategy.PAD);
+        ClassLoader classLoader = basePlugin.getWrapper().getPluginClassLoader();
         for (String classPackageName : classPackageNames) {
             Class<?> aClass = Class.forName(classPackageName, false, classLoader);
             if(aClass == null){
