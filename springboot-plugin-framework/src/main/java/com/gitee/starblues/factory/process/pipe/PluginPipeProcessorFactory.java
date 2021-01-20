@@ -7,6 +7,7 @@ import com.gitee.starblues.factory.process.pipe.bean.ConfigBeanProcessor;
 import com.gitee.starblues.factory.process.pipe.bean.ConfigFileBeanProcessor;
 import com.gitee.starblues.factory.process.pipe.bean.OneselfListenerStopEventProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassProcess;
+import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -35,7 +36,10 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
 
     @Override
     public void initialize() throws Exception{
-        // OneselfListenerStopEventProcessor 触发停止事件, 必须第一个执行
+        // 以下顺序不能更改
+        // 插件资源加载者, 必须放在第一位
+        pluginPipeProcessors.add(new PluginResourceLoadFactory());
+        // OneselfListenerStopEventProcessor 触发停止事件
         pluginPipeProcessors.add(new OneselfListenerStopEventProcessor(applicationContext));
         pluginPipeProcessors.add(new PluginClassProcess());
         // 配置文件在所有bean中第一个初始化。
@@ -63,13 +67,18 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
 
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
+        boolean findException = false;
         for (PluginPipeProcessor pluginPipeProcessor : pluginPipeProcessors) {
             try {
                 pluginPipeProcessor.unRegistry(pluginRegistryInfo);
             } catch (Exception e){
+                findException = true;
                 logger.error("unRegistry plugin '{}' failure by {}", pluginRegistryInfo.getPluginWrapper().getPluginId(),
                         pluginPipeProcessor.getClass().getName(), e);
             }
+        }
+        if(findException){
+            throw new Exception("UnRegistry plugin '" + pluginRegistryInfo.getPluginWrapper().getPluginId() + "'failure");
         }
     }
 }

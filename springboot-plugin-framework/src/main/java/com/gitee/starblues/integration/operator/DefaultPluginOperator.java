@@ -17,6 +17,7 @@ import org.pf4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,7 +45,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
     private final static DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-
+    protected final GenericApplicationContext applicationContext;
     protected final IntegrationConfiguration integrationConfiguration;
     protected final PluginManager pluginManager;
     protected final PluginFactory pluginFactory;
@@ -57,8 +58,10 @@ public class DefaultPluginOperator implements PluginOperator {
                                  IntegrationConfiguration integrationConfiguration,
                                  PluginManager pluginManager,
                                  PluginListenerFactory pluginListenerFactory) {
+        Objects.requireNonNull(integrationConfiguration, "applicationContext can't be null");
         Objects.requireNonNull(integrationConfiguration, "IntegrationConfiguration can't be null");
         Objects.requireNonNull(pluginManager, "PluginManager can't be null");
+        this.applicationContext = (GenericApplicationContext) applicationContext;
         this.integrationConfiguration = integrationConfiguration;
         this.pluginManager = pluginManager;
         this.pluginFactory = new DefaultPluginFactory(applicationContext, pluginListenerFactory);
@@ -113,7 +116,8 @@ public class DefaultPluginOperator implements PluginOperator {
                         PluginOperatorInfo.OperatorType.INSTALL, false);
                 try {
                     // 依次注册插件信息到Spring boot
-                    pluginFactory.registry(PluginRegistryInfo.build(pluginWrapper, true));
+                    pluginFactory.registry(PluginRegistryInfo.build(pluginWrapper, pluginManager,
+                            applicationContext, true));
                 } catch (Exception e){
                     log.error("Plugin '{}' registry failure. Reason : {}", pluginId, e.getMessage(), e);
                     isFoundException = true;
@@ -273,7 +277,8 @@ public class DefaultPluginOperator implements PluginOperator {
             PluginState pluginState = pluginManager.startPlugin(pluginId);
             if(pluginState == PluginState.STARTED){
                 GlobalRegistryInfo.addOperatorPluginInfo(pluginId, PluginOperatorInfo.OperatorType.START, false);
-                pluginFactory.registry(PluginRegistryInfo.build(pluginWrapper, false));
+                pluginFactory.registry(PluginRegistryInfo.build(pluginWrapper, pluginManager,
+                        applicationContext,false));
                 pluginFactory.build();
                 log.info("Plugin '{}' start success", pluginId);
                 return true;

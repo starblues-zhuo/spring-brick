@@ -1,7 +1,8 @@
-package com.gitee.starblues.loader.load;
+package com.gitee.starblues.factory.process.pipe.loader.load;
 
-import com.gitee.starblues.loader.PluginResourceLoader;
-import com.gitee.starblues.loader.ResourceWrapper;
+import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoader;
+import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.OrderPriority;
 import com.gitee.starblues.utils.ScanUtils;
@@ -25,8 +26,9 @@ public class PluginClassLoader implements PluginResourceLoader {
     }
 
     @Override
-    public ResourceWrapper load(BasePlugin basePlugin) throws Exception{
-        RuntimeMode runtimeMode = basePlugin.getWrapper().getRuntimeMode();
+    public ResourceWrapper load(PluginRegistryInfo pluginRegistryInfo) throws Exception{
+        RuntimeMode runtimeMode = pluginRegistryInfo.getPluginWrapper().getRuntimeMode();
+        BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
         Set<String> classPackageName = null;
         if(runtimeMode == RuntimeMode.DEPLOYMENT){
             // 生产环境
@@ -44,7 +46,7 @@ public class PluginClassLoader implements PluginResourceLoader {
     }
 
     @Override
-    public void unload(BasePlugin basePlugin, ResourceWrapper resourceWrapper) throws Exception {
+    public void unload(PluginRegistryInfo pluginRegistryInfo, ResourceWrapper resourceWrapper) throws Exception {
         // Do nothing
     }
 

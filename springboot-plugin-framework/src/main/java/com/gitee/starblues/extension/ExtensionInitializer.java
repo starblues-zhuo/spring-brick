@@ -4,7 +4,7 @@ import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.factory.process.pipe.PluginPreProcessorExtend;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
 import com.gitee.starblues.factory.process.post.PluginPostProcessorExtend;
-import com.gitee.starblues.loader.PluginResourceLoader;
+import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoader;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.OrderPriority;
 import org.slf4j.Logger;

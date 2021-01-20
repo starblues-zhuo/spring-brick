@@ -1,10 +1,8 @@
-package com.gitee.starblues.loader;
+package com.gitee.starblues.factory.process.pipe.loader;
 
+import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.OrderPriority;
-import org.springframework.core.io.Resource;
-
-import java.util.List;
 
 /**
  * 插件资源加载者统一定义的接口
@@ -23,19 +21,19 @@ public interface PluginResourceLoader {
 
     /**
      * 加载资源
-     * @param basePlugin 插件对象
+     * @param pluginRegistryInfo 插件注册者信息
      * @return 资源包装对象
      * @throws Exception Exception
      */
-    ResourceWrapper load(BasePlugin basePlugin) throws Exception;
+    ResourceWrapper load(PluginRegistryInfo pluginRegistryInfo) throws Exception;
 
     /**
      * 卸载时的操作
-     * @param basePlugin 插件对象
+     * @param pluginRegistryInfo 插件对象
      * @param resourceWrapper 资源包装者
      * @throws Exception 卸载异常
      */
-    void unload(BasePlugin basePlugin, ResourceWrapper resourceWrapper) throws Exception;
+    void unload(PluginRegistryInfo pluginRegistryInfo, ResourceWrapper resourceWrapper) throws Exception;
 
 
     /**

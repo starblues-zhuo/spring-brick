@@ -4,12 +4,14 @@ import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.group.*;
-import com.gitee.starblues.loader.PluginResourceLoadFactory;
-import com.gitee.starblues.loader.ResourceWrapper;
-import com.gitee.starblues.loader.load.PluginClassLoader;
+import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoadFactory;
+import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
+import com.gitee.starblues.factory.process.pipe.loader.load.PluginClassLoader;
 import com.gitee.starblues.realize.BasePlugin;
+import org.pf4j.ClassLoadingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
@@ -58,9 +60,7 @@ public class PluginClassProcess implements PluginPipeProcessor {
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
-        PluginResourceLoadFactory pluginResourceLoadFactory = basePlugin.getBasePluginExtend()
-                .getPluginResourceLoadFactory();
-        ResourceWrapper resourceWrapper = pluginResourceLoadFactory.getPluginResources(PluginClassLoader.KEY);
+        ResourceWrapper resourceWrapper = pluginRegistryInfo.getPluginLoadResource(PluginClassLoader.KEY);
         if(resourceWrapper == null){
             return;
         }
@@ -77,9 +77,10 @@ public class PluginClassProcess implements PluginPipeProcessor {
             }
         }
         Set<String> classPackageNames = resourceWrapper.getClassPackageNames();
+        ClassLoader classLoader = pluginRegistryInfo.getPluginClassLoader(
+                PluginRegistryInfo.ClassLoaderStrategy.PAD);
         for (String classPackageName : classPackageNames) {
-            Class<?> aClass = Class.forName(classPackageName, false,
-                    basePlugin.getWrapper().getPluginClassLoader());
+            Class<?> aClass = Class.forName(classPackageName, false, classLoader);
             if(aClass == null){
                 continue;
             }

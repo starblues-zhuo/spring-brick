@@ -1,9 +1,11 @@
 package com.gitee.starblues.factory;
 
+import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
-import org.pf4j.Plugin;
-import org.pf4j.PluginState;
-import org.pf4j.PluginWrapper;
+import org.pf4j.*;
+import org.pf4j.util.StringUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,32 +24,66 @@ public class PluginRegistryInfo {
     private final Map<String, Object> extensionMap = new ConcurrentHashMap<>();
 
     private final PluginWrapper pluginWrapper;
+    private final PluginManager pluginManager;
+    private final GenericApplicationContext parentApplicationContext;
+    private final AnnotationConfigApplicationContext pluginApplicationContext;
+
     /**
      * 是否跟随主程序启动而初始化
      */
     private final boolean followingInitial;
     private final BasePlugin basePlugin;
 
+
     /**
      * 插件中的Class
      */
     private final List<Class<?>> classes = new ArrayList<>();
     /**
+     * 插件加载的资源
+     */
+    private final Map<String, ResourceWrapper> pluginLoadResources = new ConcurrentHashMap<>();
+    /**
      * 插件中分类的Class
      */
-    private final Map<String, List<Class<?>>> groupClasses = new HashMap<>();
-    private final Map<String, Object> processorInfo = new HashMap<>();
+    private final Map<String, List<Class<?>>> groupClasses = new ConcurrentHashMap<>();
+    /**
+     * 处理者信息
+     */
+    private final Map<String, Object> processorInfo = new ConcurrentHashMap<>();
+
+    /**
+     * 自定义策略插件类加载器缓存
+     */
+    private final Map<ClassLoaderStrategy, PluginClassLoader> pluginClassLoaders = new ConcurrentHashMap<>();
 
 
-    private PluginRegistryInfo(PluginWrapper pluginWrapper, boolean followingInitial) {
+    private PluginRegistryInfo(PluginWrapper pluginWrapper,
+                               PluginManager pluginManager,
+                               GenericApplicationContext parentApplicationContext,
+                               boolean followingInitial) {
         this.pluginWrapper = pluginWrapper;
+        this.pluginManager = pluginManager;
         this.basePlugin = (BasePlugin) pluginWrapper.getPlugin();
+        this.parentApplicationContext = parentApplicationContext;
         this.followingInitial = followingInitial;
+
+        // 生成插件Application
+        this.pluginApplicationContext =
+                new AnnotationConfigApplicationContext();
+        this.pluginApplicationContext.setClassLoader(basePlugin.getWrapper().getPluginClassLoader());
+
     }
 
-    public static PluginRegistryInfo build(PluginWrapper pluginWrapper, boolean followingInitial){
+    public static PluginRegistryInfo build(PluginWrapper pluginWrapper,
+                                           PluginManager pluginManager,
+                                           GenericApplicationContext parentApplicationContext,
+                                           boolean followingInitial){
         Objects.requireNonNull(pluginWrapper, "PluginWrapper can't is null");
-        return new PluginRegistryInfo(pluginWrapper, followingInitial);
+        Objects.requireNonNull(pluginWrapper, "PluginManager can't is null");
+        Objects.requireNonNull(pluginWrapper, "parentApplicationContext can't is null");
+        return new PluginRegistryInfo(pluginWrapper, pluginManager,
+                parentApplicationContext, followingInitial);
     }
 
 
@@ -81,9 +117,31 @@ public class PluginRegistryInfo {
      * @return 类集合容器
      */
     public List<Class<?>> getClasses(){
-        List<Class<?>> result = new ArrayList<>();
-        result.addAll(classes);
-        return result;
+        return Collections.unmodifiableList(classes);
+    }
+
+    /**
+     * 添加插件中加载的资源
+     * @param key key
+     * @param resourceWrapper 资源包装者
+     */
+    public void addPluginLoadResource(String key, ResourceWrapper resourceWrapper){
+        if(StringUtils.isNullOrEmpty(key)){
+            return;
+        }
+        if(resourceWrapper == null){
+            return;
+        }
+        pluginLoadResources.put(key, resourceWrapper);
+    }
+
+    /**
+     * 得到插件中加载的资源
+     * @param key 资源key
+     * @return ResourceWrapper
+     */
+    public ResourceWrapper getPluginLoadResource(String key) {
+        return pluginLoadResources.get(key);
     }
 
     /**
@@ -92,11 +150,13 @@ public class PluginRegistryInfo {
      * @param aClass 类
      */
     public void addGroupClasses(String key, Class<?> aClass){
-        List<Class<?>> classes = groupClasses.get(key);
-        if(classes == null){
-            classes = new ArrayList<>();
-            groupClasses.put(key, classes);
+        if(StringUtils.isNullOrEmpty(key)){
+            return;
         }
+        if(aClass == null){
+            return;
+        }
+        List<Class<?>> classes = groupClasses.computeIfAbsent(key, k -> new ArrayList<>());
         classes.add(aClass);
     }
 
@@ -137,8 +197,6 @@ public class PluginRegistryInfo {
         processorInfo.put(key, value);
     }
 
-
-
     /**
      * 添加扩展数据
      * @param key 扩展的key
@@ -149,6 +207,14 @@ public class PluginRegistryInfo {
             throw new RuntimeException("The extension key ' " + key + " 'already exists");
         }
         extensionMap.put(key, value);
+    }
+
+    public GenericApplicationContext getParentApplicationContext() {
+        return parentApplicationContext;
+    }
+
+    public AnnotationConfigApplicationContext getPluginApplicationContext() {
+        return pluginApplicationContext;
     }
 
     /**
@@ -174,7 +240,70 @@ public class PluginRegistryInfo {
         }
     }
 
+    public ClassLoader getDefaultPluginClassLoader(){
+        return pluginWrapper.getPluginClassLoader();
+    }
+
+    public ClassLoader getPluginClassLoader(ClassLoaderStrategy strategy){
+        PluginClassLoader pluginClassLoader = pluginClassLoaders.get(strategy);
+        if(pluginClassLoader != null){
+            return pluginClassLoader;
+        }
+        ClassLoadingStrategy classLoadingStrategy = null;
+        switch (strategy){
+            case APD:
+                classLoadingStrategy = ClassLoadingStrategy.APD;
+                break;
+            case ADP:
+                classLoadingStrategy = ClassLoadingStrategy.ADP;
+                break;
+            case PAD:
+                classLoadingStrategy = ClassLoadingStrategy.PAD;
+                break;
+            case DAP:
+                classLoadingStrategy = ClassLoadingStrategy.DAP;
+                break;
+            case DPA:
+                classLoadingStrategy = ClassLoadingStrategy.DPA;
+                break;
+            case PDA:
+                classLoadingStrategy = ClassLoadingStrategy.PDA;
+                break;
+        }
+
+        pluginClassLoader = new PluginClassLoader(pluginManager, pluginWrapper.getDescriptor(),
+                ClassLoader.getSystemClassLoader(), classLoadingStrategy);
+        pluginClassLoader.addFile(pluginWrapper.getPluginPath().toFile());
+        pluginClassLoaders.put(strategy, pluginClassLoader);
+        return pluginClassLoader;
+    }
+
+    public List<ClassLoader> getPluginClassLoaders(){
+        return Collections.unmodifiableList(new ArrayList<>(pluginClassLoaders.values()));
+    }
+
+
     public boolean isFollowingInitial() {
         return followingInitial;
     }
+
+
+    void clear(){
+        try {
+            extensionMap.clear();
+            classes.clear();
+            groupClasses.clear();
+            processorInfo.clear();
+            pluginClassLoaders.clear();
+            pluginLoadResources.clear();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public enum ClassLoaderStrategy{
+        APD, ADP, PAD, DAP, DPA, PDA
+    }
+
 }
