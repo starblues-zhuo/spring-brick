@@ -53,7 +53,7 @@ public class PluginResourceResolverProcess implements PluginPostProcessorExtend 
             try {
                 StaticResourceConfig staticResourceConfig = ExtensionConfigUtils.getConfig(
                         applicationContext, pluginId, StaticResourceConfig.class);
-                PluginResourceResolver.parse(pluginRegistryInfo.getBasePlugin(), staticResourceConfig);
+                PluginResourceResolver.parse(pluginRegistryInfo, staticResourceConfig);
             } catch (Exception e){
                 LOGGER.error("Parse plugin '{}' static resource failure.", pluginId, e);
             }

@@ -14,6 +14,7 @@ import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.pf4j.ClassLoadingStrategy;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,8 +102,8 @@ public class TkMybatisProcessor implements PluginPipeProcessorExtend {
             mapperHelper.setConfig(tkConfig);
         }
 
-        ClassLoader pluginClassLoader = pluginWrapper.getPluginClassLoader();
-        PluginResourceFinder pluginResourceFinder = new PluginResourceFinder(pluginClassLoader);
+
+        PluginResourceFinder pluginResourceFinder = new PluginResourceFinder(pluginRegistryInfo);
 
         Class<?>[] aliasesClasses = pluginResourceFinder.getAliasesClasses(config.entityPackage());
         if(aliasesClasses != null && aliasesClasses.length > 0){
@@ -113,7 +114,7 @@ public class TkMybatisProcessor implements PluginPipeProcessorExtend {
         if(xmlResource != null && xmlResource.length > 0){
             factory.setMapperLocations(xmlResource);
         }
-
+        ClassLoader pluginClassLoader = pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PAD);
         ClassLoader defaultClassLoader = Resources.getDefaultClassLoader();
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
@@ -134,7 +135,6 @@ public class TkMybatisProcessor implements PluginPipeProcessorExtend {
             Resources.setDefaultClassLoader(defaultClassLoader);
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
-
     }
 
     /**

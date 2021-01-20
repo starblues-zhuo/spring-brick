@@ -12,6 +12,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.pf4j.ClassLoadingStrategy;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,8 +86,7 @@ public class MybatisProcessor implements PluginPipeProcessorExtend {
                 }
             }
         }
-
-        PluginResourceFinder pluginResourceFinder = new PluginResourceFinder(pluginWrapper.getPluginClassLoader());
+        PluginResourceFinder pluginResourceFinder = new PluginResourceFinder(pluginRegistryInfo);
 
         Class<?>[] aliasesClasses = pluginResourceFinder.getAliasesClasses(config.entityPackage());
         if(aliasesClasses != null && aliasesClasses.length > 0){
@@ -100,7 +100,7 @@ public class MybatisProcessor implements PluginPipeProcessorExtend {
 
         ClassLoader defaultClassLoader = Resources.getDefaultClassLoader();
         try {
-            Resources.setDefaultClassLoader(pluginWrapper.getPluginClassLoader());
+            Resources.setDefaultClassLoader(pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PAD));
             SqlSessionFactory sqlSessionFactory = factory.getObject();
             if(sqlSessionFactory == null){
                 throw new Exception("Get mybatis sqlSessionFactory is null");

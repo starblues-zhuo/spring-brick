@@ -1,6 +1,8 @@
 package com.gitee.starblues.extension.mybatis;
 
 
+import com.gitee.starblues.factory.PluginRegistryInfo;
+import org.pf4j.ClassLoadingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -34,8 +36,8 @@ public class PluginResourceFinder {
     private final MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
 
 
-    public PluginResourceFinder(ClassLoader classLoader) {
-        this.classLoader = classLoader;
+    public PluginResourceFinder(PluginRegistryInfo pluginRegistryInfo) {
+        this.classLoader = pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PAD);
         this.resourcePatternResolver = new PathMatchingResourcePatternResolver(classLoader);;
     }
 

@@ -34,7 +34,7 @@ public class MapperHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapperHandler.class);
 
-    private static final String MAPPER_INTERFACE_NAMES = "MapperInterfaceNames";
+    private static final String MAPPER_INTERFACE_NAMES = "MybatisMapperInterfaceNames";
 
     private final ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
 
@@ -77,7 +77,7 @@ public class MapperHandler {
                 LOGGER.error("process mapper '{}' error. {}", groupClass.getName(), e.getMessage(), e);
             }
         }
-        pluginRegistryInfo.addProcessorInfo(MAPPER_INTERFACE_NAMES, beanNames);
+        pluginRegistryInfo.addExtension(MAPPER_INTERFACE_NAMES, beanNames);
     }
 
 
@@ -107,7 +107,7 @@ public class MapperHandler {
      * @throws Exception 卸载异常
      */
     public void unRegistryMapper(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        Set<String> beanNames = pluginRegistryInfo.getProcessorInfo(MAPPER_INTERFACE_NAMES);
+        Set<String> beanNames = pluginRegistryInfo.getExtension(MAPPER_INTERFACE_NAMES);
         if(beanNames == null){
             return;
         }
