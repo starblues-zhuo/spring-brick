@@ -28,6 +28,11 @@ public class ProxyController {
     }
 
 
+    @GetMapping("noArg")
+    public String noArg(){
+        return callerService.notArg();
+    }
+
     @GetMapping("add")
     public Integer add(){
         return callerService.add(1, 2);

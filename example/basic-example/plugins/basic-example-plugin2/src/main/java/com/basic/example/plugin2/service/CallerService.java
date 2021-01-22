@@ -22,6 +22,8 @@ public interface CallerService {
 
     CommonReturn commonTest(String key, CommonParam commonParam);
 
+    String notArg();
+
     class CallerInfo{
         private String name;
         private PluginInfo pluginInfo;

@@ -203,6 +203,9 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
             }
 
             Caller.Method callerMethod = method.getAnnotation(Caller.Method.class);
+            if(args == null){
+                args = new Object[]{};
+            }
             if(callerMethod == null){
                 return notAnnotationInvoke(method, supplierObject, args);
             } else {
@@ -272,13 +275,12 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
          */
         private Object notAnnotationInvoke(Method method, Object supplierObject, Object[] args) throws Throwable{
             String name = method.getName();
-            Class<?>[] argClasses = new Class<?>[args.length];
+            Class<?>[] argClasses = new Class[args.length];
             for (int i = 0; i < args.length; i++) {
                 argClasses[i] = args[i].getClass();
             }
             Class<?> supplierClass = supplierObject.getClass();
             Method supplierMethod = supplierClass.getMethod(name, argClasses);
-            System.out.println(supplierObject);
             Object invokeReturn = supplierMethod.invoke(supplierObject, args);
             return getReturnObject(invokeReturn, method);
         }
