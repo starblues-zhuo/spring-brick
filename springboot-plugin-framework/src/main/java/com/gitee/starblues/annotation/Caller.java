@@ -24,7 +24,7 @@ public @interface Caller {
      * 可指定调用哪一个插件
      * @return 插件id
      */
-    String pluginId();
+    String pluginId() default "";
 
     /**
      * 调用者方法注解。配合 @Supper.Method 使用。如果不定义, 则以方法名称为准。

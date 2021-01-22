@@ -10,7 +10,7 @@ import com.gitee.starblues.annotation.Caller;
  * @author starBlues
  * @version 1.0
  */
-@Caller("SupplierService")
+@Caller(value = "SupplierService")
 public interface CallerService {
 
     PluginInfo getConfig(String key);

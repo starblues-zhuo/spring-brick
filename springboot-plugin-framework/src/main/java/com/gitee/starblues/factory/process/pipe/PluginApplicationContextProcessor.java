@@ -31,6 +31,7 @@ public class PluginApplicationContextProcessor implements PluginPipeProcessor{
         pluginBeanDefinitionRegistrars.add(new ConfigBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new ConfigFileBeanRegistrar(mainApplicationContext));
         pluginBeanDefinitionRegistrars.add(new BasicBeanRegistrar());
+        pluginBeanDefinitionRegistrars.add(new InvokeBeanRegistrar());
         pluginBeanDefinitionRegistrars.addAll(ExtensionInitializer.getPluginBeanRegistrarExtends());
     }
 
@@ -67,7 +68,7 @@ public class PluginApplicationContextProcessor implements PluginPipeProcessor{
         PluginUtils pluginUtils = new PluginUtils(parentApplicationContext,
                 pluginApplicationContext,
                 pluginRegistryInfo.getPluginWrapper().getDescriptor());
-        parentApplicationContext.getBeanFactory().registerSingleton(
+        pluginApplicationContext.getBeanFactory().registerSingleton(
                 pluginUtils.getClass().getName(), pluginUtils);
     }
 

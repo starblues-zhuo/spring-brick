@@ -135,24 +135,9 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
 
         @Override
         public T getObject() throws Exception {
-            String pluginId = callerAnnotation.pluginId();
-            Object supperObject = null;
-            if(StringUtils.isNullOrEmpty(pluginId)){
-                supperObject = getSupper(callerAnnotation.value());
-            } else {
-                supperObject = getSupper(pluginId, callerAnnotation.value());
-            }
-            if(supperObject == null){
-                if(StringUtils.isNullOrEmpty(pluginId)){
-                    throw new Exception("Not found Supper '" + callerAnnotation.value() + "'");
-                } else {
-                    throw new Exception("Not found Supper '" + callerAnnotation.value() + "' in plugin '" + pluginId + "'");
-                }
-            }
             ClassLoader classLoader = callerInterface.getClassLoader();
             Class<?>[] interfaces = new Class[]{callerInterface};
-
-            ProxyHandler proxy = new ProxyHandler(supperObject);
+            ProxyHandler proxy = new ProxyHandler(callerInterface, callerAnnotation);
             return (T) Proxy.newProxyInstance(classLoader, interfaces, proxy);
         }
 
@@ -190,22 +175,40 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
      */
     private static class ProxyHandler implements InvocationHandler {
 
-        private final Object supplier;
+        private final Class<?> supplierClass;
+        private final Caller callerAnnotation;
+
         private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-        private ProxyHandler(Object supplier) {
-            this.supplier = supplier;
+        private ProxyHandler(Class<?> supplierClass, Caller callerAnnotation) {
+            this.supplierClass = supplierClass;
+            this.callerAnnotation = callerAnnotation;
         }
 
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            Object supplierObject = null;
+            String pluginId = callerAnnotation.pluginId();
+            if(StringUtils.isNullOrEmpty(pluginId)){
+                supplierObject = getSupper(callerAnnotation.value());
+            } else {
+                supplierObject = getSupper(pluginId, callerAnnotation.value());
+            }
+            if(supplierObject == null){
+                if(StringUtils.isNullOrEmpty(pluginId)){
+                    throw new Exception("Not found '" + callerAnnotation.value() + "' supplier object");
+                } else {
+                    throw new Exception("Not found '" + callerAnnotation.value() + "' supplier object in plugin '" +
+                            pluginId + "'");
+                }
+            }
 
             Caller.Method callerMethod = method.getAnnotation(Caller.Method.class);
             if(callerMethod == null){
-                return notAnnotationInvoke(method, args);
+                return notAnnotationInvoke(method, supplierObject, args);
             } else {
-                return annotationInvoke(method, callerMethod, args);
+                return annotationInvoke(method, callerMethod, supplierObject, args);
             }
         }
 
@@ -213,14 +216,16 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
          * 有注解的调用
          * @param method 调用接口的方法
          * @param callerMethod 调用者方法注解
+         * @param supplierObject 调用者对象
          * @param args 传入参数
          * @return 返回值
          * @throws Throwable 异常
          */
-        private Object annotationInvoke(Method method, Caller.Method callerMethod, Object[] args) throws Throwable{
+        private Object annotationInvoke(Method method, Caller.Method callerMethod,
+                                        Object supplierObject, Object[] args) throws Throwable{
+
             String callerMethodName = callerMethod.value();
-            Class<?> aClass = supplier.getClass();
-            Method[] methods = aClass.getMethods();
+            Method[] methods = supplierClass.getMethods();
             Method supplierMethod = null;
             for (Method m : methods) {
                 Supplier.Method supplierMethodAnnotation = m.getAnnotation(Supplier.Method.class);
@@ -234,12 +239,12 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
             }
             if(supplierMethod == null){
                 // 如果为空, 说明没有找到被调用者的注解, 则走没有注解的代理调用。
-                return notAnnotationInvoke(method, args);
+                return notAnnotationInvoke(method, supplierObject, args);
             }
             Class<?>[] parameterTypes = supplierMethod.getParameterTypes();
             if(parameterTypes.length != args.length){
                 // 参数不匹配
-                return notAnnotationInvoke(method, args);
+                return notAnnotationInvoke(method, supplierObject, args);
             }
             Object[] supplierArgs = new Object[args.length];
             for (int i = 0; i < parameterTypes.length; i++) {
@@ -254,25 +259,27 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
                     supplierArgs[i] = serializeObject;
                 }
             }
-            Object invokeReturn = supplierMethod.invoke(supplier, supplierArgs);
+            Object invokeReturn = supplierMethod.invoke(supplierObject, supplierArgs);
             return getReturnObject(invokeReturn, method);
         }
 
         /**
          * 没有注解调用
          * @param method 调用接口的方法
+         * @param supplierObject 提供者对象
          * @param args 传入参数
          * @return 返回值
          * @throws Throwable 异常
          */
-        private Object notAnnotationInvoke(Method method, Object[] args) throws Throwable{
+        private Object notAnnotationInvoke(Method method, Object supplierObject, Object[] args) throws Throwable{
             String name = method.getName();
             Class<?>[] argClasses = new Class<?>[args.length];
             for (int i = 0; i < args.length; i++) {
                 argClasses[i] = args[i].getClass();
             }
-            Method supplierMethod = supplier.getClass().getMethod(name, argClasses);
-            Object invokeReturn = supplierMethod.invoke(supplier, args);
+            Method supplierMethod = supplierClass.getMethod(name, argClasses);
+            System.out.println(supplierObject);
+            Object invokeReturn = supplierMethod.invoke(supplierObject, args);
             return getReturnObject(invokeReturn, method);
         }
 
