@@ -3,7 +3,6 @@ package com.gitee.starblues.factory.process.post.bean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitee.starblues.annotation.Caller;
 import com.gitee.starblues.annotation.Supplier;
-import com.gitee.starblues.factory.PluginInfoContainer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.classs.group.CallerGroup;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -40,13 +38,8 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
     private final String KEY_SUPPERS = "PluginInvokePostProcessorSuppers";
     private final String KEY_CALLERS = "PluginInvokePostProcessorCallers";
 
-    private final GenericApplicationContext applicationContext;
-    private final SpringBeanRegister springBeanRegister;
-
     public PluginInvokePostProcessor(ApplicationContext applicationContext){
         Objects.requireNonNull(applicationContext);
-        this.applicationContext = (GenericApplicationContext) applicationContext;
-        this.springBeanRegister = new SpringBeanRegister(applicationContext);
     }
 
 
@@ -108,6 +101,7 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
         }
         Set<String> beanNames = new HashSet<>();
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
+        SpringBeanRegister springBeanRegister = pluginRegistryInfo.getSpringBeanRegister();
         for (Class<?> supperClass : supperClasses) {
             if(supperClass == null){
                 continue;
@@ -117,7 +111,7 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
                 continue;
             }
             String beanName = supplier.value();
-            if(PluginInfoContainer.existRegisterBeanName(beanName)){
+            if(springBeanRegister.exist(beanName)){
                 String error = MessageFormat.format(
                         "Plugin {0} : Bean @Supplier name {1} already exist of {2}",
                         pluginRegistryInfo.getPluginWrapper().getPluginId(), beanName, supperClass.getName());
@@ -146,17 +140,17 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
             if(caller == null){
                 continue;
             }
-            Object supper = applicationContext.getBean(caller.value());
-            if(supper == null){
-                return;
-            }
-            String beanName = springBeanRegister.register(pluginId, callerClass, (beanDefinition) ->{
-                beanDefinition.getPropertyValues().add("callerInterface", callerClass);
-                beanDefinition.getPropertyValues().add("supper", supper);
-                beanDefinition.setBeanClass(CallerInterfaceFactory.class);
-                beanDefinition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_TYPE);
-            });
-            beanNames.add(beanName);
+//            Object supper = applicationContext.getBean(caller.value());
+//            if(supper == null){
+//                return;
+//            }
+//            String beanName = springBeanRegister.register(pluginId, callerClass, (beanDefinition) ->{
+//                beanDefinition.getPropertyValues().add("callerInterface", callerClass);
+//                beanDefinition.getPropertyValues().add("supper", supper);
+//                beanDefinition.setBeanClass(CallerInterfaceFactory.class);
+//                beanDefinition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_TYPE);
+//            });
+//            beanNames.add(beanName);
         }
         pluginRegistryInfo.addProcessorInfo(getKey(KEY_CALLERS, pluginRegistryInfo), beanNames);
     }
@@ -181,7 +175,7 @@ public class PluginInvokePostProcessor implements PluginPostProcessor {
             return;
         }
         for (String beanName : beanNames) {
-            springBeanRegister.unregister(pluginId, beanName);
+            // springBeanRegister.unregister(pluginId, beanName);
         }
     }
 

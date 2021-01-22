@@ -11,21 +11,24 @@ import com.gitee.starblues.extension.mybatis.MapperHandler;
 import com.gitee.starblues.extension.mybatis.PluginFollowCoreConfig;
 import com.gitee.starblues.extension.mybatis.PluginResourceFinder;
 import com.gitee.starblues.factory.PluginRegistryInfo;
-import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
-import com.gitee.starblues.utils.OrderPriority;
+import com.gitee.starblues.factory.process.pipe.bean.PluginBeanRegistrarExtend;
+import com.gitee.starblues.utils.PluginBeanUtils;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.pf4j.ClassLoadingStrategy;
-import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
+import org.springframework.core.type.AnnotationMetadata;
+
+import java.util.Set;
 
 
 /**
@@ -33,26 +36,19 @@ import org.springframework.core.io.Resource;
  * @author starBlues
  * @version 2.3
  */
-public class MybatisPlusProcessor implements PluginPipeProcessorExtend {
+public class MybatisPlusProcessor implements PluginBeanRegistrarExtend, ImportBeanDefinitionRegistrar {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MybatisPlusProcessor.class);
 
-    private final GenericApplicationContext applicationContext;
     private final MapperHandler mapperHandler;
 
     public MybatisPlusProcessor(ApplicationContext applicationContext) {
-        this.applicationContext = (GenericApplicationContext) applicationContext;
-        this.mapperHandler = new MapperHandler(this.applicationContext);
+        this.mapperHandler = new MapperHandler(applicationContext);
     }
 
     @Override
     public String key() {
         return "MybatisPlusProcessor";
-    }
-
-    @Override
-    public OrderPriority order() {
-        return OrderPriority.getMiddlePriority();
     }
 
     @Override
@@ -62,21 +58,20 @@ public class MybatisPlusProcessor implements PluginPipeProcessorExtend {
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
-
-        SpringBootMybatisPlusConfig config = ExtensionConfigUtils.getConfig(applicationContext,
-                pluginWrapper.getPluginId(),
+        SpringBootMybatisPlusConfig config = PluginBeanUtils.getObjectByInterfaceClass(
+                pluginRegistryInfo.getConfigSingletons(),
                 SpringBootMybatisPlusConfig.class);
         if(config == null){
             return;
         }
-
         final MybatisSqlSessionFactoryBean factory = new MybatisSqlSessionFactoryBean();
 
         if(config.enableOneselfConfig()){
             config.oneselfConfig(factory);
         } else {
-            PluginFollowCoreConfig followCoreConfig = new PluginFollowCoreConfig(applicationContext);
+            PluginFollowCoreConfig followCoreConfig = new PluginFollowCoreConfig(
+                    pluginRegistryInfo.getMainApplicationContext()
+            );
             factory.setDataSource(followCoreConfig.getDataSource());
             factory.setConfiguration(followCoreConfig.getMybatisPlusConfiguration());
             Interceptor[] interceptor = followCoreConfig.getInterceptor();
@@ -92,7 +87,7 @@ public class MybatisPlusProcessor implements PluginPipeProcessorExtend {
                 factory.setScriptingLanguageDrivers(languageDriver);
             }
             // 配置mybatis私有的配置
-            mybatisPlusFollowCoreConfig(factory);
+            mybatisPlusFollowCoreConfig(factory, pluginRegistryInfo.getMainApplicationContext());
         }
 
         PluginResourceFinder pluginResourceFinder = new PluginResourceFinder(pluginRegistryInfo);
@@ -124,40 +119,41 @@ public class MybatisPlusProcessor implements PluginPipeProcessorExtend {
     }
 
 
-    @Override
-    public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        mapperHandler.unRegistryMapper(pluginRegistryInfo);
-    }
 
-    private void mybatisPlusFollowCoreConfig(MybatisSqlSessionFactoryBean factory){
-        MybatisPlusProperties plusProperties = applicationContext.getBean(MybatisPlusProperties.class);
+    private void mybatisPlusFollowCoreConfig(MybatisSqlSessionFactoryBean factory,
+                                             GenericApplicationContext parentApplicationContext){
+        MybatisPlusProperties plusProperties = parentApplicationContext.getBean(MybatisPlusProperties.class);
 
         GlobalConfig globalConfig = plusProperties.getGlobalConfig();
 
-        if (this.applicationContext.getBeanNamesForType(IKeyGenerator.class, false,
+        if (parentApplicationContext.getBeanNamesForType(IKeyGenerator.class, false,
                 false).length > 0) {
-            IKeyGenerator keyGenerator = this.applicationContext.getBean(IKeyGenerator.class);
+            IKeyGenerator keyGenerator = parentApplicationContext.getBean(IKeyGenerator.class);
             globalConfig.getDbConfig().setKeyGenerator(keyGenerator);
         }
 
-        if (this.applicationContext.getBeanNamesForType(MetaObjectHandler.class,
+        if (parentApplicationContext.getBeanNamesForType(MetaObjectHandler.class,
                 false, false).length > 0) {
-            MetaObjectHandler metaObjectHandler = this.applicationContext.getBean(MetaObjectHandler.class);
+            MetaObjectHandler metaObjectHandler = parentApplicationContext.getBean(MetaObjectHandler.class);
             globalConfig.setMetaObjectHandler(metaObjectHandler);
         }
-        if (this.applicationContext.getBeanNamesForType(IKeyGenerator.class, false,
+        if (parentApplicationContext.getBeanNamesForType(IKeyGenerator.class, false,
                 false).length > 0) {
-            IKeyGenerator keyGenerator = this.applicationContext.getBean(IKeyGenerator.class);
+            IKeyGenerator keyGenerator = parentApplicationContext.getBean(IKeyGenerator.class);
             globalConfig.getDbConfig().setKeyGenerator(keyGenerator);
         }
 
-        if (this.applicationContext.getBeanNamesForType(ISqlInjector.class, false,
+        if (parentApplicationContext.getBeanNamesForType(ISqlInjector.class, false,
                 false).length > 0) {
-            ISqlInjector iSqlInjector = this.applicationContext.getBean(ISqlInjector.class);
+            ISqlInjector iSqlInjector = parentApplicationContext.getBean(ISqlInjector.class);
             globalConfig.setSqlInjector(iSqlInjector);
         }
         factory.setGlobalConfig(globalConfig);
     }
 
 
+    @Override
+    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+
+    }
 }

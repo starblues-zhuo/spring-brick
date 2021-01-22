@@ -36,15 +36,11 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
 
     private static final String KEY = "PluginControllerPostProcessor";
 
-    private final SpringBeanRegister springBeanRegister;
-    private final GenericApplicationContext applicationContext;
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
     private final IntegrationConfiguration configuration;
 
     public PluginControllerPostProcessor(ApplicationContext applicationContext){
         Objects.requireNonNull(applicationContext);
-        this.springBeanRegister = new SpringBeanRegister(applicationContext);
-        this.applicationContext = (GenericApplicationContext) applicationContext;
         this.requestMappingHandlerMapping = applicationContext.getBean(RequestMappingHandlerMapping.class);
         this.configuration = applicationContext.getBean(IntegrationConfiguration.class);
     }
@@ -72,7 +68,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
                     }
                     try {
                         ControllerBeanWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
-                        process(1, pluginRegistryInfo.getPluginWrapper().getPluginId(), groupClass);
+                        // process(1, pluginRegistryInfo.getPluginWrapper().getPluginId(), groupClass);
                         controllerBeanWrappers.add(controllerBeanWrapper);
                     } catch (Exception e){
                         pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
@@ -104,11 +100,10 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
                     continue;
                 }
                 unregister(pluginId, controllerBeanWrapper);
-                process(2,
-                        pluginRegistryInfo.getPluginWrapper().getPluginId(),
-                        controllerBeanWrapper.getBeanClass());
+//                process(2,
+//                        pluginRegistryInfo.getPluginWrapper().getPluginId(),
+//                        controllerBeanWrapper.getBeanClass());
             }
-
         }
     }
 
@@ -122,18 +117,10 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
     private ControllerBeanWrapper registry(PluginRegistryInfo pluginRegistryInfo, Class<?> aClass)
             throws Exception {
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-        String beanName = springBeanRegister.register(pluginId, aClass);
-        if(beanName == null || "".equals(beanName)){
-            throw new IllegalArgumentException("registry "+ aClass.getName() + "failure!");
-        }
+        GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
         try {
-            Object object = applicationContext.getBean(beanName);
-            if(object == null){
-                throw new Exception("registry "+ aClass.getName() + "failure! " +
-                        "Not found The instance of" + aClass.getName());
-            }
+            Object object = pluginApplicationContext.getBean(aClass);
             ControllerBeanWrapper controllerBeanWrapper = new ControllerBeanWrapper();
-            controllerBeanWrapper.setBeanName(beanName);
             setPathPrefix(pluginId, aClass);
             Method getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
                     "getMappingForMethod", Method.class, Class.class);
@@ -153,7 +140,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             return controllerBeanWrapper;
         } catch (Exception e){
             // 出现异常, 卸载该 controller bean
-            springBeanRegister.unregister(pluginId, beanName);
             throw e;
         }
     }
@@ -170,10 +156,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             for (RequestMappingInfo requestMappingInfo : requestMappingInfos) {
                 requestMappingHandlerMapping.unregisterMapping(requestMappingInfo);
             }
-        }
-        String beanName = controllerBeanWrapper.getBeanName();
-        if(!StringUtils.isEmpty(beanName)){
-            springBeanRegister.unregister(pluginId, beanName);
         }
     }
 
@@ -280,33 +262,33 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         }
     }
 
-    private void process(int type, String pluginId, Class<?> aClass){
-        PluginControllerProcessor pluginControllerProcessor = null;
-        try {
-            pluginControllerProcessor = applicationContext.getBean(PluginControllerProcessor.class);
-        }catch (Exception e){
-            pluginControllerProcessor = null;
-        }
-        if(pluginControllerProcessor == null){
-            return;
-        }
-        if(type == 1){
-            try {
-                pluginControllerProcessor.registry(pluginId, aClass);
-            }catch (Exception e){
-                log.error("PluginControllerProcessor process {} {} error of registry",
-                        pluginId, aClass.getName());
-            }
-        } else {
-            try {
-                pluginControllerProcessor.unRegistry(pluginId, aClass);
-            }catch (Exception e){
-                log.error("PluginControllerProcessor process {} {} error of unRegistry",
-                        pluginId, aClass.getName());
-            }
-        }
-
-    }
+//    private void process(int type, String pluginId, Class<?> aClass){
+//        PluginControllerProcessor pluginControllerProcessor = null;
+//        try {
+//            pluginControllerProcessor = applicationContext.getBean(PluginControllerProcessor.class);
+//        }catch (Exception e){
+//            pluginControllerProcessor = null;
+//        }
+//        if(pluginControllerProcessor == null){
+//            return;
+//        }
+//        if(type == 1){
+//            try {
+//                pluginControllerProcessor.registry(pluginId, aClass);
+//            }catch (Exception e){
+//                log.error("PluginControllerProcessor process {} {} error of registry",
+//                        pluginId, aClass.getName());
+//            }
+//        } else {
+//            try {
+//                pluginControllerProcessor.unRegistry(pluginId, aClass);
+//            }catch (Exception e){
+//                log.error("PluginControllerProcessor process {} {} error of unRegistry",
+//                        pluginId, aClass.getName());
+//            }
+//        }
+//
+//    }
 
     /**
      * Controller Bean的包装

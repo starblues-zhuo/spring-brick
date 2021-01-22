@@ -17,15 +17,13 @@ import java.util.Objects;
  * @author starBlues
  * @version 2.1.0
  */
+@Deprecated
 public class PluginConfigurationPostProcessor implements PluginPostProcessor {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 ;
-    private final GenericApplicationContext applicationContext;
 
-    public PluginConfigurationPostProcessor(ApplicationContext applicationContext){
-        Objects.requireNonNull(applicationContext);
-        this.applicationContext = (GenericApplicationContext) applicationContext;
+    public PluginConfigurationPostProcessor(){
     }
 
 
@@ -36,9 +34,7 @@ public class PluginConfigurationPostProcessor implements PluginPostProcessor {
 
     @Override
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
-        ConfigurationClassPostProcessor configurationClassPostProcessor =
-                applicationContext.getBean(ConfigurationClassPostProcessor.class);
-        configurationClassPostProcessor.processConfigBeanDefinitions(applicationContext);
+
     }
 
     @Override

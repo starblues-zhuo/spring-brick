@@ -1,11 +1,13 @@
 package com.gitee.starblues.factory;
 
+import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
 import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
 import org.pf4j.*;
 import org.pf4j.util.StringUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.util.ClassUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,8 +27,10 @@ public class PluginRegistryInfo {
 
     private final PluginWrapper pluginWrapper;
     private final PluginManager pluginManager;
-    private final GenericApplicationContext parentApplicationContext;
+    private final GenericApplicationContext mainApplicationContext;
     private final AnnotationConfigApplicationContext pluginApplicationContext;
+    private final SpringBeanRegister springBeanRegister;
+
 
     /**
      * 是否跟随主程序启动而初始化
@@ -34,7 +38,10 @@ public class PluginRegistryInfo {
     private final boolean followingInitial;
     private final BasePlugin basePlugin;
 
-
+    /**
+     * 插件中的配置单例bean
+     */
+    private final Set<Object> configSingletonObjects = new HashSet<>(2);
     /**
      * 插件中的Class
      */
@@ -60,19 +67,18 @@ public class PluginRegistryInfo {
 
     private PluginRegistryInfo(PluginWrapper pluginWrapper,
                                PluginManager pluginManager,
-                               GenericApplicationContext parentApplicationContext,
+                               GenericApplicationContext mainApplicationContext,
                                boolean followingInitial) {
         this.pluginWrapper = pluginWrapper;
         this.pluginManager = pluginManager;
         this.basePlugin = (BasePlugin) pluginWrapper.getPlugin();
-        this.parentApplicationContext = parentApplicationContext;
+        this.mainApplicationContext = mainApplicationContext;
         this.followingInitial = followingInitial;
 
         // 生成插件Application
-        this.pluginApplicationContext =
-                new AnnotationConfigApplicationContext();
+        this.pluginApplicationContext = new AnnotationConfigApplicationContext();
         this.pluginApplicationContext.setClassLoader(basePlugin.getWrapper().getPluginClassLoader());
-
+        this.springBeanRegister = new SpringBeanRegister(pluginApplicationContext);
     }
 
     public static PluginRegistryInfo build(PluginWrapper pluginWrapper,
@@ -189,9 +195,24 @@ public class PluginRegistryInfo {
     }
 
     /**
-     * 添加插件bean注册者信息
-     * @param key 扩展的key
-     * @param value 扩展值
+     * 添加插件中的配置对象
+     * @param singletonObject 单例对象
+     */
+    public void addConfigSingleton(Object singletonObject){
+        configSingletonObjects.add(singletonObject);
+    }
+
+    /**
+     * 添加插件中的配置对象
+     */
+    public Set<Object> getConfigSingletons(){
+        return Collections.unmodifiableSet(configSingletonObjects);
+    }
+
+    /**
+     * 添加处理者信息
+     * @param key key
+     * @param value value
      */
     public void addProcessorInfo(String key, Object value){
         processorInfo.put(key, value);
@@ -209,12 +230,28 @@ public class PluginRegistryInfo {
         extensionMap.put(key, value);
     }
 
-    public GenericApplicationContext getParentApplicationContext() {
-        return parentApplicationContext;
+    /**
+     * 得到主程序的ApplicationContext
+     * @return GenericApplicationContext
+     */
+    public GenericApplicationContext getMainApplicationContext() {
+        return mainApplicationContext;
     }
 
+    /**
+     * 得到当前插件的ApplicationContext
+     * @return AnnotationConfigApplicationContext
+     */
     public AnnotationConfigApplicationContext getPluginApplicationContext() {
         return pluginApplicationContext;
+    }
+
+    /**
+     * 得到当前插件Bean注册者
+     * @return SpringBeanRegister
+     */
+    public SpringBeanRegister getSpringBeanRegister() {
+        return springBeanRegister;
     }
 
     /**
@@ -305,5 +342,8 @@ public class PluginRegistryInfo {
     public enum ClassLoaderStrategy{
         APD, ADP, PAD, DAP, DPA, PDA
     }
+
+
+
 
 }

@@ -1,6 +1,7 @@
 package com.gitee.starblues.extension;
 
 import com.gitee.starblues.factory.process.pipe.PluginPreProcessorExtend;
+import com.gitee.starblues.factory.process.pipe.bean.PluginBeanRegistrarExtend;
 import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoader;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
@@ -69,6 +70,18 @@ public abstract class AbstractExtension {
     public List<PluginPreProcessorExtend> getPluginPreProcessor(ApplicationContext applicationContext){
         return null;
     }
+
+
+    /**
+     * 返回扩展的bean定义注册者扩展
+     * 该扩展主要是对每一个插件进行处理
+     * @return List PluginPipeProcessorExtend
+     */
+    public List<PluginBeanRegistrarExtend> getPluginBeanRegistrar(ApplicationContext applicationContext){
+        return null;
+    }
+
+
 
     /**
      * 返回扩展的流插件处理者。

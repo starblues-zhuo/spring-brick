@@ -1,7 +1,6 @@
 package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.extension.mybatis.group.PluginMapperGroup;
-import com.gitee.starblues.factory.PluginInfoContainer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.bean.name.PluginAnnotationBeanNameGenerator;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.ScopeMetadata;
@@ -38,10 +38,8 @@ public class MapperHandler {
 
     private final ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
 
-    private final GenericApplicationContext applicationContext;
 
-    public MapperHandler(GenericApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public MapperHandler(ApplicationContext applicationContext) {
     }
 
     /**
@@ -51,6 +49,7 @@ public class MapperHandler {
      */
     public void processMapper(PluginRegistryInfo pluginRegistryInfo,
                               MapperHandler.ProcessMapper processMapper){
+        GenericApplicationContext applicationContext = pluginRegistryInfo.getPluginApplicationContext();
         List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(PluginMapperGroup.GROUP_ID);
         if(groupClasses == null || groupClasses.isEmpty()){
             return;
@@ -72,7 +71,6 @@ public class MapperHandler {
             try {
                 processMapper.process(definitionHolder, groupClass);
                 beanNames.add(beanName);
-                PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
             } catch (Exception e) {
                 LOGGER.error("process mapper '{}' error. {}", groupClass.getName(), e.getMessage(), e);
             }
@@ -107,14 +105,13 @@ public class MapperHandler {
      * @throws Exception 卸载异常
      */
     public void unRegistryMapper(PluginRegistryInfo pluginRegistryInfo) throws Exception {
+        GenericApplicationContext applicationContext = pluginRegistryInfo.getPluginApplicationContext();
         Set<String> beanNames = pluginRegistryInfo.getExtension(MAPPER_INTERFACE_NAMES);
         if(beanNames == null){
             return;
         }
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         for (String beanName : beanNames) {
             applicationContext.removeBeanDefinition(beanName);
-            PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
         }
     }
 

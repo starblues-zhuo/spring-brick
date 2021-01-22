@@ -7,6 +7,7 @@ import com.gitee.starblues.extension.mybatis.group.PluginMapperGroup;
 import com.gitee.starblues.extension.mybatis.mybatisplus.MybatisPlusProcessor;
 import com.gitee.starblues.extension.mybatis.tkmyabtis.TkMybatisProcessor;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
+import com.gitee.starblues.factory.process.pipe.bean.PluginBeanRegistrarExtend;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
 import org.springframework.context.ApplicationContext;
 
@@ -58,12 +59,19 @@ public class SpringBootMybatisExtension extends AbstractExtension {
     public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext applicationContext) {
         final List<PluginPipeProcessorExtend> pluginPipeProcessorExtends = new ArrayList<>();
         if(type == Type.MYBATIS_PLUS){
-            pluginPipeProcessorExtends.add(new MybatisPlusProcessor(applicationContext));
+
         } else if(type == Type.TK_MYBATIS){
             pluginPipeProcessorExtends.add(new TkMybatisProcessor(applicationContext));
         } else {
             pluginPipeProcessorExtends.add(new MybatisProcessor(applicationContext));
         }
+        return pluginPipeProcessorExtends;
+    }
+
+    @Override
+    public List<PluginBeanRegistrarExtend> getPluginBeanRegistrar(ApplicationContext applicationContext) {
+        final List<PluginBeanRegistrarExtend> pluginPipeProcessorExtends = new ArrayList<>();
+        pluginPipeProcessorExtends.add(new MybatisPlusProcessor(applicationContext));
         return pluginPipeProcessorExtends;
     }
 

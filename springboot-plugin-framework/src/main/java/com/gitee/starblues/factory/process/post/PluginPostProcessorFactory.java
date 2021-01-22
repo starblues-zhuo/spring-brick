@@ -33,8 +33,9 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
         // 添加扩展
         pluginPostProcessors.addAll(ExtensionInitializer.getPostProcessorExtends());
         // 以下顺序不能更改。
-        pluginPostProcessors.add(new PluginConfigurationPostProcessor(applicationContext));
-        pluginPostProcessors.add(new PluginInvokePostProcessor(applicationContext));
+        // pluginPostProcessors.add(new PluginBeanRefreshProcessor());
+        // pluginPostProcessors.add(new PluginConfigurationPostProcessor(applicationContext));
+        // pluginPostProcessors.add(new PluginInvokePostProcessor(applicationContext));
 
         pluginPostProcessors.add(new PluginControllerPostProcessor(applicationContext));
         // 主要触发启动监听事件，因此在最后一个执行。配合 OneselfListenerStopEventProcessor 该类触发启动、停止事件。

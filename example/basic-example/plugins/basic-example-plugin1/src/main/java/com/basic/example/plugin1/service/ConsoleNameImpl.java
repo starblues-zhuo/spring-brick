@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
  * @author starBlues
  * @version 1.0
  */
-@Component
 public class ConsoleNameImpl implements ConsoleName {
 
     @Autowired

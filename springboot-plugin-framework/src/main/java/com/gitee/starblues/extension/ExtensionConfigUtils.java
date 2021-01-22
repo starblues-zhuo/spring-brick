@@ -1,6 +1,5 @@
 package com.gitee.starblues.extension;
 
-import com.gitee.starblues.factory.PluginInfoContainer;
 import org.pf4j.util.StringUtils;
 import org.springframework.context.ApplicationContext;
 
@@ -35,9 +34,7 @@ public class ExtensionConfigUtils {
                 if(StringUtils.isNullOrEmpty(beanName)){
                     continue;
                 }
-                if(PluginInfoContainer.existRegisterBeanName(pluginId, beanName)){
-                    return applicationContext.getBean(beanName, tClass);
-                }
+                return applicationContext.getBean(beanName, tClass);
             }
             return null;
         } catch (Exception e){

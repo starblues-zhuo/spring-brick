@@ -16,7 +16,7 @@ public class HelloService {
     private final Plugin2Config plugin2Config;
     private final Service2 service2;
 
-    @Autowired
+
     public HelloService(Plugin2Config plugin2Config, Service2 service2) {
         this.plugin2Config = plugin2Config;
         this.service2 = service2;

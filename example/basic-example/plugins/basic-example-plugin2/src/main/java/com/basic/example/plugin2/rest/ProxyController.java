@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
  * @author starBlues
  * @version 1.0
  */
-@RestController
-@RequestMapping("/proxy")
 public class ProxyController {
 
 
