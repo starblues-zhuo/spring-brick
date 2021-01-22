@@ -12,20 +12,21 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PluginInfoContainers {
 
-    private final static Map<String, GenericApplicationContext> pluginApplicationContexts =
+    private final static Map<String, GenericApplicationContext> PLUGIN_APPLICATION_CONTEXTS =
             new ConcurrentHashMap<>();
 
 
-    static void addPluginApplicationContext(String pluginId, GenericApplicationContext applicationContext){
-        pluginApplicationContexts.put(pluginId, applicationContext);
+
+    public static void addPluginApplicationContext(String pluginId, GenericApplicationContext applicationContext){
+        PLUGIN_APPLICATION_CONTEXTS.put(pluginId, applicationContext);
     }
 
-    static void removePluginApplicationContext(String pluginId){
-        pluginApplicationContexts.remove(pluginId);
+    public static void removePluginApplicationContext(String pluginId){
+        PLUGIN_APPLICATION_CONTEXTS.remove(pluginId);
     }
 
     static public GenericApplicationContext getPluginApplicationContext(String pluginId) {
-        GenericApplicationContext applicationContext = pluginApplicationContexts.get(pluginId);
+        GenericApplicationContext applicationContext = PLUGIN_APPLICATION_CONTEXTS.get(pluginId);
         if(applicationContext == null){
             return null;
         }
@@ -33,11 +34,12 @@ public class PluginInfoContainers {
     }
 
     static public List<GenericApplicationContext> getPluginApplicationContexts() {
-        Collection<GenericApplicationContext> values = pluginApplicationContexts.values();
+        Collection<GenericApplicationContext> values = PLUGIN_APPLICATION_CONTEXTS.values();
         if(values.isEmpty()){
             return Collections.emptyList();
         }
         return new ArrayList<>(values);
     }
+
 
 }

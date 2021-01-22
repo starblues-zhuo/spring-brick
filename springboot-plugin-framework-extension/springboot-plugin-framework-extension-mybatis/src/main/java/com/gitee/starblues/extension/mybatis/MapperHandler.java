@@ -39,7 +39,7 @@ public class MapperHandler {
     private final ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
 
 
-    public MapperHandler(ApplicationContext applicationContext) {
+    public MapperHandler() {
     }
 
     /**
@@ -99,21 +99,6 @@ public class MapperHandler {
         definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
     }
 
-    /**
-     * 公共卸载Mapper
-     * @param pluginRegistryInfo 插件信息
-     * @throws Exception 卸载异常
-     */
-    public void unRegistryMapper(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        GenericApplicationContext applicationContext = pluginRegistryInfo.getPluginApplicationContext();
-        Set<String> beanNames = pluginRegistryInfo.getExtension(MAPPER_INTERFACE_NAMES);
-        if(beanNames == null){
-            return;
-        }
-        for (String beanName : beanNames) {
-            applicationContext.removeBeanDefinition(beanName);
-        }
-    }
 
 
     @FunctionalInterface

@@ -43,11 +43,11 @@ public class SpringBootMybatisExtension extends AbstractExtension {
     }
 
     @Override
-    public void initialize(ApplicationContext applicationContext) throws Exception {
+    public void initialize(ApplicationContext mainApplicationContext) throws Exception {
     }
 
     @Override
-    public List<PluginClassGroupExtend> getPluginClassGroup(ApplicationContext applicationContext) {
+    public List<PluginClassGroupExtend> getPluginClassGroup(ApplicationContext mainApplicationContext) {
         final List<PluginClassGroupExtend> pluginClassGroups = new ArrayList<>();
         pluginClassGroups.add(new MybatisConfigGroup());
         pluginClassGroups.add(new PluginEntityAliasesGroup());
@@ -56,23 +56,16 @@ public class SpringBootMybatisExtension extends AbstractExtension {
     }
 
     @Override
-    public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext applicationContext) {
-        final List<PluginPipeProcessorExtend> pluginPipeProcessorExtends = new ArrayList<>();
+    public List<PluginBeanRegistrarExtend> getPluginBeanRegistrar(ApplicationContext mainApplicationContext) {
+        final List<PluginBeanRegistrarExtend> pluginBeanRegistrarExtends = new ArrayList<>(3);
         if(type == Type.MYBATIS_PLUS){
-
+            pluginBeanRegistrarExtends.add(new MybatisPlusProcessor());
         } else if(type == Type.TK_MYBATIS){
-            pluginPipeProcessorExtends.add(new TkMybatisProcessor(applicationContext));
+            pluginBeanRegistrarExtends.add(new TkMybatisProcessor());
         } else {
-            pluginPipeProcessorExtends.add(new MybatisProcessor(applicationContext));
+            pluginBeanRegistrarExtends.add(new MybatisProcessor());
         }
-        return pluginPipeProcessorExtends;
-    }
-
-    @Override
-    public List<PluginBeanRegistrarExtend> getPluginBeanRegistrar(ApplicationContext applicationContext) {
-        final List<PluginBeanRegistrarExtend> pluginPipeProcessorExtends = new ArrayList<>();
-        pluginPipeProcessorExtends.add(new MybatisPlusProcessor(applicationContext));
-        return pluginPipeProcessorExtends;
+        return pluginBeanRegistrarExtends;
     }
 
     public enum Type{

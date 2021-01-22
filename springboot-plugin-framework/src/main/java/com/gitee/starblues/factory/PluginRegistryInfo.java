@@ -5,6 +5,8 @@ import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
 import org.pf4j.*;
 import org.pf4j.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ClassUtils;
@@ -20,10 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PluginRegistryInfo {
 
-    /**
-     * 扩展存储项
-     */
-    private final Map<String, Object> extensionMap = new ConcurrentHashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final PluginWrapper pluginWrapper;
     private final PluginManager pluginManager;
@@ -31,38 +30,47 @@ public class PluginRegistryInfo {
     private final AnnotationConfigApplicationContext pluginApplicationContext;
     private final SpringBeanRegister springBeanRegister;
 
-
     /**
      * 是否跟随主程序启动而初始化
      */
     private final boolean followingInitial;
     private final BasePlugin basePlugin;
 
+
+    /**
+     * 扩展存储项
+     */
+    private final Map<String, Object> extensionMap = new ConcurrentHashMap<>();
+
     /**
      * 插件中的配置单例bean
      */
-    private final Set<Object> configSingletonObjects = new HashSet<>(2);
+    private final Set<Object> configSingletonObjects = new HashSet<>(4);
+
     /**
      * 插件中的Class
      */
-    private final List<Class<?>> classes = new ArrayList<>();
+    private final List<Class<?>> classes = new ArrayList<>(8);
+
     /**
      * 插件加载的资源
      */
-    private final Map<String, ResourceWrapper> pluginLoadResources = new ConcurrentHashMap<>();
+    private final Map<String, ResourceWrapper> pluginLoadResources = new ConcurrentHashMap<>(8);
+
     /**
      * 插件中分类的Class
      */
-    private final Map<String, List<Class<?>>> groupClasses = new ConcurrentHashMap<>();
+    private final Map<String, List<Class<?>>> groupClasses = new ConcurrentHashMap<>(8);
+
     /**
      * 处理者信息
      */
-    private final Map<String, Object> processorInfo = new ConcurrentHashMap<>();
+    private final Map<String, Object> processorInfo = new ConcurrentHashMap<>(8);
 
     /**
      * 自定义策略插件类加载器缓存
      */
-    private final Map<ClassLoaderStrategy, PluginClassLoader> pluginClassLoaders = new ConcurrentHashMap<>();
+    private final Map<ClassLoaderStrategy, PluginClassLoader> pluginClassLoaders = new ConcurrentHashMap<>(8);
 
 
     private PluginRegistryInfo(PluginWrapper pluginWrapper,
@@ -242,7 +250,7 @@ public class PluginRegistryInfo {
      * 得到当前插件的ApplicationContext
      * @return AnnotationConfigApplicationContext
      */
-    public AnnotationConfigApplicationContext getPluginApplicationContext() {
+    public GenericApplicationContext getPluginApplicationContext() {
         return pluginApplicationContext;
     }
 
@@ -333,8 +341,20 @@ public class PluginRegistryInfo {
             processorInfo.clear();
             pluginClassLoaders.clear();
             pluginLoadResources.clear();
+            configSingletonObjects.clear();
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error("Clear plugin '{}' failure", getPluginWrapper().getPluginId(), e);
+        } finally {
+            PluginInfoContainers.removePluginApplicationContext(getPluginWrapper().getPluginId());
+            closePluginApplicationContext();
+        }
+    }
+
+    private void closePluginApplicationContext() {
+        try {
+            pluginApplicationContext.close();
+        } catch (Exception e){
+            logger.error("Close plugin '{}' ApplicationContext failure", getPluginWrapper().getPluginId(), e);
         }
     }
 

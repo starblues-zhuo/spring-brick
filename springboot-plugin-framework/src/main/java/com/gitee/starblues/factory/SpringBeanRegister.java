@@ -21,15 +21,15 @@ public class SpringBeanRegister {
 
     private static final Logger logger = LoggerFactory.getLogger(SpringBeanRegister.class);
 
-    private final GenericApplicationContext applicationContext;
+    private final GenericApplicationContext pluginApplicationContext;
 
     public SpringBeanRegister(GenericApplicationContext pluginApplicationContext){
-        this.applicationContext = pluginApplicationContext;
+        this.pluginApplicationContext = pluginApplicationContext;
     }
 
 
     public boolean exist(String name){
-        return applicationContext.containsBean(name);
+        return pluginApplicationContext.containsBean(name);
     }
 
     /**
@@ -56,9 +56,9 @@ public class SpringBeanRegister {
         beanDefinition.setBeanClass(aClass);
         BeanNameGenerator beanNameGenerator =
                 new PluginAnnotationBeanNameGenerator(pluginId);
-        String beanName = beanNameGenerator.generateBeanName(beanDefinition, applicationContext);
+        String beanName = beanNameGenerator.generateBeanName(beanDefinition, pluginApplicationContext);
 
-        if(applicationContext.containsBean(beanName)){
+        if(pluginApplicationContext.containsBean(beanName)){
             String error = MessageFormat.format("Bean name {0} already exist of {1}",
                     beanName, aClass.getName());
             logger.debug(error);
@@ -67,7 +67,7 @@ public class SpringBeanRegister {
         if(consumer != null){
             consumer.accept(beanDefinition);
         }
-        applicationContext.registerBeanDefinition(beanName, beanDefinition);
+        pluginApplicationContext.registerBeanDefinition(beanName, beanDefinition);
         return beanName;
     }
 
@@ -94,7 +94,7 @@ public class SpringBeanRegister {
                                       Consumer<AnnotatedGenericBeanDefinition> consumer) {
         AnnotatedGenericBeanDefinition beanDefinition = new
                 AnnotatedGenericBeanDefinition(aClass);
-        if(applicationContext.containsBean(beanName)){
+        if(pluginApplicationContext.containsBean(beanName)){
             String error = MessageFormat.format("Bean name {0} already exist of {1}",
                     beanName, aClass.getName());
             throw new RuntimeException(error);
@@ -102,7 +102,7 @@ public class SpringBeanRegister {
         if(consumer != null){
             consumer.accept(beanDefinition);
         }
-        applicationContext.registerBeanDefinition(beanName, beanDefinition);
+        pluginApplicationContext.registerBeanDefinition(beanName, beanDefinition);
     }
 
     /**
@@ -111,7 +111,7 @@ public class SpringBeanRegister {
      * @param object 对象
      */
     public void registerSingleton(String name, Object object){
-        DefaultListableBeanFactory listableBeanFactory = applicationContext.getDefaultListableBeanFactory();
+        DefaultListableBeanFactory listableBeanFactory = pluginApplicationContext.getDefaultListableBeanFactory();
         if(!listableBeanFactory.containsSingleton(name)){
             listableBeanFactory.registerSingleton(name, object);
         }
@@ -123,7 +123,7 @@ public class SpringBeanRegister {
      * @param name 单例名称
      */
     public void destroySingleton(String name){
-        DefaultListableBeanFactory listableBeanFactory = applicationContext.getDefaultListableBeanFactory();
+        DefaultListableBeanFactory listableBeanFactory = pluginApplicationContext.getDefaultListableBeanFactory();
         if(listableBeanFactory.containsSingleton(name)){
             listableBeanFactory.destroySingleton(name);
         }
@@ -136,7 +136,7 @@ public class SpringBeanRegister {
      */
     public void unregister(String pluginId, String beanName){
         try {
-            applicationContext.removeBeanDefinition(beanName);
+            pluginApplicationContext.removeBeanDefinition(beanName);
         } catch (Exception e){
             logger.error("Remove plugin '{}' bean {} error. {}", pluginId, beanName, e.getMessage());
         }

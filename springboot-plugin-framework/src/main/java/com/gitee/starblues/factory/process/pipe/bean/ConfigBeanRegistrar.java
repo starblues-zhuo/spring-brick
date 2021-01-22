@@ -4,8 +4,6 @@ import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.classs.group.ConfigBeanGroup;
 import com.gitee.starblues.realize.ConfigBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -18,18 +16,7 @@ import java.util.*;
  */
 public class ConfigBeanRegistrar implements PluginBeanRegistrar {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    private static final String KEY = "ConfigBeanProcessor";
-
-
     public ConfigBeanRegistrar() {
-    }
-
-
-    @Override
-    public void initialize() throws Exception {
-
     }
 
     @Override

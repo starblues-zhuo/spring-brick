@@ -47,7 +47,6 @@ public class PluginClassProcess implements PluginPipeProcessor {
         pluginClassGroups.add(new ComponentGroup());
         pluginClassGroups.add(new ControllerGroup());
         pluginClassGroups.add(new RepositoryGroup());
-        pluginClassGroups.add(new ConfigurationGroup());
         pluginClassGroups.add(new ConfigDefinitionGroup());
         pluginClassGroups.add(new ConfigBeanGroup());
         pluginClassGroups.add(new SupplierGroup());

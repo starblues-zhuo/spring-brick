@@ -31,40 +31,44 @@ public class PluginApplicationContextProcessor implements PluginPipeProcessor{
         pluginBeanDefinitionRegistrars.add(new ConfigBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new ConfigFileBeanRegistrar(mainApplicationContext));
         pluginBeanDefinitionRegistrars.add(new BasicBeanRegistrar());
-        pluginBeanDefinitionRegistrars.add(new OneselfListenerBeanRegistrar());
         pluginBeanDefinitionRegistrars.addAll(ExtensionInitializer.getPluginBeanRegistrarExtends());
     }
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        AnnotationConfigApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
+        GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
         pluginApplicationContext.getDefaultListableBeanFactory().registerSingleton("p",
                 pluginApplicationContext);
         // 进行bean注册
         for (PluginBeanRegistrar pluginBeanDefinitionRegistrar : pluginBeanDefinitionRegistrars) {
             pluginBeanDefinitionRegistrar.registry(pluginRegistryInfo);
         }
+        addBeanExtend(pluginRegistryInfo);
         pluginApplicationContext.refresh();
-        buildPluginApplicationContext(pluginRegistryInfo);
+        // 向插件静态容器中新增插件的ApplicationContext
+        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
+        PluginInfoContainers.addPluginApplicationContext(pluginId, pluginApplicationContext);
     }
 
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        PluginInfoContainers.removePluginApplicationContext(pluginRegistryInfo.getPluginWrapper().getPluginId());
+        for (PluginBeanRegistrar pluginBeanDefinitionRegistrar : pluginBeanDefinitionRegistrars) {
+            pluginBeanDefinitionRegistrar.unRegistry(pluginRegistryInfo);
+        }
     }
 
-    private void buildPluginApplicationContext(PluginRegistryInfo pluginRegistryInfo){
+    /**
+     * 向插件ApplicationContext容器中添加扩展的bean
+     * @param pluginRegistryInfo 插件注册信息
+     */
+    private void addBeanExtend(PluginRegistryInfo pluginRegistryInfo){
         GenericApplicationContext parentApplicationContext = pluginRegistryInfo.getMainApplicationContext();
-        AnnotationConfigApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
-
+        GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
         PluginUtils pluginUtils = new PluginUtils(parentApplicationContext,
                 pluginApplicationContext,
                 pluginRegistryInfo.getPluginWrapper().getDescriptor());
         parentApplicationContext.getBeanFactory().registerSingleton(
                 pluginUtils.getClass().getName(), pluginUtils);
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-        PluginInfoContainers.addPluginApplicationContext(pluginId, pluginApplicationContext);
     }
-
 
 }

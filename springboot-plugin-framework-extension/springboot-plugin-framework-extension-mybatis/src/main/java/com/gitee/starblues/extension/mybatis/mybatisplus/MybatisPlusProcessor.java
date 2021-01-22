@@ -20,12 +20,8 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
-import org.springframework.core.type.AnnotationMetadata;
 
 
 /**
@@ -33,14 +29,12 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author starBlues
  * @version 2.3
  */
-public class MybatisPlusProcessor implements PluginBeanRegistrarExtend, ImportBeanDefinitionRegistrar {
+public class MybatisPlusProcessor implements PluginBeanRegistrarExtend {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MybatisPlusProcessor.class);
 
-    private final MapperHandler mapperHandler;
 
-    public MybatisPlusProcessor(ApplicationContext applicationContext) {
-        this.mapperHandler = new MapperHandler(applicationContext);
+    public MybatisPlusProcessor() {
     }
 
     @Override
@@ -48,10 +42,6 @@ public class MybatisPlusProcessor implements PluginBeanRegistrarExtend, ImportBe
         return "MybatisPlusProcessor";
     }
 
-    @Override
-    public void initialize() throws Exception {
-
-    }
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
@@ -106,6 +96,7 @@ public class MybatisPlusProcessor implements PluginBeanRegistrarExtend, ImportBe
                 throw new Exception("Get mybatis-plus sqlSessionFactory is null");
             }
             SqlSessionTemplate sqlSessionTemplate = new SqlSessionTemplate(sqlSessionFactory);
+            MapperHandler mapperHandler = new MapperHandler();
             mapperHandler.processMapper(pluginRegistryInfo, (holder, mapperClass) -> {
                 mapperHandler.commonProcessMapper(holder, mapperClass, sqlSessionFactory, sqlSessionTemplate);
             });
@@ -148,9 +139,4 @@ public class MybatisPlusProcessor implements PluginBeanRegistrarExtend, ImportBe
         factory.setGlobalConfig(globalConfig);
     }
 
-
-    @Override
-    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-
-    }
 }

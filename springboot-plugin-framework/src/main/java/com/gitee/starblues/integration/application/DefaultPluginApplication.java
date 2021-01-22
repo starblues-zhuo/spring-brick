@@ -91,7 +91,7 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
                 pluginManager,
                 this.listenerFactory
         );
-        return new PluginOperatorWrapper(pluginOperator, configuration, applicationContext);
+        return new PluginOperatorWrapper(pluginOperator, configuration);
     }
 
 

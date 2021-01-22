@@ -12,9 +12,7 @@ import org.pf4j.RuntimeMode;
 import org.pf4j.util.StringUtils;
 import org.springframework.context.ApplicationContext;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 插件中配置文件 bean 的处理者。包括配置文件
@@ -22,8 +20,6 @@ import java.util.Set;
  * @version 2.4.0
  */
 public class ConfigFileBeanRegistrar implements PluginBeanRegistrar {
-
-    private static final String KEY = "ConfigFileBeanProcessor";
 
     private final ConfigurationParser configurationParser;
     private final IntegrationConfiguration integrationConfiguration;
@@ -36,25 +32,15 @@ public class ConfigFileBeanRegistrar implements PluginBeanRegistrar {
 
 
     @Override
-    public void initialize() throws Exception {
-
-    }
-
-    @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         List<Class<?>> configDefinitions =
                 pluginRegistryInfo.getGroupClasses(ConfigDefinitionGroup.GROUP_ID);
         if(configDefinitions == null || configDefinitions.isEmpty()){
             return;
         }
-        Set<String> beanNames = new HashSet<>();
         for (Class<?> aClass : configDefinitions) {
-            String beanName = registry(pluginRegistryInfo, aClass);
-            if(!StringUtils.isNullOrEmpty(beanName)){
-                beanNames.add(beanName);
-            }
+            registry(pluginRegistryInfo, aClass);
         }
-        pluginRegistryInfo.addProcessorInfo(KEY, beanNames);
     }
 
     /**

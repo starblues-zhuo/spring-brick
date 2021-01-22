@@ -68,7 +68,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
                     }
                     try {
                         ControllerBeanWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
-                        // process(1, pluginRegistryInfo.getPluginWrapper().getPluginId(), groupClass);
                         controllerBeanWrappers.add(controllerBeanWrapper);
                     } catch (Exception e){
                         pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
@@ -94,15 +93,11 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             if(controllerBeanWrappers == null || controllerBeanWrappers.isEmpty()){
                 continue;
             }
-            String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
             for (ControllerBeanWrapper controllerBeanWrapper : controllerBeanWrappers) {
                 if(controllerBeanWrapper == null){
                     continue;
                 }
-                unregister(pluginId, controllerBeanWrapper);
-//                process(2,
-//                        pluginRegistryInfo.getPluginWrapper().getPluginId(),
-//                        controllerBeanWrapper.getBeanClass());
+                unregister(controllerBeanWrapper);
             }
         }
     }
@@ -147,10 +142,9 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
 
     /**
      * 卸载具体的Controller操作
-     * @param pluginId 插件id
      * @param controllerBeanWrapper controllerBean包装
      */
-    private void unregister(String pluginId, ControllerBeanWrapper controllerBeanWrapper) {
+    private void unregister(ControllerBeanWrapper controllerBeanWrapper) {
         Set<RequestMappingInfo> requestMappingInfos = controllerBeanWrapper.getRequestMappingInfos();
         if(requestMappingInfos != null && !requestMappingInfos.isEmpty()){
             for (RequestMappingInfo requestMappingInfo : requestMappingInfos) {
@@ -158,7 +152,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             }
         }
     }
-
 
 
     /**
