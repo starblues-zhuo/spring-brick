@@ -17,7 +17,14 @@ public @interface ConfigDefinition {
      * 插件中的配置文件的名称
      * @return String
      */
-    String value();
+    @Deprecated
+    String value() default "";
+
+    /**
+     * 插件中的配置文件的名称
+     * @return String
+     */
+    String fileName() default "";
 
     /**
      * 自定义 bean 名称

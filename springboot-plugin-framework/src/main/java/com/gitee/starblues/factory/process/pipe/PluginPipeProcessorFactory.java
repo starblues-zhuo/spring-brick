@@ -35,18 +35,12 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
         // 以下顺序不能更改
         // 插件资源加载者, 必须放在第一位
         pluginPipeProcessors.add(new PluginResourceLoadFactory());
+        // 插件类处理者
         pluginPipeProcessors.add(new PluginClassProcess());
-        pluginPipeProcessors.add(new PluginApplicationContextProcessor(applicationContext));
-        // pluginPipeProcessors.add(new PluginApplicationContextProcessor());
-        // OneselfListenerStopEventProcessor 触发停止事件
-        // pluginPipeProcessors.add(new OneselfListenerStopEventProcessor());
-        // 配置文件在所有bean中第一个初始化
-        // pluginPipeProcessors.add(new ConfigFileBeanProcessor(applicationContext));
-        // 接下来初始化插件中配置bean的初始化
-        // pluginPipeProcessors.add(new ConfigBeanProcessor());
         // 添加前置扩展
         pluginPipeProcessors.addAll(ExtensionInitializer.getPreProcessorExtends());
-        // pluginPipeProcessors.add(new BasicBeanProcessor());
+        // 插件的ApplicationContext处理者
+        pluginPipeProcessors.add(new PluginApplicationContextProcessor(applicationContext));
         // 添加扩展
         pluginPipeProcessors.addAll(ExtensionInitializer.getPipeProcessorExtends());
 

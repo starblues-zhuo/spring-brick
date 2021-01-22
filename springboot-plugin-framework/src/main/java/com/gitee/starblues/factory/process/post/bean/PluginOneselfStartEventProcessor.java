@@ -17,6 +17,7 @@ import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * 插件中 OneselfListener 监听者处理者。主要执行监听器的启动事件。
@@ -28,12 +29,8 @@ public class PluginOneselfStartEventProcessor implements PluginPostProcessor {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final PluginUser pluginUser;
 
-    public PluginOneselfStartEventProcessor(ApplicationContext applicationContext){
-        Objects.requireNonNull(applicationContext);
-        PluginApplication pluginApplication = applicationContext.getBean(PluginApplication.class);
-        this.pluginUser = pluginApplication.getPluginUser();
+    public PluginOneselfStartEventProcessor(){
     }
 
 
@@ -44,37 +41,53 @@ public class PluginOneselfStartEventProcessor implements PluginPostProcessor {
 
     @Override
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
+        notify(pluginRegistryInfos, (oneselfListener, basePlugin) -> {
+            try {
+                oneselfListener.startEvent(basePlugin);
+            } catch (Exception e){
+                log.error("OneselfListener {} execute startEvent exception. {}",
+                        oneselfListener.getClass().getName(), e.getMessage(), e);
+            }
+        });
+    }
+
+
+    @Override
+    public void unRegistry(List<PluginRegistryInfo> pluginRegistryInfos) {
+        notify(pluginRegistryInfos, (oneselfListener, basePlugin) -> {
+            try {
+                oneselfListener.stopEvent(basePlugin);
+            } catch (Exception e){
+                log.error("OneselfListener {} execute stopEvent exception. {}",
+                        oneselfListener.getClass().getName(), e.getMessage(), e);
+            }
+        });
+    }
+
+    private void notify(List<PluginRegistryInfo> pluginRegistryInfos, NotifyConsumer consumer){
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
-            AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
             try {
                 BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
-                String pluginId = basePlugin.getWrapper().getPluginId();
                 GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
                 List<OneselfListener> oneselfListeners = PluginBeanUtils.getPluginBeans(pluginApplicationContext, OneselfListener.class);
                 oneselfListeners.stream()
                         .filter(oneselfListener -> oneselfListener != null)
                         .sorted(CommonUtils.orderPriority(oneselfListener -> oneselfListener.order()))
                         .forEach(oneselfListener -> {
-                            try {
-                                oneselfListener.startEvent(basePlugin);
-                            } catch (Exception e){
-                                log.error("OneselfListener {} execute startEvent exception. {}",
-                                        oneselfListener.getClass().getName(), e.getMessage(), e);
-                            }
+                            consumer.notify(oneselfListener, basePlugin);
                         });
-            } finally {
-                AopUtils.recoverAop();
+            } catch (Exception e){
+                e.printStackTrace();
             }
         }
     }
 
+    @FunctionalInterface
+    private interface NotifyConsumer{
 
+        void notify(OneselfListener oneselfListener, BasePlugin basePlugin);
 
-    @Override
-    public void unRegistry(List<PluginRegistryInfo> pluginRegistryInfos) {
-        // 此处不卸载调用。
     }
-
 
 
 }

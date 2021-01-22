@@ -69,7 +69,7 @@ public class ConfigFileBeanRegistrar implements PluginBeanRegistrar {
         if(configDefinition == null){
             return null;
         }
-        String fileName = getConfigFileName(configDefinition, aClass);
+        String fileName = getConfigFileName(configDefinition);
         Object parseObject = null;
         if(!StringUtils.isNullOrEmpty(fileName)){
             PluginConfigDefinition pluginConfigDefinition =
@@ -94,13 +94,16 @@ public class ConfigFileBeanRegistrar implements PluginBeanRegistrar {
     /**
      * 根据项目运行环境模式来获取配置文件
      * @param configDefinition 配置的注解
-     * @param aClass 当前配置类
      * @return 文件名称
      */
-    private String getConfigFileName(ConfigDefinition configDefinition, Class<?> aClass){
+    private String getConfigFileName(ConfigDefinition configDefinition){
+        // TODO 后期移除 value
         String fileName = configDefinition.value();
         if(StringUtils.isNullOrEmpty(fileName)){
-            return fileName;
+            fileName = configDefinition.fileName();
+            if(StringUtils.isNullOrEmpty(fileName)){
+                return null;
+            }
         }
 
         String fileNamePrefix;

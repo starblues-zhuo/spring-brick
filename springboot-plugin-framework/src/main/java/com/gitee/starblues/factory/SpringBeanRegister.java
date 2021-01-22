@@ -1,19 +1,14 @@
 package com.gitee.starblues.factory;
 
 import com.gitee.starblues.factory.process.pipe.bean.name.PluginAnnotationBeanNameGenerator;
-import com.gitee.starblues.utils.PluginBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
