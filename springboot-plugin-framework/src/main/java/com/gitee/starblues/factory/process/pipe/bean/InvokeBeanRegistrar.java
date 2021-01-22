@@ -137,7 +137,7 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
         public T getObject() throws Exception {
             ClassLoader classLoader = callerInterface.getClassLoader();
             Class<?>[] interfaces = new Class[]{callerInterface};
-            ProxyHandler proxy = new ProxyHandler(callerInterface, callerAnnotation);
+            ProxyHandler proxy = new ProxyHandler(callerAnnotation);
             return (T) Proxy.newProxyInstance(classLoader, interfaces, proxy);
         }
 
@@ -175,13 +175,11 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
      */
     private static class ProxyHandler implements InvocationHandler {
 
-        private final Class<?> supplierClass;
         private final Caller callerAnnotation;
 
         private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-        private ProxyHandler(Class<?> supplierClass, Caller callerAnnotation) {
-            this.supplierClass = supplierClass;
+        private ProxyHandler(Caller callerAnnotation) {
             this.callerAnnotation = callerAnnotation;
         }
 
@@ -225,6 +223,7 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
                                         Object supplierObject, Object[] args) throws Throwable{
 
             String callerMethodName = callerMethod.value();
+            Class<?> supplierClass = supplierObject.getClass();
             Method[] methods = supplierClass.getMethods();
             Method supplierMethod = null;
             for (Method m : methods) {
@@ -277,6 +276,7 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
             for (int i = 0; i < args.length; i++) {
                 argClasses[i] = args[i].getClass();
             }
+            Class<?> supplierClass = supplierObject.getClass();
             Method supplierMethod = supplierClass.getMethod(name, argClasses);
             System.out.println(supplierObject);
             Object invokeReturn = supplierMethod.invoke(supplierObject, args);
