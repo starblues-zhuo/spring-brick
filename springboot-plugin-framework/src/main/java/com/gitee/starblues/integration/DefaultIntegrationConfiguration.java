@@ -1,5 +1,6 @@
 package com.gitee.starblues.integration;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -35,6 +36,10 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
         return true;
     }
 
+    @Override
+    public Set<String> enablePluginIds() {
+        return null;
+    }
 
     @Override
     public Set<String> disablePluginIds() {
@@ -44,5 +49,10 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     @Override
     public boolean enableSwaggerRefresh() {
         return true;
+    }
+
+    @Override
+    public List<String> sortInitPluginIds() {
+        return null;
     }
 }

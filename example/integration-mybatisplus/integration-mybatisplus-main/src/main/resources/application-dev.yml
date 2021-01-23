@@ -16,6 +16,6 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 plugin:
-  runMode: prod
-  pluginPath: D:\code\open-source-code\springboot-plugin-framework-parent\example\integration-mybatisplus\dist\plugins
+  runMode: dev
+  pluginPath: ./example/integration-mybatisplus/plugins
   pluginConfigFilePath:

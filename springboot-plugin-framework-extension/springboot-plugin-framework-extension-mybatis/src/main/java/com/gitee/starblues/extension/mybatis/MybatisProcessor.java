@@ -1,9 +1,8 @@
 package com.gitee.starblues.extension.mybatis;
 
-import com.gitee.starblues.extension.ExtensionConfigUtils;
 import com.gitee.starblues.factory.PluginRegistryInfo;
-import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
-import com.gitee.starblues.utils.OrderPriority;
+import com.gitee.starblues.factory.process.pipe.bean.PluginBeanRegistrarExtend;
+import com.gitee.starblues.utils.PluginBeanUtils;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.plugin.Interceptor;
@@ -12,10 +11,8 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 
@@ -24,16 +21,11 @@ import org.springframework.core.io.Resource;
  * @author starBlues
  * @version 2.3
  */
-public class MybatisProcessor implements PluginPipeProcessorExtend {
+public class MybatisProcessor implements PluginBeanRegistrarExtend {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MybatisProcessor.class);
 
-    private final GenericApplicationContext applicationContext;
-    private final MapperHandler mapperHandler;
-
-    public MybatisProcessor(ApplicationContext applicationContext) {
-        this.applicationContext = (GenericApplicationContext) applicationContext;
-        this.mapperHandler = new MapperHandler(this.applicationContext);
+    public MybatisProcessor() {
     }
 
     @Override
@@ -42,20 +34,9 @@ public class MybatisProcessor implements PluginPipeProcessorExtend {
     }
 
     @Override
-    public OrderPriority order() {
-        return OrderPriority.getHighPriority();
-    }
-
-    @Override
-    public void initialize() throws Exception {
-
-    }
-
-    @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
-
-        SpringBootMybatisConfig config = ExtensionConfigUtils.getConfig(applicationContext, pluginWrapper.getPluginId(),
+        SpringBootMybatisConfig config = PluginBeanUtils.getObjectByInterfaceClass(
+                pluginRegistryInfo.getConfigSingletons(),
                 SpringBootMybatisConfig.class);
         if(config == null){
             return;
@@ -66,7 +47,8 @@ public class MybatisProcessor implements PluginPipeProcessorExtend {
         if(config.enableOneselfConfig()){
             config.oneselfConfig(factory);
         } else {
-            PluginFollowCoreConfig followCoreConfig = new PluginFollowCoreConfig(applicationContext);
+            GenericApplicationContext mainApplicationContext = pluginRegistryInfo.getMainApplicationContext();
+            PluginFollowCoreConfig followCoreConfig = new PluginFollowCoreConfig(mainApplicationContext);
             factory.setDataSource(followCoreConfig.getDataSource());
             Configuration configuration = followCoreConfig.getConfiguration(SpringBootMybatisExtension.Type.MYBATIS);
             factory.setConfiguration(configuration);
@@ -85,8 +67,7 @@ public class MybatisProcessor implements PluginPipeProcessorExtend {
                 }
             }
         }
-
-        PluginResourceFinder pluginResourceFinder = new PluginResourceFinder(pluginWrapper.getPluginClassLoader());
+        PluginResourceFinder pluginResourceFinder = new PluginResourceFinder(pluginRegistryInfo);
 
         Class<?>[] aliasesClasses = pluginResourceFinder.getAliasesClasses(config.entityPackage());
         if(aliasesClasses != null && aliasesClasses.length > 0){
@@ -100,12 +81,13 @@ public class MybatisProcessor implements PluginPipeProcessorExtend {
 
         ClassLoader defaultClassLoader = Resources.getDefaultClassLoader();
         try {
-            Resources.setDefaultClassLoader(pluginWrapper.getPluginClassLoader());
+            Resources.setDefaultClassLoader(pluginRegistryInfo.getDefaultPluginClassLoader());
             SqlSessionFactory sqlSessionFactory = factory.getObject();
             if(sqlSessionFactory == null){
                 throw new Exception("Get mybatis sqlSessionFactory is null");
             }
             SqlSessionTemplate sqlSessionTemplate = new SqlSessionTemplate(sqlSessionFactory);
+            MapperHandler mapperHandler = new MapperHandler();
             mapperHandler.processMapper(pluginRegistryInfo, (holder, mapperClass) -> {
                 mapperHandler.commonProcessMapper(holder, mapperClass, sqlSessionFactory, sqlSessionTemplate);
             });
@@ -113,11 +95,6 @@ public class MybatisProcessor implements PluginPipeProcessorExtend {
             Resources.setDefaultClassLoader(defaultClassLoader);
         }
 
-    }
-
-    @Override
-    public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        mapperHandler.unRegistryMapper(pluginRegistryInfo);
     }
 
 

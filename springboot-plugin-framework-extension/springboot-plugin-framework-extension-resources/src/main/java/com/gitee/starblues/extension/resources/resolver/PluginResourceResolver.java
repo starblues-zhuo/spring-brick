@@ -1,7 +1,8 @@
 package com.gitee.starblues.extension.resources.resolver;
 
 import com.gitee.starblues.extension.resources.StaticResourceConfig;
-import com.gitee.starblues.loader.PluginResource;
+import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.factory.process.pipe.loader.PluginResource;
 import com.gitee.starblues.realize.BasePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,6 @@ public class PluginResourceResolver extends AbstractResourceResolver {
         if (endOffset != -1) {
             String pluginId = requestPath.substring(startOffset, endOffset);
             String partialPath = requestPath.substring(endOffset + 1);
-
             PluginStaticResource pluginResource = PLUGIN_RESOURCE_MAP.get(pluginId);
 
             if(pluginResource == null){
@@ -94,16 +94,17 @@ public class PluginResourceResolver extends AbstractResourceResolver {
         if(classPaths == null || classPaths.isEmpty()){
             return null;
         }
-
-        BasePlugin basePlugin = pluginResource.getBasePlugin();
+        PluginRegistryInfo pluginRegistryInfo = pluginResource.getPluginRegistryInfo();
+        BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
         if(basePlugin == null){
             return null;
         }
 
-
+        ClassLoader pluginClassLoader = pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PDA);
         for (String classPath : classPaths) {
             try {
-                Resource resource = new PluginResource(classPath + partialPath, basePlugin);
+                PluginResource resource = new PluginResource(classPath + partialPath, pluginRegistryInfo);
+                resource.setClassLoader(pluginClassLoader);
                 if(resource.exists()){
                     return resource;
                 }
@@ -192,15 +193,15 @@ public class PluginResourceResolver extends AbstractResourceResolver {
 
     /**
      * 每新增一个插件, 都需要调用该方法，来解析该插件的 StaticResourceConfig 配置。并将其保存到 StaticResourceConfig bean 中。
-     * @param basePlugin 插件信息
+     * @param pluginRegistryInfo 插件信息
      */
-    public static synchronized void parse(BasePlugin basePlugin,
+    public static synchronized void parse(PluginRegistryInfo pluginRegistryInfo,
                                           StaticResourceConfig staticResourceConfig){
-        if(basePlugin == null || staticResourceConfig == null){
+        if(pluginRegistryInfo == null || staticResourceConfig == null){
             return;
         }
 
-        String pluginId = basePlugin.getWrapper().getPluginId();
+        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
 
         Set<String> locations = staticResourceConfig.locations();
         if(locations == null || locations.isEmpty()){
@@ -243,7 +244,7 @@ public class PluginResourceResolver extends AbstractResourceResolver {
         PluginStaticResource pluginResource = new PluginStaticResource();
         pluginResource.setClassPaths(classPaths);
         pluginResource.setFilePaths(filePaths);
-        pluginResource.setBasePlugin(basePlugin);
+        pluginResource.setPluginRegistryInfo(pluginRegistryInfo);
 
         logger.info("PluginResources '{}' set classpath resources: {}, set file resources: {}", pluginId,
                 classPaths, filePaths);
@@ -279,7 +280,7 @@ public class PluginResourceResolver extends AbstractResourceResolver {
         /**
          * basePlugin bean
          */
-        private BasePlugin basePlugin;
+        private PluginRegistryInfo pluginRegistryInfo;
 
         /**
          * 定义的classpath集合
@@ -296,13 +297,12 @@ public class PluginResourceResolver extends AbstractResourceResolver {
          */
         private Map<String, Resource> cacheResourceMaps = new ConcurrentHashMap<>();
 
-
-        BasePlugin getBasePlugin() {
-            return basePlugin;
+        PluginRegistryInfo getPluginRegistryInfo() {
+            return pluginRegistryInfo;
         }
 
-        void setBasePlugin(BasePlugin basePlugin) {
-            this.basePlugin = basePlugin;
+        void setPluginRegistryInfo(PluginRegistryInfo pluginRegistryInfo) {
+            this.pluginRegistryInfo = pluginRegistryInfo;
         }
 
         Set<String> getClassPaths() {

@@ -40,6 +40,9 @@ public class SupplierService {
         return key;
     }
 
+    public String notArg(){
+        return "noArg";
+    }
 
     public CommonReturn commonTest(String key, CommonParam commonParam){
         System.out.println(commonParam);

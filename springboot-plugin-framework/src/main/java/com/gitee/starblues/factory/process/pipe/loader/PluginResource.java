@@ -1,6 +1,7 @@
-package com.gitee.starblues.loader;
+package com.gitee.starblues.factory.process.pipe.loader;
 
-import com.gitee.starblues.realize.BasePlugin;
+import com.gitee.starblues.factory.PluginRegistryInfo;
+import org.pf4j.ClassLoadingStrategy;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.channels.ReadableByteChannel;
 
 /**
  * 插件资源实现类.主要是对Spring中的抽象的Resource实现.
@@ -28,7 +28,7 @@ public class PluginResource implements Resource {
 
     private final static Logger log = LoggerFactory.getLogger(PluginResource.class);
 
-    private final ClassLoader classLoader;
+    private ClassLoader classLoader;
     private final PluginWrapper pluginWrapper;
 
     private final long lastModified;
@@ -38,22 +38,25 @@ public class PluginResource implements Resource {
     /**
      * 相对Classpath 路径
      * @param path 路径
-     * @param basePlugin basePlugin bean
+     * @param pluginRegistryInfo pluginRegistryInfo bean
      */
-    public PluginResource(String path, BasePlugin basePlugin) {
+    public PluginResource(String path, PluginRegistryInfo pluginRegistryInfo) {
         String pathToUse = StringUtils.cleanPath(path);
         if (pathToUse.startsWith("/")) {
             pathToUse = pathToUse.substring(1);
         }
         this.path = pathToUse;
 
-        PluginWrapper pluginWrapper = basePlugin.getWrapper();
-        this.classLoader = pluginWrapper.getPluginClassLoader();
+        PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
+        this.classLoader = pluginRegistryInfo.getDefaultPluginClassLoader();
         this.pluginWrapper = pluginWrapper;
 
-        this.lastModified = basePlugin.getBasePluginExtend().getStartTimestamp();
+        this.lastModified = pluginRegistryInfo.getBasePlugin().getBasePluginExtend().getStartTimestamp();
     }
 
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
 
     @Override
     public InputStream getInputStream() throws IOException {

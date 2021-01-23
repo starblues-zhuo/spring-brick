@@ -1,9 +1,11 @@
-package com.gitee.starblues.loader.load;
+package com.gitee.starblues.factory.process.pipe.loader.load;
 
-import com.gitee.starblues.loader.PluginResourceLoader;
-import com.gitee.starblues.loader.ResourceWrapper;
+import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoader;
+import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.OrderPriority;
+import org.pf4j.ClassLoadingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -43,11 +45,12 @@ public class PluginConfigFileLoader implements PluginResourceLoader {
     }
 
     @Override
-    public ResourceWrapper load(BasePlugin basePlugin) throws Exception {
+    public ResourceWrapper load(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         List<Supplier<SupplierBean>> suppliers = new ArrayList<>();
+        BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
         suppliers.add(findConfigRoot());
         suppliers.add(findPluginRoot(basePlugin));
-        suppliers.add(findClassPath(basePlugin));
+        suppliers.add(findClassPath(pluginRegistryInfo.getDefaultPluginClassLoader()));
 
 
         for (Supplier<SupplierBean> supplier : suppliers) {
@@ -68,7 +71,7 @@ public class PluginConfigFileLoader implements PluginResourceLoader {
     }
 
     @Override
-    public void unload(BasePlugin basePlugin, ResourceWrapper resourceWrapper) throws Exception {
+    public void unload(PluginRegistryInfo pluginRegistryInfo, ResourceWrapper resourceWrapper) throws Exception {
         // Do nothing
     }
 
@@ -107,12 +110,12 @@ public class PluginConfigFileLoader implements PluginResourceLoader {
 
     /**
      * 从ClassPath 中查找配置文件
-     * @param basePlugin  basePlugin
+     * @param classLoader  classLoader
      * @return 返回resource
      */
-    private Supplier<SupplierBean> findClassPath(BasePlugin basePlugin){
+    private Supplier<SupplierBean> findClassPath(ClassLoader classLoader){
         return ()->{
-            Resource resource = new ClassPathResource("/" + fileName, basePlugin.getWrapper().getPluginClassLoader());
+            Resource resource = new ClassPathResource("/" + fileName, classLoader);
             return new SupplierBean("classPath", resource);
         };
     }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -65,10 +66,32 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     private Boolean enableSwaggerRefresh;
 
     /**
+     * 在卸载插件后, 备份插件的目录
+     */
+    @Value("${backupPath:}")
+    private String backupPath;
+
+    /**
+     * 上传的插件所存储的临时目录
+     */
+    @Value("${uploadTempPath:}")
+    private String uploadTempPath;
+
+    /**
+     * 启用的插件id
+     */
+    private Set<String> enablePluginIds;
+
+    /**
      * 禁用的插件id, 禁用后系统不会启动该插件
      * 如果禁用所有插件, 则Set集合中返回一个字符: *
      */
-    public Set<String> disablePluginIds;
+    private Set<String> disablePluginIds;
+
+    /**
+     * 设置初始化时插件启动的顺序
+     */
+    private List<String> sortInitPluginIds;
 
     @Override
     public RuntimeMode environment() {
@@ -94,14 +117,21 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         return enable;
     }
 
+
     @Override
     public String uploadTempPath() {
-        return super.uploadTempPath();
+        if(StringUtils.isNullOrEmpty(uploadTempPath)){
+            return super.uploadTempPath();
+        }
+        return uploadTempPath;
     }
 
     @Override
     public String backupPath() {
-        return super.backupPath();
+        if(StringUtils.isNullOrEmpty(backupPath)){
+            return super.backupPath();
+        }
+        return backupPath;
     }
 
     @Override
@@ -120,6 +150,12 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         } else {
             return enablePluginIdRestPathPrefix;
         }
+    }
+
+
+    @Override
+    public Set<String> enablePluginIds() {
+        return enablePluginIds;
     }
 
     @Override
@@ -188,11 +224,43 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         this.enableSwaggerRefresh = enableSwaggerRefresh;
     }
 
+    public String getBackupPath() {
+        return backupPath;
+    }
+
+    public void setBackupPath(String backupPath) {
+        this.backupPath = backupPath;
+    }
+
+    public String getUploadTempPath() {
+        return uploadTempPath;
+    }
+
+    public void setUploadTempPath(String uploadTempPath) {
+        this.uploadTempPath = uploadTempPath;
+    }
+
+    public Set<String> getEnablePluginIds() {
+        return enablePluginIds;
+    }
+
+    public void setEnablePluginIds(Set<String> enablePluginIds) {
+        this.enablePluginIds = enablePluginIds;
+    }
+
     public Set<String> getDisablePluginIds() {
         return disablePluginIds;
     }
 
     public void setDisablePluginIds(Set<String> disablePluginIds) {
         this.disablePluginIds = disablePluginIds;
+    }
+
+    public List<String> getSortInitPluginIds() {
+        return sortInitPluginIds;
+    }
+
+    public void setSortInitPluginIds(List<String> sortInitPluginIds) {
+        this.sortInitPluginIds = sortInitPluginIds;
     }
 }

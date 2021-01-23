@@ -1,4 +1,4 @@
-package com.gitee.starblues.loader;
+package com.gitee.starblues.factory.process.pipe.loader;
 
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;

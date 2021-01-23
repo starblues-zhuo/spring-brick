@@ -1,49 +1,35 @@
 package com.gitee.starblues.factory.process.pipe.bean;
 
 import com.gitee.starblues.annotation.ConfigDefinition;
-import com.gitee.starblues.factory.PluginInfoContainer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
-import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
+import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.bean.configuration.ConfigurationParser;
 import com.gitee.starblues.factory.process.pipe.bean.configuration.PluginConfigDefinition;
 import com.gitee.starblues.factory.process.pipe.bean.configuration.YamlConfigurationParser;
 import com.gitee.starblues.factory.process.pipe.classs.group.ConfigDefinitionGroup;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.pf4j.RuntimeMode;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.pf4j.util.StringUtils;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.StringUtils;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 插件中配置文件 bean 的处理者。包括配置文件
  * @author starBlues
  * @version 2.4.0
  */
-public class ConfigFileBeanProcessor implements PluginPipeProcessor {
-
-    private static final String KEY = "ConfigFileBeanProcessor";
+public class ConfigFileBeanRegistrar implements PluginBeanRegistrar {
 
     private final ConfigurationParser configurationParser;
-    private final DefaultListableBeanFactory defaultListableBeanFactory;
     private final IntegrationConfiguration integrationConfiguration;
 
-    public ConfigFileBeanProcessor(ApplicationContext mainApplicationContext) {
+    public ConfigFileBeanRegistrar(ApplicationContext mainApplicationContext) {
         integrationConfiguration =
                 mainApplicationContext.getBean(IntegrationConfiguration.class);
         this.configurationParser = new YamlConfigurationParser(integrationConfiguration);
-        this.defaultListableBeanFactory = (DefaultListableBeanFactory)
-                mainApplicationContext.getAutowireCapableBeanFactory();
     }
 
-
-    @Override
-    public void initialize() throws Exception {
-
-    }
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
@@ -52,30 +38,8 @@ public class ConfigFileBeanProcessor implements PluginPipeProcessor {
         if(configDefinitions == null || configDefinitions.isEmpty()){
             return;
         }
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-        Set<String> beanNames = new HashSet<>();
         for (Class<?> aClass : configDefinitions) {
-            String beanName = registry(pluginRegistryInfo, aClass);
-            if(!StringUtils.isEmpty(beanName)){
-                beanNames.add(beanName);
-                PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
-            }
-        }
-        pluginRegistryInfo.addProcessorInfo(KEY, beanNames);
-    }
-
-    @Override
-    public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        Set<String> beanNames = pluginRegistryInfo.getProcessorInfo(KEY);
-        if(beanNames == null){
-            return;
-        }
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-        for (String beanName : beanNames) {
-            if(defaultListableBeanFactory.containsSingleton(beanName)){
-                defaultListableBeanFactory.destroySingleton(beanName);
-                PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
-            }
+            registry(pluginRegistryInfo, aClass);
         }
     }
 
@@ -91,32 +55,41 @@ public class ConfigFileBeanProcessor implements PluginPipeProcessor {
         if(configDefinition == null){
             return null;
         }
-        String fileName = getConfigFileName(configDefinition, aClass);
-        PluginConfigDefinition pluginConfigDefinition =
-                new PluginConfigDefinition(fileName, aClass);
-        Object parseObject = configurationParser.parse(pluginRegistryInfo.getBasePlugin(),
-                pluginConfigDefinition);
+        String fileName = getConfigFileName(configDefinition);
+        Object parseObject = null;
+        if(!StringUtils.isNullOrEmpty(fileName)){
+            PluginConfigDefinition pluginConfigDefinition =
+                    new PluginConfigDefinition(fileName, aClass);
+            parseObject = configurationParser.parse(pluginRegistryInfo,
+                    pluginConfigDefinition);
+        } else {
+            parseObject = aClass.newInstance();
+        }
+
         String name = configDefinition.beanName();
-        if(StringUtils.isEmpty(name)){
+        if(StringUtils.isNullOrEmpty(name)){
             name = aClass.getName();
         }
         name = name + "@" + pluginRegistryInfo.getPluginWrapper().getPluginId();
-        if(!defaultListableBeanFactory.containsSingleton(name)){
-            defaultListableBeanFactory.registerSingleton(name, parseObject);
-        }
+        SpringBeanRegister springBeanRegister = pluginRegistryInfo.getSpringBeanRegister();
+        springBeanRegister.registerSingleton(name, parseObject);
+        pluginRegistryInfo.addConfigSingleton(parseObject);
         return name;
     }
 
     /**
      * 根据项目运行环境模式来获取配置文件
      * @param configDefinition 配置的注解
-     * @param aClass 当前配置类
      * @return 文件名称
      */
-    private String getConfigFileName(ConfigDefinition configDefinition, Class<?> aClass){
+    private String getConfigFileName(ConfigDefinition configDefinition){
+        // TODO 后期移除 value
         String fileName = configDefinition.value();
-        if(StringUtils.isEmpty(fileName)){
-            throw new IllegalArgumentException(aClass.getName() + " configDefinition value is null");
+        if(StringUtils.isNullOrEmpty(fileName)){
+            fileName = configDefinition.fileName();
+            if(StringUtils.isNullOrEmpty(fileName)){
+                return null;
+            }
         }
 
         String fileNamePrefix;

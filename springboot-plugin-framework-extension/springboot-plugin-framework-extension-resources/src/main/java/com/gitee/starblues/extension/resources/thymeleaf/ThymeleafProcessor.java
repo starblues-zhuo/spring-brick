@@ -1,12 +1,12 @@
 package com.gitee.starblues.extension.resources.thymeleaf;
 
-import com.gitee.starblues.extension.ExtensionConfigUtils;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.utils.OrderPriority;
+import com.gitee.starblues.utils.PluginBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -26,10 +26,7 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
     private static final String TEMPLATE_RESOLVER_BEAN = "ClassLoaderTemplateResolver";
     private static final Logger LOGGER = LoggerFactory.getLogger(ThymeleafProcessor.class);
 
-    private final ApplicationContext applicationContext;
-
-    public ThymeleafProcessor(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public ThymeleafProcessor() {
     }
 
     @Override
@@ -49,14 +46,13 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-
-        SpringTemplateEngine springTemplateEngine = getSpringTemplateEngine();
+        SpringTemplateEngine springTemplateEngine = getSpringTemplateEngine(pluginRegistryInfo);
         if(springTemplateEngine == null){
             return;
         }
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-        SpringBootThymeleafConfig config = ExtensionConfigUtils.getConfig(applicationContext,
-                pluginId, SpringBootThymeleafConfig.class);
+        SpringBootThymeleafConfig config = PluginBeanUtils.getObjectByInterfaceClass(
+                pluginRegistryInfo.getConfigSingletons(),
+                SpringBootThymeleafConfig.class);
         if(config == null){
             return;
         }
@@ -114,7 +110,7 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
             return;
         }
         try {
-            SpringTemplateEngine springTemplateEngine = getSpringTemplateEngine();
+            SpringTemplateEngine springTemplateEngine = getSpringTemplateEngine(pluginRegistryInfo);
             Set<ITemplateResolver> templateResolvers = getITemplateResolvers(springTemplateEngine);
             if(templateResolvers != null){
                 templateResolvers.remove(resolver);
@@ -125,7 +121,8 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
         }
     }
 
-    private SpringTemplateEngine getSpringTemplateEngine(){
+    private SpringTemplateEngine getSpringTemplateEngine(PluginRegistryInfo pluginRegistryInfo){
+        GenericApplicationContext applicationContext = pluginRegistryInfo.getMainApplicationContext();
         String[] beanNamesForType = applicationContext.getBeanNamesForType(SpringTemplateEngine.class,
                 false, false);
         if(beanNamesForType.length == 0){

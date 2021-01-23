@@ -1,5 +1,6 @@
 package com.mybatis.plugin1;
 
+import com.gitee.starblues.annotation.ConfigDefinition;
 import com.gitee.starblues.extension.resources.StaticResourceConfig;
 import com.gitee.starblues.extension.resources.thymeleaf.SpringBootThymeleafConfig;
 import com.gitee.starblues.extension.resources.thymeleaf.ThymeleafConfig;
@@ -13,7 +14,7 @@ import java.util.Set;
  * @version 1.0
  * @since 2020-12-19
  */
-@Component
+@ConfigDefinition
 public class ResourceConfig implements StaticResourceConfig, SpringBootThymeleafConfig {
     @Override
     public Set<String> locations() {

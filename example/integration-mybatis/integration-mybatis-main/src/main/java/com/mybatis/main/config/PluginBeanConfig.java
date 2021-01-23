@@ -5,6 +5,7 @@ import com.gitee.starblues.extension.resources.StaticResourceExtension;
 import com.gitee.starblues.integration.*;
 import com.gitee.starblues.integration.application.AutoPluginApplication;
 import com.gitee.starblues.integration.application.PluginApplication;
+import com.google.common.collect.Sets;
 import org.pf4j.RuntimeMode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -59,6 +60,8 @@ public class PluginBeanConfig {
                 .pluginRestPathPrefix("/api/plugin")
                 .enablePluginIdRestPathPrefix(true)
                 .enableSwaggerRefresh(true)
+                .enablePluginIds(Sets.newHashSet("integration-mybatis-plugin1"))
+                .disablePluginIds(Sets.newHashSet("integration-mybatis-plugin2"))
                 .build();
     }
 

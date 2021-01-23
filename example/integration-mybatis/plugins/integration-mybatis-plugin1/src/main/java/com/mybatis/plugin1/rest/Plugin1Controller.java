@@ -1,6 +1,5 @@
 package com.mybatis.plugin1.rest;
 
-import com.baomidou.mybatisplus.generator.config.GlobalConfig;
 import com.mybatis.plugin1.entity.Plugin1;
 import com.mybatis.plugin1.mapper.Plugin1Mapper;
 import com.mybatis.plugin1.service.TranServiec;
@@ -47,7 +46,6 @@ public class Plugin1Controller {
         if(!StringUtils.isEmpty(name)){
             p.setName(name);
         }
-        GlobalConfig config = new GlobalConfig();
         return pluginMapperl.getByCondition(p);
     }
 

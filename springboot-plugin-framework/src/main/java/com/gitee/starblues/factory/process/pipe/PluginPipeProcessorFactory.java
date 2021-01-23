@@ -2,11 +2,8 @@ package com.gitee.starblues.factory.process.pipe;
 
 import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
-import com.gitee.starblues.factory.process.pipe.bean.BasicBeanProcessor;
-import com.gitee.starblues.factory.process.pipe.bean.ConfigBeanProcessor;
-import com.gitee.starblues.factory.process.pipe.bean.ConfigFileBeanProcessor;
-import com.gitee.starblues.factory.process.pipe.bean.OneselfListenerStopEventProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassProcess;
+import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -35,16 +32,17 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
 
     @Override
     public void initialize() throws Exception{
-        // OneselfListenerStopEventProcessor 触发停止事件, 必须第一个执行
-        pluginPipeProcessors.add(new OneselfListenerStopEventProcessor(applicationContext));
+        // 以下顺序不能更改
+        // 插件资源加载者, 必须放在第一位
+        pluginPipeProcessors.add(new PluginResourceLoadFactory());
+        // 插件类处理者
         pluginPipeProcessors.add(new PluginClassProcess());
-        // 配置文件在所有bean中第一个初始化。
-        pluginPipeProcessors.add(new ConfigFileBeanProcessor(applicationContext));
-        // 接下来初始化插件中配置bean的初始化
-        pluginPipeProcessors.add(new ConfigBeanProcessor(applicationContext));
         // 添加前置扩展
         pluginPipeProcessors.addAll(ExtensionInitializer.getPreProcessorExtends());
-        pluginPipeProcessors.add(new BasicBeanProcessor(applicationContext));
+        // 插件的ApplicationContext处理者
+        pluginPipeProcessors.add(new PluginPipeApplicationContextProcessor(applicationContext));
+        // 插件ConfigBean处理者
+        pluginPipeProcessors.add(new PluginConfigBeanPipeProcessor());
         // 添加扩展
         pluginPipeProcessors.addAll(ExtensionInitializer.getPipeProcessorExtends());
 
@@ -63,13 +61,18 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
 
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
+        boolean findException = false;
         for (PluginPipeProcessor pluginPipeProcessor : pluginPipeProcessors) {
             try {
                 pluginPipeProcessor.unRegistry(pluginRegistryInfo);
             } catch (Exception e){
+                findException = true;
                 logger.error("unRegistry plugin '{}' failure by {}", pluginRegistryInfo.getPluginWrapper().getPluginId(),
                         pluginPipeProcessor.getClass().getName(), e);
             }
+        }
+        if(findException){
+            throw new Exception("UnRegistry plugin '" + pluginRegistryInfo.getPluginWrapper().getPluginId() + "'failure");
         }
     }
 }

@@ -1,6 +1,4 @@
 package com.gitee.starblues.factory;
-
-import com.gitee.starblues.extension.ExtensionConfigUtils;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorFactory;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
@@ -9,8 +7,6 @@ import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginListener;
 import com.gitee.starblues.integration.listener.PluginListenerFactory;
 import com.gitee.starblues.integration.listener.SwaggerListeningListener;
-import com.gitee.starblues.realize.UnRegistryValidator;
-import com.gitee.starblues.utils.AopUtils;
 import org.pf4j.PluginWrapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
@@ -52,16 +48,16 @@ public class DefaultPluginFactory implements PluginFactory {
 
     public DefaultPluginFactory(ApplicationContext applicationContext,
                                 PluginListenerFactory pluginListenerFactory) {
+        this.applicationContext = (GenericApplicationContext) applicationContext;
         this.pluginPipeProcessor = new PluginPipeProcessorFactory(applicationContext);
         this.pluginPostProcessor = new PluginPostProcessorFactory(applicationContext);
-        this.applicationContext = (GenericApplicationContext) applicationContext;
+
         if(pluginListenerFactory == null){
             this.pluginListenerFactory = new PluginListenerFactory();
         } else {
             this.pluginListenerFactory = pluginListenerFactory;
         }
         configuration = applicationContext.getBean(IntegrationConfiguration.class);
-        AopUtils.registered(applicationContext);
     }
 
 
@@ -86,18 +82,17 @@ public class DefaultPluginFactory implements PluginFactory {
         if(!buildContainer.isEmpty() && buildType == 2){
             throw new IllegalAccessException("Unable to Registry operate. Because there's no build");
         }
-        AopUtils.resolveAop(pluginWrapper);
         try {
             pluginPipeProcessor.registry(pluginRegistryInfo);
             registerPluginInfoMap.put(pluginWrapper.getPluginId(), pluginRegistryInfo);
             buildContainer.add(pluginRegistryInfo);
             return this;
         } catch (Exception e) {
+
             pluginListenerFactory.failure(pluginWrapper.getPluginId(), e);
             throw e;
         } finally {
             buildType = 1;
-            AopUtils.recoverAop();
         }
     }
 
@@ -115,6 +110,7 @@ public class DefaultPluginFactory implements PluginFactory {
             buildContainer.add(registerPluginInfo);
             return this;
         } catch (Exception e) {
+            registerPluginInfo.destroy();
             pluginListenerFactory.failure(pluginId, e);
             throw e;
         } finally {
@@ -122,6 +118,8 @@ public class DefaultPluginFactory implements PluginFactory {
             buildType = 2;
         }
     }
+
+
 
     @Override
     public synchronized void build() throws Exception {
@@ -137,10 +135,12 @@ public class DefaultPluginFactory implements PluginFactory {
                 unRegistryBuild();
             }
         } finally {
-            buildContainer.clear();
-            if(buildType == 1){
-                AopUtils.recoverAop();
+            if(buildType != 1){
+                for (PluginRegistryInfo pluginRegistryInfo : buildContainer) {
+                    pluginRegistryInfo.destroy();
+                }
             }
+            buildContainer.clear();
             buildType = 0;
         }
     }
@@ -187,6 +187,8 @@ public class DefaultPluginFactory implements PluginFactory {
             pluginListenerFactory.unRegistry(pluginRegistryInfo.getPluginWrapper().getPluginId());
         }
     }
+
+
 
     /**
      * 添加默认插件监听者
