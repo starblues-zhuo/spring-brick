@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -74,6 +75,11 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
      * 如果禁用所有插件, 则Set集合中返回一个字符: *
      */
     private Set<String> disablePluginIds;
+
+    /**
+     * 设置初始化时插件启动的顺序
+     */
+    private List<String> sortInitPluginIds;
 
     @Override
     public RuntimeMode environment() {
@@ -214,5 +220,13 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     public void setDisablePluginIds(Set<String> disablePluginIds) {
         this.disablePluginIds = disablePluginIds;
+    }
+
+    public List<String> getSortInitPluginIds() {
+        return sortInitPluginIds;
+    }
+
+    public void setSortInitPluginIds(List<String> sortInitPluginIds) {
+        this.sortInitPluginIds = sortInitPluginIds;
     }
 }

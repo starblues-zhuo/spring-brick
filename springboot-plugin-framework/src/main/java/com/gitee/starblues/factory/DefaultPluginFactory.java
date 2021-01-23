@@ -7,14 +7,10 @@ import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginListener;
 import com.gitee.starblues.integration.listener.PluginListenerFactory;
 import com.gitee.starblues.integration.listener.SwaggerListeningListener;
-import com.gitee.starblues.utils.AopUtils;
-import org.pf4j.PluginRuntimeException;
 import org.pf4j.PluginWrapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +58,6 @@ public class DefaultPluginFactory implements PluginFactory {
             this.pluginListenerFactory = pluginListenerFactory;
         }
         configuration = applicationContext.getBean(IntegrationConfiguration.class);
-        AopUtils.registered(applicationContext);
     }
 
 

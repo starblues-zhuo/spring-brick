@@ -6,7 +6,6 @@ import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.classs.group.ControllerGroup;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
 import com.gitee.starblues.integration.IntegrationConfiguration;
-import com.gitee.starblues.utils.AopUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -54,32 +53,24 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
     @Override
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
-            AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
-
-            try {
-                List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(ControllerGroup.GROUP_ID);
-                if(groupClasses == null || groupClasses.isEmpty()){
+            List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(ControllerGroup.GROUP_ID);
+            if(groupClasses == null || groupClasses.isEmpty()){
+                continue;
+            }
+            List<ControllerBeanWrapper> controllerBeanWrappers = new ArrayList<>();
+            for (Class<?> groupClass : groupClasses) {
+                if(groupClass == null){
                     continue;
                 }
-                List<ControllerBeanWrapper> controllerBeanWrappers = new ArrayList<>();
-                for (Class<?> groupClass : groupClasses) {
-                    if(groupClass == null){
-                        continue;
-                    }
-                    try {
-                        ControllerBeanWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
-                        controllerBeanWrappers.add(controllerBeanWrapper);
-                    } catch (Exception e){
-                        pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
-                        throw e;
-                    }
+                try {
+                    ControllerBeanWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
+                    controllerBeanWrappers.add(controllerBeanWrapper);
+                } catch (Exception e){
+                    pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
+                    throw e;
                 }
-
-                pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
-            } finally {
-                AopUtils.recoverAop();
             }
-
+            pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
         }
     }
 

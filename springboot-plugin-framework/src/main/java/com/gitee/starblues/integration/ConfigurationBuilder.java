@@ -3,6 +3,7 @@ package com.gitee.starblues.integration;
 import org.pf4j.RuntimeMode;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -28,6 +29,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     private Set<String> enablePluginIds;
     private Set<String> disablePluginIds;
+    private List<String> sortInitPluginIds;
     private Boolean enableSwaggerRefresh;
 
     public ConfigurationBuilder(Builder builder) {
@@ -41,6 +43,8 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         this.enablePluginIdRestPathPrefix = builder.enablePluginIdRestPathPrefix;
         this.enablePluginIds = builder.enablePluginIds;
         this.disablePluginIds = builder.disablePluginIds;
+        this.sortInitPluginIds = builder.sortInitPluginIds;
+
         if(builder.enable == null){
             this.enable = true;
         } else {
@@ -72,6 +76,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
         private Set<String> enablePluginIds;
         private Set<String> disablePluginIds;
+        private List<String> sortInitPluginIds;
         private Boolean enableSwaggerRefresh;
 
         public Builder runtimeMode(RuntimeMode runtimeMode){
@@ -123,6 +128,12 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             this.disablePluginIds = disablePluginIds;
             return this;
         }
+
+        public Builder sortInitPluginIds(List<String> sortInitPluginIds){
+            this.sortInitPluginIds = sortInitPluginIds;
+            return this;
+        }
+
         public Builder enableSwaggerRefresh(Boolean enableSwaggerRefresh){
             this.enableSwaggerRefresh = enableSwaggerRefresh;
             return this;
@@ -200,6 +211,11 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     @Override
     public Set<String> disablePluginIds() {
         return disablePluginIds;
+    }
+
+    @Override
+    public List<String> sortInitPluginIds() {
+        return sortInitPluginIds;
     }
 
     @Override

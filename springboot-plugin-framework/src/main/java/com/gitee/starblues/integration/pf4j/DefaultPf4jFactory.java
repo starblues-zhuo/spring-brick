@@ -5,6 +5,7 @@ import org.pf4j.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -30,10 +31,18 @@ public class DefaultPf4jFactory implements Pf4jFactory {
         if(environment == null){
             throw new RuntimeException("Configuration RuntimeMode is null" + configuration.environment());
         }
+        List<String> sortInitPluginIds = configuration.sortInitPluginIds();
         if(RuntimeMode.DEVELOPMENT == environment){
             // 开发环境下的插件管理者
             Path path = Paths.get(getDevPluginDir(configuration));
             return new DefaultPluginManager(path){
+
+                @Override
+                protected void initialize() {
+                    super.initialize();
+                    dependencyResolver = new SortDependencyResolver(sortInitPluginIds, versionManager);
+                }
+
                 @Override
                 public RuntimeMode getRuntimeMode() {
                     System.setProperty("pf4j.mode", RuntimeMode.DEVELOPMENT.toString());
@@ -57,15 +66,17 @@ public class DefaultPf4jFactory implements Pf4jFactory {
                             configuration.enablePluginIds(),
                             configuration.disablePluginIds());
                 }
+
             };
         } else if(RuntimeMode.DEPLOYMENT == environment){
             // 运行环境下的插件管理者
             Path path = Paths.get(getProdPluginDir(configuration));
             return new DefaultPluginManager(path){
+
                 @Override
-                protected PluginRepository createPluginRepository() {
-                    return new CompoundPluginRepository()
-                            .add(new JarPluginRepository(getPluginsRoot()));
+                protected void initialize() {
+                    super.initialize();
+                    dependencyResolver = new SortDependencyResolver(sortInitPluginIds, versionManager);
                 }
 
                 @Override
