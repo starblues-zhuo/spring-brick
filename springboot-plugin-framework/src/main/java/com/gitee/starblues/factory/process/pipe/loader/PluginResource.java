@@ -48,7 +48,7 @@ public class PluginResource implements Resource {
         this.path = pathToUse;
 
         PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
-        this.classLoader = pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PAD);
+        this.classLoader = pluginRegistryInfo.getDefaultPluginClassLoader();
         this.pluginWrapper = pluginWrapper;
 
         this.lastModified = pluginRegistryInfo.getBasePlugin().getBasePluginExtend().getStartTimestamp();

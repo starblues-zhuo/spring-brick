@@ -96,7 +96,7 @@ public class TkMybatisProcessor implements PluginBeanRegistrarExtend {
         if(xmlResource != null && xmlResource.length > 0){
             factory.setMapperLocations(xmlResource);
         }
-        ClassLoader pluginClassLoader = pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PAD);
+        ClassLoader pluginClassLoader = pluginRegistryInfo.getDefaultPluginClassLoader();
         ClassLoader defaultClassLoader = Resources.getDefaultClassLoader();
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {

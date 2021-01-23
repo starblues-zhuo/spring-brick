@@ -81,7 +81,7 @@ public class MybatisProcessor implements PluginBeanRegistrarExtend {
 
         ClassLoader defaultClassLoader = Resources.getDefaultClassLoader();
         try {
-            Resources.setDefaultClassLoader(pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PAD));
+            Resources.setDefaultClassLoader(pluginRegistryInfo.getDefaultPluginClassLoader());
             SqlSessionFactory sqlSessionFactory = factory.getObject();
             if(sqlSessionFactory == null){
                 throw new Exception("Get mybatis sqlSessionFactory is null");

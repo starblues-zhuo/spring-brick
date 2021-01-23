@@ -4,12 +4,13 @@ import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.bean.*;
 import com.gitee.starblues.realize.PluginUtils;
+import org.pf4j.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 插件的ApplicationContext 处理
@@ -18,6 +19,8 @@ import java.util.List;
  * @version 1.0
  */
 public class PluginApplicationContextProcessor implements PluginPipeProcessor{
+
+    private final static Logger logger = LoggerFactory.getLogger(PluginApplicationContextProcessor.class);
 
     private final List<PluginBeanRegistrar> pluginBeanDefinitionRegistrars = new ArrayList<>();
     private final ApplicationContext mainApplicationContext;
@@ -38,14 +41,19 @@ public class PluginApplicationContextProcessor implements PluginPipeProcessor{
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
-        pluginApplicationContext.getDefaultListableBeanFactory().registerSingleton("p",
-                pluginApplicationContext);
         // 进行bean注册
         for (PluginBeanRegistrar pluginBeanDefinitionRegistrar : pluginBeanDefinitionRegistrars) {
             pluginBeanDefinitionRegistrar.registry(pluginRegistryInfo);
         }
         addBeanExtend(pluginRegistryInfo);
-        pluginApplicationContext.refresh();
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(pluginRegistryInfo.getDefaultPluginClassLoader());
+            pluginApplicationContext.refresh();
+        } finally {
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
+        }
+
         // 向插件静态容器中新增插件的ApplicationContext
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         PluginInfoContainers.addPluginApplicationContext(pluginId, pluginApplicationContext);
@@ -53,10 +61,18 @@ public class PluginApplicationContextProcessor implements PluginPipeProcessor{
 
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        for (PluginBeanRegistrar pluginBeanDefinitionRegistrar : pluginBeanDefinitionRegistrars) {
-            pluginBeanDefinitionRegistrar.unRegistry(pluginRegistryInfo);
+        for (PluginBeanRegistrar registrar : pluginBeanDefinitionRegistrars) {
+            try {
+                registrar.unRegistry(pluginRegistryInfo);
+            } catch (Exception e){
+                logger.error("Plugin '{}'-'{}' unRegistry failure.",
+                        pluginRegistryInfo.getPluginWrapper().getPluginId(),
+                        registrar.getClass().getName());
+            }
         }
+        removeBeanExtend(pluginRegistryInfo);
     }
+
 
     /**
      * 向插件ApplicationContext容器中添加扩展的bean
@@ -68,8 +84,23 @@ public class PluginApplicationContextProcessor implements PluginPipeProcessor{
         PluginUtils pluginUtils = new PluginUtils(parentApplicationContext,
                 pluginApplicationContext,
                 pluginRegistryInfo.getPluginWrapper().getDescriptor());
-        pluginApplicationContext.getBeanFactory().registerSingleton(
-                pluginUtils.getClass().getName(), pluginUtils);
+        String name = pluginUtils.getClass().getName();
+        pluginApplicationContext.getBeanFactory().registerSingleton(name, pluginUtils);
+        pluginRegistryInfo.addExtension("PluginUtilsName", name);
+    }
+
+
+    /**
+     * 移除扩展绑定
+     * @param pluginRegistryInfo 插件注册信息
+     */
+    private void removeBeanExtend(PluginRegistryInfo pluginRegistryInfo) {
+        String pluginUtilsName = pluginRegistryInfo.getExtension("PluginUtilsName");
+        if(StringUtils.isNullOrEmpty(pluginUtilsName)){
+            return;
+        }
+        GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
+        pluginApplicationContext.getDefaultListableBeanFactory().destroySingleton(pluginUtilsName);
     }
 
 }
