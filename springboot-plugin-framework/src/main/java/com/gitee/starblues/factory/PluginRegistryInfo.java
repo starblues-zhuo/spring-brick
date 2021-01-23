@@ -11,6 +11,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ClassUtils;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -333,20 +335,41 @@ public class PluginRegistryInfo {
     }
 
 
-    void clear(){
+    void destroy(){
+        // 关闭ApplicationContext
+        try {
+            PluginInfoContainers.removePluginApplicationContext(getPluginWrapper().getPluginId());
+            closePluginApplicationContext();
+        } catch (Exception e){
+            logger.error("Close plugin '{}'-ApplicationContext failure", getPluginWrapper().getPluginId(), e);
+        }
+
+        // 关闭ClassClassLoader
+        try {
+            for (ClassLoader pluginClassLoader : pluginClassLoaders.values()) {
+                if (pluginClassLoader instanceof Closeable) {
+                    try {
+                        ((Closeable) pluginClassLoader).close();
+                    } catch (IOException e) {
+                        logger.error("Close plugin '{}'-ClassLoader-'{}' failure", getPluginWrapper().getPluginId(),
+                                pluginClassLoader.getClass().getName(), e);
+                    }
+                }
+            }
+        } finally {
+            pluginClassLoaders.clear();
+        }
+
+        // 清除数据集合
         try {
             extensionMap.clear();
             classes.clear();
             groupClasses.clear();
             processorInfo.clear();
-            pluginClassLoaders.clear();
             pluginLoadResources.clear();
             configSingletonObjects.clear();
         } catch (Exception e){
             logger.error("Clear plugin '{}' failure", getPluginWrapper().getPluginId(), e);
-        } finally {
-            PluginInfoContainers.removePluginApplicationContext(getPluginWrapper().getPluginId());
-            closePluginApplicationContext();
         }
     }
 

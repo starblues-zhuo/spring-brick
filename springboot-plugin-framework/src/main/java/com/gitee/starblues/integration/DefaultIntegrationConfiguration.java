@@ -35,6 +35,10 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
         return true;
     }
 
+    @Override
+    public Set<String> enablePluginIds() {
+        return null;
+    }
 
     @Override
     public Set<String> disablePluginIds() {

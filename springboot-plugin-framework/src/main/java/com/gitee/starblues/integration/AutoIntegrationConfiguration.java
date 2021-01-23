@@ -65,10 +65,15 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     private Boolean enableSwaggerRefresh;
 
     /**
+     * 启用的插件id
+     */
+    private Set<String> enablePluginIds;
+
+    /**
      * 禁用的插件id, 禁用后系统不会启动该插件
      * 如果禁用所有插件, 则Set集合中返回一个字符: *
      */
-    public Set<String> disablePluginIds;
+    private Set<String> disablePluginIds;
 
     @Override
     public RuntimeMode environment() {
@@ -93,6 +98,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         }
         return enable;
     }
+
 
     @Override
     public String uploadTempPath() {
@@ -120,6 +126,12 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         } else {
             return enablePluginIdRestPathPrefix;
         }
+    }
+
+
+    @Override
+    public Set<String> enablePluginIds() {
+        return enablePluginIds;
     }
 
     @Override
@@ -186,6 +198,14 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     public void setEnableSwaggerRefresh(Boolean enableSwaggerRefresh) {
         this.enableSwaggerRefresh = enableSwaggerRefresh;
+    }
+
+    public Set<String> getEnablePluginIds() {
+        return enablePluginIds;
+    }
+
+    public void setEnablePluginIds(Set<String> enablePluginIds) {
+        this.enablePluginIds = enablePluginIds;
     }
 
     public Set<String> getDisablePluginIds() {

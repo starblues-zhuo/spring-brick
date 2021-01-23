@@ -66,6 +66,12 @@ public interface IntegrationConfiguration {
     boolean enable();
 
     /**
+     * 启用的插件id
+     * @return Set
+     */
+    Set<String> enablePluginIds();
+
+    /**
      * 禁用的插件id, 禁用后系统不会启动该插件
      * 如果禁用所有插件, 则Set集合中返回一个字符: *
      * @return Set

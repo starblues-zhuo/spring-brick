@@ -53,7 +53,9 @@ public class DefaultPf4jFactory implements Pf4jFactory {
 
                 @Override
                 protected PluginStatusProvider createPluginStatusProvider() {
-                    return new ConfigPluginStatusProvider(configuration.disablePluginIds());
+                    return new ConfigPluginStatusProvider(
+                            configuration.enablePluginIds(),
+                            configuration.disablePluginIds());
                 }
             };
         } else if(RuntimeMode.DEPLOYMENT == environment){
@@ -73,7 +75,9 @@ public class DefaultPf4jFactory implements Pf4jFactory {
 
                 @Override
                 protected PluginStatusProvider createPluginStatusProvider() {
-                    return new ConfigPluginStatusProvider(configuration.disablePluginIds());
+                    return new ConfigPluginStatusProvider(
+                            configuration.enablePluginIds(),
+                            configuration.disablePluginIds());
                 }
 
                 @Override

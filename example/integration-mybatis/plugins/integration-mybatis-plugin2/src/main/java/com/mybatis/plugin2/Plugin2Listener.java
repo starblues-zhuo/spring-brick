@@ -2,10 +2,12 @@ package com.mybatis.plugin2;
 
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.realize.OneselfListener;
+import com.gitee.starblues.realize.PluginUtils;
 import com.gitee.starblues.utils.OrderPriority;
 import com.mybatis.main.mapper.RoleMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * description
@@ -19,8 +21,9 @@ public class Plugin2Listener implements OneselfListener {
 
     private final RoleMapper roleMapper;
 
-    public Plugin2Listener(RoleMapper roleMapper) {
-        this.roleMapper = roleMapper;
+    @Autowired
+    public Plugin2Listener(PluginUtils pluginUtils){
+        roleMapper = pluginUtils.getMainBean(RoleMapper.class);
     }
 
     @Override

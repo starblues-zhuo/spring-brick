@@ -87,18 +87,17 @@ public class DefaultPluginFactory implements PluginFactory {
         if(!buildContainer.isEmpty() && buildType == 2){
             throw new IllegalAccessException("Unable to Registry operate. Because there's no build");
         }
-        AopUtils.resolveAop(pluginWrapper);
         try {
             pluginPipeProcessor.registry(pluginRegistryInfo);
             registerPluginInfoMap.put(pluginWrapper.getPluginId(), pluginRegistryInfo);
             buildContainer.add(pluginRegistryInfo);
             return this;
         } catch (Exception e) {
+
             pluginListenerFactory.failure(pluginWrapper.getPluginId(), e);
             throw e;
         } finally {
             buildType = 1;
-            AopUtils.recoverAop();
         }
     }
 
@@ -116,6 +115,7 @@ public class DefaultPluginFactory implements PluginFactory {
             buildContainer.add(registerPluginInfo);
             return this;
         } catch (Exception e) {
+            registerPluginInfo.destroy();
             pluginListenerFactory.failure(pluginId, e);
             throw e;
         } finally {
@@ -140,13 +140,9 @@ public class DefaultPluginFactory implements PluginFactory {
                 unRegistryBuild();
             }
         } finally {
-            if(buildType == 1){
-                AopUtils.recoverAop();
-            } else {
+            if(buildType != 1){
                 for (PluginRegistryInfo pluginRegistryInfo : buildContainer) {
-                    // 卸载classLoader
-                    closeClassLoader(pluginRegistryInfo);
-                    pluginRegistryInfo.clear();
+                    pluginRegistryInfo.destroy();
                 }
             }
             buildContainer.clear();
@@ -197,22 +193,7 @@ public class DefaultPluginFactory implements PluginFactory {
         }
     }
 
-    /**
-     * 卸载Close Loader
-     * @param registerPluginInfo registerPluginInfo
-     */
-    private void closeClassLoader(PluginRegistryInfo registerPluginInfo) {
-        List<ClassLoader> pluginClassLoaders = registerPluginInfo.getPluginClassLoaders();
-        for (ClassLoader pluginClassLoader : pluginClassLoaders) {
-            if (pluginClassLoader instanceof Closeable) {
-                try {
-                    ((Closeable) pluginClassLoader).close();
-                } catch (IOException e) {
-                    throw new PluginRuntimeException(e, "");
-                }
-            }
-        }
-    }
+
 
     /**
      * 添加默认插件监听者

@@ -26,6 +26,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     private Boolean enablePluginIdRestPathPrefix;
 
+    private Set<String> enablePluginIds;
     private Set<String> disablePluginIds;
     private Boolean enableSwaggerRefresh;
 
@@ -38,6 +39,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         this.backupPath = builder.backupPath;
         this.pluginRestPathPrefix = builder.pluginRestPathPrefix;
         this.enablePluginIdRestPathPrefix = builder.enablePluginIdRestPathPrefix;
+        this.enablePluginIds = builder.enablePluginIds;
         this.disablePluginIds = builder.disablePluginIds;
         if(builder.enable == null){
             this.enable = true;
@@ -68,6 +70,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         private String pluginRestPathPrefix;
         private Boolean enablePluginIdRestPathPrefix;
 
+        private Set<String> enablePluginIds;
         private Set<String> disablePluginIds;
         private Boolean enableSwaggerRefresh;
 
@@ -108,6 +111,11 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
         public Builder enablePluginIdRestPathPrefix(Boolean enablePluginIdRestPathPrefix){
             this.enablePluginIdRestPathPrefix = enablePluginIdRestPathPrefix;
+            return this;
+        }
+
+        public Builder enablePluginIds(Set<String> enablePluginIds){
+            this.enablePluginIds = enablePluginIds;
             return this;
         }
 
@@ -185,7 +193,20 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     }
 
     @Override
+    public Set<String> enablePluginIds() {
+        return enablePluginIds;
+    }
+
+    @Override
     public Set<String> disablePluginIds() {
         return disablePluginIds;
+    }
+
+    @Override
+    public boolean enableSwaggerRefresh() {
+        if(enableSwaggerRefresh == null){
+            super.enableSwaggerRefresh();
+        }
+        return enableSwaggerRefresh;
     }
 }
