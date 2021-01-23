@@ -25,7 +25,7 @@
 
 - 支持在插件中自定义`Mapper`接口、`Mapper xml` 以及对应的实体`bean`
 
-- 支持集成``Mybatis`、`Mybatis-Plus`、`Tk-Mybatis`
+- 支持集成`Mybatis`、`Mybatis-Plus`、`Tk-Mybatis`
 
 - 支持可在插件中独立配置数据源
 
