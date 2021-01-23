@@ -2,8 +2,10 @@ package com.basic.example.plugin1.rest;
 
 import com.basic.example.plugin1.config.PluginConfig1;
 import com.basic.example.plugin1.service.HelloService;
+import com.gitee.starblues.realize.PluginUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.pf4j.PluginDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +28,8 @@ public class HelloPlugin1 {
     @Autowired
     private PluginConfig1 pluginConfig1;
 
+    @Autowired
+    private PluginUtils pluginUtils;
 
     @GetMapping("plugin1")
     @ApiOperation(value = "hello", notes = "hello")
@@ -50,6 +54,9 @@ public class HelloPlugin1 {
         return helloService.sayService2();
     }
 
-
+    @GetMapping("pluginInfo")
+    public PluginDescriptor getPluginInfo(){
+        return pluginUtils.getPluginDescriptor();
+    }
 
 }

@@ -100,10 +100,11 @@ public class PluginResourceResolver extends AbstractResourceResolver {
             return null;
         }
 
-
+        ClassLoader pluginClassLoader = pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PDA);
         for (String classPath : classPaths) {
             try {
-                Resource resource = new PluginResource(classPath + partialPath, pluginRegistryInfo);
+                PluginResource resource = new PluginResource(classPath + partialPath, pluginRegistryInfo);
+                resource.setClassLoader(pluginClassLoader);
                 if(resource.exists()){
                     return resource;
                 }

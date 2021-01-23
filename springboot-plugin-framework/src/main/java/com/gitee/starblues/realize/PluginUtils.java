@@ -31,7 +31,7 @@ public class PluginUtils {
      * 获取主程序的 ApplicationContext
      * @return ApplicationContext
      */
-    public ApplicationContext getParentApplicationContext() {
+    public ApplicationContext getMainApplicationContext() {
         return parentApplicationContext;
     }
 
@@ -43,18 +43,22 @@ public class PluginUtils {
         return pluginApplicationContext;
     }
 
+    /**
+     * 获取当前插件的描述信息
+     * @return PluginDescriptor
+     */
     public PluginDescriptor getPluginDescriptor(){
         return pluginDescriptor;
     }
 
 
     /**
-     * 获取当前插件bean名称得到主程序中的bean
+     * 获取bean名称得到主程序中的bean
      * @param name bean 名称
      * @param <T> bean 类型
      * @return bean
      */
-    public <T> T getParentBean(String name){
+    public <T> T getMainBean(String name){
         Object bean = parentApplicationContext.getBean(name);
         if(bean == null){
             return null;
@@ -63,22 +67,22 @@ public class PluginUtils {
     }
 
     /**
-     * 通过当前插件bean类型得到主程序中的bean
+     * 通过bean类型得到主程序中的bean
      * @param aClass bean 类型
      * @param <T> bean 类型
      * @return bean
      */
-    public <T> T getParentBean(Class<T> aClass) {
+    public <T> T getMainBean(Class<T> aClass) {
         return parentApplicationContext.getBean(aClass);
     }
 
     /**
-     * 通过当前插件bean接口或者抽象类型得到主程序中的多个实现类型
+     * 通过接口或者抽象类型得到主程序中的多个实现类型
      * @param aClass bean 类型
      * @param <T> bean 类型
      * @return bean
      */
-    public <T> List<T> getParentBeans(Class<T> aClass){
+    public <T> List<T> getMainBeans(Class<T> aClass){
         return PluginBeanUtils.getPluginBeans(parentApplicationContext, aClass);
     }
 
