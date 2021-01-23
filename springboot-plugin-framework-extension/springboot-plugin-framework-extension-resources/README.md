@@ -1,4 +1,6 @@
-#扩展包 - 集成SpringBoot Mybatis
+### 包含内容
+- 可集成插件静态资源访问
+- 可集成`Thymeleaf`
 
 ### maven 仓库地址
 

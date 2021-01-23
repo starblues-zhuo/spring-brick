@@ -1,4 +1,7 @@
-#扩展包 - 集成SpringBoot Mybatis
+### 包含集成
+- 可集成`Mybatis`
+- 可集成`Mybatis-Plus`
+- 可集成`Tk-Mybatis`
 
 ### maven 仓库地址
 
@@ -225,5 +228,3 @@ public void oneselfConfig(Config config){
     
 #### 2.0.3 版本
 1. 修复Mapper无法注入的bug. (由于springboot-plugin-framework 2.0.3 版本升级导致)
-
-
