@@ -215,6 +215,9 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public boolean uninstall(String pluginId, boolean isBackup) throws Exception {
+        if(isDev()){
+            throw new RuntimeException("Plugin cannot be uninstalled in 'dev' environment");
+        }
         if(StringUtils.isEmpty(pluginId)){
             throw new IllegalArgumentException("Method:uninstall param 'pluginId' can not be empty");
         }
@@ -328,7 +331,7 @@ public class DefaultPluginOperator implements PluginOperator {
     @Override
     public boolean uploadPluginAndStart(MultipartFile pluginFile) throws Exception {
         if(isDev()){
-            throw new RuntimeException("Plugin cannot be installed in the 'dev' environment");
+            throw new RuntimeException("Plugin cannot uploadPluginAndStart in the 'dev' environment");
         }
         if(pluginFile == null){
             throw new IllegalArgumentException("Method:uploadPluginAndStart param 'pluginFile' can not be null");
@@ -344,6 +347,9 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public boolean installConfigFile(Path configFilePath) throws Exception {
+        if(isDev()){
+            throw new RuntimeException("Plugin config file cannot be installed in the 'dev' environment");
+        }
         if(!Files.exists(configFilePath)){
             throw new FileNotFoundException("configFilePath '" + configFilePath + "'  does not exist!");
         }
@@ -361,6 +367,9 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public boolean uploadConfigFile(MultipartFile configFile) throws Exception {
+        if(isDev()){
+            throw new RuntimeException("Plugin config file cannot be uploaded in the 'dev' environment");
+        }
         if(configFile == null){
             throw new IllegalArgumentException("Method:uploadConfigFile param 'configFile' can not be null");
         }
@@ -379,6 +388,9 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public boolean backupPlugin(Path backDirPath, String sign) throws Exception {
+        if(isDev()){
+            throw new RuntimeException("Plugin cannot backup in the 'dev' environment");
+        }
         Objects.requireNonNull(backDirPath);
         return backup(backDirPath, sign, 2);
     }
@@ -386,6 +398,9 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public boolean backupPlugin(String pluginId, String sign) throws Exception {
+        if(isDev()){
+            throw new RuntimeException("Plugin cannot backup in the 'dev' environment");
+        }
         PluginWrapper pluginManager = getPluginWrapper(pluginId, "BackupPlugin by pluginId");
         return backupPlugin(pluginManager.getPluginPath(), sign);
     }

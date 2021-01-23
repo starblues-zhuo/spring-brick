@@ -70,7 +70,6 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
                         registrar.getClass().getName());
             }
         }
-        removeBeanExtend(pluginRegistryInfo);
     }
 
 
@@ -94,7 +93,7 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
      * 移除扩展绑定
      * @param pluginRegistryInfo 插件注册信息
      */
-    private void removeBeanExtend(PluginRegistryInfo pluginRegistryInfo) {
+    public static void removeBeanExtend(PluginRegistryInfo pluginRegistryInfo) {
         String pluginUtilsName = pluginRegistryInfo.getExtension("PluginUtilsName");
         if(StringUtils.isNullOrEmpty(pluginUtilsName)){
             return;
