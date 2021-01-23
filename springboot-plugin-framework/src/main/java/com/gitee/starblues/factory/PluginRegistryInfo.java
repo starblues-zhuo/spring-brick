@@ -1,6 +1,7 @@
 package com.gitee.starblues.factory;
 
 import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
+import com.gitee.starblues.factory.process.pipe.PluginPipeApplicationContextProcessor;
 import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
 import org.pf4j.*;
@@ -375,6 +376,7 @@ public class PluginRegistryInfo {
 
     private void closePluginApplicationContext() {
         try {
+            PluginPipeApplicationContextProcessor.removeBeanExtend(this);
             pluginApplicationContext.close();
         } catch (Exception e){
             logger.error("Close plugin '{}' ApplicationContext failure", getPluginWrapper().getPluginId(), e);
