@@ -16,6 +16,8 @@ import java.util.*;
  */
 public class ConfigBeanRegistrar implements PluginBeanRegistrar {
 
+    public final static String KEY = "ConfigBeanNames";
+
     public ConfigBeanRegistrar() {
     }
 
@@ -35,6 +37,5 @@ public class ConfigBeanRegistrar implements PluginBeanRegistrar {
             springBeanRegister.register(pluginId, aClass);
         }
     }
-
 
 }

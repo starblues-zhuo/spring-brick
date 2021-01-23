@@ -18,14 +18,14 @@ import java.util.*;
  * @author starBlues
  * @version 1.0
  */
-public class PluginApplicationContextProcessor implements PluginPipeProcessor{
+public class PluginPipeApplicationContextProcessor implements PluginPipeProcessor{
 
-    private final static Logger logger = LoggerFactory.getLogger(PluginApplicationContextProcessor.class);
+    private final static Logger logger = LoggerFactory.getLogger(PluginPipeApplicationContextProcessor.class);
 
     private final List<PluginBeanRegistrar> pluginBeanDefinitionRegistrars = new ArrayList<>();
     private final ApplicationContext mainApplicationContext;
 
-    public PluginApplicationContextProcessor(ApplicationContext mainApplicationContext) {
+    public PluginPipeApplicationContextProcessor(ApplicationContext mainApplicationContext) {
         this.mainApplicationContext = mainApplicationContext;
     }
 

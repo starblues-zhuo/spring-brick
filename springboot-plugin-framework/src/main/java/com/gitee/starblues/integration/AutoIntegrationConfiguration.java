@@ -66,6 +66,18 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     private Boolean enableSwaggerRefresh;
 
     /**
+     * 在卸载插件后, 备份插件的目录
+     */
+    @Value("${backupPath:}")
+    private String backupPath;
+
+    /**
+     * 上传的插件所存储的临时目录
+     */
+    @Value("${uploadTempPath:}")
+    private String uploadTempPath;
+
+    /**
      * 启用的插件id
      */
     private Set<String> enablePluginIds;
@@ -108,12 +120,18 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     @Override
     public String uploadTempPath() {
-        return super.uploadTempPath();
+        if(StringUtils.isNullOrEmpty(uploadTempPath)){
+            return super.uploadTempPath();
+        }
+        return uploadTempPath;
     }
 
     @Override
     public String backupPath() {
-        return super.backupPath();
+        if(StringUtils.isNullOrEmpty(backupPath)){
+            return super.backupPath();
+        }
+        return backupPath;
     }
 
     @Override
@@ -204,6 +222,22 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     public void setEnableSwaggerRefresh(Boolean enableSwaggerRefresh) {
         this.enableSwaggerRefresh = enableSwaggerRefresh;
+    }
+
+    public String getBackupPath() {
+        return backupPath;
+    }
+
+    public void setBackupPath(String backupPath) {
+        this.backupPath = backupPath;
+    }
+
+    public String getUploadTempPath() {
+        return uploadTempPath;
+    }
+
+    public void setUploadTempPath(String uploadTempPath) {
+        this.uploadTempPath = uploadTempPath;
     }
 
     public Set<String> getEnablePluginIds() {

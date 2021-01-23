@@ -40,7 +40,9 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
         // 添加前置扩展
         pluginPipeProcessors.addAll(ExtensionInitializer.getPreProcessorExtends());
         // 插件的ApplicationContext处理者
-        pluginPipeProcessors.add(new PluginApplicationContextProcessor(applicationContext));
+        pluginPipeProcessors.add(new PluginPipeApplicationContextProcessor(applicationContext));
+        // 插件ConfigBean处理者
+        pluginPipeProcessors.add(new PluginConfigBeanPipeProcessor());
         // 添加扩展
         pluginPipeProcessors.addAll(ExtensionInitializer.getPipeProcessorExtends());
 
