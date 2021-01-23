@@ -1,5 +1,6 @@
 package com.basic.example.plugin1.rest;
 
+import com.basic.example.plugin1.config.ConfigBean;
 import com.basic.example.plugin1.config.PluginConfig1;
 import com.basic.example.plugin1.service.HelloService;
 import com.gitee.starblues.realize.PluginUtils;
@@ -31,6 +32,9 @@ public class HelloPlugin1 {
     @Autowired
     private PluginUtils pluginUtils;
 
+    @Autowired
+    private ConfigBean.ConfigBeanTest configBeanTest;
+
     @GetMapping("plugin1")
     @ApiOperation(value = "hello", notes = "hello")
     public String sya(){
@@ -57,6 +61,11 @@ public class HelloPlugin1 {
     @GetMapping("pluginInfo")
     public PluginDescriptor getPluginInfo(){
         return pluginUtils.getPluginDescriptor();
+    }
+
+    @GetMapping("configBeanTest")
+    public ConfigBean.ConfigBeanTest getConfigBeanTest(){
+        return configBeanTest;
     }
 
 }
