@@ -21,7 +21,6 @@ public abstract class AbstractExtension {
 
     protected PluginApplication pluginApplication;
 
-
     public void setPluginApplication(PluginApplication pluginApplication) {
         this.pluginApplication = pluginApplication;
     }
@@ -40,7 +39,6 @@ public abstract class AbstractExtension {
      */
     public void initialize(ApplicationContext mainApplicationContext) throws Exception{
     }
-
 
     /**
      * 返回插件的资源加载者。
@@ -71,7 +69,6 @@ public abstract class AbstractExtension {
         return null;
     }
 
-
     /**
      * 返回扩展的bean定义注册者扩展
      * 该扩展主要是对每一个插件进行处理
@@ -81,8 +78,6 @@ public abstract class AbstractExtension {
     public List<PluginBeanRegistrarExtend> getPluginBeanRegistrar(ApplicationContext mainApplicationContext){
         return null;
     }
-
-
 
     /**
      * 返回扩展的流插件处理者。

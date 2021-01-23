@@ -7,6 +7,7 @@ package com.gitee.starblues.extension;
  * @author starBlues
  * @version 1.0
  */
+@Deprecated
 public interface PluginControllerProcessor {
 
     /**

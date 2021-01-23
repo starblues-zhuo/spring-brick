@@ -1,8 +1,6 @@
 package com.gitee.starblues.factory.process.post.bean;
 
-import com.gitee.starblues.extension.PluginControllerProcessor;
 import com.gitee.starblues.factory.PluginRegistryInfo;
-import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.classs.group.ControllerGroup;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
 import com.gitee.starblues.integration.IntegrationConfiguration;
@@ -12,7 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
