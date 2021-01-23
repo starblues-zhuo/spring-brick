@@ -77,11 +77,12 @@ public PluginApplication pluginApplication(){
 - 如果集成`mybatis-plus`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootMybatisPlusConfig`
 - 如果集成`tkmybatis`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootTkMybatisConfig`
 
+- 以上实现类添加注解`@ConfigDefinition` 
 
 例如集成mybatis-plus:
 ```java
 
-@Component
+@ConfigDefinition
 public class MybatisConfig implements SpringBootMybatisConfig {
 
     @Override
@@ -102,7 +103,7 @@ public class MybatisConfig implements SpringBootMybatisConfig {
 ```
 
 该步骤主要定义插件中的Mapper xml的位置。该位置的定义规则如下:
-
+- 注意: 插件中的xml路径不能和主程序中的xml路径在`resources`相对一致, 比如文件名都为`mapper`, 建议使用不同名称区分开
 ``` text
 xmlLocationsMatch:
 ? 匹配一个字符
@@ -205,6 +206,8 @@ public void oneselfConfig(Config config){
 
 
 ### 版本升级
+#### 2.4.0 版本
+- 修改扩展功能中配置实现类，必须新增`@ConfigDefinition` 注解
 
 #### 2.2.5 版本
 全新升级该扩展

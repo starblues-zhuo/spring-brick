@@ -57,7 +57,7 @@ public PluginApplication pluginApplication(){
 
 例如: 
 ```java
-@Component
+@ConfigDefinition
 public class ResourceConfig implements StaticResourceConfig {
     @Override
     public Set<String> locations() {
@@ -84,7 +84,7 @@ public class ResourceConfig implements StaticResourceConfig {
 
 例如:
 ``` java
-@Component
+@ConfigDefinition
 public class ResourceConfig implements SpringBootThymeleafConfig {
 
     @Override
@@ -98,6 +98,10 @@ public class ResourceConfig implements SpringBootThymeleafConfig {
 
 
 ### 版本升级
+
+#### 2.4.0 版本
+- 修改扩展功能中配置实现类，必须新增`@ConfigDefinition` 注解
+- 修复插件中的静态资源和主程序冲突的bug
 
 #### 2.2.5 版本
 1. 新增`Thymeleaf`模板引擎
