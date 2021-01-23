@@ -1,7 +1,9 @@
-### 包含集成
-- 可集成`Mybatis`
-- 可集成`Mybatis-Plus`
-- 可集成`Tk-Mybatis`
+### 特性
+- 支持在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean
+- 支持插件独立定义数据源
+- 支持集成 `Mybatis`
+- 支持集成 `Mybatis-Plus`
+- 支持集成`Tk-Mybatis`
 
 ### maven 仓库地址
 
