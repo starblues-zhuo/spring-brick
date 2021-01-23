@@ -1,5 +1,6 @@
 package com.mybatis.plugin1.rest;
 
+import com.gitee.starblues.realize.PluginUtils;
 import com.mybatis.main.entity.User;
 import com.mybatis.main.mapper.UserMapper;
 import com.mybatis.main.service.TestTestTransactional;
@@ -22,10 +23,12 @@ public class UserController {
     private final UserMapper userMapper;
     private final TestTestTransactional testTestTransactional;
 
+
+
     @Autowired
-    public UserController(UserMapper userMapper, TestTestTransactional testTestTransactional) {
-        this.userMapper = userMapper;
-        this.testTestTransactional = testTestTransactional;
+    public UserController(PluginUtils pluginUtils) {
+        this.userMapper = pluginUtils.getMainBean(UserMapper.class);
+        this.testTestTransactional = pluginUtils.getMainBean(TestTestTransactional.class);
     }
 
     @GetMapping("/list")

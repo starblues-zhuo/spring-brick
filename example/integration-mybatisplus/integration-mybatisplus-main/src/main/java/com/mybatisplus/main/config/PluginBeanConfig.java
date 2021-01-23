@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PluginBeanConfig {
 
-
     /**
      * 定义插件应用。使用可以注入它操作插件。
      * @return PluginApplication
@@ -31,5 +30,4 @@ public class PluginBeanConfig {
         ));
         return pluginApplication;
     }
-
 }

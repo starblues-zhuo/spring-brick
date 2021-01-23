@@ -3,8 +3,11 @@ package com.gitee.starblues.factory.process.pipe.classs.group;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroup;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.AnnotationsUtils;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +50,8 @@ public class ComponentGroup implements PluginClassGroup {
 
     @Override
     public boolean filter(Class<?> aClass) {
-        boolean have = AnnotationsUtils.haveAnnotations(aClass, false, Component.class, Service.class);
+        boolean have = AnnotationsUtils.haveAnnotations(aClass, false, Component.class, Service.class,
+                Controller.class, RestController.class, Configuration.class);
         if(!have){
             return false;
         }

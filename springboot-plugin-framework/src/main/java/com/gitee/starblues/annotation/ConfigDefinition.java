@@ -3,7 +3,9 @@ package com.gitee.starblues.annotation;
 import java.lang.annotation.*;
 
 /**
- * 插件配置文件对应的bean定义注解
+ * 插件配置对应的bean定义注解
+ * 如果存在配置文件, 则进行属性自定义
+ * 如果未依赖配置文件, 则直接定义注解即可
  * @author starBlues
  * @version 1.0
  */
@@ -14,10 +16,17 @@ public @interface ConfigDefinition {
 
 
     /**
-     * 插件中的配置文件的名称
+     * 插件中的配置文件的名称. 建议使用 fileName 进行文件名称配置.
      * @return String
      */
-    String value();
+    @Deprecated
+    String value() default "";
+
+    /**
+     * 插件中的配置文件的名称, 新版本替换 value 值
+     * @return String
+     */
+    String fileName() default "";
 
     /**
      * 自定义 bean 名称

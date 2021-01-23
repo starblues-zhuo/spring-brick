@@ -1,5 +1,6 @@
 package com.tkmybatis.plugin.config;
 
+import com.gitee.starblues.annotation.ConfigDefinition;
 import com.gitee.starblues.extension.mybatis.tkmyabtis.SpringBootTkMybatisConfig;
 import com.google.common.collect.Sets;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
@@ -14,7 +15,7 @@ import java.util.Set;
  * @version 1.0
  * @since 2020-12-14
  */
-@Component
+@ConfigDefinition
 public class TkMybatisPlusConfig implements SpringBootTkMybatisConfig {
 
     @Override

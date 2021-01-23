@@ -3,10 +3,9 @@ package com.gitee.starblues.factory;
 import com.gitee.starblues.factory.process.pipe.bean.name.PluginAnnotationBeanNameGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.support.BeanNameGenerator;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.text.MessageFormat;
@@ -22,10 +21,15 @@ public class SpringBeanRegister {
 
     private static final Logger logger = LoggerFactory.getLogger(SpringBeanRegister.class);
 
-    private final GenericApplicationContext applicationContext;
+    private final GenericApplicationContext pluginApplicationContext;
 
-    public SpringBeanRegister(ApplicationContext applicationContext){
-        this.applicationContext = (GenericApplicationContext) applicationContext;
+    public SpringBeanRegister(GenericApplicationContext pluginApplicationContext){
+        this.pluginApplicationContext = pluginApplicationContext;
+    }
+
+
+    public boolean exist(String name){
+        return pluginApplicationContext.containsBean(name);
     }
 
     /**
@@ -48,13 +52,13 @@ public class SpringBeanRegister {
      */
     public String register(String pluginId, Class<?> aClass,
                            Consumer<AnnotatedGenericBeanDefinition> consumer) {
-        AnnotatedGenericBeanDefinition beanDefinition = new
-                AnnotatedGenericBeanDefinition(aClass);
-
+        AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(aClass);
+        beanDefinition.setBeanClass(aClass);
         BeanNameGenerator beanNameGenerator =
                 new PluginAnnotationBeanNameGenerator(pluginId);
-        String beanName = beanNameGenerator.generateBeanName(beanDefinition, applicationContext);
-        if(PluginInfoContainer.existRegisterBeanName((beanName))){
+        String beanName = beanNameGenerator.generateBeanName(beanDefinition, pluginApplicationContext);
+
+        if(pluginApplicationContext.containsBean(beanName)){
             String error = MessageFormat.format("Bean name {0} already exist of {1}",
                     beanName, aClass.getName());
             logger.debug(error);
@@ -63,13 +67,7 @@ public class SpringBeanRegister {
         if(consumer != null){
             consumer.accept(beanDefinition);
         }
-        PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
-        applicationContext.registerBeanDefinition(beanName, beanDefinition);
-        try {
-            applicationContext.getBean(beanName);
-        } catch (BeansException e) {
-            logger.debug(e.getMessage());
-        }
+        pluginApplicationContext.registerBeanDefinition(beanName, beanDefinition);
         return beanName;
     }
 
@@ -96,7 +94,7 @@ public class SpringBeanRegister {
                                       Consumer<AnnotatedGenericBeanDefinition> consumer) {
         AnnotatedGenericBeanDefinition beanDefinition = new
                 AnnotatedGenericBeanDefinition(aClass);
-        if(PluginInfoContainer.existRegisterBeanName((beanName))){
+        if(pluginApplicationContext.containsBean(beanName)){
             String error = MessageFormat.format("Bean name {0} already exist of {1}",
                     beanName, aClass.getName());
             throw new RuntimeException(error);
@@ -104,11 +102,32 @@ public class SpringBeanRegister {
         if(consumer != null){
             consumer.accept(beanDefinition);
         }
-        applicationContext.registerBeanDefinition(beanName, beanDefinition);
-        PluginInfoContainer.addRegisterBeanName(pluginId, beanName);
+        pluginApplicationContext.registerBeanDefinition(beanName, beanDefinition);
+    }
+
+    /**
+     * 注册单例
+     * @param name 单例名称
+     * @param object 对象
+     */
+    public void registerSingleton(String name, Object object){
+        DefaultListableBeanFactory listableBeanFactory = pluginApplicationContext.getDefaultListableBeanFactory();
+        if(!listableBeanFactory.containsSingleton(name)){
+            listableBeanFactory.registerSingleton(name, object);
+        }
     }
 
 
+    /**
+     * 销毁单例
+     * @param name 单例名称
+     */
+    public void destroySingleton(String name){
+        DefaultListableBeanFactory listableBeanFactory = pluginApplicationContext.getDefaultListableBeanFactory();
+        if(listableBeanFactory.containsSingleton(name)){
+            listableBeanFactory.destroySingleton(name);
+        }
+    }
 
     /**
      * 卸载bean
@@ -117,11 +136,9 @@ public class SpringBeanRegister {
      */
     public void unregister(String pluginId, String beanName){
         try {
-            applicationContext.removeBeanDefinition(beanName);
+            pluginApplicationContext.removeBeanDefinition(beanName);
         } catch (Exception e){
             logger.error("Remove plugin '{}' bean {} error. {}", pluginId, beanName, e.getMessage());
-        } finally {
-            PluginInfoContainer.removeRegisterBeanName(pluginId, beanName);
         }
     }
 

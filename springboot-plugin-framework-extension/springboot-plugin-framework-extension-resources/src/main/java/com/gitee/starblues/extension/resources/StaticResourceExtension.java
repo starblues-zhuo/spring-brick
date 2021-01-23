@@ -43,26 +43,26 @@ public class StaticResourceExtension extends AbstractExtension {
     }
 
     @Override
-    public void initialize(ApplicationContext applicationContext) throws Exception{
+    public void initialize(ApplicationContext mainApplicationContext) throws Exception{
         WebMvcConfigurer webMvcConfigurer = new ResourceWebMvcConfigurer();
         List<WebMvcConfigurer> webMvcConfigurers = new ArrayList<>();
         webMvcConfigurers.add(webMvcConfigurer);
         DelegatingWebMvcConfiguration support =
-                applicationContext.getBean(DelegatingWebMvcConfiguration.class);
+                mainApplicationContext.getBean(DelegatingWebMvcConfiguration.class);
         support.setConfigurers(webMvcConfigurers);
     }
 
     @Override
-    public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext applicationContext) {
+    public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext mainApplicationContext) {
         final List<PluginPipeProcessorExtend> pluginPipeProcessorExtends = new ArrayList<>();
-        pluginPipeProcessorExtends.add(new ThymeleafProcessor(applicationContext));
+        pluginPipeProcessorExtends.add(new ThymeleafProcessor());
         return pluginPipeProcessorExtends;
     }
 
     @Override
-    public List<PluginPostProcessorExtend> getPluginPostProcessor(ApplicationContext applicationContext) {
+    public List<PluginPostProcessorExtend> getPluginPostProcessor(ApplicationContext mainApplicationContext) {
         final List<PluginPostProcessorExtend> pluginPostProcessorExtends = new ArrayList<>();
-        pluginPostProcessorExtends.add(new PluginResourceResolverProcess(applicationContext));
+        pluginPostProcessorExtends.add(new PluginResourceResolverProcess());
         return pluginPostProcessorExtends;
     }
 

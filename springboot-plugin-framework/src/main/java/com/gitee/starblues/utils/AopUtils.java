@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author starBlues
  * @version 1.0
  */
+@Deprecated
 public class AopUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(AopUtils.class);

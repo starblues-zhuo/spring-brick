@@ -7,6 +7,7 @@ import com.gitee.starblues.extension.mybatis.group.PluginMapperGroup;
 import com.gitee.starblues.extension.mybatis.mybatisplus.MybatisPlusProcessor;
 import com.gitee.starblues.extension.mybatis.tkmyabtis.TkMybatisProcessor;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
+import com.gitee.starblues.factory.process.pipe.bean.PluginBeanRegistrarExtend;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
 import org.springframework.context.ApplicationContext;
 
@@ -42,11 +43,11 @@ public class SpringBootMybatisExtension extends AbstractExtension {
     }
 
     @Override
-    public void initialize(ApplicationContext applicationContext) throws Exception {
+    public void initialize(ApplicationContext mainApplicationContext) throws Exception {
     }
 
     @Override
-    public List<PluginClassGroupExtend> getPluginClassGroup(ApplicationContext applicationContext) {
+    public List<PluginClassGroupExtend> getPluginClassGroup(ApplicationContext mainApplicationContext) {
         final List<PluginClassGroupExtend> pluginClassGroups = new ArrayList<>();
         pluginClassGroups.add(new MybatisConfigGroup());
         pluginClassGroups.add(new PluginEntityAliasesGroup());
@@ -55,16 +56,16 @@ public class SpringBootMybatisExtension extends AbstractExtension {
     }
 
     @Override
-    public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext applicationContext) {
-        final List<PluginPipeProcessorExtend> pluginPipeProcessorExtends = new ArrayList<>();
+    public List<PluginBeanRegistrarExtend> getPluginBeanRegistrar(ApplicationContext mainApplicationContext) {
+        final List<PluginBeanRegistrarExtend> pluginBeanRegistrarExtends = new ArrayList<>(3);
         if(type == Type.MYBATIS_PLUS){
-            pluginPipeProcessorExtends.add(new MybatisPlusProcessor(applicationContext));
+            pluginBeanRegistrarExtends.add(new MybatisPlusProcessor());
         } else if(type == Type.TK_MYBATIS){
-            pluginPipeProcessorExtends.add(new TkMybatisProcessor(applicationContext));
+            pluginBeanRegistrarExtends.add(new TkMybatisProcessor());
         } else {
-            pluginPipeProcessorExtends.add(new MybatisProcessor(applicationContext));
+            pluginBeanRegistrarExtends.add(new MybatisProcessor());
         }
-        return pluginPipeProcessorExtends;
+        return pluginBeanRegistrarExtends;
     }
 
     public enum Type{

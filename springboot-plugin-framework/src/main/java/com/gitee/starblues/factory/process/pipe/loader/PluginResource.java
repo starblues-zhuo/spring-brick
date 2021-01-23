@@ -28,7 +28,7 @@ public class PluginResource implements Resource {
 
     private final static Logger log = LoggerFactory.getLogger(PluginResource.class);
 
-    private final ClassLoader classLoader;
+    private ClassLoader classLoader;
     private final PluginWrapper pluginWrapper;
 
     private final long lastModified;
@@ -48,12 +48,15 @@ public class PluginResource implements Resource {
         this.path = pathToUse;
 
         PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
-        this.classLoader = pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PAD);
+        this.classLoader = pluginRegistryInfo.getDefaultPluginClassLoader();
         this.pluginWrapper = pluginWrapper;
 
         this.lastModified = pluginRegistryInfo.getBasePlugin().getBasePluginExtend().getStartTimestamp();
     }
 
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
 
     @Override
     public InputStream getInputStream() throws IOException {

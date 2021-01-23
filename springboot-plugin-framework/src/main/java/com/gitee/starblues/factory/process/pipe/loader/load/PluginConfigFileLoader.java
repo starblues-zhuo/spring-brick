@@ -50,7 +50,7 @@ public class PluginConfigFileLoader implements PluginResourceLoader {
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
         suppliers.add(findConfigRoot());
         suppliers.add(findPluginRoot(basePlugin));
-        suppliers.add(findClassPath(pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PAD)));
+        suppliers.add(findClassPath(pluginRegistryInfo.getDefaultPluginClassLoader()));
 
 
         for (Supplier<SupplierBean> supplier : suppliers) {

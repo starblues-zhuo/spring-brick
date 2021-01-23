@@ -94,7 +94,9 @@ public interface PluginUser {
      * @param <T> 实例泛型
      * @return 新实例对象
      */
+    @Deprecated
     <T> T generateNewInstance(T object);
+
 
 
     /**

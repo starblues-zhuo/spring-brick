@@ -21,25 +21,21 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private final List<PluginPostProcessor> pluginPostProcessors = new ArrayList<>();
-    private final ApplicationContext applicationContext;
+    private final ApplicationContext mainApplicationContext;
 
-    public PluginPostProcessorFactory(ApplicationContext applicationContext){
-       this.applicationContext = applicationContext;
+    public PluginPostProcessorFactory(ApplicationContext mainApplicationContext){
+       this.mainApplicationContext = mainApplicationContext;
     }
 
     @Override
     public void initialize() throws Exception{
-
+        // 以下顺序不能更改
+        pluginPostProcessors.add(new PluginInvokePostProcessor(mainApplicationContext));
+        pluginPostProcessors.add(new PluginControllerPostProcessor(mainApplicationContext));
+        // 主要触发启动监听事件，因此在最后一个执行。配合 OneselfListenerStopEventProcessor 该类触发启动、停止事件。
+        pluginPostProcessors.add(new PluginOneselfStartEventProcessor());
         // 添加扩展
         pluginPostProcessors.addAll(ExtensionInitializer.getPostProcessorExtends());
-        // 以下顺序不能更改。
-        pluginPostProcessors.add(new PluginConfigurationPostProcessor(applicationContext));
-        pluginPostProcessors.add(new PluginInvokePostProcessor(applicationContext));
-
-        pluginPostProcessors.add(new PluginControllerPostProcessor(applicationContext));
-        // 主要触发启动监听事件，因此在最后一个执行。配合 OneselfListenerStopEventProcessor 该类触发启动、停止事件。
-        pluginPostProcessors.add(new PluginOneselfStartEventProcessor(applicationContext));
-
 
         // 进行初始化
         for (PluginPostProcessor pluginPostProcessor : pluginPostProcessors) {
