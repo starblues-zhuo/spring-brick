@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 插件资源加载者
  *
  * @author starBlues
- * @version 2.2.0
+ * @version 2.4.0
  */
 public class PluginResourceLoadFactory implements PluginPipeProcessor {
 

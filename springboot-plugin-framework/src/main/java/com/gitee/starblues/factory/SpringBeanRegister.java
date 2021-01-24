@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * Spring bean注册者, 向Spring注册Bean时, 必须使用该对象进行注册
  *
  * @author starBlues
- * @version 2.1.0
+ * @version 2.4.0
  */
 public class SpringBeanRegister {
 

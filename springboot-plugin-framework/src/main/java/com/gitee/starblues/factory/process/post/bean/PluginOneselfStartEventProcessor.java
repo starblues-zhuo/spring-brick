@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * 插件中 OneselfListener 监听者处理者。主要执行监听器的启动事件。
  * @author starBlues
- * @version 2.1.0
+ * @version 2.4.0
  */
 public class PluginOneselfStartEventProcessor implements PluginPostProcessor {
 

@@ -6,7 +6,7 @@ package com.gitee.starblues.realize;
  * bean 指的是Spring 容器中管理的bean
  *
  * @author starBlues
- * @version 2.2.2
+ * @version 2.4.0
  */
 public interface ConfigBean {
 

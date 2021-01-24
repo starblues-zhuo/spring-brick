@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * 控制插件启动顺序
  * @author starBlues
- * @version 1.0
+ * @version 2.4.0
  */
 public class SortDependencyResolver extends DependencyResolver {
 

@@ -4,14 +4,11 @@ import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.group.*;
-import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoadFactory;
 import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.factory.process.pipe.loader.load.PluginClassLoader;
 import com.gitee.starblues.realize.BasePlugin;
-import org.pf4j.ClassLoadingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
@@ -23,7 +20,7 @@ import java.util.Set;
  * 插件类加载处理者
  *
  * @author starBlues
- * @version 2.2.2
+ * @version 2.4.0
  */
 public class PluginClassProcess implements PluginPipeProcessor {
 

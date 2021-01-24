@@ -94,7 +94,8 @@ public class DefaultPf4jFactory implements Pf4jFactory {
                 @Override
                 protected PluginLoader createPluginLoader() {
                     return new CompoundPluginLoader()
-                            .add(new JarPluginLoader(this), this::isNotDevelopment);
+                            .add(new JarPluginLoader(this), this::isNotDevelopment)
+                            .add(new DefaultPluginLoader(this), this::isNotDevelopment);
                 }
 
             };

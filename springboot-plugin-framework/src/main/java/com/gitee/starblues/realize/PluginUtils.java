@@ -1,9 +1,7 @@
 package com.gitee.starblues.realize;
 
-import com.gitee.starblues.integration.operator.module.PluginInfo;
 import com.gitee.starblues.utils.PluginBeanUtils;
 import org.pf4j.PluginDescriptor;
-import org.pf4j.PluginWrapper;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
@@ -11,7 +9,7 @@ import java.util.List;
 /**
  * 插件工具类
  * @author starBlues
- * @version 1.0
+ * @version 2.4.0
  */
 public class PluginUtils {
 

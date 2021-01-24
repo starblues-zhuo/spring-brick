@@ -320,7 +320,7 @@ public class PluginRegistryInfo {
         }
 
         pluginClassLoader = new PluginClassLoader(pluginManager, pluginWrapper.getDescriptor(),
-                ClassLoader.getSystemClassLoader(), classLoadingStrategy);
+                this.getClass().getClassLoader(), classLoadingStrategy);
         pluginClassLoader.addFile(pluginWrapper.getPluginPath().toFile());
         pluginClassLoaders.put(strategy, pluginClassLoader);
         return pluginClassLoader;

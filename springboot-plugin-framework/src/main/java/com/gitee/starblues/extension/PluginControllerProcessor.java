@@ -2,10 +2,10 @@ package com.gitee.starblues.extension;
 
 
 /**
- * controller 处理者
+ * controller 处理者(已经废弃)
  *
  * @author starBlues
- * @version 1.0
+ * @version 2.4.0
  */
 @Deprecated
 public interface PluginControllerProcessor {

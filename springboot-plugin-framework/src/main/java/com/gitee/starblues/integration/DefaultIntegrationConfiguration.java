@@ -7,7 +7,7 @@ import java.util.Set;
  * 默认的插件集成配置。给非必须配置设置了默认值
  *
  * @author starBlues
- * @version 1.0
+ * @version 2.4.0
  */
 public abstract class DefaultIntegrationConfiguration implements IntegrationConfiguration{
 

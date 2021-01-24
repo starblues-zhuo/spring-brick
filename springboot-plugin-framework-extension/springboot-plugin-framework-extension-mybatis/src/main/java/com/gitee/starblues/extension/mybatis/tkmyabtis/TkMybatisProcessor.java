@@ -27,7 +27,7 @@ import tk.mybatis.spring.mapper.MapperFactoryBean;
 /**
  * tk-mybatis处理者
  * @author starBlues
- * @version 2.3
+ * @version 2.4.0
  */
 public class TkMybatisProcessor implements PluginBeanRegistrarExtend {
 

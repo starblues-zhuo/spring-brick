@@ -6,7 +6,7 @@ import com.gitee.starblues.utils.OrderPriority;
  * 监听本插件模块事件的监听者接口
  *
  * @author starBlues
- * @version 2.2.1
+ * @version 2.4.0
  */
 public interface OneselfListener {
 
