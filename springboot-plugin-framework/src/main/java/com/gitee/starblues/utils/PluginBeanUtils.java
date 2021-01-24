@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * 插件bean工具类
  * @author starBlues
- * @version 1.0
+ * @version 2.4.0
  */
 public class PluginBeanUtils {
 
@@ -38,6 +38,36 @@ public class PluginBeanUtils {
             }
         }
         return null;
+    }
+
+    /***
+     * 得到存在的bean, 不存在则返回null
+     * @param applicationContext ApplicationContext容器
+     * @param aClass bean 类型
+     * @return 存在bean对象, 不存在返回null
+     */
+    public static <T> T getExistBean(ApplicationContext applicationContext, Class<T> aClass){
+        String[] beanNamesForType = applicationContext.getBeanNamesForType(aClass, false, false);
+        if(beanNamesForType.length > 0){
+            return applicationContext.getBean(aClass);
+        } else {
+            return null;
+        }
+    }
+
+    /***
+     * 得到存在的bean, 不存在则返回null
+     * @param applicationContext ApplicationContext容器
+     * @param beanName bean 名称
+     * @return 存在bean对象, 不存在返回null
+     */
+    public static <T> T getExistBean(ApplicationContext applicationContext, String beanName){
+        if(applicationContext.containsBean(beanName)){
+            Object bean = applicationContext.getBean(beanName);
+            return (T) bean;
+        } else {
+            return null;
+        }
     }
 
 }

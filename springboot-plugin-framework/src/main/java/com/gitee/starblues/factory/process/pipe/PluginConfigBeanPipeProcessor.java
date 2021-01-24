@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * @author starBlues
- * @version 1.0
+ * @version 2.4.0
  */
 public class PluginConfigBeanPipeProcessor implements PluginPipeProcessor{
 

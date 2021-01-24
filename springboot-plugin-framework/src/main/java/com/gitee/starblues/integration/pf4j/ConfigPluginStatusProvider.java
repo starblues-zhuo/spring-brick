@@ -7,7 +7,7 @@ import java.util.Set;
 
 /**
  * @author starBlues
- * @version 2.3
+ * @version 2.4.0
  */
 public class ConfigPluginStatusProvider implements PluginStatusProvider {
 

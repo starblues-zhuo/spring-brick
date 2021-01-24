@@ -7,7 +7,7 @@ import org.pf4j.PluginWrapper;
  * 插件包要继承的抽象类。
  * 注意: 实现该类的子类无法使用依赖注入
  * @author starBlues
- * @version 2.2.0
+ * @version 2.4.0
  */
 public abstract class BasePlugin extends Plugin {
 

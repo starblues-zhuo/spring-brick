@@ -19,7 +19,7 @@ import org.springframework.core.io.Resource;
 /**
  * mybatis 处理者
  * @author starBlues
- * @version 2.3
+ * @version 2.4.0
  */
 public class MybatisProcessor implements PluginBeanRegistrarExtend {
 

@@ -23,7 +23,7 @@ import java.util.function.Function;
  * 静态的扩展初始化器
  *
  * @author starBlues
- * @version 2.2.1
+ * @version 2.4.0
  */
 public class ExtensionInitializer {
 

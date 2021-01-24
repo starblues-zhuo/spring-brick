@@ -7,7 +7,7 @@ import java.lang.annotation.*;
  * 如果存在配置文件, 则进行属性自定义
  * 如果未依赖配置文件, 则直接定义注解即可
  * @author starBlues
- * @version 1.0
+ * @version 2.4.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

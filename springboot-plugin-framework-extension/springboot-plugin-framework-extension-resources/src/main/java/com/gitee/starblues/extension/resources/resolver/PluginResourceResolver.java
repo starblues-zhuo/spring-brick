@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * 插件资源发现者
  *
  * @author starBlues
- * @version 2.2.1
+ * @version 2.4.0
  */
 public class PluginResourceResolver extends AbstractResourceResolver {
 

@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * 默认插件使用者
  * @author starBlues
- * @version 2.2.2
+ * @version 2.4.0
  */
 public class DefaultPluginUser implements PluginUser{
 

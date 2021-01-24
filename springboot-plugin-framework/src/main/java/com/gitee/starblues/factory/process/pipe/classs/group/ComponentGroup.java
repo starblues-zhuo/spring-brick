@@ -16,7 +16,7 @@ import java.util.List;
  * 分组存在注解: Component、Service
  *
  * @author starBlues
- * @version 2.1.0
+ * @version 2.4.0
  */
 public class ComponentGroup implements PluginClassGroup {
 

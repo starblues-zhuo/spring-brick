@@ -15,7 +15,7 @@ import java.util.List;
  * 插件的pipe处理者工厂
  *
  * @author starBlues
- * @version 2.2.2
+ * @version 2.4.0
  */
 public class PluginPipeProcessorFactory implements PluginPipeProcessor {
 

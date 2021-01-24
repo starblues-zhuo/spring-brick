@@ -1,7 +1,6 @@
 package com.gitee.starblues.factory.process.pipe.loader;
 
 import com.gitee.starblues.factory.PluginRegistryInfo;
-import org.pf4j.ClassLoadingStrategy;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,7 @@ import java.net.URLConnection;
  * 插件资源实现类.主要是对Spring中的抽象的Resource实现.
  * 功能: 主要是获取插件包中的文件资源。
  * @author starBlues
- * @version 2.2.1
+ * @version 2.4.0
  */
 public class PluginResource implements Resource {
 
