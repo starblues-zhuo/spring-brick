@@ -1,8 +1,11 @@
 package com.gitee.starblues.factory.process.post.bean;
 
+import com.gitee.starblues.extension.ExtensionFactory;
+import com.gitee.starblues.extension.PluginControllerProcessorExtend;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.classs.group.ControllerGroup;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
+import com.gitee.starblues.factory.process.post.bean.model.ControllerWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * 插件中controller处理者
@@ -35,16 +39,28 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
     private final IntegrationConfiguration configuration;
 
-    public PluginControllerPostProcessor(ApplicationContext applicationContext){
-        Objects.requireNonNull(applicationContext);
-        this.requestMappingHandlerMapping = applicationContext.getBean(RequestMappingHandlerMapping.class);
-        this.configuration = applicationContext.getBean(IntegrationConfiguration.class);
+    private final List<PluginControllerProcessorExtend> pluginControllerProcessors;
+
+    public PluginControllerPostProcessor(ApplicationContext mainApplicationContext){
+        Objects.requireNonNull(mainApplicationContext);
+        this.requestMappingHandlerMapping = mainApplicationContext.getBean(RequestMappingHandlerMapping.class);
+        this.configuration = mainApplicationContext.getBean(IntegrationConfiguration.class);
+        this.pluginControllerProcessors = ExtensionFactory
+                .getPluginControllerProcessorExtend(mainApplicationContext);
     }
 
 
     @Override
     public void initialize() throws Exception {
-
+        resolveProcessExtend(extend->{
+            try {
+                extend.initialize();
+            }catch (Exception e){
+                log.error("'{}' initialize error",
+                        extend.getClass().getName(),
+                        e);
+            }
+        });
     }
 
     @Override
@@ -54,19 +70,29 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             if(groupClasses == null || groupClasses.isEmpty()){
                 continue;
             }
-            List<ControllerBeanWrapper> controllerBeanWrappers = new ArrayList<>();
+            String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
+            List<ControllerWrapper> controllerBeanWrappers = new ArrayList<>();
             for (Class<?> groupClass : groupClasses) {
                 if(groupClass == null){
                     continue;
                 }
                 try {
-                    ControllerBeanWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
+                    ControllerWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
                     controllerBeanWrappers.add(controllerBeanWrapper);
                 } catch (Exception e){
                     pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
                     throw e;
                 }
             }
+            resolveProcessExtend(extend->{
+                try {
+                    extend.registry(pluginId, controllerBeanWrappers);
+                }catch (Exception e){
+                    log.error("'{}' process plugin[{}] error in registry",
+                            extend.getClass().getName(),
+                            pluginId,  e);
+                }
+            });
             pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
         }
     }
@@ -76,17 +102,27 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
     @Override
     public void unRegistry(List<PluginRegistryInfo> pluginRegistryInfos) {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
-            List<ControllerBeanWrapper> controllerBeanWrappers =
+            List<ControllerWrapper> controllerBeanWrappers =
                     pluginRegistryInfo.getProcessorInfo(getKey(pluginRegistryInfo));
             if(controllerBeanWrappers == null || controllerBeanWrappers.isEmpty()){
                 continue;
             }
-            for (ControllerBeanWrapper controllerBeanWrapper : controllerBeanWrappers) {
+            String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
+            for (ControllerWrapper controllerBeanWrapper : controllerBeanWrappers) {
                 if(controllerBeanWrapper == null){
                     continue;
                 }
                 unregister(controllerBeanWrapper);
             }
+            resolveProcessExtend(extend->{
+                try {
+                    extend.unRegistry(pluginId, controllerBeanWrappers);
+                }catch (Exception e){
+                    log.error("'{}' process plugin[{}] error in unRegistry",
+                            extend.getClass().getName(),
+                            pluginId,  e);
+                }
+            });
         }
     }
 
@@ -97,13 +133,13 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
      * @return ControllerBeanWrapper
      * @throws Exception  Exception
      */
-    private ControllerBeanWrapper registry(PluginRegistryInfo pluginRegistryInfo, Class<?> aClass)
+    private ControllerWrapper registry(PluginRegistryInfo pluginRegistryInfo, Class<?> aClass)
             throws Exception {
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
         try {
             Object object = pluginApplicationContext.getBean(aClass);
-            ControllerBeanWrapper controllerBeanWrapper = new ControllerBeanWrapper();
+            ControllerWrapper controllerBeanWrapper = new ControllerWrapper();
             setPathPrefix(pluginId, aClass);
             Method getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
                     "getMappingForMethod", Method.class, Class.class);
@@ -132,7 +168,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
      * 卸载具体的Controller操作
      * @param controllerBeanWrapper controllerBean包装
      */
-    private void unregister(ControllerBeanWrapper controllerBeanWrapper) {
+    private void unregister(ControllerWrapper controllerBeanWrapper) {
         Set<RequestMappingInfo> requestMappingInfos = controllerBeanWrapper.getRequestMappingInfos();
         if(requestMappingInfos != null && !requestMappingInfos.isEmpty()){
             for (RequestMappingInfo requestMappingInfo : requestMappingInfos) {
@@ -141,6 +177,18 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         }
     }
 
+    /**
+     * 调用扩展出的接口控制器
+     * @param extendConsumer 扩展消费者
+     */
+    private void resolveProcessExtend(Consumer<PluginControllerProcessorExtend> extendConsumer){
+        if(pluginControllerProcessors == null || pluginControllerProcessors.isEmpty()){
+            return;
+        }
+        for (PluginControllerProcessorExtend pluginControllerProcessor : pluginControllerProcessors) {
+            extendConsumer.accept(pluginControllerProcessor);
+        }
+    }
 
     /**
      * 得到往RegisterPluginInfo->processorInfo 保存的key
@@ -203,8 +251,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         }
     }
 
-
-
     /**
      * 拼接路径
      * @param path1 路径1
@@ -243,74 +289,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         }
     }
 
-//    private void process(int type, String pluginId, Class<?> aClass){
-//        PluginControllerProcessor pluginControllerProcessor = null;
-//        try {
-//            pluginControllerProcessor = applicationContext.getBean(PluginControllerProcessor.class);
-//        }catch (Exception e){
-//            pluginControllerProcessor = null;
-//        }
-//        if(pluginControllerProcessor == null){
-//            return;
-//        }
-//        if(type == 1){
-//            try {
-//                pluginControllerProcessor.registry(pluginId, aClass);
-//            }catch (Exception e){
-//                log.error("PluginControllerProcessor process {} {} error of registry",
-//                        pluginId, aClass.getName());
-//            }
-//        } else {
-//            try {
-//                pluginControllerProcessor.unRegistry(pluginId, aClass);
-//            }catch (Exception e){
-//                log.error("PluginControllerProcessor process {} {} error of unRegistry",
-//                        pluginId, aClass.getName());
-//            }
-//        }
-//
-//    }
 
-    /**
-     * Controller Bean的包装
-     */
-    public static final class ControllerBeanWrapper{
-        /**
-         * controller bean 名称
-         */
-        private String beanName;
-
-        private Class<?> beanClass;
-
-        /**
-         * controller 的 RequestMappingInfo 集合
-         */
-        private Set<RequestMappingInfo> requestMappingInfos;
-
-        public Class<?> getBeanClass() {
-            return beanClass;
-        }
-
-        public void setBeanClass(Class<?> beanClass) {
-            this.beanClass = beanClass;
-        }
-
-        public String getBeanName() {
-            return beanName;
-        }
-
-        public void setBeanName(String beanName) {
-            this.beanName = beanName;
-        }
-
-        public Set<RequestMappingInfo> getRequestMappingInfos() {
-            return requestMappingInfos;
-        }
-
-        public void setRequestMappingInfos(Set<RequestMappingInfo> requestMappingInfos) {
-            this.requestMappingInfos = requestMappingInfos;
-        }
-    }
 
 
 }

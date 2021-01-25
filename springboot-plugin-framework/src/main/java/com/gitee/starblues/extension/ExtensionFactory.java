@@ -1,5 +1,6 @@
 package com.gitee.starblues.extension;
 
+import com.gitee.starblues.utils.PluginBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -7,7 +8,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  * 静态的扩展工厂
@@ -38,6 +38,16 @@ public class ExtensionFactory {
             LOG.error("add failure, key is empty");
         }
         PLUGIN_EXTENSION_MAP.put(key, abstractExtension);
+    }
+
+    /**
+     * 得到PluginControllerProcessorExtend的实现
+     * @param mainApplicationContext 主程序的 ApplicationContext
+     * @return PluginControllerProcessorExtend 的实现对象集合
+     */
+    public static List<PluginControllerProcessorExtend> getPluginControllerProcessorExtend(ApplicationContext mainApplicationContext){
+        return PluginBeanUtils.getPluginBeans(mainApplicationContext,
+                PluginControllerProcessorExtend.class);
     }
 
 
