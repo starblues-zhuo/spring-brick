@@ -71,6 +71,7 @@
         <spring-version>5.0.7.RELEASE</spring-version>
         <spring-boot-version>2.4.1</spring-boot-version>
         <swagger-spring-web.version>2.10.5</swagger-spring-web.version>
+        <springdoc.version>1.5.2</springdoc.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <junit.version>4.11</junit.version>
     </properties>
@@ -125,6 +126,13 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-spring-web</artifactId>
             <version>${swagger-spring-web.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
             <scope>provided</scope>
         </dependency>
 
