@@ -1,6 +1,7 @@
 package com.tkmybatis.plugin.rest;
 
 import com.github.pagehelper.PageHelper;
+import com.tkmybatis.plugin.Service;
 import com.tkmybatis.plugin.entity.Country;
 import com.tkmybatis.plugin.mapper.CountryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +20,20 @@ import java.util.List;
 public class CountryController {
 
     @Autowired
-    private CountryMapper countryMapper;
-
+    private Service service;
 
     @GetMapping("all")
     public List<Country> getAll(){
-        PageHelper.startPage(1, 1);
-        return countryMapper.selectAll();
+        return service.getAll();
     }
 
+    @GetMapping("one")
+    public Country getOne(){
+        return service.getOne();
+    }
 
     @GetMapping("xml-all")
     public List<Country> getXmlAll(){
-        return countryMapper.getAll();
+        return service.getAll();
     }
 }
