@@ -1,6 +1,6 @@
 package com.gitee.starblues.realize;
 
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.pf4j.PluginDescriptor;
 import org.springframework.context.ApplicationContext;
 
@@ -81,7 +81,7 @@ public class PluginUtils {
      * @return bean
      */
     public <T> List<T> getMainBeans(Class<T> aClass){
-        return PluginBeanUtils.getPluginBeans(parentApplicationContext, aClass);
+        return SpringBeanUtils.getBeans(parentApplicationContext, aClass);
     }
 
 }

@@ -1,7 +1,7 @@
 package com.gitee.starblues.integration.user;
 
 import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.pf4j.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +85,7 @@ public class DefaultPluginUser implements PluginUser{
         if(pluginApplicationContext == null){
             return Collections.emptyList();
         }
-        return PluginBeanUtils.getPluginBeans(pluginApplicationContext, aClass);
+        return SpringBeanUtils.getBeans(pluginApplicationContext, aClass);
     }
 
     @Override
@@ -177,7 +177,7 @@ public class DefaultPluginUser implements PluginUser{
 
         List<T> result = new ArrayList<>();
         for (GenericApplicationContext pluginApplicationContext : pluginApplicationContexts) {
-            List<T> pluginBeans = PluginBeanUtils.getPluginBeans(pluginApplicationContext, aClass);
+            List<T> pluginBeans = SpringBeanUtils.getBeans(pluginApplicationContext, aClass);
             if(!pluginBeans.isEmpty()){
                 result.addAll(pluginBeans);
             }

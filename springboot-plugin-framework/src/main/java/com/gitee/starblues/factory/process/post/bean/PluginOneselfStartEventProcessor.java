@@ -5,7 +5,7 @@ import com.gitee.starblues.factory.process.post.PluginPostProcessor;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.realize.OneselfListener;
 import com.gitee.starblues.utils.CommonUtils;
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
@@ -38,7 +38,7 @@ public class PluginOneselfStartEventProcessor implements PluginPostProcessor {
             BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
             try {
                 GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
-                List<OneselfListener> oneselfListeners = PluginBeanUtils.getPluginBeans(pluginApplicationContext, OneselfListener.class);
+                List<OneselfListener> oneselfListeners = SpringBeanUtils.getBeans(pluginApplicationContext, OneselfListener.class);
                 List<OneselfListener> saveOneselfListeners = new ArrayList<>(oneselfListeners.size());
                 oneselfListeners.stream()
                         .filter(oneselfListener -> oneselfListener != null)

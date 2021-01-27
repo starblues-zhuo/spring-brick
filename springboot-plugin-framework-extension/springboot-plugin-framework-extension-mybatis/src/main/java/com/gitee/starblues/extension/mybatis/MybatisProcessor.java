@@ -2,7 +2,7 @@ package com.gitee.starblues.extension.mybatis;
 
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.bean.PluginBeanRegistrarExtend;
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.plugin.Interceptor;
@@ -35,7 +35,7 @@ public class MybatisProcessor implements PluginBeanRegistrarExtend {
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        SpringBootMybatisConfig config = PluginBeanUtils.getObjectByInterfaceClass(
+        SpringBootMybatisConfig config = SpringBeanUtils.getObjectByInterfaceClass(
                 pluginRegistryInfo.getConfigSingletons(),
                 SpringBootMybatisConfig.class);
         if(config == null){

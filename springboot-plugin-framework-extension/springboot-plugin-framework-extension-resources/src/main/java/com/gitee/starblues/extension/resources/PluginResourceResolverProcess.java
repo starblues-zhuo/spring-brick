@@ -4,7 +4,7 @@ import com.gitee.starblues.extension.resources.resolver.PluginResourceResolver;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.post.PluginPostProcessorExtend;
 import com.gitee.starblues.utils.OrderPriority;
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class PluginResourceResolverProcess implements PluginPostProcessorExtend 
             }
             String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
             try {
-                StaticResourceConfig config = PluginBeanUtils.getObjectByInterfaceClass(
+                StaticResourceConfig config = SpringBeanUtils.getObjectByInterfaceClass(
                         pluginRegistryInfo.getConfigSingletons(),
                         StaticResourceConfig.class);
                 if(config == null){

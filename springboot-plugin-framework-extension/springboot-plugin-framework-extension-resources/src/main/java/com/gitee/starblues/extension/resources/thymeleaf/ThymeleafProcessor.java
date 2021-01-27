@@ -3,7 +3,7 @@ package com.gitee.starblues.extension.resources.thymeleaf;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.utils.OrderPriority;
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
@@ -50,7 +50,7 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
         if(springTemplateEngine == null){
             return;
         }
-        SpringBootThymeleafConfig config = PluginBeanUtils.getObjectByInterfaceClass(
+        SpringBootThymeleafConfig config = SpringBeanUtils.getObjectByInterfaceClass(
                 pluginRegistryInfo.getConfigSingletons(),
                 SpringBootThymeleafConfig.class);
         if(config == null){

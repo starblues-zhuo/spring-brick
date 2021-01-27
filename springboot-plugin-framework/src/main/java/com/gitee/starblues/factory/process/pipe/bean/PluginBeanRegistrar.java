@@ -12,6 +12,7 @@ public interface PluginBeanRegistrar {
 
     /**
      * 处理该插件的注册
+     * @param pluginRegistryInfo 插件注册的信息
      * @throws Exception 处理异常
      */
     void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception;

@@ -36,6 +36,7 @@ public class ClassUtils {
      * 通过反射获取字段
      * @param o 对象
      * @param fieldName 字段名称
+     * @param fieldClassType 字段类型
      * @param <T> 字段类型
      * @return 字段值
      * @throws IllegalAccessException 异常信息

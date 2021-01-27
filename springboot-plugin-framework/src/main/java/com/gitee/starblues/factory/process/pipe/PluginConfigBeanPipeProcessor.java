@@ -2,7 +2,7 @@ package com.gitee.starblues.factory.process.pipe;
 
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.realize.ConfigBean;
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ public class PluginConfigBeanPipeProcessor implements PluginPipeProcessor{
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        List<ConfigBean> pluginBeans = PluginBeanUtils.getPluginBeans(pluginRegistryInfo.getPluginApplicationContext(),
+        List<ConfigBean> pluginBeans = SpringBeanUtils.getBeans(pluginRegistryInfo.getPluginApplicationContext(),
                 ConfigBean.class);
         if(pluginBeans.isEmpty()){
             return;

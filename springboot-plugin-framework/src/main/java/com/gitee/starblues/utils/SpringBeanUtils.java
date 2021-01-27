@@ -10,9 +10,16 @@ import java.util.*;
  * @author starBlues
  * @version 2.4.0
  */
-public class PluginBeanUtils {
+public class SpringBeanUtils {
 
-    public static <T> List<T> getPluginBeans(ApplicationContext applicationContext, Class<T> aClass) {
+    /**
+     * 得到ApplicationContext中的bean的实现
+     * @param applicationContext ApplicationContext
+     * @param aClass 接口或者抽象类型bean类型
+     * @param <T> 接口或者抽象类型bean类型
+     * @return 所有的实现对象
+     */
+    public static <T> List<T> getBeans(ApplicationContext applicationContext, Class<T> aClass) {
         Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
         if(beansOfTypeMap.isEmpty()){
             return Collections.emptyList();
@@ -24,7 +31,8 @@ public class PluginBeanUtils {
      * 得到某个接口的实现对象
      * @param sourceObject 遍历的对象
      * @param interfaceClass 接口类类型
-     * @return Object
+     * @param <T> 接口类型
+     * @return 实现对象
      */
     public static <T> T getObjectByInterfaceClass(Set<Object> sourceObject, Class<T> interfaceClass){
         if(sourceObject == null || sourceObject.isEmpty()){
@@ -40,10 +48,11 @@ public class PluginBeanUtils {
         return null;
     }
 
-    /***
+    /**
      * 得到存在的bean, 不存在则返回null
      * @param applicationContext ApplicationContext容器
      * @param aClass bean 类型
+     * @param <T> bean 类型
      * @return 存在bean对象, 不存在返回null
      */
     public static <T> T getExistBean(ApplicationContext applicationContext, Class<T> aClass){
@@ -55,10 +64,11 @@ public class PluginBeanUtils {
         }
     }
 
-    /***
+    /**
      * 得到存在的bean, 不存在则返回null
      * @param applicationContext ApplicationContext容器
      * @param beanName bean 名称
+     * @param <T> 返回的bean类型
      * @return 存在bean对象, 不存在返回null
      */
     public static <T> T getExistBean(ApplicationContext applicationContext, String beanName){
