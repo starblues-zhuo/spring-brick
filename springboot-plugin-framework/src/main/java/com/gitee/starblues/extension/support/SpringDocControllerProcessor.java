@@ -3,7 +3,7 @@ package com.gitee.starblues.extension.support;
 import com.gitee.starblues.extension.PluginControllerProcessorExtend;
 import com.gitee.starblues.factory.process.post.bean.model.ControllerWrapper;
 import com.gitee.starblues.utils.ClassUtils;
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.springdoc.api.AbstractOpenApiResource;
 import org.springdoc.core.OpenAPIService;
 import org.springframework.context.ApplicationContext;
@@ -28,7 +28,7 @@ public class SpringDocControllerProcessor implements PluginControllerProcessorEx
 
     @Override
     public void initialize() {
-        AbstractOpenApiResource openApiResource = PluginBeanUtils.getExistBean(applicationContext, AbstractOpenApiResource.class);
+        AbstractOpenApiResource openApiResource = SpringBeanUtils.getExistBean(applicationContext, AbstractOpenApiResource.class);
         if(openApiResource == null){
             return;
         }
@@ -38,7 +38,7 @@ public class SpringDocControllerProcessor implements PluginControllerProcessorEx
         } catch (IllegalAccessException e) {
             restControllers = null;
         }
-        openAPIService = PluginBeanUtils.getExistBean(applicationContext, OpenAPIService.class);
+        openAPIService = SpringBeanUtils.getExistBean(applicationContext, OpenAPIService.class);
     }
 
     @Override

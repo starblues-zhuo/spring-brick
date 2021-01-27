@@ -1,6 +1,6 @@
 package com.gitee.starblues.extension;
 
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -46,7 +46,7 @@ public class ExtensionFactory {
      * @return PluginControllerProcessorExtend 的实现对象集合
      */
     public static List<PluginControllerProcessorExtend> getPluginControllerProcessorExtend(ApplicationContext mainApplicationContext){
-        return PluginBeanUtils.getPluginBeans(mainApplicationContext,
+        return SpringBeanUtils.getBeans(mainApplicationContext,
                 PluginControllerProcessorExtend.class);
     }
 

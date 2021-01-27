@@ -26,8 +26,8 @@
 
         <mapper-spring-boot-starter.version>2.1.5</mapper-spring-boot-starter.version>
 
-        <springboot-plugin-framework.version>2.4.0-RELEASE</springboot-plugin-framework.version>
-        <extension-mybatis.version>2.4.0-RELEASE</extension-mybatis.version>
+        <springboot-plugin-framework.version>2.3-RELEASE</springboot-plugin-framework.version>
+        <extension-mybatis.version>2.3-RELEASE</extension-mybatis.version>
         <springfox-swagger2.version>2.7.0</springfox-swagger2.version>
         <swagger-bootstrap-ui.version>1.6</swagger-bootstrap-ui.version>
     </properties>
@@ -70,6 +70,13 @@
             <artifactId>mapper-spring-boot-starter</artifactId>
             <version>${mapper-spring-boot-starter.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+
 
         <dependency>
             <groupId>com.github.pagehelper</groupId>

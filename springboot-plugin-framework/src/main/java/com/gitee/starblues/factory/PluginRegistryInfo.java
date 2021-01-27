@@ -215,6 +215,7 @@ public class PluginRegistryInfo {
 
     /**
      * 添加插件中的配置对象
+     * @return 配置的实现对象
      */
     public Set<Object> getConfigSingletons(){
         return Collections.unmodifiableSet(configSingletonObjects);

@@ -1,6 +1,7 @@
 package com.tkmybatis.plugin.mapper;
 
 import com.tkmybatis.plugin.entity.Country;
+import tk.mybatis.mapper.common.BaseMapper;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  * @since 2020-12-18
  */
 @org.apache.ibatis.annotations.Mapper
-public interface CountryMapper extends Mapper<Country> {
+public interface CountryMapper extends BaseMapper<Country> {
 
     List<Country> getAll();
 

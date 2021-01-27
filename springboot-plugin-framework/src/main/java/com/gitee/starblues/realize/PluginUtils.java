@@ -1,6 +1,6 @@
 package com.gitee.starblues.realize;
 
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.pf4j.PluginDescriptor;
 import org.springframework.context.ApplicationContext;
 
@@ -51,7 +51,7 @@ public class PluginUtils {
 
 
     /**
-     * 获取bean名称得到主程序中的bean
+     * 通过 bean名称得到主程序中的bean
      * @param name bean 名称
      * @param <T> bean 类型
      * @return bean
@@ -75,13 +75,13 @@ public class PluginUtils {
     }
 
     /**
-     * 通过接口或者抽象类型得到主程序中的多个实现类型
+     * 通过接口或者抽象类类型得到主程序中的多个实现对象
      * @param aClass bean 类型
      * @param <T> bean 类型
      * @return bean
      */
     public <T> List<T> getMainBeans(Class<T> aClass){
-        return PluginBeanUtils.getPluginBeans(parentApplicationContext, aClass);
+        return SpringBeanUtils.getBeans(parentApplicationContext, aClass);
     }
 
 }

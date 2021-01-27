@@ -4,9 +4,8 @@ import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
-import com.gitee.starblues.realize.PluginUtils;
 import com.gitee.starblues.realize.UnRegistryValidator;
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.pf4j.PluginWrapper;
 import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
@@ -189,7 +188,7 @@ public class PluginOperatorWrapper implements PluginOperator{
                     pluginId);
             return;
         }
-        List<UnRegistryValidator> unRegistryValidators = PluginBeanUtils.getPluginBeans(pluginApplicationContext, UnRegistryValidator.class);
+        List<UnRegistryValidator> unRegistryValidators = SpringBeanUtils.getBeans(pluginApplicationContext, UnRegistryValidator.class);
         for (UnRegistryValidator unRegistryValidator : unRegistryValidators) {
             UnRegistryValidator.Result result = unRegistryValidator.verify();
             if(result.isVerify()){

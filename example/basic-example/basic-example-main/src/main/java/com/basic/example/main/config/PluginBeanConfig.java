@@ -11,6 +11,7 @@ import org.springdoc.core.SpringDocUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * 插件集成配置
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
  * @version 1.0
  */
 @Configuration
+@Import(SpringDocControllerProcessor.class)
 public class PluginBeanConfig {
 
 
@@ -35,14 +37,5 @@ public class PluginBeanConfig {
         return autoPluginApplication;
     }
 
-    /**
-     * 集成 SpringDoc 的插件刷新
-     * @param applicationContext ApplicationContext
-     * @return SpringDocControllerProcessor
-     */
-    @Bean
-    public SpringDocControllerProcessor springDocControllerProcessor(ApplicationContext applicationContext){
-        return new SpringDocControllerProcessor(applicationContext);
-    }
 
 }

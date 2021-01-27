@@ -15,7 +15,7 @@ import java.util.Set;
  * @version 1.0
  * @since 2020-12-14
  */
-@ConfigDefinition
+@Component
 public class TkMybatisPlusConfig implements SpringBootTkMybatisConfig {
 
     @Override

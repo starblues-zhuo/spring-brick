@@ -1,12 +1,10 @@
 package com.gitee.starblues.integration.listener;
 
-import com.gitee.starblues.utils.PluginBeanUtils;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper;
-
-import java.util.List;
 
 /**
  * Swagger 监听事件
@@ -37,7 +35,7 @@ public class SwaggerListeningListener implements PluginListener{
 
     private void refresh(){
         try {
-            DocumentationPluginsBootstrapper documentationPluginsBootstrapper = PluginBeanUtils.getExistBean(mainApplicationContext,
+            DocumentationPluginsBootstrapper documentationPluginsBootstrapper = SpringBeanUtils.getExistBean(mainApplicationContext,
                     DocumentationPluginsBootstrapper.class);
             if(documentationPluginsBootstrapper != null){
                 documentationPluginsBootstrapper.stop();
