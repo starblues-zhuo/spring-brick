@@ -120,6 +120,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <!-- 高版本Spring-boot 2.1.1.RELEASE 需要新增id -->
+                        <id>repackage</id>
                         <goals>
                             <goal>repackage</goal>
                         </goals>
