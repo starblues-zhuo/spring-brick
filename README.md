@@ -48,8 +48,7 @@
 
 ### 文档地址
 
-- [文档地址1](http://doc.starblues.cn/)
-- [文档地址2](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages)
+- [文档地址](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages)
 
 ### QQ交流群
 859570617(**点赞框架后可进群, 进群前请备注gitee昵称**)
