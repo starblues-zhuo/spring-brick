@@ -3,6 +3,7 @@ package com.gitee.starblues.integration;
 import org.pf4j.RuntimeMode;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -26,7 +27,9 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     private Boolean enablePluginIdRestPathPrefix;
 
+    private Set<String> enablePluginIds;
     private Set<String> disablePluginIds;
+    private List<String> sortInitPluginIds;
     private Boolean enableSwaggerRefresh;
 
     public ConfigurationBuilder(Builder builder) {
@@ -38,7 +41,10 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         this.backupPath = builder.backupPath;
         this.pluginRestPathPrefix = builder.pluginRestPathPrefix;
         this.enablePluginIdRestPathPrefix = builder.enablePluginIdRestPathPrefix;
+        this.enablePluginIds = builder.enablePluginIds;
         this.disablePluginIds = builder.disablePluginIds;
+        this.sortInitPluginIds = builder.sortInitPluginIds;
+
         if(builder.enable == null){
             this.enable = true;
         } else {
@@ -68,7 +74,9 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         private String pluginRestPathPrefix;
         private Boolean enablePluginIdRestPathPrefix;
 
+        private Set<String> enablePluginIds;
         private Set<String> disablePluginIds;
+        private List<String> sortInitPluginIds;
         private Boolean enableSwaggerRefresh;
 
         public Builder runtimeMode(RuntimeMode runtimeMode){
@@ -111,10 +119,21 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             return this;
         }
 
+        public Builder enablePluginIds(Set<String> enablePluginIds){
+            this.enablePluginIds = enablePluginIds;
+            return this;
+        }
+
         public Builder disablePluginIds(Set<String> disablePluginIds){
             this.disablePluginIds = disablePluginIds;
             return this;
         }
+
+        public Builder sortInitPluginIds(List<String> sortInitPluginIds){
+            this.sortInitPluginIds = sortInitPluginIds;
+            return this;
+        }
+
         public Builder enableSwaggerRefresh(Boolean enableSwaggerRefresh){
             this.enableSwaggerRefresh = enableSwaggerRefresh;
             return this;
@@ -185,7 +204,25 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     }
 
     @Override
+    public Set<String> enablePluginIds() {
+        return enablePluginIds;
+    }
+
+    @Override
     public Set<String> disablePluginIds() {
         return disablePluginIds;
+    }
+
+    @Override
+    public List<String> sortInitPluginIds() {
+        return sortInitPluginIds;
+    }
+
+    @Override
+    public boolean enableSwaggerRefresh() {
+        if(enableSwaggerRefresh == null){
+            super.enableSwaggerRefresh();
+        }
+        return enableSwaggerRefresh;
     }
 }

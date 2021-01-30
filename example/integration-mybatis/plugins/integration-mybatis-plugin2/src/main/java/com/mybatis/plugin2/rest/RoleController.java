@@ -1,5 +1,6 @@
 package com.mybatis.plugin2.rest;
 
+import com.gitee.starblues.realize.PluginUtils;
 import com.mybatis.main.entity.Role;
 import com.mybatis.main.mapper.RoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,8 @@ public class RoleController {
     private final RoleMapper roleMapper;
 
     @Autowired
-    public RoleController(RoleMapper roleMapper) {
-        this.roleMapper = roleMapper;
+    public RoleController(PluginUtils pluginUtils){
+        roleMapper = pluginUtils.getMainBean(RoleMapper.class);
     }
 
     @GetMapping("/list")

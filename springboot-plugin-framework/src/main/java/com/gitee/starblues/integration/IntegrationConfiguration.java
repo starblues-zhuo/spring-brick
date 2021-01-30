@@ -2,6 +2,7 @@ package com.gitee.starblues.integration;
 
 import org.pf4j.RuntimeMode;
 
+import java.util.List;
 import java.util.Set;
 
 
@@ -66,6 +67,12 @@ public interface IntegrationConfiguration {
     boolean enable();
 
     /**
+     * 启用的插件id
+     * @return Set
+     */
+    Set<String> enablePluginIds();
+
+    /**
      * 禁用的插件id, 禁用后系统不会启动该插件
      * 如果禁用所有插件, 则Set集合中返回一个字符: *
      * @return Set
@@ -77,5 +84,11 @@ public interface IntegrationConfiguration {
      * @return 启用返回true, 不启用返回 false
      */
     boolean enableSwaggerRefresh();
+
+    /**
+     * 设置初始化时插件启动的顺序.
+     * @return 有顺序的插件id
+     */
+    List<String> sortInitPluginIds();
 
 }

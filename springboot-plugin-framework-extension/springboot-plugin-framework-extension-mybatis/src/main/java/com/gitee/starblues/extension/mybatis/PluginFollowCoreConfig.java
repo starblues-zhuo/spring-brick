@@ -22,22 +22,22 @@ import java.util.*;
  */
 public class PluginFollowCoreConfig {
 
-    private final ApplicationContext applicationContext;
+    private final ApplicationContext mainApplicationContext;
 
-    public PluginFollowCoreConfig(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public PluginFollowCoreConfig(ApplicationContext mainApplicationContext) {
+        this.mainApplicationContext = mainApplicationContext;
     }
 
 
     public DataSource getDataSource(){
-        return applicationContext.getBean(DataSource.class);
+        return mainApplicationContext.getBean(DataSource.class);
     }
 
     public Configuration getConfiguration(SpringBootMybatisExtension.Type type){
         Configuration configuration = new Configuration();
         if(type == SpringBootMybatisExtension.Type.MYBATIS){
             try {
-                Map<String, ConfigurationCustomizer> customizerMap = applicationContext.getBeansOfType(ConfigurationCustomizer.class);
+                Map<String, ConfigurationCustomizer> customizerMap = mainApplicationContext.getBeansOfType(ConfigurationCustomizer.class);
                 if(!customizerMap.isEmpty()){
                     for (ConfigurationCustomizer customizer : customizerMap.values()) {
                         customizer.customize(configuration);
@@ -54,7 +54,7 @@ public class PluginFollowCoreConfig {
         MybatisConfiguration configuration = new MybatisConfiguration();
         try {
             Map<String, com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer> customizerMap =
-                    applicationContext.getBeansOfType(com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer.class);
+                    mainApplicationContext.getBeansOfType(com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer.class);
             if(!customizerMap.isEmpty()){
                 for (com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer customizer : customizerMap.values()) {
                     customizer.customize(configuration);
@@ -69,7 +69,7 @@ public class PluginFollowCoreConfig {
     public Interceptor[] getInterceptor(){
         Map<Class<? extends Interceptor>, Interceptor> interceptorMap = new HashMap<>();
         try {
-            SqlSessionFactory sqlSessionFactory = applicationContext.getBean(SqlSessionFactory.class);
+            SqlSessionFactory sqlSessionFactory = mainApplicationContext.getBean(SqlSessionFactory.class);
             // 先从 SqlSessionFactory 工厂中获取拦截器
             List<Interceptor> interceptors = sqlSessionFactory.getConfiguration().getInterceptors();
             if(interceptors != null){
@@ -84,7 +84,7 @@ public class PluginFollowCoreConfig {
             // ignore
         }
         // 再从定义Bean中获取拦截器
-        Map<String, Interceptor> beanInterceptorMap = applicationContext.getBeansOfType(Interceptor.class);
+        Map<String, Interceptor> beanInterceptorMap = mainApplicationContext.getBeansOfType(Interceptor.class);
         if(!beanInterceptorMap.isEmpty()){
             beanInterceptorMap.forEach((k, v)->{
                 // 如果Class一致, 则会覆盖
@@ -99,9 +99,9 @@ public class PluginFollowCoreConfig {
     }
 
     public DatabaseIdProvider getDatabaseIdProvider(){
-        String[] beanNamesForType = applicationContext.getBeanNamesForType(DatabaseIdProvider.class, false, false);
+        String[] beanNamesForType = mainApplicationContext.getBeanNamesForType(DatabaseIdProvider.class, false, false);
         if(beanNamesForType.length > 0){
-            return applicationContext.getBean(DatabaseIdProvider.class);
+            return mainApplicationContext.getBean(DatabaseIdProvider.class);
         }
         return null;
     }
@@ -110,7 +110,7 @@ public class PluginFollowCoreConfig {
     public LanguageDriver[] getLanguageDriver(){
         Map<Class<? extends LanguageDriver>, LanguageDriver> languageDriverMap = new HashMap<>();
         try {
-            SqlSessionFactory sqlSessionFactory = applicationContext.getBean(SqlSessionFactory.class);
+            SqlSessionFactory sqlSessionFactory = mainApplicationContext.getBean(SqlSessionFactory.class);
             LanguageDriverRegistry languageRegistry = sqlSessionFactory.getConfiguration()
                     .getLanguageRegistry();
             // 先从 SqlSessionFactory 工厂中获取LanguageDriver
@@ -128,7 +128,7 @@ public class PluginFollowCoreConfig {
         } catch (Exception e){
             // ignore
         }
-        Map<String, LanguageDriver> beansLanguageDriver = applicationContext.getBeansOfType(LanguageDriver.class);
+        Map<String, LanguageDriver> beansLanguageDriver = mainApplicationContext.getBeansOfType(LanguageDriver.class);
         if(!beansLanguageDriver.isEmpty()){
             beansLanguageDriver.forEach((k, v)->{
                 // 如果Class一致, 则会覆盖

@@ -5,7 +5,6 @@ import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoader;
 import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.OrderPriority;
-import org.pf4j.ClassLoadingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -23,7 +22,7 @@ import java.util.function.Supplier;
  * 插件配置文件加载者
  *
  * @author starBlues
- * @version 2.2.2
+ * @version 2.4.0
  */
 public class PluginConfigFileLoader implements PluginResourceLoader {
 
@@ -50,7 +49,7 @@ public class PluginConfigFileLoader implements PluginResourceLoader {
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
         suppliers.add(findConfigRoot());
         suppliers.add(findPluginRoot(basePlugin));
-        suppliers.add(findClassPath(pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PAD)));
+        suppliers.add(findClassPath(pluginRegistryInfo.getDefaultPluginClassLoader()));
 
 
         for (Supplier<SupplierBean> supplier : suppliers) {

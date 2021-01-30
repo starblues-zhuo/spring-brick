@@ -8,7 +8,7 @@ import com.gitee.starblues.utils.OrderPriority;
  * 插件资源加载者统一定义的接口
  *
  * @author starBlues
- * @version 2.2.0
+ * @version 2.4.0
  */
 public interface PluginResourceLoader {
 

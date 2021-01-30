@@ -5,7 +5,6 @@ import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoader;
 import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.factory.process.pipe.loader.load.PluginConfigFileLoader;
-import com.gitee.starblues.realize.BasePlugin;
 import org.springframework.core.io.Resource;
 
 import java.util.List;

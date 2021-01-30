@@ -73,24 +73,24 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
         return "backupPlugin";
     }
 
-    /**
-     * 重写插件RestController请求的路径前缀
-     * @return String
-     */
-    @Override
-    public String pluginRestPathPrefix() {
-        return "/api/plugin";
-    }
-
-    /**
-     * 重写是否启用插件id作为RestController请求的路径前缀。
-     * 启动则插件id会作为二级路径前缀。即: /api/plugin/pluginId/**
-     * @return String
-     */
-    @Override
-    public boolean enablePluginIdRestPathPrefix() {
-        return true;
-    }
+//    /**
+//     * 重写插件RestController请求的路径前缀
+//     * @return String
+//     */
+//    @Override
+//    public String pluginRestPathPrefix() {
+//        return "/api/plugin";
+//    }
+//
+//    /**
+//     * 重写是否启用插件id作为RestController请求的路径前缀。
+//     * 启动则插件id会作为二级路径前缀。即: /api/plugin/pluginId/**
+//     * @return String
+//     */
+//    @Override
+//    public boolean enablePluginIdRestPathPrefix() {
+//        return true;
+//    }
 
     public String getRunMode() {
         return runMode;

@@ -1,10 +1,17 @@
 package com.basic.example.main.config;
 
+import com.gitee.starblues.extension.support.SpringDocControllerProcessor;
 import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.application.AutoPluginApplication;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.quartz.SchedulerFactory;
+import org.springdoc.core.GroupedOpenApi;
+import org.springdoc.core.SpringDocUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * 插件集成配置
@@ -13,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
  * @version 1.0
  */
 @Configuration
+@Import(SpringDocControllerProcessor.class)
 public class PluginBeanConfig {
 
 
@@ -28,5 +36,6 @@ public class PluginBeanConfig {
         autoPluginApplication.addListener(ExamplePluginListener.class);
         return autoPluginApplication;
     }
+
 
 }

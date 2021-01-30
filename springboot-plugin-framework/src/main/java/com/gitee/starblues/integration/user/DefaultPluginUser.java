@@ -1,6 +1,7 @@
 package com.gitee.starblues.integration.user;
 
-import com.gitee.starblues.factory.PluginInfoContainer;
+import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.pf4j.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,24 +9,24 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 默认插件使用者
  * @author starBlues
- * @version 2.2.2
+ * @version 2.4.0
  */
 public class DefaultPluginUser implements PluginUser{
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    protected final GenericApplicationContext applicationContext;
+    protected final GenericApplicationContext parentApplicationContext;
+
     protected final PluginManager pluginManager;
 
-    public DefaultPluginUser(ApplicationContext applicationContext, PluginManager pluginManager) {
-        Objects.requireNonNull(applicationContext, "ApplicationContext can't be null");
+    public DefaultPluginUser(ApplicationContext parentApplicationContext, PluginManager pluginManager) {
+        Objects.requireNonNull(parentApplicationContext, "ApplicationContext can't be null");
         Objects.requireNonNull(pluginManager, "PluginManager can't be null");
-        this.applicationContext = (GenericApplicationContext)applicationContext;
+        this.parentApplicationContext = (GenericApplicationContext)parentApplicationContext;
         this.pluginManager = pluginManager;
     }
 
@@ -37,24 +38,17 @@ public class DefaultPluginUser implements PluginUser{
      */
     @Override
     public <T> T getBean(String name){
-        Object bean = applicationContext.getBean(name);
-        if(bean == null){
-            return null;
-        }
-        return (T) bean;
+        return getBean(name, true);
     }
 
     @Override
     public <T> T getBean(Class<T> aClass) {
-        return applicationContext.getBean(aClass);
+        return getBean(aClass, true);
     }
 
     @Override
     public <T> T getPluginBean(String name) {
-        if(isPluginBean(name)){
-            return getBean(name);
-        }
-        return null;
+        return getBean(name, false);
     }
 
     /**
@@ -65,29 +59,12 @@ public class DefaultPluginUser implements PluginUser{
      */
     @Override
     public <T> List<T> getBeans(Class<T> aClass){
-        Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
-        if(beansOfTypeMap == null){
-            return Collections.emptyList();
-        }
-        return beansOfTypeMap.values()
-                .stream()
-                .filter(beansOfType-> beansOfTypeMap != null)
-                .collect(Collectors.toList());
+        return getBeans(aClass, 3);
     }
 
     @Override
     public <T> List<T> getMainBeans(Class<T> aClass) {
-        Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
-        if(beansOfTypeMap == null){
-            return Collections.emptyList();
-        }
-        List<T> beans = new ArrayList<>();
-        beansOfTypeMap.forEach((beanName, bean)->{
-            if(!isPluginBean(beanName)){
-                beans.add(bean);
-            }
-        });
-        return beans;
+        return getBeans(aClass, 1);
     }
 
     /**
@@ -98,32 +75,17 @@ public class DefaultPluginUser implements PluginUser{
      */
     @Override
     public <T> List<T> getPluginBeans(Class<T> aClass) {
-        Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
-        if(beansOfTypeMap == null){
-            return Collections.emptyList();
-        }
-        List<T> beans = new ArrayList<>();
-        beansOfTypeMap.forEach((beanName, bean)->{
-            if(isPluginBean(beanName)){
-                beans.add(bean);
-            }
-        });
-        return beans;
+        return getBeans(aClass, 2);
     }
 
     @Override
     public <T> List<T> getPluginBeans(String pluginId, Class<T> aClass) {
-        Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
-        if(beansOfTypeMap == null){
+        GenericApplicationContext pluginApplicationContext =
+                PluginInfoContainers.getPluginApplicationContext(pluginId);
+        if(pluginApplicationContext == null){
             return Collections.emptyList();
         }
-        List<T> beans = new ArrayList<>();
-        beansOfTypeMap.forEach((beanName, bean)->{
-            if(PluginInfoContainer.existRegisterBeanName(pluginId, beanName)){
-                beans.add(bean);
-            }
-        });
-        return beans;
+        return SpringBeanUtils.getBeans(pluginApplicationContext, aClass);
     }
 
     @Override
@@ -131,13 +93,21 @@ public class DefaultPluginUser implements PluginUser{
         if(object == null){
             return null;
         }
-        try {
-            Object newObject = applicationContext.getDefaultListableBeanFactory()
-                    .createBean(object.getClass());
-            return (T) newObject;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        List<GenericApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+        pluginApplicationContexts.add(parentApplicationContext);
+        Class<?> aClass = object.getClass();
+        for (GenericApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+            try {
+                // 判断是否存在
+                pluginApplicationContext.getBean(aClass);
+                Object newBean = pluginApplicationContext.getBeanFactory()
+                        .createBean(aClass);
+                return (T) newBean;
+            } catch (Exception e){
+                // 忽略
+            }
         }
+        return null;
     }
 
 
@@ -152,16 +122,67 @@ public class DefaultPluginUser implements PluginUser{
         return pluginManager.getExtensions(tClass);
     }
 
-    /**
-     * 是否是插件中的bean
-     * @param beanName bean名称
-     * @return boolean
-     */
-    protected boolean isPluginBean(String beanName){
-        if(beanName == null){
-            return false;
+
+    private <T> T getBean(String name, boolean haveParent){
+        List<GenericApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+        if(haveParent){
+            pluginApplicationContexts.add(parentApplicationContext);
         }
-        return PluginInfoContainer.existRegisterBeanName(beanName);
+        for (GenericApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+            if(pluginApplicationContext.containsBean(name)){
+                return (T) pluginApplicationContext.getBean(name);
+            }
+        }
+        return null;
+    }
+
+    private <T> T getBean(Class<T> aClass,  boolean haveParent) {
+        List<GenericApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+        if(haveParent){
+            pluginApplicationContexts.add(parentApplicationContext);
+        }
+        for (GenericApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+            try {
+                T bean = pluginApplicationContext.getBean(aClass);
+                if(bean != null){
+                    return bean;
+                }
+            } catch (Exception e){
+                // 忽略
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取多个bean.
+     * @param aClass 接口或者抽象类类类型
+     * @param type 1 获取主程序的, 2 获取插件中的, 3 获取所有的
+     * @param <T> 类类型
+     * @return List
+     */
+    private <T> List<T> getBeans(Class<T> aClass, int type) {
+        List<GenericApplicationContext> pluginApplicationContexts = new ArrayList<>(1);
+
+        if(type == 1){
+            pluginApplicationContexts.add(parentApplicationContext);
+        } else if(type == 2){
+            pluginApplicationContexts.addAll(PluginInfoContainers.getPluginApplicationContexts());
+        } else if(type == 3){
+            pluginApplicationContexts.add(parentApplicationContext);
+            pluginApplicationContexts.addAll(PluginInfoContainers.getPluginApplicationContexts());
+        } else {
+            return Collections.emptyList();
+        }
+
+        List<T> result = new ArrayList<>();
+        for (GenericApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+            List<T> pluginBeans = SpringBeanUtils.getBeans(pluginApplicationContext, aClass);
+            if(!pluginBeans.isEmpty()){
+                result.addAll(pluginBeans);
+            }
+        }
+        return result;
     }
 
 }

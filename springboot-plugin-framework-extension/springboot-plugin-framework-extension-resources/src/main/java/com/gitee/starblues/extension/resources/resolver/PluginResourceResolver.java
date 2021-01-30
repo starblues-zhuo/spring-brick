@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * 插件资源发现者
  *
  * @author starBlues
- * @version 2.2.1
+ * @version 2.4.0
  */
 public class PluginResourceResolver extends AbstractResourceResolver {
 
@@ -100,10 +100,11 @@ public class PluginResourceResolver extends AbstractResourceResolver {
             return null;
         }
 
-
+        ClassLoader pluginClassLoader = pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PDA);
         for (String classPath : classPaths) {
             try {
-                Resource resource = new PluginResource(classPath + partialPath, pluginRegistryInfo);
+                PluginResource resource = new PluginResource(classPath + partialPath, pluginRegistryInfo);
+                resource.setClassLoader(pluginClassLoader);
                 if(resource.exists()){
                     return resource;
                 }

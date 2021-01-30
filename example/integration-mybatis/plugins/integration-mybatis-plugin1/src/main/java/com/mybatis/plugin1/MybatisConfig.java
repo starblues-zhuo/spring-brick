@@ -1,5 +1,6 @@
 package com.mybatis.plugin1;
 
+import com.gitee.starblues.annotation.ConfigDefinition;
 import com.gitee.starblues.extension.mybatis.SpringBootMybatisConfig;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,7 @@ import java.util.Set;
  * @version 1.0
  * @since 2020-12-18
  */
-@Component
+@ConfigDefinition
 public class MybatisConfig implements SpringBootMybatisConfig {
 
     @Override

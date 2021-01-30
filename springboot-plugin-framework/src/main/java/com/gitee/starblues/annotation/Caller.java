@@ -4,7 +4,7 @@ package com.gitee.starblues.annotation;
  * 调用者的注解。配合 @Supplier 注解使用, 两者结合实现插件中的方法调用。
  *
  * @author starBlues
- * @version 1.0
+ * @version 2.4.0
  */
 
 import java.lang.annotation.*;
@@ -19,6 +19,12 @@ public @interface Caller {
      * @return String
      */
     String value();
+
+    /**
+     * 可指定调用哪一个插件
+     * @return 插件id
+     */
+    String pluginId() default "";
 
     /**
      * 调用者方法注解。配合 @Supper.Method 使用。如果不定义, 则以方法名称为准。

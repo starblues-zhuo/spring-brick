@@ -2,7 +2,6 @@ package com.gitee.starblues.extension.mybatis;
 
 
 import com.gitee.starblues.factory.PluginRegistryInfo;
-import org.pf4j.ClassLoadingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -20,7 +19,7 @@ import java.util.*;
 /**
  * 插件资源发现者
  * @author starBlues
- * @version 2.3
+ * @version 2.4.0
  */
 public class PluginResourceFinder {
 
@@ -37,7 +36,7 @@ public class PluginResourceFinder {
 
 
     public PluginResourceFinder(PluginRegistryInfo pluginRegistryInfo) {
-        this.classLoader = pluginRegistryInfo.getPluginClassLoader(PluginRegistryInfo.ClassLoaderStrategy.PAD);
+        this.classLoader = pluginRegistryInfo.getDefaultPluginClassLoader();
         this.resourcePatternResolver = new PathMatchingResourcePatternResolver(classLoader);;
     }
 

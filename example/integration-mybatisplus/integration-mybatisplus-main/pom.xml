@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.3.RELEASE</version>
+        <version>2.4.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -120,6 +120,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <!-- 高版本Spring-boot 2.1.1.RELEASE 需要新增id -->
+                        <id>repackage</id>
                         <goals>
                             <goal>repackage</goal>
                         </goals>

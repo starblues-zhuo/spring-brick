@@ -1,12 +1,13 @@
 package com.gitee.starblues.integration;
 
+import java.util.List;
 import java.util.Set;
 
 /**
  * 默认的插件集成配置。给非必须配置设置了默认值
  *
  * @author starBlues
- * @version 1.0
+ * @version 2.4.0
  */
 public abstract class DefaultIntegrationConfiguration implements IntegrationConfiguration{
 
@@ -35,6 +36,10 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
         return true;
     }
 
+    @Override
+    public Set<String> enablePluginIds() {
+        return null;
+    }
 
     @Override
     public Set<String> disablePluginIds() {
@@ -44,5 +49,10 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     @Override
     public boolean enableSwaggerRefresh() {
         return true;
+    }
+
+    @Override
+    public List<String> sortInitPluginIds() {
+        return null;
     }
 }

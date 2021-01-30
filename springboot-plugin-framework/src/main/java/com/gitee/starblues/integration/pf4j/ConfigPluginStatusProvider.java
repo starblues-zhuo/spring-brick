@@ -7,17 +7,22 @@ import java.util.Set;
 
 /**
  * @author starBlues
- * @version 2.3
+ * @version 2.4.0
  */
 public class ConfigPluginStatusProvider implements PluginStatusProvider {
 
+    private Set<String> enablePluginIds = new HashSet<>();
     private Set<String> disabledPlugins = new HashSet<>();
 
     public ConfigPluginStatusProvider() {
-        this(null);
+        this(null, null);
     }
 
-    public ConfigPluginStatusProvider(Set<String> disabledPluginIds) {
+    public ConfigPluginStatusProvider(Set<String> enablePluginIds,
+                                      Set<String> disabledPluginIds) {
+        if(enablePluginIds != null && !enablePluginIds.isEmpty()){
+            this.enablePluginIds.addAll(enablePluginIds);
+        }
         if(disabledPluginIds != null && !disabledPluginIds.isEmpty()){
             this.disabledPlugins.addAll(disabledPluginIds);
         }
@@ -29,10 +34,11 @@ public class ConfigPluginStatusProvider implements PluginStatusProvider {
         if(disabledPlugins.contains("*")){
             return true;
         }
-        if(pluginId == null || "".equals(pluginId)){
+        if (disabledPlugins.contains(pluginId)) {
             return true;
         }
-        return disabledPlugins.contains(pluginId);
+
+        return !enablePluginIds.isEmpty() && !enablePluginIds.contains(pluginId);
     }
 
     @Override
@@ -41,6 +47,7 @@ public class ConfigPluginStatusProvider implements PluginStatusProvider {
             return;
         }
         disabledPlugins.add(pluginId);
+        enablePluginIds.remove(pluginId);
     }
 
     @Override
@@ -49,5 +56,6 @@ public class ConfigPluginStatusProvider implements PluginStatusProvider {
             return;
         }
         disabledPlugins.remove(pluginId);
+        enablePluginIds.add(pluginId);
     }
 }

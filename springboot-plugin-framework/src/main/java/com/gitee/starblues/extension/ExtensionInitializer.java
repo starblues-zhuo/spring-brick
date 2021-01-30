@@ -2,6 +2,7 @@ package com.gitee.starblues.extension;
 
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.factory.process.pipe.PluginPreProcessorExtend;
+import com.gitee.starblues.factory.process.pipe.bean.PluginBeanRegistrarExtend;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroupExtend;
 import com.gitee.starblues.factory.process.post.PluginPostProcessorExtend;
 import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoader;
@@ -22,7 +23,7 @@ import java.util.function.Function;
  * 静态的扩展初始化器
  *
  * @author starBlues
- * @version 2.2.1
+ * @version 2.4.0
  */
 public class ExtensionInitializer {
 
@@ -33,6 +34,7 @@ public class ExtensionInitializer {
 
     private static final List<PluginResourceLoader> RESOURCE_LOADERS_EXTENDS  = new ArrayList<>();
     private static final List<PluginPipeProcessorExtend> PIPE_PROCESSOR_EXTENDS  = new ArrayList<>();
+    private static final List<PluginBeanRegistrarExtend> BEAN_REGISTRAR_EXTEND = new ArrayList<>();
     private static final List<PluginClassGroupExtend> CLASS_GROUP_EXTENDS  = new ArrayList<>();
     private static final List<PluginPreProcessorExtend> PRE_PROCESSOR_EXTENDS  = new ArrayList<>();
     private static final List<PluginPostProcessorExtend> POST_PROCESSOR_EXTENDS  = new ArrayList<>();
@@ -70,29 +72,34 @@ public class ExtensionInitializer {
         StringBuilder debug = new StringBuilder();
         debug.append("Plugin extension '").append(abstractExtension.key()).append("'")
                 .append(" are [");
-        iteration(abstractExtension.getPluginResourceLoader(), pluginResourceLoader->{
-            RESOURCE_LOADERS_EXTENDS.add(pluginResourceLoader);
-            debug.append(pluginResourceLoader.key()).append("、");
+        iteration(abstractExtension.getPluginResourceLoader(), extend->{
+            RESOURCE_LOADERS_EXTENDS.add(extend);
+            debug.append(extend.key()).append("、");
         }, bean -> bean.order());
 
-        iteration(abstractExtension.getPluginPreProcessor(applicationContext), pluginPreProcessorExtend->{
-            PRE_PROCESSOR_EXTENDS.add(pluginPreProcessorExtend);
-            debug.append(pluginPreProcessorExtend.key()).append("、");
+        iteration(abstractExtension.getPluginPreProcessor(applicationContext), extend->{
+            PRE_PROCESSOR_EXTENDS.add(extend);
+            debug.append(extend.key()).append("、");
         }, bean -> bean.order());
 
-        iteration(abstractExtension.getPluginPipeProcessor(applicationContext), pluginPipeProcessorExtend->{
-            PIPE_PROCESSOR_EXTENDS.add(pluginPipeProcessorExtend);
-            debug.append(pluginPipeProcessorExtend.key()).append("、");
-        }, bean -> bean.order());
-
-        iteration(abstractExtension.getPluginClassGroup(applicationContext), pluginClassGroupExtend->{
-            CLASS_GROUP_EXTENDS.add(pluginClassGroupExtend);
-            debug.append(pluginClassGroupExtend.key()).append("、");
+        iteration(abstractExtension.getPluginBeanRegistrar(applicationContext), extend->{
+            BEAN_REGISTRAR_EXTEND.add(extend);
+            debug.append(extend.key()).append("、");
         }, null);
 
-        iteration(abstractExtension.getPluginPostProcessor(applicationContext), pluginResourceLoader->{
-            POST_PROCESSOR_EXTENDS.add(pluginResourceLoader);
-            debug.append(pluginResourceLoader.key());
+        iteration(abstractExtension.getPluginPipeProcessor(applicationContext), extend->{
+            PIPE_PROCESSOR_EXTENDS.add(extend);
+            debug.append(extend.key()).append("、");
+        }, bean -> bean.order());
+
+        iteration(abstractExtension.getPluginClassGroup(applicationContext), extend->{
+            CLASS_GROUP_EXTENDS.add(extend);
+            debug.append(extend.key()).append("、");
+        }, null);
+
+        iteration(abstractExtension.getPluginPostProcessor(applicationContext), extend->{
+            POST_PROCESSOR_EXTENDS.add(extend);
+            debug.append(extend.key());
         }, bean -> bean.order());
 
         debug.append("] is registered");
@@ -111,6 +118,10 @@ public class ExtensionInitializer {
 
     public static List<PluginPipeProcessorExtend> getPipeProcessorExtends() {
         return PIPE_PROCESSOR_EXTENDS;
+    }
+
+    public static List<PluginBeanRegistrarExtend> getPluginBeanRegistrarExtends() {
+        return BEAN_REGISTRAR_EXTEND;
     }
 
     public static List<PluginClassGroupExtend> getClassGroupExtends() {

@@ -14,7 +14,7 @@ import java.util.Set;
  * 插件类文件加载者
  *
  * @author starBlues
- * @version 2.2.2
+ * @version 2.4.0
  */
 public class PluginClassLoader implements PluginResourceLoader {
 

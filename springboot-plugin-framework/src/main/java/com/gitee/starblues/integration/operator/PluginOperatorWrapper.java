@@ -1,15 +1,16 @@
 package com.gitee.starblues.integration.operator;
 
-import com.gitee.starblues.extension.ExtensionConfigUtils;
+import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
 import com.gitee.starblues.realize.UnRegistryValidator;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.pf4j.PluginWrapper;
 import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -28,14 +29,11 @@ public class PluginOperatorWrapper implements PluginOperator{
 
     private final PluginOperator pluginOperator;
     private final IntegrationConfiguration integrationConfiguration;
-    private final ApplicationContext applicationContext;
 
     public PluginOperatorWrapper(PluginOperator pluginOperator,
-                                 IntegrationConfiguration integrationConfiguration,
-                                 ApplicationContext applicationContext) {
+                                 IntegrationConfiguration integrationConfiguration) {
         this.pluginOperator = pluginOperator;
         this.integrationConfiguration = integrationConfiguration;
-        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -184,20 +182,24 @@ public class PluginOperatorWrapper implements PluginOperator{
      * @throws Exception 检查异常
      */
     private void checkIsUnRegistry(String pluginId) throws Exception{
-        UnRegistryValidator unRegistryValidator = ExtensionConfigUtils
-                .getConfig(applicationContext, pluginId, UnRegistryValidator.class);
-        if(unRegistryValidator == null){
+        GenericApplicationContext pluginApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
+        if(pluginApplicationContext == null){
+            log.error("Plugin '{}' Not found ApplicationContext. So cannot found and execute unRegistryValidator",
+                    pluginId);
             return;
         }
-        UnRegistryValidator.Result result = unRegistryValidator.verify();
-        if(result.isVerify()){
-            return;
+        List<UnRegistryValidator> unRegistryValidators = SpringBeanUtils.getBeans(pluginApplicationContext, UnRegistryValidator.class);
+        for (UnRegistryValidator unRegistryValidator : unRegistryValidators) {
+            UnRegistryValidator.Result result = unRegistryValidator.verify();
+            if(result.isVerify()){
+                return;
+            }
+            String message = result.getMessage();
+            if(StringUtils.isNullOrEmpty(message)){
+                message = "Plugin [" + pluginId + "] Stop or Uninstall be banned";
+            }
+            throw new Exception(message);
         }
-        String message = result.getMessage();
-        if(StringUtils.isNullOrEmpty(message)){
-            message = "Plugin [" + pluginId + "] Stop or Uninstall be banned";
-        }
-        throw new Exception(message);
     }
 
 

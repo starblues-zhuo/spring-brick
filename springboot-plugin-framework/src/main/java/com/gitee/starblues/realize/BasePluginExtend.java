@@ -4,7 +4,7 @@ package com.gitee.starblues.realize;
  * 扩展的BasePlugin信息
  *
  * @author starBlues
- * @version 1.0
+ * @version 2.4.0
  */
 public final class BasePluginExtend {
 

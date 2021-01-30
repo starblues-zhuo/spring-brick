@@ -1,12 +1,14 @@
 package com.basic.example.main.config;
 
 import com.gitee.starblues.integration.DefaultIntegrationConfiguration;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.pf4j.RuntimeMode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
 
@@ -122,7 +124,6 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
     public void setPluginConfigFilePath(String pluginConfigFilePath) {
         this.pluginConfigFilePath = pluginConfigFilePath;
     }
-
 
 
     @Override

@@ -17,8 +17,16 @@ public interface UnRegistryValidator {
 
 
     class Result{
+        /**
+         * 是否可卸载
+         */
         private boolean verify;
+
+        /**
+         * 不可卸载时的提示内容
+         */
         private String message;
+
 
         public Result(boolean verify) {
             this.verify = verify;
