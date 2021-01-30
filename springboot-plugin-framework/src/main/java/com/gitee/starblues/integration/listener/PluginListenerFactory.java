@@ -1,10 +1,12 @@
 package com.gitee.starblues.integration.listener;
 
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 插件监听工厂
@@ -76,8 +78,7 @@ public class PluginListenerFactory implements PluginListener {
         }
     }
 
-    public <T extends PluginListener> void buildListenerClass(GenericApplicationContext
-                                                                      applicationContext) {
+    public <T extends PluginListener> void buildListenerClass(GenericApplicationContext applicationContext) {
         if (applicationContext == null) {
             return;
         }
@@ -85,11 +86,30 @@ public class PluginListenerFactory implements PluginListener {
             if(isBuildListenerClass){
                 return;
             }
+            // 搜索Spring容器中的监听器
+            List<PluginListener> pluginListeners = SpringBeanUtils.getBeans(applicationContext, PluginListener.class);
+            if(pluginListeners.isEmpty()){
+                pluginListeners = new ArrayList<>();
+            }
             for (Class<T> listenerClass : listenerClasses) {
                 // 兼容 spring 4.x
-                applicationContext.registerBeanDefinition(listenerClass.getName(), BeanDefinitionBuilder.genericBeanDefinition(listenerClass).getBeanDefinition());
+                applicationContext.registerBeanDefinition(listenerClass.getName(),
+                        BeanDefinitionBuilder.genericBeanDefinition(listenerClass).getBeanDefinition());
                 T bean = applicationContext.getBean(listenerClass);
-                listeners.add(bean);
+                pluginListeners.add(bean);
+            }
+            for (PluginListener pluginListener : pluginListeners) {
+                boolean find = false;
+                for (PluginListener listener : listeners) {
+                    if(Objects.equals(listener, pluginListener)){
+                        find = true;
+                        break;
+                    }
+                }
+                // 防止监听器重复注册
+                if(!find){
+                    listeners.add(pluginListener);
+                }
             }
             listenerClasses.clear();
             isBuildListenerClass = true;
