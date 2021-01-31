@@ -50,6 +50,12 @@
 
 - [文档地址](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages)
 
+### 衍生产品
+#### 携带前后端插件功能的后台管理系统
+- [Grape](https://gitee.com/starblues/grape)
+#### ETL 工具
+- [Rope](https://gitee.com/starblues/rope)
+
 ### QQ交流群
 859570617(**点赞框架后可进群, 进群前请备注gitee昵称**)
 
