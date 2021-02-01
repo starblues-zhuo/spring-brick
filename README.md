@@ -48,7 +48,7 @@
 
 ### 文档地址
 
-- [文档地址](https://gitee.com/starblues/springboot-plugin-framework-parent/wikis/pages)
+- [文档地址](http://39.99.159.68)
 
 ### 衍生产品
 #### 携带前后端插件功能的后台管理系统
