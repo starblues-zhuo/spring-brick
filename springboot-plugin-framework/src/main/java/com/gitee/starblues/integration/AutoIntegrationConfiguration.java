@@ -78,6 +78,22 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     private String uploadTempPath;
 
     /**
+     * 当前主程序的版本号, 用于校验插件是否可安装.
+     * 插件中可通过插件配置信息 requires 来指定可安装的主程序版本
+     * 如果为: 0.0.0 的话, 表示不校验
+     */
+    @Value("${version:0.0.0}")
+    private String version;
+
+    /**
+     * 设置为true表示插件设置的requires的版本号完全匹配version版本号才可允许插件安装, 即: requires=x.y.z
+     * 设置为false表示插件设置的requires的版本号小于等于version值, 插件就可安装, 即requires<=x.y.z
+     * 默认为false
+     */
+    @Value("${exactVersionAllowed:false}")
+    private Boolean exactVersionAllowed;
+
+    /**
      * 启用的插件id
      */
     private Set<String> enablePluginIds;
@@ -168,6 +184,21 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         return enableSwaggerRefresh;
     }
 
+    @Override
+    public List<String> sortInitPluginIds() {
+        return sortInitPluginIds;
+    }
+
+    @Override
+    public String version() {
+        return version;
+    }
+
+    @Override
+    public boolean exactVersionAllowed() {
+        return exactVersionAllowed;
+    }
+
     public String getRunMode() {
         return runMode;
     }
@@ -238,6 +269,22 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     public void setUploadTempPath(String uploadTempPath) {
         this.uploadTempPath = uploadTempPath;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public Boolean getExactVersionAllowed() {
+        return exactVersionAllowed;
+    }
+
+    public void setExactVersionAllowed(Boolean exactVersionAllowed) {
+        this.exactVersionAllowed = exactVersionAllowed;
     }
 
     public Set<String> getEnablePluginIds() {

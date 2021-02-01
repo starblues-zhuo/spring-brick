@@ -1,7 +1,7 @@
 package com.gitee.starblues.integration;
 
 import org.pf4j.RuntimeMode;
-import org.springframework.util.StringUtils;
+import org.pf4j.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +32,9 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     private List<String> sortInitPluginIds;
     private Boolean enableSwaggerRefresh;
 
+    private String version;
+    private Boolean exactVersionAllowed;
+
     public ConfigurationBuilder(Builder builder) {
         this.runtimeMode = Objects.requireNonNull(builder.runtimeMode, "runtimeMode can't be empty");
         this.pluginPath = Objects.requireNonNull(builder.pluginPath, "pluginPath can't be empty");
@@ -44,7 +47,8 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         this.enablePluginIds = builder.enablePluginIds;
         this.disablePluginIds = builder.disablePluginIds;
         this.sortInitPluginIds = builder.sortInitPluginIds;
-
+        this.version = builder.version;
+        this.exactVersionAllowed = builder.exactVersionAllowed;
         if(builder.enable == null){
             this.enable = true;
         } else {
@@ -78,6 +82,9 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         private Set<String> disablePluginIds;
         private List<String> sortInitPluginIds;
         private Boolean enableSwaggerRefresh;
+
+        private String version;
+        private Boolean exactVersionAllowed;
 
         public Builder runtimeMode(RuntimeMode runtimeMode){
             this.runtimeMode = runtimeMode;
@@ -139,6 +146,16 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             return this;
         }
 
+        public Builder version(String version){
+            this.version = version;
+            return this;
+        }
+
+        public Builder exactVersionAllowed(Boolean exactVersionAllowed){
+            this.exactVersionAllowed = exactVersionAllowed;
+            return this;
+        }
+
         public ConfigurationBuilder build(){
             return new ConfigurationBuilder(this);
         }
@@ -164,7 +181,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     @Override
     public String uploadTempPath() {
-        if(StringUtils.isEmpty(uploadTempPath)){
+        if(StringUtils.isNullOrEmpty(uploadTempPath)){
             return super.uploadTempPath();
         } else {
             return uploadTempPath;
@@ -173,7 +190,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     @Override
     public String backupPath() {
-        if(StringUtils.isEmpty(backupPath)){
+        if(StringUtils.isNullOrEmpty(backupPath)){
             return super.backupPath();
         } else {
             return backupPath;
@@ -182,7 +199,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     @Override
     public String pluginRestPathPrefix() {
-        if(StringUtils.isEmpty(pluginRestPathPrefix)){
+        if(StringUtils.isNullOrEmpty(pluginRestPathPrefix)){
             return super.pluginRestPathPrefix();
         } else {
             return pluginRestPathPrefix;
@@ -224,5 +241,21 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             super.enableSwaggerRefresh();
         }
         return enableSwaggerRefresh;
+    }
+
+    @Override
+    public String version() {
+        if(StringUtils.isNullOrEmpty(version)){
+            return super.version();
+        }
+        return version;
+    }
+
+    @Override
+    public boolean exactVersionAllowed() {
+        if(exactVersionAllowed == null){
+            return super.exactVersionAllowed();
+        }
+        return exactVersionAllowed;
     }
 }

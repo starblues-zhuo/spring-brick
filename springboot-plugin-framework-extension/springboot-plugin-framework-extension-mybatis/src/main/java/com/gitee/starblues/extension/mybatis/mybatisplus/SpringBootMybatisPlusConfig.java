@@ -1,5 +1,7 @@
 package com.gitee.starblues.extension.mybatis.mybatisplus;
 
+import com.baomidou.mybatisplus.core.MybatisConfiguration;
+import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.gitee.starblues.extension.mybatis.MybatisCommonConfig;
 
@@ -18,6 +20,16 @@ public interface SpringBootMybatisPlusConfig extends MybatisCommonConfig {
      * @param sqlSessionFactoryBean MybatisSqlSessionFactoryBean
      */
     default void oneselfConfig(MybatisSqlSessionFactoryBean sqlSessionFactoryBean){
+    }
+
+    /**
+     * 重写设置配置
+     * 只有 enableOneselfConfig 返回 false, 实现该方法才生效
+     * @param configuration 当前 MybatisConfiguration
+     * @param globalConfig 当前全局配置GlobalConfig
+     */
+    default void reSetMainConfig(MybatisConfiguration configuration, GlobalConfig globalConfig){
+
     }
 
 

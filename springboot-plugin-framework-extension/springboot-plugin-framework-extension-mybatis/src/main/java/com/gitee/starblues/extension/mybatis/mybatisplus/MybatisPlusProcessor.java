@@ -1,10 +1,12 @@
 package com.gitee.starblues.extension.mybatis.mybatisplus;
 
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
+import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.incrementer.IKeyGenerator;
 import com.baomidou.mybatisplus.core.injector.ISqlInjector;
+import com.baomidou.mybatisplus.core.toolkit.GlobalConfigUtils;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.gitee.starblues.extension.mybatis.MapperHandler;
 import com.gitee.starblues.extension.mybatis.PluginFollowCoreConfig;
@@ -20,6 +22,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 
@@ -59,8 +62,9 @@ public class MybatisPlusProcessor implements PluginBeanRegistrarExtend {
             PluginFollowCoreConfig followCoreConfig = new PluginFollowCoreConfig(
                     pluginRegistryInfo.getMainApplicationContext()
             );
+            MybatisConfiguration mybatisPlusConfiguration = followCoreConfig.getMybatisPlusConfiguration();
             factory.setDataSource(followCoreConfig.getDataSource());
-            factory.setConfiguration(followCoreConfig.getMybatisPlusConfiguration());
+            factory.setConfiguration(mybatisPlusConfiguration);
             Interceptor[] interceptor = followCoreConfig.getInterceptor();
             if(interceptor != null && interceptor.length > 0){
                 factory.setPlugins(interceptor);
@@ -73,8 +77,9 @@ public class MybatisPlusProcessor implements PluginBeanRegistrarExtend {
             if(languageDriver != null){
                 factory.setScriptingLanguageDrivers(languageDriver);
             }
-            // 配置mybatis私有的配置
-            mybatisPlusFollowCoreConfig(factory, pluginRegistryInfo.getMainApplicationContext());
+            // 配置mybatis-plus私有的配置
+            GlobalConfig globalConfig = mybatisPlusFollowCoreConfig(factory, pluginRegistryInfo.getMainApplicationContext());
+            config.reSetMainConfig(mybatisPlusConfiguration, globalConfig);
         }
 
         PluginResourceFinder pluginResourceFinder = new PluginResourceFinder(pluginRegistryInfo);
@@ -108,35 +113,39 @@ public class MybatisPlusProcessor implements PluginBeanRegistrarExtend {
 
 
 
-    private void mybatisPlusFollowCoreConfig(MybatisSqlSessionFactoryBean factory,
-                                             GenericApplicationContext parentApplicationContext){
-        MybatisPlusProperties plusProperties = parentApplicationContext.getBean(MybatisPlusProperties.class);
+    private GlobalConfig mybatisPlusFollowCoreConfig(MybatisSqlSessionFactoryBean factory,
+                                             GenericApplicationContext mainApplicationContext){
+        MybatisPlusProperties plusProperties = mainApplicationContext.getBean(MybatisPlusProperties.class);
 
+        GlobalConfig currentGlobalConfig = new GlobalConfig();
         GlobalConfig globalConfig = plusProperties.getGlobalConfig();
-
-        if (parentApplicationContext.getBeanNamesForType(IKeyGenerator.class, false,
+        if(globalConfig != null){
+            BeanUtils.copyProperties(globalConfig, currentGlobalConfig);
+        }
+        if (mainApplicationContext.getBeanNamesForType(IKeyGenerator.class, false,
                 false).length > 0) {
-            IKeyGenerator keyGenerator = parentApplicationContext.getBean(IKeyGenerator.class);
-            globalConfig.getDbConfig().setKeyGenerator(keyGenerator);
+            IKeyGenerator keyGenerator = mainApplicationContext.getBean(IKeyGenerator.class);
+            currentGlobalConfig.getDbConfig().setKeyGenerator(keyGenerator);
         }
 
-        if (parentApplicationContext.getBeanNamesForType(MetaObjectHandler.class,
+        if (mainApplicationContext.getBeanNamesForType(MetaObjectHandler.class,
                 false, false).length > 0) {
-            MetaObjectHandler metaObjectHandler = parentApplicationContext.getBean(MetaObjectHandler.class);
-            globalConfig.setMetaObjectHandler(metaObjectHandler);
+            MetaObjectHandler metaObjectHandler = mainApplicationContext.getBean(MetaObjectHandler.class);
+            currentGlobalConfig.setMetaObjectHandler(metaObjectHandler);
         }
-        if (parentApplicationContext.getBeanNamesForType(IKeyGenerator.class, false,
+        if (mainApplicationContext.getBeanNamesForType(IKeyGenerator.class, false,
                 false).length > 0) {
-            IKeyGenerator keyGenerator = parentApplicationContext.getBean(IKeyGenerator.class);
-            globalConfig.getDbConfig().setKeyGenerator(keyGenerator);
+            IKeyGenerator keyGenerator = mainApplicationContext.getBean(IKeyGenerator.class);
+            currentGlobalConfig.getDbConfig().setKeyGenerator(keyGenerator);
         }
 
-        if (parentApplicationContext.getBeanNamesForType(ISqlInjector.class, false,
+        if (mainApplicationContext.getBeanNamesForType(ISqlInjector.class, false,
                 false).length > 0) {
-            ISqlInjector iSqlInjector = parentApplicationContext.getBean(ISqlInjector.class);
-            globalConfig.setSqlInjector(iSqlInjector);
+            ISqlInjector iSqlInjector = mainApplicationContext.getBean(ISqlInjector.class);
+            currentGlobalConfig.setSqlInjector(iSqlInjector);
         }
-        factory.setGlobalConfig(globalConfig);
+        factory.setGlobalConfig(currentGlobalConfig);
+        return currentGlobalConfig;
     }
 
 }

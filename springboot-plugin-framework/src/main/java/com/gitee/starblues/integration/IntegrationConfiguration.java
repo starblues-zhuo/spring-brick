@@ -91,4 +91,19 @@ public interface IntegrationConfiguration {
      */
     List<String> sortInitPluginIds();
 
+    /**
+     * 当前主程序的版本号, 用于校验插件是否可安装.
+     * 插件中可通过插件配置信息 requires 来指定可安装的主程序版本
+     * @return 系统版本号, 如果为: 0.0.0 的话, 表示不校验
+     */
+    String version();
+
+    /**
+     * 设置为true表示插件设置的requires的版本号完全匹配version版本号才可允许插件安装, 即: requires=x.y.z
+     * 设置为false表示插件设置的requires的版本号小于等于version值, 插件就可安装, 即requires<=x.y.z
+     * 默认为false
+     * @return true or false
+     */
+    boolean exactVersionAllowed();
+
 }

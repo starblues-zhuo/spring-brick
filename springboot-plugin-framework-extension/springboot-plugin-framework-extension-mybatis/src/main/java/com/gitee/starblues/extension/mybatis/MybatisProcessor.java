@@ -66,6 +66,7 @@ public class MybatisProcessor implements PluginBeanRegistrarExtend {
                     configuration.getLanguageRegistry().register(languageDriver);
                 }
             }
+
         }
         PluginResourceFinder pluginResourceFinder = new PluginResourceFinder(pluginRegistryInfo);
 

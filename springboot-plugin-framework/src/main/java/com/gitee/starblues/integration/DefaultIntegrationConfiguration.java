@@ -55,4 +55,14 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     public List<String> sortInitPluginIds() {
         return null;
     }
+
+    @Override
+    public String version() {
+        return "0.0.0";
+    }
+
+    @Override
+    public boolean exactVersionAllowed() {
+        return false;
+    }
 }

@@ -1,24 +1,21 @@
-### 特性
-- 支持在插件中自定义Mapper接口、Mapper xml 以及对应的实体bean
-- 支持插件独立定义数据源
-- 支持集成 `Mybatis`
-- 支持集成 `Mybatis-Plus`
-- 支持集成`Tk-Mybatis`
+### 集成Mybatis扩展
 
-### maven 仓库地址
+## 包含集成
+- 可集成`Mybatis`
+- 可集成`Mybatis-Plus`
+- 可集成`Tk-Mybatis`
 
-https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework-extension-mybatis
+## maven 仓库地址
 
-### 集成步骤
+[maven 仓库地址](https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework-extension-mybatis)
 
-#### 主程序集成步骤
-
-一. 引入依赖
+## 主程序集成步骤
+#### 引入依赖
 ```xmml
 <dependency>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework-extension-mybatis</artifactId>
-    <version>${latest.version}</version>
+    <version>2.4.0-RELEASE</version>
 </dependency>
 
 <!--  如果使用mybatis, 则自行引入如下依赖 -->
@@ -44,7 +41,7 @@ https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framewo
 
 ```
 
-二. 配置扩展
+#### 配置扩展
 
 定义PluginApplication bean时, 新增该扩展。
 ```java
@@ -63,10 +60,9 @@ public PluginApplication pluginApplication(){
 - Mybatis-Plus类型为：`SpringBootMybatisExtension.Type.MYBATIS_PLUS`
 - Tk-Mybatis类型为：`SpringBootMybatisExtension.Type.TK_MYBATIS`
 
+## 插件集成步骤
 
-#### 插件程序集成步骤
-
-一. 以provided方式引入主程序依赖, 例如：
+#### 以provided方式引入主程序依赖, 例如：
 ```xml
 <dependency>
     <groupId>com.gitee.starblues</groupId>
@@ -76,15 +72,15 @@ public PluginApplication pluginApplication(){
 </dependency>
 ```
 
-二. 进行配置
+#### 进行配置
 
-- 如果集成`mybatis`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootMybatisConfig`
-- 如果集成`mybatis-plus`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootMybatisPlusConfig`
-- 如果集成`tkmybatis`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootTkMybatisConfig`
+- 如果集成`Mybatis`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootMybatisConfig`
+- 如果集成`Mybatis-Plus`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootMybatisPlusConfig`
+- 如果集成`TkMybatis`, 则实现接口：`com.gitee.starblues.extension.mybatis.SpringBootTkMybatisConfig`
 
-- 以上实现类添加注解`@ConfigDefinition` 
+以上实现类添加注解`@ConfigDefinition` 
 
-例如集成mybatis-plus:
+例如集成`Mybatis-Plus`:
 ```java
 
 @ConfigDefinition
@@ -122,7 +118,7 @@ classpath路径-> classpath: xml/mapper/*PluginMapper.xml
 
 ```
 
-三. 定义的Mapper 接口需要加上注解 @Mapper
+#### 定义的Mapper 接口需要加上注解 @Mapper
 
 注解位置: org.apache.ibatis.annotations.Mapper
 
@@ -154,7 +150,7 @@ public interface Plugin1Mapper {
 }
 
 ```
-### 如果插件不想使用主程序的配置或者数据源, 插件可自定义配置, 配置说明如下: 
+#### 如果插件不想使用主程序的配置或者数据源, 插件可自定义配置, 配置说明如下: 
 1. 实现`enableOneselfConfig`方法, 并设置返回值为true
 2. 实现`oneselfConfig(xx)`方法进行独立配置
 - Mybatis独立配置:
@@ -205,28 +201,32 @@ public void oneselfConfig(Config config){
 
 ```
 
-#### 集成Mybatis-Plus说明
+### 集成Mybatis-Plus说明
 
 - 集成mybatis-plus后，在插件中无法使用 `LambdaQueryWrapper` 条件构造器
 
 
-### 版本升级
-#### 2.4.0 版本
+## 版本说明
+#### `2.4.1-RELEASE` 版本
+- 修复插件中使用`Mybatis-Plus`批量插入bug
+- 针对`Mybatis`、`Mybatis-Plus`、`Tk-Mybatis` 新增使用主程序配置时,可重写主程序配置到本插件中
+
+### `2.4.0-RELEASE` 版本
 - 修改扩展功能中配置实现类，必须新增`@ConfigDefinition` 注解
 
-#### 2.2.5 版本
+### `2.2.5-RELEASE` 版本
 全新升级该扩展
 1. 对 `Mybatis`、`Mybatis-Plus`、`Tk-Mybatis` 进行支持
 2. 支持动态卸载和安装
 3. 支持插件可独立进行配置, 与主程序和其他插件进行环境隔离
 
 
-#### 2.1.3 版本
+### `2.1.3-RELEASE` 版本
 跟随 springboot-plugin-framework 版本的部分类修改。升级到 2.1.3
 
-#### 2.1.1 版本
+### `2.1.1-RELEASE` 版本
 1. 新增支持 Mybatis-Plus ServiceImpl的包装类。ServiceImplWrapper。使用详见`集成Mybatis-Plus说明`
 2. 修复 Mapper.xml 中定义的 resultType 类型无法定义的bug。
     
-#### 2.0.3 版本
+### `2.0.3-RELEASE` 版本
 1. 修复Mapper无法注入的bug. (由于springboot-plugin-framework 2.0.3 版本升级导致)

@@ -1,25 +1,25 @@
-### 特性
-- 支持通过http访问插件中静态资源
-- 支持集成`Thymeleaf`
+### 集成静态资源扩展
+## 包含内容
+- 可集成插件静态资源访问
+- 可集成`Thymeleaf`
 
-### maven 仓库地址
+## maven 仓库地址
 
-https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework-extension-mybatis
+[maven 仓库地址](https://mvnrepository.com/artifact/com.gitee.starblues/springboot-plugin-framework-extension-mybatis)
 
-### 集成步骤
 
-#### 主程序集成步骤
+## 主程序集成步骤
 
-一. 引入依赖
+#### 引入依赖
 ```xmml
 <dependency>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework-extension-resources</artifactId>
-    <version>${latest.version}</version>
+    <version>2.4.0-RELEASE</version>
 </dependency>
 ```
 
-二. 配置扩展
+#### 配置扩展
 
 定义PluginApplication bean时, 新增该扩展。
 ```java
@@ -39,9 +39,9 @@ public PluginApplication pluginApplication(){
 
 **插件的http资源url访问规则为: http://ip:port/pathPrefix(上述说明配置的值)/插件id/具体插件的资源路径**
 
-#### 插件程序集成步骤
+## 插件程序集成步骤
 
-一. 以provided方式引入主程序依赖, 例如：
+#### 以`provided`方式引入主程序依赖, 例如：
 ```xml
 <dependency>
     <groupId>com.gitee.starblues</groupId>
@@ -51,7 +51,7 @@ public PluginApplication pluginApplication(){
 </dependency>
 ```
 
-二. 进行配置
+#### 进行配置
 
 1. 配置集成静态资源
 
@@ -99,20 +99,20 @@ public class ResourceConfig implements SpringBootThymeleafConfig {
 ```
 
 
-### 版本升级
+## 版本说明
+#### `2.4.1-RELEASE` 版本
+- 新增使用该扩展时可选择性包含`thymeleaf`
 
-#### 2.4.0 版本
+#### `2.4.0-RELEASE` 版本
 - 修改扩展功能中配置实现类，必须新增`@ConfigDefinition` 注解
 - 修复插件中的静态资源和主程序冲突的bug
 
-#### 2.2.5 版本
+#### `2.2.5-RELEASE` 版本
 1. 新增`Thymeleaf`模板引擎
 2. 修改插件中扩展的配置方式
 
-#### 2.2.1 版本
+#### `2.2.1-RELEASE` 版本
 修改该扩展导致无法卸载插件的bug
     
-#### 2.1.1 版本
+#### `2.1.1-RELEASE` 版本
 新增当前扩展
-
-

@@ -10,6 +10,7 @@ import com.gitee.starblues.utils.SpringBeanUtils;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -57,14 +58,14 @@ public class TkMybatisProcessor implements PluginBeanRegistrarExtend {
 
         Config tkConfig = null;
         if(config.enableOneselfConfig()){
-            config.oneselfConfig(factory);
             tkConfig = new Config();
-            config.oneselfConfig(tkConfig);
+            config.oneselfConfig(factory, tkConfig);
         } else {
             GenericApplicationContext mainApplicationContext = pluginRegistryInfo.getMainApplicationContext();
             PluginFollowCoreConfig followCoreConfig = new PluginFollowCoreConfig(mainApplicationContext);
             factory.setDataSource(followCoreConfig.getDataSource());
-            factory.setConfiguration(followCoreConfig.getConfiguration(SpringBootMybatisExtension.Type.TK_MYBATIS));
+            Configuration configuration = followCoreConfig.getConfiguration(SpringBootMybatisExtension.Type.TK_MYBATIS);
+            factory.setConfiguration(configuration);
             Interceptor[] interceptor = followCoreConfig.getInterceptor();
             if(interceptor != null && interceptor.length > 0){
                 factory.setPlugins(interceptor);
@@ -77,6 +78,7 @@ public class TkMybatisProcessor implements PluginBeanRegistrarExtend {
                     false, false).length > 0){
                 tkConfig = mainApplicationContext.getBean(Config.class);
             }
+            config.reSetMainConfig(configuration, tkConfig);
         }
 
         MapperHelper mapperHelper = new MapperHelper();
