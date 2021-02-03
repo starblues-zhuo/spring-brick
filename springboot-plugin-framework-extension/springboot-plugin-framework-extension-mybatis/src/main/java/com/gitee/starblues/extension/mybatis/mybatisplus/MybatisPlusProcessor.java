@@ -95,7 +95,7 @@ public class MybatisPlusProcessor implements PluginBeanRegistrarExtend {
         }
         ClassLoader defaultClassLoader = Resources.getDefaultClassLoader();
         try {
-            Resources.setDefaultClassLoader(pluginRegistryInfo.getDefaultPluginClassLoader());
+            Resources.setDefaultClassLoader(pluginRegistryInfo.getPluginClassLoader());
             SqlSessionFactory sqlSessionFactory = factory.getObject();
             if(sqlSessionFactory == null){
                 throw new Exception("Get mybatis-plus sqlSessionFactory is null");
@@ -114,35 +114,17 @@ public class MybatisPlusProcessor implements PluginBeanRegistrarExtend {
 
 
     private GlobalConfig mybatisPlusFollowCoreConfig(MybatisSqlSessionFactoryBean factory,
-                                             GenericApplicationContext mainApplicationContext){
+                                                     GenericApplicationContext mainApplicationContext){
         MybatisPlusProperties plusProperties = mainApplicationContext.getBean(MybatisPlusProperties.class);
 
         GlobalConfig currentGlobalConfig = new GlobalConfig();
+        currentGlobalConfig.setBanner(false);
         GlobalConfig globalConfig = plusProperties.getGlobalConfig();
         if(globalConfig != null){
-            BeanUtils.copyProperties(globalConfig, currentGlobalConfig);
-        }
-        if (mainApplicationContext.getBeanNamesForType(IKeyGenerator.class, false,
-                false).length > 0) {
-            IKeyGenerator keyGenerator = mainApplicationContext.getBean(IKeyGenerator.class);
-            currentGlobalConfig.getDbConfig().setKeyGenerator(keyGenerator);
-        }
-
-        if (mainApplicationContext.getBeanNamesForType(MetaObjectHandler.class,
-                false, false).length > 0) {
-            MetaObjectHandler metaObjectHandler = mainApplicationContext.getBean(MetaObjectHandler.class);
-            currentGlobalConfig.setMetaObjectHandler(metaObjectHandler);
-        }
-        if (mainApplicationContext.getBeanNamesForType(IKeyGenerator.class, false,
-                false).length > 0) {
-            IKeyGenerator keyGenerator = mainApplicationContext.getBean(IKeyGenerator.class);
-            currentGlobalConfig.getDbConfig().setKeyGenerator(keyGenerator);
-        }
-
-        if (mainApplicationContext.getBeanNamesForType(ISqlInjector.class, false,
-                false).length > 0) {
-            ISqlInjector iSqlInjector = mainApplicationContext.getBean(ISqlInjector.class);
-            currentGlobalConfig.setSqlInjector(iSqlInjector);
+            currentGlobalConfig.setDbConfig(globalConfig.getDbConfig());
+            currentGlobalConfig.setIdentifierGenerator(globalConfig.getIdentifierGenerator());
+            currentGlobalConfig.setMetaObjectHandler(globalConfig.getMetaObjectHandler());
+            currentGlobalConfig.setSqlInjector(globalConfig.getSqlInjector());
         }
         factory.setGlobalConfig(currentGlobalConfig);
         return currentGlobalConfig;

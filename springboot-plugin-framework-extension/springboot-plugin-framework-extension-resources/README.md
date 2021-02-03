@@ -97,11 +97,12 @@ public class ResourceConfig implements SpringBootThymeleafConfig {
 }
 
 ```
+## 注意事项
+**插件中`resources`中存放的资源文件目录一定不能和主程序相同, 否则就会加载到主程序的资源**
+- 例如: 主程序在`resources`中定义了 `web` 文件夹. 插件中的`resources`中不能再定义`web`文件夹来存放静态资源
 
 
 ## 版本说明
-#### `2.4.1-RELEASE` 版本
-- 新增使用该扩展时可选择性包含`thymeleaf`
 
 #### `2.4.0-RELEASE` 版本
 - 修改扩展功能中配置实现类，必须新增`@ConfigDefinition` 注解

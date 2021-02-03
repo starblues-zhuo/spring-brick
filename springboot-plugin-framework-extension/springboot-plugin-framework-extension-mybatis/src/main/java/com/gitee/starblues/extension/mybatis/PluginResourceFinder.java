@@ -36,7 +36,7 @@ public class PluginResourceFinder {
 
 
     public PluginResourceFinder(PluginRegistryInfo pluginRegistryInfo) {
-        this.classLoader = pluginRegistryInfo.getDefaultPluginClassLoader();
+        this.classLoader = pluginRegistryInfo.getPluginClassLoader();
         this.resourcePatternResolver = new PathMatchingResourcePatternResolver(classLoader);;
     }
 

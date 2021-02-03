@@ -48,7 +48,7 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         addBeanExtend(pluginRegistryInfo);
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(pluginRegistryInfo.getDefaultPluginClassLoader());
+            Thread.currentThread().setContextClassLoader(pluginRegistryInfo.getPluginClassLoader());
             pluginApplicationContext.refresh();
         } finally {
             Thread.currentThread().setContextClassLoader(contextClassLoader);
