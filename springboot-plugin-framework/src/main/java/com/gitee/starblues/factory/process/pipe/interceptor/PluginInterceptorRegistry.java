@@ -5,7 +5,6 @@ import org.springframework.core.Ordered;
 import org.springframework.web.context.request.WebRequestInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapter;
 
 import java.util.ArrayList;

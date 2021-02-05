@@ -15,8 +15,6 @@ public class PluginInfoContainers {
     private final static Map<String, GenericApplicationContext> PLUGIN_APPLICATION_CONTEXTS =
             new ConcurrentHashMap<>();
 
-
-
     public static void addPluginApplicationContext(String pluginId, GenericApplicationContext applicationContext){
         PLUGIN_APPLICATION_CONTEXTS.put(pluginId, applicationContext);
     }

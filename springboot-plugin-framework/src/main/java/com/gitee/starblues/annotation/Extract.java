@@ -22,12 +22,12 @@ public @interface Extract {
      * 场景
      * @return 场景标志
      */
-    String useCase() default "";
+    String scene() default "";
 
     /**
      * 用例
      * @return 用例标志
      */
-    String scene() default "";
+    String useCase() default "";
 
 }

@@ -8,49 +8,49 @@ import java.util.Objects;
 /**
  * 执行器坐标
  * @author starBlues
- * @version 1.0
+ * @version 2.4.1
  */
 public class ExtractCoordinate {
 
     private String bus;
-    private String useCase;
     private String scene;
+    private String useCase;
 
-    ExtractCoordinate(String bus, String useCase, String scene) {
+    ExtractCoordinate(String bus, String scene, String useCase) {
         this.bus = bus;
-        this.useCase = useCase;
         this.scene = scene;
+        this.useCase = useCase;
     }
 
 
     ExtractCoordinate(Extract extract) {
         this.bus = extract.bus();
-        this.useCase = extract.useCase();
         this.scene = extract.scene();
+        this.useCase = extract.useCase();
     }
 
     public static ExtractCoordinate build(String bus) {
         return new ExtractCoordinate(bus, null, null);
     }
 
-    public static ExtractCoordinate build(String bus, String useCase) {
-        return new ExtractCoordinate(bus, useCase, null);
+    public static ExtractCoordinate build(String bus, String scene) {
+        return new ExtractCoordinate(bus, scene, null);
     }
 
-    public static ExtractCoordinate build(String bus, String useCase, String scene) {
-        return new ExtractCoordinate(bus, useCase, scene);
+    public static ExtractCoordinate build(String bus, String scene, String useCase) {
+        return new ExtractCoordinate(bus, scene, useCase);
     }
 
     public String getBus() {
         return bus;
     }
 
-    public String getUseCase() {
-        return useCase;
-    }
-
     public String getScene() {
         return scene;
+    }
+
+    public String getUseCase() {
+        return useCase;
     }
 
     @Override
@@ -59,16 +59,16 @@ public class ExtractCoordinate {
         if (!(o instanceof ExtractCoordinate)) return false;
         ExtractCoordinate that = (ExtractCoordinate) o;
         if(StringUtils.isNotNullOrEmpty(bus) &&
-                StringUtils.isNotNullOrEmpty(useCase) &&
-                StringUtils.isNotNullOrEmpty(scene)){
+                StringUtils.isNotNullOrEmpty(scene) &&
+                StringUtils.isNotNullOrEmpty(useCase)){
             return Objects.equals(getBus(), that.getBus()) &&
-                    Objects.equals(getUseCase(), that.getUseCase()) &&
-                    Objects.equals(getScene(), that.getScene());
+                    Objects.equals(getScene(), that.getScene()) &&
+                    Objects.equals(getUseCase(), that.getUseCase());
         }
 
-        if(StringUtils.isNotNullOrEmpty(bus) && StringUtils.isNotNullOrEmpty(useCase)){
+        if(StringUtils.isNotNullOrEmpty(bus) && StringUtils.isNotNullOrEmpty(scene)){
             return Objects.equals(getBus(), that.getBus()) &&
-                    Objects.equals(getUseCase(), that.getUseCase());
+                    Objects.equals(getScene(), that.getScene());
         }
 
         if(StringUtils.isNotNullOrEmpty(bus)){
@@ -80,15 +80,16 @@ public class ExtractCoordinate {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getBus(), getUseCase(), getScene());
+        return Objects.hash(getBus(), getScene(), getUseCase());
     }
 
     @Override
     public String toString() {
         return "ExtractCoordinate{" +
                 "bus='" + bus + '\'' +
-                ", useCase='" + useCase + '\'' +
                 ", scene='" + scene + '\'' +
+                ", useCase='" + useCase + '\'' +
                 '}';
     }
+
 }
