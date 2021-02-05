@@ -3,13 +3,15 @@ package com.gitee.starblues.factory.process.pipe;
 import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.bean.*;
-import com.gitee.starblues.realize.PluginUtils;
-import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 
+import javax.servlet.ServletContext;
 import java.util.*;
 
 /**
@@ -25,12 +27,14 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
     private final List<PluginBeanRegistrar> pluginBeanDefinitionRegistrars = new ArrayList<>();
     private final ApplicationContext mainApplicationContext;
 
+
     public PluginPipeApplicationContextProcessor(ApplicationContext mainApplicationContext) {
         this.mainApplicationContext = mainApplicationContext;
     }
 
     @Override
     public void initialize() throws Exception {
+        pluginBeanDefinitionRegistrars.add(new PluginInsetBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new ConfigBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new ConfigFileBeanRegistrar(mainApplicationContext));
         pluginBeanDefinitionRegistrars.add(new BasicBeanRegistrar());
@@ -45,7 +49,6 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         for (PluginBeanRegistrar pluginBeanDefinitionRegistrar : pluginBeanDefinitionRegistrars) {
             pluginBeanDefinitionRegistrar.registry(pluginRegistryInfo);
         }
-        addBeanExtend(pluginRegistryInfo);
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(pluginRegistryInfo.getPluginClassLoader());
@@ -70,36 +73,6 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
                         registrar.getClass().getName());
             }
         }
-    }
-
-
-    /**
-     * 向插件ApplicationContext容器中添加扩展的bean
-     * @param pluginRegistryInfo 插件注册信息
-     */
-    private void addBeanExtend(PluginRegistryInfo pluginRegistryInfo){
-        GenericApplicationContext parentApplicationContext = pluginRegistryInfo.getMainApplicationContext();
-        GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
-        PluginUtils pluginUtils = new PluginUtils(parentApplicationContext,
-                pluginApplicationContext,
-                pluginRegistryInfo.getPluginWrapper().getDescriptor());
-        String name = pluginUtils.getClass().getName();
-        pluginApplicationContext.getBeanFactory().registerSingleton(name, pluginUtils);
-        pluginRegistryInfo.addExtension("PluginUtilsName", name);
-    }
-
-
-    /**
-     * 移除扩展绑定
-     * @param pluginRegistryInfo 插件注册信息
-     */
-    public static void removeBeanExtend(PluginRegistryInfo pluginRegistryInfo) {
-        String pluginUtilsName = pluginRegistryInfo.getExtension("PluginUtilsName");
-        if(StringUtils.isNullOrEmpty(pluginUtilsName)){
-            return;
-        }
-        GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
-        pluginApplicationContext.getDefaultListableBeanFactory().destroySingleton(pluginUtilsName);
     }
 
 }

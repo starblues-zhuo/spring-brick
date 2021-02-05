@@ -100,6 +100,11 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
         return true;
     }
 
+    @Override
+    public String version() {
+        return "1.2.6";
+    }
+
     public String getRunMode() {
         return runMode;
     }

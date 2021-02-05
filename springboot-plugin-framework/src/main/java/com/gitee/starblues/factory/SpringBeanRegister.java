@@ -15,21 +15,21 @@ import java.util.function.Consumer;
  * Spring bean注册者, 向Spring注册Bean时, 必须使用该对象进行注册
  *
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.1
  */
 public class SpringBeanRegister {
 
     private static final Logger logger = LoggerFactory.getLogger(SpringBeanRegister.class);
 
-    private final GenericApplicationContext pluginApplicationContext;
+    private final GenericApplicationContext applicationContext;
 
-    public SpringBeanRegister(GenericApplicationContext pluginApplicationContext){
-        this.pluginApplicationContext = pluginApplicationContext;
+    public SpringBeanRegister(GenericApplicationContext applicationContext){
+        this.applicationContext = applicationContext;
     }
 
 
     public boolean exist(String name){
-        return pluginApplicationContext.containsBean(name);
+        return applicationContext.containsBean(name);
     }
 
     /**
@@ -56,9 +56,9 @@ public class SpringBeanRegister {
         beanDefinition.setBeanClass(aClass);
         BeanNameGenerator beanNameGenerator =
                 new PluginAnnotationBeanNameGenerator(pluginId);
-        String beanName = beanNameGenerator.generateBeanName(beanDefinition, pluginApplicationContext);
+        String beanName = beanNameGenerator.generateBeanName(beanDefinition, applicationContext);
 
-        if(pluginApplicationContext.containsBean(beanName)){
+        if(applicationContext.containsBean(beanName)){
             String error = MessageFormat.format("Bean name {0} already exist of {1}",
                     beanName, aClass.getName());
             logger.debug(error);
@@ -67,7 +67,7 @@ public class SpringBeanRegister {
         if(consumer != null){
             consumer.accept(beanDefinition);
         }
-        pluginApplicationContext.registerBeanDefinition(beanName, beanDefinition);
+        applicationContext.registerBeanDefinition(beanName, beanDefinition);
         return beanName;
     }
 
@@ -94,7 +94,7 @@ public class SpringBeanRegister {
                                       Consumer<AnnotatedGenericBeanDefinition> consumer) {
         AnnotatedGenericBeanDefinition beanDefinition = new
                 AnnotatedGenericBeanDefinition(aClass);
-        if(pluginApplicationContext.containsBean(beanName)){
+        if(applicationContext.containsBean(beanName)){
             String error = MessageFormat.format("Bean name {0} already exist of {1}",
                     beanName, aClass.getName());
             throw new RuntimeException(error);
@@ -102,7 +102,7 @@ public class SpringBeanRegister {
         if(consumer != null){
             consumer.accept(beanDefinition);
         }
-        pluginApplicationContext.registerBeanDefinition(beanName, beanDefinition);
+        applicationContext.registerBeanDefinition(beanName, beanDefinition);
     }
 
     /**
@@ -111,7 +111,7 @@ public class SpringBeanRegister {
      * @param object 对象
      */
     public void registerSingleton(String name, Object object){
-        DefaultListableBeanFactory listableBeanFactory = pluginApplicationContext.getDefaultListableBeanFactory();
+        DefaultListableBeanFactory listableBeanFactory = applicationContext.getDefaultListableBeanFactory();
         if(!listableBeanFactory.containsSingleton(name)){
             listableBeanFactory.registerSingleton(name, object);
         }
@@ -123,10 +123,18 @@ public class SpringBeanRegister {
      * @param name 单例名称
      */
     public void destroySingleton(String name){
-        DefaultListableBeanFactory listableBeanFactory = pluginApplicationContext.getDefaultListableBeanFactory();
+        DefaultListableBeanFactory listableBeanFactory = applicationContext.getDefaultListableBeanFactory();
         if(listableBeanFactory.containsSingleton(name)){
             listableBeanFactory.destroySingleton(name);
         }
+    }
+
+    /**
+     * 销毁所有单例
+     */
+    public void destroySingletons(){
+        DefaultListableBeanFactory listableBeanFactory = applicationContext.getDefaultListableBeanFactory();
+        listableBeanFactory.destroySingletons();
     }
 
     /**
@@ -136,7 +144,7 @@ public class SpringBeanRegister {
      */
     public void unregister(String pluginId, String beanName){
         try {
-            pluginApplicationContext.removeBeanDefinition(beanName);
+            applicationContext.removeBeanDefinition(beanName);
         } catch (Exception e){
             logger.error("Remove plugin '{}' bean {} error. {}", pluginId, beanName, e.getMessage());
         }

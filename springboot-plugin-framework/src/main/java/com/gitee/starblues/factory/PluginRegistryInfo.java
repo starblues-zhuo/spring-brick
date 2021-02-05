@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 注册的插件信息
  *
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.1
  */
 public class PluginRegistryInfo {
 
@@ -316,13 +316,11 @@ public class PluginRegistryInfo {
 
     private void closePluginApplicationContext() {
         try {
-            PluginPipeApplicationContextProcessor.removeBeanExtend(this);
+            getSpringBeanRegister().destroySingletons();
             pluginApplicationContext.close();
         } catch (Exception e){
             logger.error("Close plugin '{}' ApplicationContext failure", getPluginWrapper().getPluginId(), e);
         }
     }
-
-
 
 }
