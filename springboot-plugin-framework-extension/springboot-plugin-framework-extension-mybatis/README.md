@@ -15,7 +15,7 @@
 <dependency>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework-extension-mybatis</artifactId>
-    <version>2.4.1-RELEASE</version>
+    <version>2.4.0-RELEASE</version>
 </dependency>
 
 <!--  如果使用mybatis, 则自行引入如下依赖 -->
@@ -201,25 +201,28 @@ public void oneselfConfig(Config config){
 
 ```
 
+#### 重新主程序配置
+1. 实现各个配置的 `reSetMainConfig` 方法进行重写
+2. 重写后不影响主程序的配置, 只在当前插件中起作用
+
 ### 集成Mybatis-Plus说明
 
 - 集成mybatis-plus后，在插件中无法使用 `LambdaQueryWrapper` 条件构造器
 
 
 ## 版本说明
-#### `2.4.1-RELEASE` 版本
-- 修复插件中使用`Mybatis-Plus`批量插入bug
-- 针对`Mybatis`、`Mybatis-Plus`、`Tk-Mybatis` 新增使用主程序配置时,可重写主程序配置到本插件中
-
 ### `2.4.1-RELEASE` 版本
-- 修改扩展功能中配置实现类，必须新增`@ConfigDefinition` 注解
+1. 新增`Mybatis`、`Mybatis-Plus`、`Tk-Mybatis`扩展新增可重写覆盖主程序的配置(重写后会当前插件私有, 不影响主程序)
+2. 修复`Mybatis-Plus`批量插入的bug
+
+### `2.4.0-RELEASE` 版本
+1. 修改扩展功能中配置实现类，必须新增`@ConfigDefinition` 注解
 
 ### `2.2.5-RELEASE` 版本
 全新升级该扩展
 1. 对 `Mybatis`、`Mybatis-Plus`、`Tk-Mybatis` 进行支持
 2. 支持动态卸载和安装
 3. 支持插件可独立进行配置, 与主程序和其他插件进行环境隔离
-
 
 ### `2.1.3-RELEASE` 版本
 跟随 springboot-plugin-framework 版本的部分类修改。升级到 2.1.3

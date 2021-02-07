@@ -46,6 +46,15 @@ public class ExtractController {
         return extractExample.exeInfo(info);
     }
 
-
+    @GetMapping("/mainExtract")
+    public ExtractExample.Info getMainExtract(){
+        ExtractExample extractExample = extractFactory.getExtractByCoordinateOfMain(ExtractCoordinate.build(
+                "main", "1", "2"
+        ));
+        ExtractExample.Info info = new ExtractExample.Info();
+        info.setName("main info");
+        info.setAge(Integer.MAX_VALUE);
+        return extractExample.exeInfo(info);
+    }
 
 }

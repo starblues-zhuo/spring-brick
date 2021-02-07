@@ -18,7 +18,6 @@ public class PluginInterceptorR implements PluginInterceptorRegister {
     @Resource
     private PluginInterceptor1 pluginInterceptor1;
 
-
     @Override
     public void registry(PluginInterceptorRegistry registry) {
         registry.addInterceptor(pluginInterceptor1, PluginInterceptorRegistry.Type.PLUGIN)

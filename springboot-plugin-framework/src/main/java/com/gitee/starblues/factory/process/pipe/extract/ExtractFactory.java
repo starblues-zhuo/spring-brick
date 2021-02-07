@@ -13,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ExtractFactory {
 
+    public static final String MAIN_EXTRACT_KEY = ExtractFactory.class.getName() + UUID.randomUUID().toString();
+
     private Map<String, Map<ExtractCoordinate, Object>> extractMap = new ConcurrentHashMap<>();
 
     private static ExtractFactory EXTRACT_FACTORY = new ExtractFactory();
@@ -26,6 +28,15 @@ public class ExtractFactory {
     public static ExtractFactory getInstant(){
         return EXTRACT_FACTORY;
     }
+
+    /**
+     * 添加扩展
+     * @param extractObject 扩展的bean
+     */
+    void addOfMain(Object extractObject){
+        add(MAIN_EXTRACT_KEY, extractObject);
+    }
+
 
     /**
      * 添加扩展
@@ -89,6 +100,27 @@ public class ExtractFactory {
         return (T) extracts;
     }
 
+
+    /**
+     * 根据坐标得到主程序的扩展
+     * 主程序扩展必须使用 @Extract+@Component 进行定义
+     * @param coordinate 扩展的坐标
+     * @param <T> 扩展的泛型
+     * @return 扩展实例, 如果不存在则抛出 RuntimeException 异常
+     */
+    public <T> T getExtractByCoordinateOfMain(ExtractCoordinate coordinate){
+        Objects.requireNonNull(coordinate, "ExtractCoordinate can't be null");
+        Map<ExtractCoordinate, Object> extractCoordinates = extractMap.get(MAIN_EXTRACT_KEY);
+        if(extractCoordinates  == null){
+            throw new RuntimeException("Not found " + coordinate + " from main");
+        }
+        Object extracts = extractCoordinates.get(coordinate);
+        if(extracts == null){
+            throw new RuntimeException("Not found " + coordinate + " from main");
+        }
+        return (T) extracts;
+    }
+
     /**
      * 根据接口类型获取扩展
      * @param interfaceClass 接口类类型
@@ -134,6 +166,17 @@ public class ExtractFactory {
             }
         }
         return extracts;
+    }
+
+    /**
+     * 根据接口类型获取主程序的扩展
+     * 主程序扩展必须使用 @Extract+@Component 进行定义
+     * @param interfaceClass 接口类类型
+     * @param <T> 接口类型泛型
+     * @return 扩展实现集合
+     */
+    public <T> List<T> getExtractByInterClassOfMain(Class<T> interfaceClass){
+        return getExtractByInterClass(MAIN_EXTRACT_KEY, interfaceClass);
     }
 
     /**

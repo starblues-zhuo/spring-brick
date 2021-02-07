@@ -16,10 +16,12 @@ import java.util.Map;
  */
 public class PluginExtractPipeProcessor implements PluginPipeProcessor {
 
+    private final ApplicationContext mainApplicationContext;
     private final SpringBeanRegister springBeanRegister;
     private final ExtractFactory extractFactory;
 
     public PluginExtractPipeProcessor(ApplicationContext mainApplicationContext) {
+        this.mainApplicationContext = mainApplicationContext;
         this.springBeanRegister = new SpringBeanRegister((GenericApplicationContext) mainApplicationContext);
         this.extractFactory = ExtractFactory.getInstant();
     }
@@ -27,6 +29,13 @@ public class PluginExtractPipeProcessor implements PluginPipeProcessor {
     @Override
     public void initialize() throws Exception {
         springBeanRegister.registerSingleton(ExtractFactory.class.getName(), extractFactory);
+        // 获取主程序的扩展
+        Map<String, Object> extractMap = mainApplicationContext.getBeansWithAnnotation(Extract.class);
+        if(!extractMap.isEmpty()){
+            for (Object extract : extractMap.values()) {
+                extractFactory.addOfMain(extract);
+            }
+        }
     }
 
     @Override
