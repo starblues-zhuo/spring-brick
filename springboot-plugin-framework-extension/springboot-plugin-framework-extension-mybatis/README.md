@@ -15,7 +15,7 @@
 <dependency>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework-extension-mybatis</artifactId>
-    <version>2.4.0-RELEASE</version>
+    <version>2.4.1-RELEASE</version>
 </dependency>
 
 <!--  如果使用mybatis, 则自行引入如下依赖 -->
@@ -211,7 +211,7 @@ public void oneselfConfig(Config config){
 - 修复插件中使用`Mybatis-Plus`批量插入bug
 - 针对`Mybatis`、`Mybatis-Plus`、`Tk-Mybatis` 新增使用主程序配置时,可重写主程序配置到本插件中
 
-### `2.4.0-RELEASE` 版本
+### `2.4.1-RELEASE` 版本
 - 修改扩展功能中配置实现类，必须新增`@ConfigDefinition` 注解
 
 ### `2.2.5-RELEASE` 版本

@@ -15,7 +15,7 @@
 <dependency>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework-extension-resources</artifactId>
-    <version>2.4.0-RELEASE</version>
+    <version>2.4.1-RELEASE</version>
 </dependency>
 ```
 
@@ -104,7 +104,7 @@ public class ResourceConfig implements SpringBootThymeleafConfig {
 
 ## 版本说明
 
-#### `2.4.0-RELEASE` 版本
+#### `2.4.1-RELEASE` 版本
 - 修改扩展功能中配置实现类，必须新增`@ConfigDefinition` 注解
 - 修复插件中的静态资源和主程序冲突的bug
 
