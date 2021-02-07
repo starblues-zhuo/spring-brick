@@ -12,7 +12,9 @@ import com.gitee.starblues.integration.user.PluginUser;
 import org.pf4j.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -57,6 +59,7 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
         pluginUser = createPluginUser(applicationContext, pluginManager);
         pluginOperator = createPluginOperator(applicationContext, pluginManager, configuration);
         try {
+            setBeanFactory(applicationContext);
             pluginOperator.initPlugins(listener);
             beInitialized.set(true);
         } catch (Exception e) {
@@ -105,6 +108,17 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
     public PluginUser getPluginUser() {
         assertInjected();
         return pluginUser;
+    }
+
+    /**
+     * 直接将 PluginOperator 和 PluginUser 注入到ApplicationContext容器中
+     * @param applicationContext ApplicationContext
+     */
+    private void setBeanFactory(ApplicationContext applicationContext){
+        GenericApplicationContext genericApplicationContext = (GenericApplicationContext) applicationContext;
+        DefaultListableBeanFactory defaultListableBeanFactory = genericApplicationContext.getDefaultListableBeanFactory();
+        defaultListableBeanFactory.registerSingleton(pluginOperator.getClass().getName(), pluginOperator);
+        defaultListableBeanFactory.registerSingleton(pluginUser.getClass().getName(), pluginUser);
     }
 
     /**

@@ -561,9 +561,9 @@ public class DefaultPluginOperator implements PluginOperator {
             String fileName = sourcePath.getFileName().toString();
             String targetName = integrationConfiguration.backupPath() + File.separator;
             if(!StringUtils.isEmpty(sign)){
-                targetName = targetName + "[" + sign + "]";
+                targetName = targetName + sign;
             }
-            targetName = targetName + "[" + getNowTimeByFormat() + "]";
+            targetName = targetName + "_" +getNowTimeByFormat();
             Path target = Paths.get(targetName + "_" + fileName);
             if(!Files.exists(target.getParent())){
                 Files.createDirectories(target.getParent());

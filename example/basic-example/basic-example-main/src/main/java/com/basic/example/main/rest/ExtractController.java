@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author starBlues
@@ -21,33 +25,23 @@ public class ExtractController {
     @Resource
     private ExtractFactory extractFactory;
 
-
-    @GetMapping("{name}/exe")
-    public void exe(@PathVariable("name") String name){
-        ExtractExample extractExample = extractFactory.getExtract(ExtractCoordinate.build(name));
-        extractExample.exe();
+    @GetMapping("getExtractCoordinates")
+    public Map<String, Set<ExtractCoordinate>> getExtractCoordinates(){
+        return extractFactory.getExtractCoordinates();
     }
 
-    @GetMapping("{name}/exeName")
-    public void exeName(@PathVariable("name") String name){
-        ExtractExample extractExample = extractFactory.getExtract(ExtractCoordinate.build(name));
-        extractExample.exe("name");
-    }
-
-
-    @GetMapping("{name}/exeInfo")
-    public void exeInfo(@PathVariable("name") String name){
-        ExtractExample extractExample = extractFactory.getExtract(ExtractCoordinate.build(name));
-        ExtractExample.Info info = new ExtractExample.Info();
-        info.setName("plugin2");
-        info.setAge(3);
-        extractExample.exe(info);
+    @GetMapping("getExtractByInterClass")
+    public List<String> getExtractByInterClass(){
+        List<ExtractExample> extractByInterClass = extractFactory.getExtractByInterClass(ExtractExample.class);
+        return extractByInterClass.stream()
+                .map(extractExample -> extractExample.getClass().getName())
+                .collect(Collectors.toList());
     }
 
 
     @GetMapping("{name}/exeR")
     public ExtractExample.Info exeInfoR(@PathVariable("name") String name){
-        ExtractExample extractExample = extractFactory.getExtract(ExtractCoordinate.build(name));
+        ExtractExample extractExample = extractFactory.getExtractByCoordinate(ExtractCoordinate.build(name));
         ExtractExample.Info info = new ExtractExample.Info();
         return extractExample.exeInfo(info);
     }

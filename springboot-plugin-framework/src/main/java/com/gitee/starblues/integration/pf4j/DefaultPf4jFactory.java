@@ -131,12 +131,12 @@ public class DefaultPf4jFactory implements Pf4jFactory {
         if(runtimeMode == RuntimeMode.DEPLOYMENT){
             // 生产
             return new CompoundPluginDescriptorFinder()
-                    .add(new ResourcesPluginDescriptorFinder(RuntimeMode.DEPLOYMENT))
+                    .add(new ResourcesPluginDescriptorFinder(runtimeMode))
                     .add(new ManifestPluginDescriptorFinder());
         } else {
             // 开发
             return new CompoundPluginDescriptorFinder()
-                    .add(new ResourcesPluginDescriptorFinder(RuntimeMode.DEVELOPMENT))
+                    .add(new ResourcesPluginDescriptorFinder(runtimeMode))
                     .add(new ResolvePropertiesPluginDescriptorFinder())
                     .add(new ManifestPluginDescriptorFinder());
         }

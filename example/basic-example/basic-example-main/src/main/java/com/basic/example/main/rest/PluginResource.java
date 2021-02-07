@@ -24,8 +24,8 @@ public class PluginResource {
     private final PluginOperator pluginOperator;
 
     @Autowired
-    public PluginResource(PluginApplication pluginApplication) {
-        this.pluginOperator = pluginApplication.getPluginOperator();
+    public PluginResource(PluginOperator pluginOperator) {
+        this.pluginOperator = pluginOperator;
     }
     /**
      * 获取插件信息

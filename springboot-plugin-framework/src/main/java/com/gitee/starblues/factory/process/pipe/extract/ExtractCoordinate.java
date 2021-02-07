@@ -15,30 +15,33 @@ public class ExtractCoordinate {
     private String bus;
     private String scene;
     private String useCase;
+    private Class<?> extractClass;
 
-    ExtractCoordinate(String bus, String scene, String useCase) {
+    ExtractCoordinate(String bus, String scene, String useCase, Class<?> extractClass) {
         this.bus = bus;
         this.scene = scene;
         this.useCase = useCase;
+        this.extractClass = extractClass;
     }
 
 
-    ExtractCoordinate(Extract extract) {
+    ExtractCoordinate(Extract extract, Class<?> extractClass) {
         this.bus = extract.bus();
         this.scene = extract.scene();
         this.useCase = extract.useCase();
+        this.extractClass = extractClass;
     }
 
     public static ExtractCoordinate build(String bus) {
-        return new ExtractCoordinate(bus, null, null);
+        return new ExtractCoordinate(bus, null, null, null);
     }
 
     public static ExtractCoordinate build(String bus, String scene) {
-        return new ExtractCoordinate(bus, scene, null);
+        return new ExtractCoordinate(bus, scene, null, null);
     }
 
     public static ExtractCoordinate build(String bus, String scene, String useCase) {
-        return new ExtractCoordinate(bus, scene, useCase);
+        return new ExtractCoordinate(bus, scene, useCase, null);
     }
 
     public String getBus() {
@@ -51,6 +54,10 @@ public class ExtractCoordinate {
 
     public String getUseCase() {
         return useCase;
+    }
+
+    public Class<?> getExtractClass() {
+        return extractClass;
     }
 
     @Override

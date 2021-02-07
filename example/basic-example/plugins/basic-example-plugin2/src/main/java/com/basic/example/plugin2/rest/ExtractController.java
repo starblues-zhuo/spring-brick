@@ -24,20 +24,20 @@ public class ExtractController {
 
     @GetMapping("{name}/exe")
     public void exe(@PathVariable("name") String name){
-        ExtractExample extractExample = extractFactory.getExtract(ExtractCoordinate.build(name));
+        ExtractExample extractExample = extractFactory.getExtractByCoordinate(ExtractCoordinate.build(name));
         extractExample.exe();
     }
 
     @GetMapping("{name}/exeName")
     public void exeName(@PathVariable("name") String name){
-        ExtractExample extractExample = extractFactory.getExtract(ExtractCoordinate.build(name));
+        ExtractExample extractExample = extractFactory.getExtractByCoordinate(ExtractCoordinate.build(name));
         extractExample.exe("name");
     }
 
 
     @GetMapping("{name}/exeInfo")
     public void exeInfo(@PathVariable("name") String name){
-        ExtractExample extractExample = extractFactory.getExtract(ExtractCoordinate.build(name));
+        ExtractExample extractExample = extractFactory.getExtractByCoordinate(ExtractCoordinate.build(name));
         ExtractExample.Info info = new ExtractExample.Info();
         info.setName("plugin2");
         info.setAge(3);
@@ -47,7 +47,7 @@ public class ExtractController {
 
     @GetMapping("{name}/exeR")
     public ExtractExample.Info exeInfoR(@PathVariable("name") String name){
-        ExtractExample extractExample = extractFactory.getExtract(ExtractCoordinate.build(name));
+        ExtractExample extractExample = extractFactory.getExtractByCoordinate(ExtractCoordinate.build(name));
         ExtractExample.Info info = new ExtractExample.Info();
         return extractExample.exeInfo(info);
     }
