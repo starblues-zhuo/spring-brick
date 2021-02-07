@@ -18,7 +18,7 @@ public class ControllerGroup implements PluginClassGroup {
     /**
      * spring @Controller @RestController 注解bean
      */
-    public static final String GROUP_ID= "spring_controller";
+    public static final String GROUP_ID = "spring_controller";
 
 
     @Override

@@ -10,8 +10,7 @@ import org.springframework.http.CacheControl;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,9 +32,18 @@ public class StaticResourceExtension extends AbstractExtension {
      * 访问静态资源的缓存控制。默认最大1小时。主要针对http协议的缓存。
      */
     private static CacheControl pluginStaticResourcesCacheControl =
-            CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic();;
+            CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic();
 
+    private final Set<Include> includes = new HashSet<>(1);
 
+    public StaticResourceExtension(){
+    }
+
+    public StaticResourceExtension(Include... includes){
+        if(includes != null){
+            this.includes.addAll(Arrays.asList(includes));
+        }
+    }
 
     @Override
     public String key() {
@@ -54,9 +62,12 @@ public class StaticResourceExtension extends AbstractExtension {
 
     @Override
     public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext mainApplicationContext) {
-        final List<PluginPipeProcessorExtend> pluginPipeProcessorExtends = new ArrayList<>();
-        pluginPipeProcessorExtends.add(new ThymeleafProcessor());
-        return pluginPipeProcessorExtends;
+        if(includes.contains(Include.THYMELEAF)){
+            final List<PluginPipeProcessorExtend> pluginPipeProcessorExtends = new ArrayList<>(1);
+            pluginPipeProcessorExtends.add(new ThymeleafProcessor());
+            return pluginPipeProcessorExtends;
+        }
+        return null;
     }
 
     @Override
@@ -96,4 +107,8 @@ public class StaticResourceExtension extends AbstractExtension {
         return pluginStaticResourcesCacheControl;
     }
 
+
+    public enum Include{
+        THYMELEAF
+    }
 }

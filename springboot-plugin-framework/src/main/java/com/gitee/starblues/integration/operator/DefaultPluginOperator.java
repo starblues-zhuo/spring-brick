@@ -147,7 +147,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
 
     @Override
-    public boolean install(Path jarPath) throws Exception {
+    public synchronized boolean install(Path jarPath) throws Exception {
         if(isDev()){
             throw new RuntimeException("Plugin cannot be installed in 'dev' environment");
         }
@@ -214,7 +214,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
 
     @Override
-    public boolean uninstall(String pluginId, boolean isBackup) throws Exception {
+    public synchronized boolean uninstall(String pluginId, boolean isBackup) throws Exception {
         if(isDev()){
             throw new RuntimeException("Plugin cannot be uninstalled in 'dev' environment");
         }
@@ -268,7 +268,7 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
     @Override
-    public boolean start(String pluginId) throws Exception {
+    public synchronized boolean start(String pluginId) throws Exception {
         if(StringUtils.isEmpty(pluginId)){
             throw new IllegalArgumentException("Method:start param 'pluginId' can not be empty");
         }
@@ -302,7 +302,7 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
     @Override
-    public boolean stop(String pluginId) throws Exception {
+    public synchronized boolean stop(String pluginId) throws Exception {
         if(StringUtils.isEmpty(pluginId)){
             throw new IllegalArgumentException("Method:stop param 'pluginId' can not be empty");
         }
@@ -329,7 +329,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
 
     @Override
-    public boolean uploadPluginAndStart(MultipartFile pluginFile) throws Exception {
+    public synchronized boolean uploadPluginAndStart(MultipartFile pluginFile) throws Exception {
         if(isDev()){
             throw new RuntimeException("Plugin cannot uploadPluginAndStart in the 'dev' environment");
         }
@@ -346,7 +346,7 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
     @Override
-    public boolean installConfigFile(Path configFilePath) throws Exception {
+    public synchronized boolean installConfigFile(Path configFilePath) throws Exception {
         if(isDev()){
             throw new RuntimeException("Plugin config file cannot be installed in the 'dev' environment");
         }
@@ -366,7 +366,7 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
     @Override
-    public boolean uploadConfigFile(MultipartFile configFile) throws Exception {
+    public synchronized boolean uploadConfigFile(MultipartFile configFile) throws Exception {
         if(isDev()){
             throw new RuntimeException("Plugin config file cannot be uploaded in the 'dev' environment");
         }
@@ -387,7 +387,7 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
     @Override
-    public boolean backupPlugin(Path backDirPath, String sign) throws Exception {
+    public synchronized boolean backupPlugin(Path backDirPath, String sign) throws Exception {
         if(isDev()){
             throw new RuntimeException("Plugin cannot backup in the 'dev' environment");
         }
@@ -397,7 +397,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
 
     @Override
-    public boolean backupPlugin(String pluginId, String sign) throws Exception {
+    public synchronized boolean backupPlugin(String pluginId, String sign) throws Exception {
         if(isDev()){
             throw new RuntimeException("Plugin cannot backup in the 'dev' environment");
         }
@@ -561,9 +561,9 @@ public class DefaultPluginOperator implements PluginOperator {
             String fileName = sourcePath.getFileName().toString();
             String targetName = integrationConfiguration.backupPath() + File.separator;
             if(!StringUtils.isEmpty(sign)){
-                targetName = targetName + "[" + sign + "]";
+                targetName = targetName + sign;
             }
-            targetName = targetName + "[" + getNowTimeByFormat() + "]";
+            targetName = targetName + "_" +getNowTimeByFormat();
             Path target = Paths.get(targetName + "_" + fileName);
             if(!Files.exists(target.getParent())){
                 Files.createDirectories(target.getParent());

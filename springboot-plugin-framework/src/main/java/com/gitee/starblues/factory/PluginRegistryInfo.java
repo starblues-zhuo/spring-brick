@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 注册的插件信息
  *
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.1
  */
 public class PluginRegistryInfo {
 
@@ -69,12 +69,6 @@ public class PluginRegistryInfo {
      * 处理者信息
      */
     private final Map<String, Object> processorInfo = new ConcurrentHashMap<>(8);
-
-    /**
-     * 自定义策略插件类加载器缓存
-     */
-    private final Map<ClassLoaderStrategy, PluginClassLoader> pluginClassLoaders = new ConcurrentHashMap<>(8);
-
 
     private PluginRegistryInfo(PluginWrapper pluginWrapper,
                                PluginManager pluginManager,
@@ -289,48 +283,9 @@ public class PluginRegistryInfo {
         }
     }
 
-    public ClassLoader getDefaultPluginClassLoader(){
+    public ClassLoader getPluginClassLoader(){
         return pluginWrapper.getPluginClassLoader();
     }
-
-    public ClassLoader getPluginClassLoader(ClassLoaderStrategy strategy){
-        PluginClassLoader pluginClassLoader = pluginClassLoaders.get(strategy);
-        if(pluginClassLoader != null){
-            return pluginClassLoader;
-        }
-        ClassLoadingStrategy classLoadingStrategy = null;
-        switch (strategy){
-            case APD:
-                classLoadingStrategy = ClassLoadingStrategy.APD;
-                break;
-            case ADP:
-                classLoadingStrategy = ClassLoadingStrategy.ADP;
-                break;
-            case PAD:
-                classLoadingStrategy = ClassLoadingStrategy.PAD;
-                break;
-            case DAP:
-                classLoadingStrategy = ClassLoadingStrategy.DAP;
-                break;
-            case DPA:
-                classLoadingStrategy = ClassLoadingStrategy.DPA;
-                break;
-            case PDA:
-                classLoadingStrategy = ClassLoadingStrategy.PDA;
-                break;
-        }
-
-        pluginClassLoader = new PluginClassLoader(pluginManager, pluginWrapper.getDescriptor(),
-                this.getClass().getClassLoader(), classLoadingStrategy);
-        pluginClassLoader.addFile(pluginWrapper.getPluginPath().toFile());
-        pluginClassLoaders.put(strategy, pluginClassLoader);
-        return pluginClassLoader;
-    }
-
-    public List<ClassLoader> getPluginClassLoaders(){
-        return Collections.unmodifiableList(new ArrayList<>(pluginClassLoaders.values()));
-    }
-
 
     public boolean isFollowingInitial() {
         return followingInitial;
@@ -344,22 +299,6 @@ public class PluginRegistryInfo {
             closePluginApplicationContext();
         } catch (Exception e){
             logger.error("Close plugin '{}'-ApplicationContext failure", getPluginWrapper().getPluginId(), e);
-        }
-
-        // 关闭ClassClassLoader
-        try {
-            for (ClassLoader pluginClassLoader : pluginClassLoaders.values()) {
-                if (pluginClassLoader instanceof Closeable) {
-                    try {
-                        ((Closeable) pluginClassLoader).close();
-                    } catch (IOException e) {
-                        logger.error("Close plugin '{}'-ClassLoader-'{}' failure", getPluginWrapper().getPluginId(),
-                                pluginClassLoader.getClass().getName(), e);
-                    }
-                }
-            }
-        } finally {
-            pluginClassLoaders.clear();
         }
 
         // 清除数据集合
@@ -377,19 +316,11 @@ public class PluginRegistryInfo {
 
     private void closePluginApplicationContext() {
         try {
-            PluginPipeApplicationContextProcessor.removeBeanExtend(this);
+            getSpringBeanRegister().destroySingletons();
             pluginApplicationContext.close();
         } catch (Exception e){
             logger.error("Close plugin '{}' ApplicationContext failure", getPluginWrapper().getPluginId(), e);
         }
     }
-
-
-    public enum ClassLoaderStrategy{
-        APD, ADP, PAD, DAP, DPA, PDA
-    }
-
-
-
 
 }

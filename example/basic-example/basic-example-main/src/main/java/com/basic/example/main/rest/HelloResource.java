@@ -25,9 +25,9 @@ public class HelloResource {
     private final PluginUser pluginUser;
     private final ConsoleNameFactory consoleNameFactory;
 
-    public HelloResource(PluginApplication pluginApplication,
+    public HelloResource(PluginUser pluginUser,
                          ConsoleNameFactory consoleNameFactory) {
-        this.pluginUser = pluginApplication.getPluginUser();
+        this.pluginUser = pluginUser;
         this.consoleNameFactory = consoleNameFactory;
     }
 

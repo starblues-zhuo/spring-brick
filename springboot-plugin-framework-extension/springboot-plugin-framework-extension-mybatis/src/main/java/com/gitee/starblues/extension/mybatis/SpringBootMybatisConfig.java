@@ -1,5 +1,6 @@
 package com.gitee.starblues.extension.mybatis;
 
+import org.apache.ibatis.session.Configuration;
 import org.mybatis.spring.SqlSessionFactoryBean;
 
 /**
@@ -18,5 +19,12 @@ public interface SpringBootMybatisConfig extends MybatisCommonConfig{
     default void oneselfConfig(SqlSessionFactoryBean sqlSessionFactoryBean){
     }
 
+    /**
+     * 重写配置当前跟随主程序的配置
+     * 只有 enableOneselfConfig 返回 false, 实现该方法才生效
+     * @param configuration Mybatis Configuration 的配置
+     */
+    default void reSetMainConfig(Configuration configuration){
 
+    }
 }

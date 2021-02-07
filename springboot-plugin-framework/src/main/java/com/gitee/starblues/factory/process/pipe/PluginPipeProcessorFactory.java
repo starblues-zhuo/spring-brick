@@ -3,6 +3,7 @@ package com.gitee.starblues.factory.process.pipe;
 import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassProcess;
+import com.gitee.starblues.factory.process.pipe.extract.PluginExtractPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +22,11 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final ApplicationContext applicationContext;
+    private final ApplicationContext mainApplicationContext;
     private final List<PluginPipeProcessor> pluginPipeProcessors = new ArrayList<>();
 
-    public PluginPipeProcessorFactory(ApplicationContext applicationContext){
-        this.applicationContext = applicationContext;
+    public PluginPipeProcessorFactory(ApplicationContext mainApplicationContext){
+        this.mainApplicationContext = mainApplicationContext;
     }
 
 
@@ -40,9 +41,13 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
         // 添加前置扩展
         pluginPipeProcessors.addAll(ExtensionInitializer.getPreProcessorExtends());
         // 插件的ApplicationContext处理者
-        pluginPipeProcessors.add(new PluginPipeApplicationContextProcessor(applicationContext));
+        pluginPipeProcessors.add(new PluginPipeApplicationContextProcessor(mainApplicationContext));
+        // 拦截器处理者
+        pluginPipeProcessors.add(new PluginInterceptorsPipeProcessor(mainApplicationContext));
         // 插件ConfigBean处理者
         pluginPipeProcessors.add(new PluginConfigBeanPipeProcessor());
+        // 插件扩展的流处理者
+        pluginPipeProcessors.add(new PluginExtractPipeProcessor(mainApplicationContext));
         // 添加扩展
         pluginPipeProcessors.addAll(ExtensionInitializer.getPipeProcessorExtends());
 

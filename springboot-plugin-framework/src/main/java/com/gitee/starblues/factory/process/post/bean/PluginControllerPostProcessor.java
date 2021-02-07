@@ -7,6 +7,8 @@ import com.gitee.starblues.factory.process.pipe.classs.group.ControllerGroup;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.model.ControllerWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
+import com.gitee.starblues.utils.CommonUtils;
+import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -210,18 +212,9 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         if(requestMapping == null){
             return;
         }
-        String pathPrefix = configuration.pluginRestPathPrefix();
-        if(configuration.enablePluginIdRestPathPrefix()){
-            if(pathPrefix != null && !"".equals(pathPrefix)){
-                pathPrefix = joiningPath(pathPrefix, pluginId);
-            } else {
-                pathPrefix = pluginId;
-            }
-        } else {
-            if(pathPrefix == null || "".equals(pathPrefix)){
-                // 不启用插件id作为路径前缀, 并且路径前缀为空, 则直接返回。
-                return;
-            }
+        String pathPrefix = CommonUtils.getPluginRestPrefix(configuration, pluginId);
+        if(StringUtils.isNullOrEmpty(pathPrefix)){
+            return;
         }
         InvocationHandler invocationHandler = Proxy.getInvocationHandler(requestMapping);
         Set<String> definePaths = new HashSet<>();
@@ -238,7 +231,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
                 if(definePath.contains(pathPrefix)){
                     newPath[i++] = definePath;
                 } else {
-                    newPath[i++] = joiningPath(pathPrefix, definePath);
+                    newPath[i++] = CommonUtils.restJoiningPath(pathPrefix, definePath);
                 }
             }
             if(newPath.length == 0){
@@ -248,30 +241,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             memberValues.put("value", new String[]{});
         } catch (Exception e) {
             log.error("Define Plugin RestController pathPrefix error : {}", e.getMessage(), e);
-        }
-    }
-
-    /**
-     * 拼接路径
-     * @param path1 路径1
-     * @param path2 路径2
-     * @return 拼接的路径
-     */
-    private String joiningPath(String path1, String path2){
-        if(path1 != null && path2 != null){
-            if(path1.endsWith("/") && path2.startsWith("/")){
-                return path1 + path2.substring(1);
-            } else if(!path1.endsWith("/") && !path2.startsWith("/")){
-                return path1 + "/" + path2;
-            } else {
-                return path1 + path2;
-            }
-        } else if(path1 != null){
-            return path1;
-        } else if(path2 != null){
-            return path2;
-        } else {
-            return "";
         }
     }
 

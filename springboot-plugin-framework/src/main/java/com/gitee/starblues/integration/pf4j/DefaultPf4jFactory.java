@@ -32,10 +32,11 @@ public class DefaultPf4jFactory implements Pf4jFactory {
             throw new RuntimeException("Configuration RuntimeMode is null" + configuration.environment());
         }
         List<String> sortInitPluginIds = configuration.sortInitPluginIds();
+        DefaultPluginManager defaultPluginManager = null;
         if(RuntimeMode.DEVELOPMENT == environment){
             // 开发环境下的插件管理者
             Path path = Paths.get(getDevPluginDir(configuration));
-            return new DefaultPluginManager(path){
+            defaultPluginManager = new DefaultPluginManager(path){
 
                 @Override
                 protected void initialize() {
@@ -71,7 +72,7 @@ public class DefaultPf4jFactory implements Pf4jFactory {
         } else if(RuntimeMode.DEPLOYMENT == environment){
             // 运行环境下的插件管理者
             Path path = Paths.get(getProdPluginDir(configuration));
-            return new DefaultPluginManager(path){
+            defaultPluginManager = new DefaultPluginManager(path){
 
                 @Override
                 protected void initialize() {
@@ -99,9 +100,13 @@ public class DefaultPf4jFactory implements Pf4jFactory {
                 }
 
             };
-        } else {
+        }
+        if(defaultPluginManager == null){
             throw new RuntimeException("Not found run environment " + configuration.environment());
         }
+        defaultPluginManager.setSystemVersion(configuration.version());
+        defaultPluginManager.setExactVersionAllowed(configuration.exactVersionAllowed());
+        return defaultPluginManager;
     }
 
 
@@ -126,12 +131,12 @@ public class DefaultPf4jFactory implements Pf4jFactory {
         if(runtimeMode == RuntimeMode.DEPLOYMENT){
             // 生产
             return new CompoundPluginDescriptorFinder()
-                    .add(new ResourcesPluginDescriptorFinder(RuntimeMode.DEPLOYMENT))
+                    .add(new ResourcesPluginDescriptorFinder(runtimeMode))
                     .add(new ManifestPluginDescriptorFinder());
         } else {
             // 开发
             return new CompoundPluginDescriptorFinder()
-                    .add(new ResourcesPluginDescriptorFinder(RuntimeMode.DEVELOPMENT))
+                    .add(new ResourcesPluginDescriptorFinder(runtimeMode))
                     .add(new ResolvePropertiesPluginDescriptorFinder())
                     .add(new ManifestPluginDescriptorFinder());
         }
