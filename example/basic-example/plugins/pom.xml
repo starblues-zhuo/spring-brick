@@ -13,6 +13,7 @@
     <modules>
         <module>basic-example-plugin1</module>
         <module>basic-example-plugin2</module>
+        <module>basic-example-plugin3</module>
     </modules>
 
     <properties>

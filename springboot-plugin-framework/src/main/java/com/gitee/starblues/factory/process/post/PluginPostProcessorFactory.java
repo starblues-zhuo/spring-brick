@@ -32,6 +32,7 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
         // 以下顺序不能更改
         pluginPostProcessors.add(new PluginInvokePostProcessor(mainApplicationContext));
         pluginPostProcessors.add(new PluginControllerPostProcessor(mainApplicationContext));
+        pluginPostProcessors.add(new PluginWebSocketProcessor(mainApplicationContext));
         // 主要触发启动监听事件，因此在最后一个执行。配合 OneselfListenerStopEventProcessor 该类触发启动、停止事件。
         pluginPostProcessors.add(new PluginOneselfStartEventProcessor());
         // 添加扩展
