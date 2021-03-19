@@ -2,6 +2,7 @@ package com.gitee.starblues.extension.resources.thymeleaf;
 
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
+import com.gitee.starblues.utils.ClassUtils;
 import com.gitee.starblues.utils.OrderPriority;
 import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
@@ -93,7 +94,7 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
         resolver.setCheckExistence(true);
         Set<ITemplateResolver> templateResolvers = getITemplateResolvers(springTemplateEngine);
         if(templateResolvers != null){
-            springTemplateEngine.addTemplateResolver(resolver);
+            templateResolvers.add(resolver);
         } else {
             LOGGER.error("You can't use Thymeleaf, because not fount 'Set<ITemplateResolver>' " +
                     "from Bean:SpringTemplateEngine by reflect");
@@ -102,7 +103,6 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
         pluginRegistryInfo.addExtension(TEMPLATE_RESOLVER_BEAN, resolver);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         Object resolver = pluginRegistryInfo.getExtension(TEMPLATE_RESOLVER_BEAN);
@@ -112,7 +112,7 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
         try {
             SpringTemplateEngine springTemplateEngine = getSpringTemplateEngine(pluginRegistryInfo);
             Set<ITemplateResolver> templateResolvers = getITemplateResolvers(springTemplateEngine);
-            if(templateResolvers != null){
+            if(templateResolvers != null && resolver instanceof ClassLoaderTemplateResolver){
                 templateResolvers.remove(resolver);
             }
         } catch (Exception e){
@@ -139,14 +139,8 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
         if(springTemplateEngine == null){
             return null;
         }
-        Field templateResolversField = ReflectionUtils.findField(springTemplateEngine.getClass(), "templateResolvers");
-        if (templateResolversField == null) {
-            return null;
-        }
-        if(!templateResolversField.isAccessible()){
-            templateResolversField.setAccessible(true);
-        }
-        return (Set<ITemplateResolver>) templateResolversField.get(springTemplateEngine);
+        return ClassUtils.getReflectionField(springTemplateEngine, "templateResolvers");
     }
+
 
 }

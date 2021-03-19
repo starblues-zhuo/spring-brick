@@ -49,6 +49,25 @@ public class SpringBeanUtils {
     }
 
     /**
+     * 获取具体类的对象
+     * @param sourceObject 源对象集合
+     * @param aClass 对象对应的类类型
+     * @param <T> 类实现
+     * @return T
+     */
+    public static <T> T getObjectClass(Set<Object> sourceObject, Class<T> aClass){
+        if(sourceObject == null || sourceObject.isEmpty()){
+            return null;
+        }
+        for (Object configSingletonObject : sourceObject) {
+            if(Objects.equals(configSingletonObject.getClass(), aClass)){
+                return (T) configSingletonObject;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 得到存在的bean, 不存在则返回null
      * @param applicationContext ApplicationContext容器
      * @param aClass bean 类型

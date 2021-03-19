@@ -13,7 +13,7 @@
 
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework-extension-resources</artifactId>
-    <version>2.4.1-RELEASE</version>
+    <version>2.4.2-RELEASE</version>
     <packaging>jar</packaging>
 
     <description>插件扩展-通过url读取插件中的静态资源</description>
@@ -69,7 +69,7 @@
         <spring-version>5.0.7.RELEASE</spring-version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
 
-        <springboot-plugin-framework.version>2.4.1-RELEASE</springboot-plugin-framework.version>
+        <springboot-plugin-framework.version>2.4.2-RELEASE</springboot-plugin-framework.version>
         <spring-boot-starter-thymeleaf.version>2.0.3.RELEASE</spring-boot-starter-thymeleaf.version>
         <spring-boot-starter-web.version>2.1.1.RELEASE</spring-boot-starter-web.version>
     </properties>

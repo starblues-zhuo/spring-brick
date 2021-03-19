@@ -1,9 +1,6 @@
 package com.gitee.starblues.extension.mybatis.tkmyabtis;
 
-import com.gitee.starblues.extension.mybatis.MapperHandler;
-import com.gitee.starblues.extension.mybatis.PluginFollowCoreConfig;
-import com.gitee.starblues.extension.mybatis.PluginResourceFinder;
-import com.gitee.starblues.extension.mybatis.SpringBootMybatisExtension;
+import com.gitee.starblues.extension.mybatis.*;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.bean.PluginBeanRegistrarExtend;
 import com.gitee.starblues.utils.SpringBeanUtils;
@@ -114,6 +111,7 @@ public class TkMybatisProcessor implements PluginBeanRegistrarExtend {
             mapperHandler.processMapper(pluginRegistryInfo, (holder, mapperClass) -> {
                 processMapper(holder, mapperClass, mapperHelper, sqlSessionFactory, sqlSessionTemplate);
             });
+            CommonRegister.commonRegister(pluginRegistryInfo, sqlSessionFactory, sqlSessionTemplate);
         } finally {
             Resources.setDefaultClassLoader(defaultClassLoader);
             Thread.currentThread().setContextClassLoader(contextClassLoader);

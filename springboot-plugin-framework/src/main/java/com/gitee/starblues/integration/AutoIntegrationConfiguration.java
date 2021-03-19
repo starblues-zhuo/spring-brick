@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * 自动集成的配置
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.2
  */
 @Component
 @ConfigurationProperties(prefix = "plugin")
@@ -109,6 +109,12 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
      */
     private List<String> sortInitPluginIds;
 
+    /**
+     * 是否启用webSocket的功能. 如需启用, 则需要引入springboot支持的WebSocket依赖
+     */
+    @Value("${enableWebSocket:false}")
+    private Boolean enableWebSocket;
+
     @Override
     public RuntimeMode environment() {
         return RuntimeMode.byName(runMode);
@@ -124,7 +130,6 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         return pluginConfigFilePath;
     }
 
-
     @Override
     public boolean enable() {
         if(enable == null){
@@ -132,7 +137,6 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         }
         return enable;
     }
-
 
     @Override
     public String uploadTempPath() {
@@ -168,7 +172,6 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         }
     }
 
-
     @Override
     public Set<String> enablePluginIds() {
         return enablePluginIds;
@@ -196,7 +199,18 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     @Override
     public boolean exactVersionAllowed() {
+        if(exactVersionAllowed == null){
+            return false;
+        }
         return exactVersionAllowed;
+    }
+
+    @Override
+    public boolean enableWebSocket() {
+        if(enableWebSocket == null){
+            return false;
+        }
+        return enableWebSocket;
     }
 
     public String getRunMode() {
@@ -309,5 +323,13 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     public void setSortInitPluginIds(List<String> sortInitPluginIds) {
         this.sortInitPluginIds = sortInitPluginIds;
+    }
+
+    public Boolean getEnableWebSocket() {
+        return enableWebSocket;
+    }
+
+    public void setEnableWebSocket(Boolean enableWebSocket) {
+        this.enableWebSocket = enableWebSocket;
     }
 }

@@ -8,12 +8,12 @@
     <parent>
         <groupId>com.gitee.starblues</groupId>
         <artifactId>integration-mybatis-plugin-parent</artifactId>
-        <version>2.4.1-RELEASE</version>
+        <version>2.4.2-RELEASE</version>
         <relativePath>../../integration-mybatis-plugin-parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>integration-mybatis-plugin2</artifactId>
-    <version>2.4.1-RELEASE</version>
+    <version>2.4.2-RELEASE</version>
     <packaging>jar</packaging>
 
     <properties>

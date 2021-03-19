@@ -211,7 +211,7 @@ public void oneselfConfig(Config config){
 
 
 ## 版本说明
-### `2.4.1-RELEASE` 版本
+### `2.4.2-RELEASE` 版本
 1. 新增`Mybatis`、`Mybatis-Plus`、`Tk-Mybatis`扩展新增可重写覆盖主程序的配置(重写后会当前插件私有, 不影响主程序)
 2. 修复`Mybatis-Plus`批量插入的bug
 

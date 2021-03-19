@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * 插件集成时的配置接口。插件集成的配置接口
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.2
  */
 public interface IntegrationConfiguration {
 
@@ -99,11 +99,17 @@ public interface IntegrationConfiguration {
     String version();
 
     /**
-     * 设置为true表示插件设置的requires的版本号完全匹配version版本号才可允许插件安装, 即: requires=x.y.z
-     * 设置为false表示插件设置的requires的版本号小于等于version值, 插件就可安装, 即requires<=x.y.z
+     * 设置为true表示插件设置的requires的版本号完全匹配version版本号才可允许插件安装, 即: [requires]=[x.y.z]
+     * 设置为false表示插件设置的requires的版本号小于等于version值, 插件就可安装, 即[requires]小于等于[x.y.z]
      * 默认为false
      * @return true or false
      */
     boolean exactVersionAllowed();
+
+    /**
+     * 是否启用webSocket功能. 如需启用, 则需要引入springboot支持的WebSocket依赖
+     * @return 启用返回true,不启用返回false
+     */
+    boolean enableWebSocket();
 
 }

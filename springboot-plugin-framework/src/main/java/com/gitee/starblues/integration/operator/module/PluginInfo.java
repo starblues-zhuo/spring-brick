@@ -61,4 +61,14 @@ public class PluginInfo {
     public String getRunMode() {
         return runMode;
     }
+
+    @Override
+    public String toString() {
+        return "PluginInfo{" +
+                "pluginDescriptor=" + pluginDescriptor +
+                ", pluginState=" + pluginState +
+                ", path='" + path + '\'' +
+                ", runMode='" + runMode + '\'' +
+                '}';
+    }
 }

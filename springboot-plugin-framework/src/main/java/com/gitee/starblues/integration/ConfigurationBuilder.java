@@ -11,7 +11,7 @@ import java.util.Set;
  * 通过构造者进行配置插件初始化配置
  *
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.2
  */
 public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
@@ -34,6 +34,8 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     private String version;
     private Boolean exactVersionAllowed;
+
+    private Boolean enableWebSocket;
 
     public ConfigurationBuilder(Builder builder) {
         this.runtimeMode = Objects.requireNonNull(builder.runtimeMode, "runtimeMode can't be empty");
@@ -58,6 +60,11 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             this.enableSwaggerRefresh = true;
         } else {
             this.enableSwaggerRefresh = builder.enableSwaggerRefresh;
+        }
+        if(builder.enableWebSocket == null){
+            this.enableWebSocket = false;
+        } else {
+            this.enableWebSocket = builder.enableWebSocket;
         }
     }
 
@@ -85,6 +92,8 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
         private String version;
         private Boolean exactVersionAllowed;
+
+        private Boolean enableWebSocket;
 
         public Builder runtimeMode(RuntimeMode runtimeMode){
             this.runtimeMode = runtimeMode;
@@ -153,6 +162,11 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
         public Builder exactVersionAllowed(Boolean exactVersionAllowed){
             this.exactVersionAllowed = exactVersionAllowed;
+            return this;
+        }
+
+        public Builder enableWebSocket(Boolean enableWebSocket){
+            this.enableWebSocket = enableWebSocket;
             return this;
         }
 
@@ -257,5 +271,14 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             return super.exactVersionAllowed();
         }
         return exactVersionAllowed;
+    }
+
+    @Override
+    public boolean enableWebSocket() {
+        if(enableWebSocket == null){
+            return super.enableWebSocket();
+        } else {
+            return enableWebSocket;
+        }
     }
 }

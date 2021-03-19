@@ -27,10 +27,10 @@ public class PluginInterceptorRegistry {
         this.pluginRestApiPrefix = pluginRestApiPrefix;
     }
 
-
     /**
      * Adds the provided {@link HandlerInterceptor}.
      * @param interceptor the interceptor to add
+     * @param type type {@link Type}
      * @return An {@link InterceptorRegistration} that allows you optionally configure the
      * registered interceptor further for example adding URL patterns it should apply to.
      */
@@ -44,6 +44,8 @@ public class PluginInterceptorRegistry {
     /**
      * Adds the provided {@link WebRequestInterceptor}.
      * @param interceptor the interceptor to add
+     * @param type type {@link Type}
+     *
      * @return An {@link InterceptorRegistration} that allows you optionally configure the
      * registered interceptor further for example adding URL patterns it should apply to.
      */
@@ -57,6 +59,7 @@ public class PluginInterceptorRegistry {
 
     /**
      * Return all registered interceptors.
+     * @return interceptors
      */
     public List<Object> getInterceptors() {
         return this.registrations.stream()

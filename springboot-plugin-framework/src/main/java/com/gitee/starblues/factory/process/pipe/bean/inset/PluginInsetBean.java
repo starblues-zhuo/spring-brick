@@ -16,6 +16,7 @@ public interface PluginInsetBean {
 
     /**
      * 得到bean对象
+     * @param pluginRegistryInfo pluginRegistryInfo
      * @return 对象
      */
     Object getBean(PluginRegistryInfo pluginRegistryInfo);

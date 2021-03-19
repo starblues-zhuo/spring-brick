@@ -12,7 +12,7 @@ import java.util.Set;
  * @version 1.0
  * @since 2020-12-14
  */
-@ConfigDefinition("")
+@ConfigDefinition()
 public class MybatisPlusConfig2 implements SpringBootMybatisPlusConfig {
     @Override
     public Set<String> entityPackage() {

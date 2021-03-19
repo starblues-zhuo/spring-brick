@@ -78,7 +78,8 @@ public class PluginBeanConfig {
                 SpringBootMybatisExtension.Type.MYBATIS
         ));
         // 新增静态资源扩展
-        StaticResourceExtension staticResourceExtension = new StaticResourceExtension();
+        StaticResourceExtension staticResourceExtension = new StaticResourceExtension(
+                StaticResourceExtension.Include.THYMELEAF);
         staticResourceExtension.setPathPrefix("static");
         staticResourceExtension.setCacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic());
         pluginApplication.addExtension(staticResourceExtension);

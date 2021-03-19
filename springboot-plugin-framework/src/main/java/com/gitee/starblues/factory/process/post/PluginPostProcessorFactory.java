@@ -3,6 +3,7 @@ package com.gitee.starblues.factory.process.post;
 import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.post.bean.*;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -22,9 +23,11 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
 
     private final List<PluginPostProcessor> pluginPostProcessors = new ArrayList<>();
     private final ApplicationContext mainApplicationContext;
+    private final IntegrationConfiguration integrationConfiguration;
 
     public PluginPostProcessorFactory(ApplicationContext mainApplicationContext){
        this.mainApplicationContext = mainApplicationContext;
+       this.integrationConfiguration = mainApplicationContext.getBean(IntegrationConfiguration.class);
     }
 
     @Override
@@ -32,7 +35,10 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
         // 以下顺序不能更改
         pluginPostProcessors.add(new PluginInvokePostProcessor(mainApplicationContext));
         pluginPostProcessors.add(new PluginControllerPostProcessor(mainApplicationContext));
-        pluginPostProcessors.add(new PluginWebSocketProcessor(mainApplicationContext));
+        if(integrationConfiguration.enableWebSocket()){
+            // 如果配置启用webSocket的功能, 则进行引入
+            pluginPostProcessors.add(new PluginWebSocketProcessor(mainApplicationContext));
+        }
         // 主要触发启动监听事件，因此在最后一个执行。配合 OneselfListenerStopEventProcessor 该类触发启动、停止事件。
         pluginPostProcessors.add(new PluginOneselfStartEventProcessor());
         // 添加扩展

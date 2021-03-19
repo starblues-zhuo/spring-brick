@@ -7,6 +7,7 @@ import com.gitee.starblues.factory.process.pipe.classs.group.ControllerGroup;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
 import com.gitee.starblues.factory.process.post.bean.model.ControllerWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
+import com.gitee.starblues.utils.ClassUtils;
 import com.gitee.starblues.utils.CommonUtils;
 import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
@@ -216,14 +217,11 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         if(StringUtils.isNullOrEmpty(pathPrefix)){
             return;
         }
-        InvocationHandler invocationHandler = Proxy.getInvocationHandler(requestMapping);
         Set<String> definePaths = new HashSet<>();
         definePaths.addAll(Arrays.asList(requestMapping.path()));
         definePaths.addAll(Arrays.asList(requestMapping.value()));
         try {
-            Field field = invocationHandler.getClass().getDeclaredField("memberValues");
-            field.setAccessible(true);
-            Map<String, Object> memberValues = (Map<String, Object>) field.get(invocationHandler);
+            Map<String, Object> memberValues = ClassUtils.getAnnotationsUpdater(requestMapping);
             String[] newPath = new String[definePaths.size()];
             int i = 0;
             for (String definePath : definePaths) {

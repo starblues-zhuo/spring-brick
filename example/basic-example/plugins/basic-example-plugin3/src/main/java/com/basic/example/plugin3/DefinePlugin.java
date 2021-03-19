@@ -5,7 +5,7 @@ import org.pf4j.PluginWrapper;
 
 /**
  * 插件定义类
- *
+ * websocket 测试网站：http://coolaf.com/tool/chattest
  * @author starBlues
  * @version 1.0
  */

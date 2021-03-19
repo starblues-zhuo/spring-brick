@@ -70,10 +70,6 @@ public class PluginRegistryInfo {
      */
     private final Map<String, Object> processorInfo = new ConcurrentHashMap<>(8);
 
-    /**
-     * websocket路径
-     */
-    private final List<String> websocketPaths = new ArrayList<>();
 
     private PluginRegistryInfo(PluginWrapper pluginWrapper,
                                PluginManager pluginManager,
@@ -326,14 +322,6 @@ public class PluginRegistryInfo {
         } catch (Exception e){
             logger.error("Close plugin '{}' ApplicationContext failure", getPluginWrapper().getPluginId(), e);
         }
-    }
-
-    public void addWebsocketPath(String path) {
-        websocketPaths.add(path);
-    }
-
-    public List<String> getWebsocketPaths() {
-        return websocketPaths;
     }
 
 }

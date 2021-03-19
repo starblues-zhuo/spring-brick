@@ -59,6 +59,8 @@ public class PluginInterceptorRegistration {
 
     /**
      * Add URL patterns to which the registered interceptor should apply to.
+     * @param patterns patterns
+     * @return PluginInterceptorRegistration
      */
     public PluginInterceptorRegistration addPathPatterns(String... patterns) {
         if(type == PluginInterceptorRegistry.Type.GLOBAL){
@@ -76,6 +78,8 @@ public class PluginInterceptorRegistration {
 
     /**
      * Add URL patterns to which the registered interceptor should not apply to.
+     * @param patterns patterns
+     * @return PluginInterceptorRegistration
      */
     public PluginInterceptorRegistration excludePathPatterns(String... patterns) {
         if(type == PluginInterceptorRegistry.Type.GLOBAL){
@@ -96,6 +100,8 @@ public class PluginInterceptorRegistration {
      * advanced property required only if using custom PathMatcher implementations
      * that support mapping metadata other than the Ant path patterns supported
      * by default.
+     * @param pathMatcher pathMatcher
+     * @return PluginInterceptorRegistration
      */
     public PluginInterceptorRegistration pathMatcher(PathMatcher pathMatcher) {
         this.pathMatcher = pathMatcher;
@@ -104,7 +110,9 @@ public class PluginInterceptorRegistration {
 
     /**
      * Specify an order position to be used. Default is 0.
+     * @param order order
      * @since 5.0
+     * @return PluginInterceptorRegistration
      */
     public PluginInterceptorRegistration order(int order){
         this.order = order;
@@ -114,6 +122,7 @@ public class PluginInterceptorRegistration {
     /**
      * Return the order position to be used.
      * @since 5.0
+     * @return int
      */
     protected int getOrder() {
         return this.order;
@@ -123,6 +132,7 @@ public class PluginInterceptorRegistration {
     /**
      * Build the underlying interceptor. If URL patterns are provided, the returned
      * type is {@link MappedInterceptor}; otherwise {@link HandlerInterceptor}.
+     * @return object 为 {@link MappedInterceptor} or {@link HandlerInterceptor}
      */
     protected Object getInterceptor() {
         if(type == PluginInterceptorRegistry.Type.PLUGIN){

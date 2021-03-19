@@ -3,12 +3,6 @@ package com.basic.example.main.config;
 import com.gitee.starblues.extension.support.SpringDocControllerProcessor;
 import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.application.AutoPluginApplication;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import org.quartz.SchedulerFactory;
-import org.springdoc.core.GroupedOpenApi;
-import org.springdoc.core.SpringDocUtils;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -29,8 +23,7 @@ public class PluginBeanConfig {
      * @return PluginApplication
      */
     @Bean
-    public PluginApplication pluginApplication(PluginListener pluginListener,
-                                               SchedulerFactory schedulerFactory){
+    public PluginApplication pluginApplication(PluginListener pluginListener){
         AutoPluginApplication autoPluginApplication = new AutoPluginApplication();
         autoPluginApplication.setPluginInitializerListener(pluginListener);
         autoPluginApplication.addListener(ExamplePluginListener.class);

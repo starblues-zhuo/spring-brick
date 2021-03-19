@@ -105,6 +105,11 @@ public class PluginConfiguration extends DefaultIntegrationConfiguration {
         return "1.2.6";
     }
 
+    @Override
+    public boolean enableWebSocket() {
+        return true;
+    }
+
     public String getRunMode() {
         return runMode;
     }

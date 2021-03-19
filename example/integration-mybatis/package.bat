@@ -13,7 +13,7 @@ mkdir dist\pluginConfig
 
 
 REM copy main program and config
-xcopy integration-mybatis-main\target\*-exec.jar dist /s /i
+xcopy integration-mybatis-main\target\*-RELEASE.jar dist /s /i
 xcopy integration-mybatis-main\src\main\resources\application-prod.yml dist /s
 
 REM copy plugin and config
@@ -26,6 +26,6 @@ xcopy plugins\integration-mybatis-plugin2\src\main\resources\plugin2.yml dist\pl
 cd dist
 
 REM run main
-rename *-exec.jar integration-mybatis-start.jar
+rename *-RELEASE.jar integration-mybatis-start.jar
 rename application-prod.yml application.yml
 java -jar integration-mybatis-start.jar --spring.config.location=application.yml

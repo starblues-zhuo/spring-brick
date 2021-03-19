@@ -8,10 +8,16 @@ import com.gitee.starblues.factory.process.pipe.bean.configuration.PluginConfigD
 import com.gitee.starblues.factory.process.pipe.bean.configuration.YamlConfigurationParser;
 import com.gitee.starblues.factory.process.pipe.classs.group.ConfigDefinitionGroup;
 import com.gitee.starblues.integration.IntegrationConfiguration;
+import com.gitee.starblues.realize.ConfigDefinitionTip;
+import com.gitee.starblues.utils.ClassUtils;
 import org.pf4j.RuntimeMode;
 import org.pf4j.util.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ReflectionUtils;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -72,9 +78,26 @@ public class ConfigFileBeanRegistrar implements PluginBeanRegistrar {
         }
         name = name + "@" + pluginRegistryInfo.getPluginWrapper().getPluginId();
         SpringBeanRegister springBeanRegister = pluginRegistryInfo.getSpringBeanRegister();
+        setConfigDefinitionTip(pluginRegistryInfo, parseObject);
         springBeanRegister.registerSingleton(name, parseObject);
         pluginRegistryInfo.addConfigSingleton(parseObject);
         return name;
+    }
+
+    /**
+     * 设置小工具类
+     * @param parseObject 当前的配置对象
+     */
+    private void setConfigDefinitionTip(PluginRegistryInfo pluginRegistryInfo, Object parseObject) {
+        Class<?> aClass = parseObject.getClass();
+        List<Field> fields = ClassUtils.getAllFields(aClass);
+        ConfigDefinitionTip configDefinitionTip = new ConfigDefinitionTip(pluginRegistryInfo);
+        for (Field field : fields) {
+            if(field.getType() == ConfigDefinitionTip.class){
+                field.setAccessible(true);
+                ReflectionUtils.setField(field, parseObject, configDefinitionTip);
+            }
+        }
     }
 
     /**

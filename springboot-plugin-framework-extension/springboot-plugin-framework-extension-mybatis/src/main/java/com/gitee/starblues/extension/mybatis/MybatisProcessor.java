@@ -92,6 +92,7 @@ public class MybatisProcessor implements PluginBeanRegistrarExtend {
             mapperHandler.processMapper(pluginRegistryInfo, (holder, mapperClass) -> {
                 mapperHandler.commonProcessMapper(holder, mapperClass, sqlSessionFactory, sqlSessionTemplate);
             });
+            CommonRegister.commonRegister(pluginRegistryInfo, sqlSessionFactory, sqlSessionTemplate);
         } finally {
             Resources.setDefaultClassLoader(defaultClassLoader);
         }

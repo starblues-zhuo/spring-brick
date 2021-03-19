@@ -104,7 +104,7 @@ public class ResourceConfig implements SpringBootThymeleafConfig {
 
 ## 版本说明
 
-### `2.4.1-RELEASE` 版本
+### `2.4.2-RELEASE` 版本
 1.  修复静态资源无法访问的bug
 
 #### `2.4.0-RELEASE` 版本

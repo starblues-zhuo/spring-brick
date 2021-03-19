@@ -3,11 +3,8 @@ package com.gitee.starblues.extension.mybatis.mybatisplus;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
-import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
-import com.baomidou.mybatisplus.core.incrementer.IKeyGenerator;
-import com.baomidou.mybatisplus.core.injector.ISqlInjector;
-import com.baomidou.mybatisplus.core.toolkit.GlobalConfigUtils;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import com.gitee.starblues.extension.mybatis.CommonRegister;
 import com.gitee.starblues.extension.mybatis.MapperHandler;
 import com.gitee.starblues.extension.mybatis.PluginFollowCoreConfig;
 import com.gitee.starblues.extension.mybatis.PluginResourceFinder;
@@ -22,7 +19,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 
@@ -105,6 +101,7 @@ public class MybatisPlusProcessor implements PluginBeanRegistrarExtend {
             mapperHandler.processMapper(pluginRegistryInfo, (holder, mapperClass) -> {
                 mapperHandler.commonProcessMapper(holder, mapperClass, sqlSessionFactory, sqlSessionTemplate);
             });
+            CommonRegister.commonRegister(pluginRegistryInfo, sqlSessionFactory, sqlSessionTemplate);
         } finally {
             Resources.setDefaultClassLoader(defaultClassLoader);
         }

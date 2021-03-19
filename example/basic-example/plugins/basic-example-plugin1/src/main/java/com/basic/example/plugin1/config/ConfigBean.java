@@ -2,8 +2,11 @@ package com.basic.example.plugin1.config;
 
 import com.basic.example.main.config.PluginConfiguration;
 import com.gitee.starblues.realize.PluginUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.Resource;
 
 /**
  * @author starBlues
