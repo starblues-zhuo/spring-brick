@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.gitee.starblues</groupId>
+    <artifactId>integration-log</artifactId>
+    <version>2.4.2-RELEASE</version>
+    <packaging>pom</packaging>
+    <description>集成插件日志案例</description>
+
+    <modules>
+        <module>integration-log-main</module>
+        <module>plugins/integration-log-plugin</module>
+    </modules>
+
+</project>

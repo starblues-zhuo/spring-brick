@@ -15,6 +15,7 @@
     <modules>
         <module>springboot-plugin-framework-extension-mybatis</module>
         <module>springboot-plugin-framework-extension-resources</module>
+        <module>springboot-plugin-framework-extension-log</module>
     </modules>
 
 </project>
