@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log>
+    <fileName>integration-log-plugin</fileName>
+    <level>INFO</level>
+    <maxFileSize>10MB</maxFileSize>
+    <totalFileSize>10GB</totalFileSize>
+    <maxHistrory>30</maxHistrory>
+    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} -%5p --- [%t] %-40.40logger{39} : %m%n</pattern>
+</log>
