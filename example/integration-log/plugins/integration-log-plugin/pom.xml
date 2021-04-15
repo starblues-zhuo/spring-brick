@@ -59,18 +59,6 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <Plugin-Id>${plugin.id}</Plugin-Id>
-                            <Plugin-Version>${plugin.version}</Plugin-Version>
-                            <Plugin-Provider>${plugin.provider}</Plugin-Provider>
-                            <Plugin-Class>${plugin.class}</Plugin-Class>
-                        </manifestEntries>
-                    </archive>
                 </configuration>
                 <executions>
                     <execution>

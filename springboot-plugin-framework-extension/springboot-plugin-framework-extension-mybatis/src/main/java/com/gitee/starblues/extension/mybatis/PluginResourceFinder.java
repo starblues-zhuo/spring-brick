@@ -2,6 +2,7 @@ package com.gitee.starblues.extension.mybatis;
 
 
 import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.utils.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -37,7 +38,7 @@ public class PluginResourceFinder {
 
     public PluginResourceFinder(PluginRegistryInfo pluginRegistryInfo) {
         this.classLoader = pluginRegistryInfo.getPluginClassLoader();
-        this.resourcePatternResolver = new PathMatchingResourcePatternResolver(classLoader);;
+        this.resourcePatternResolver = new PathMatchingResourcePatternResolver(classLoader);
     }
 
     /**
@@ -104,18 +105,7 @@ public class PluginResourceFinder {
      * @throws IOException IO 异常
      */
     private List<Resource> getXmlResources(String mybatisMapperXmlLocationMatch) throws IOException {
-        String[] split = mybatisMapperXmlLocationMatch.split(":");
-        if(split.length != 2){
-            return null;
-        }
-        String type = split[0];
-        String location = split[1];
-        String matchLocation = null;
-        if(Objects.equals(type, TYPE_CLASSPATH) || Objects.equals(type, TYPE_FILE)){
-            matchLocation = location;
-        } else if(Objects.equals(type, TYPE_PACKAGE)){
-            matchLocation = location.replace(".", "/");
-        }
+        String matchLocation = ResourceUtils.getMatchLocation(mybatisMapperXmlLocationMatch);
         if(matchLocation == null){
             LOGGER.error("mybatisMapperXmlLocation {} illegal", mybatisMapperXmlLocationMatch);
             return null;

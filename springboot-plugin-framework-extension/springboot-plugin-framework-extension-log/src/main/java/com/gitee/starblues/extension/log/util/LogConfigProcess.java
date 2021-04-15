@@ -31,6 +31,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 日志配置处理者
+ * @author sousouki
+ * @version 2.4.3
+ */
 public class LogConfigProcess {
 
     private org.slf4j.Logger log = LoggerFactory.getLogger(LogConfigProcess.class);
@@ -54,7 +59,7 @@ public class LogConfigProcess {
     }
 
     public void loadLogConfig(List<Resource> resources, PluginWrapper pluginWrapper) {
-        resources.forEach(resource -> {
+        for (Resource resource : resources) {
             String configText;
             try {
                 configText = readConfigText(resource);
@@ -76,7 +81,7 @@ public class LogConfigProcess {
             String pluginId = pluginWrapper.getPluginId();
             logConfig.setPattern(packageName);
             pluginLogMap.put(pluginId, logConfig);
-        });
+        }
     }
 
     public void unloadLogConfig(PluginWrapper pluginWrapper) {
@@ -196,6 +201,9 @@ public class LogConfigProcess {
             }
             try {
                 Object fieldValue = field.get(logConfig);
+                if(fieldValue == null){
+                    return;
+                }
                 Class<?> fieldType = field.getType();
                 if ("".equals(fieldValue.toString()) || ObjectUtil.isEmptyObject(fieldType, fieldValue)) {
                     String defaultValue = configItem.defaultValue();
@@ -231,12 +239,14 @@ public class LogConfigProcess {
     private Object xml2object(String xml) throws Exception {
         Object object;
         try {
+            System.out.println(xml);
             JAXBContext context = JAXBContext.newInstance(LogConfig.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             StringReader stringReader = new StringReader(xml);
             object = unmarshaller.unmarshal(stringReader);
         } catch (JAXBException e) {
-            throw new Exception("Invalid xml definition");
+            e.printStackTrace();
+            throw new Exception("Invalid xml definition", e);
         }
         return object;
     }

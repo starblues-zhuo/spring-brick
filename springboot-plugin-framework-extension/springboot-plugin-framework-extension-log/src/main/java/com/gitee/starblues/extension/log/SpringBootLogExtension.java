@@ -9,6 +9,11 @@ import org.springframework.context.ApplicationContext;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 日志扩展
+ * @author sousouki
+ * @version 2.4.3
+ */
 public class SpringBootLogExtension extends AbstractExtension {
 
     public static final String KEY = "SpringBootLogExtension";
