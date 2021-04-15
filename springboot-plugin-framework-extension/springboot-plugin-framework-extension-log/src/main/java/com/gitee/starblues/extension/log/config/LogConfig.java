@@ -14,29 +14,50 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "log")
 public class LogConfig {
 
+    /**
+     * 日志文件名称
+     **/
     @XmlElement(name = "fileName")
     private String fileName;
 
+    /**
+     * 日志级别
+     **/
     @ConfigItem(defaultValue = "INFO")
     @XmlElement(name = "level")
     private String level;
 
+    /**
+     * 日志文件最大容量
+     **/
     @ConfigItem(defaultValue = "10MB")
     @XmlElement(name = "maxFileSize")
     private String maxFileSize;
 
+    /**
+     * 日志文件总容量
+     **/
     @ConfigItem(defaultValue = "10GB")
     @XmlElement(name = "totalFileSize")
     private String totalFileSize;
 
+    /**
+     * 最大保存时间
+     **/
     @ConfigItem(defaultValue = "30")
     @XmlElement(name = "maxHistory")
     private Integer maxHistory;
 
+    /**
+     * 日志内容格式
+     **/
     @ConfigItem(defaultValue = "%d{yyyy-MM-dd HH:mm:ss.SSS} -%5p --- [%t] %-40.40logger{39} : %m%n")
     @XmlElement(name = "pattern")
     private String pattern;
 
+    /**
+     * 包名
+     **/
     @XmlTransient
     private String packageName;
 
