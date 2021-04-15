@@ -40,7 +40,7 @@ public class ResourceUtils {
         if(split.length != 2){
             return null;
         }
-        String type = split[0];
+        String type = split[0].trim();
         String location = split[1];
         if(TYPE_CLASSPATH.equalsIgnoreCase(type) || TYPE_FILE.equalsIgnoreCase(type)){
             return locationMatch;

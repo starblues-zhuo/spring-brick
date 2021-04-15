@@ -14,6 +14,17 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "log")
 public class LogConfig {
 
+    public static final String ROOT_PLUGIN_SIGN = "~";
+
+    /**
+     * 日志存储根目录，默认为当前插件存放目录。
+     * ~: 符号表示当前插件根目录
+     **/
+    @XmlElement(name = "rootDir")
+    @ConfigItem(defaultValue = ROOT_PLUGIN_SIGN + "/logs/")
+    private String rootDir;
+
+
     /**
      * 日志文件名称
      **/
@@ -23,36 +34,36 @@ public class LogConfig {
     /**
      * 日志级别
      **/
-    @ConfigItem(defaultValue = "INFO")
     @XmlElement(name = "level")
+    @ConfigItem(defaultValue = "INFO")
     private String level;
 
     /**
      * 日志文件最大容量
      **/
-    @ConfigItem(defaultValue = "10MB")
     @XmlElement(name = "maxFileSize")
+    @ConfigItem(defaultValue = "10MB")
     private String maxFileSize;
 
     /**
      * 日志文件总容量
      **/
-    @ConfigItem(defaultValue = "10GB")
     @XmlElement(name = "totalFileSize")
+    @ConfigItem(defaultValue = "10GB")
     private String totalFileSize;
 
     /**
      * 最大保存时间
      **/
-    @ConfigItem(defaultValue = "30")
     @XmlElement(name = "maxHistory")
+    @ConfigItem(defaultValue = "30")
     private Integer maxHistory;
 
     /**
      * 日志内容格式
      **/
-    @ConfigItem(defaultValue = "%d{yyyy-MM-dd HH:mm:ss.SSS} -%5p --- [%t] %-40.40logger{39} : %m%n")
     @XmlElement(name = "pattern")
+    @ConfigItem(defaultValue = "%d{yyyy-MM-dd HH:mm:ss.SSS} -%5p --- [%t] %-40.40logger{39} : %m%n")
     private String pattern;
 
     /**
@@ -60,6 +71,15 @@ public class LogConfig {
      **/
     @XmlTransient
     private String packageName;
+
+    @XmlTransient
+    public String getRootDir() {
+        return rootDir;
+    }
+
+    public void setRootDir(String rootDir) {
+        this.rootDir = rootDir;
+    }
 
     @XmlTransient
     public String getFileName() {

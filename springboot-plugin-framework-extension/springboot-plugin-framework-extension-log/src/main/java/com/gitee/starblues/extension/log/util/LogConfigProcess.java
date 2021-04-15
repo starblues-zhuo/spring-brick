@@ -14,7 +14,9 @@ import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 import com.gitee.starblues.extension.log.annotation.ConfigItem;
 import com.gitee.starblues.extension.log.config.LogConfig;
+import com.gitee.starblues.utils.CommonUtils;
 import org.pf4j.PluginWrapper;
+import org.pf4j.util.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
@@ -46,12 +48,15 @@ public class LogConfigProcess {
     private LogConfigProcess() {
     }
 
-    public LogConfigProcess getInstance() {
+    public static LogConfigProcess getInstance() {
         return INSTANCE;
     }
 
     public void loadLogConfig(List<Resource> resources, PluginWrapper pluginWrapper) {
         for (Resource resource : resources) {
+            if(resource == null || !resource.exists()){
+                continue;
+            }
             String configText;
             try {
                 configText = readConfigText(resource);
@@ -113,24 +118,21 @@ public class LogConfigProcess {
         return appender;
     }
 
-    private RollingFileAppender<ILoggingEvent> createFileAppender(PluginWrapper pluginWrapper, LogConfig logConfig, String packageName) {
+    private RollingFileAppender<ILoggingEvent> createFileAppender(PluginWrapper pluginWrapper,
+                                                                  LogConfig logConfig, String packageName) {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
-        Filter<ILoggingEvent> filter = new LogFilter(packageName);
-        filter.start();
 
-        appender.addFilter(filter);
+        RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
+        if(StringUtils.isNotNullOrEmpty(packageName)){
+            Filter<ILoggingEvent> filter = new LogFilter(packageName);
+            filter.start();
+            appender.addFilter(filter);
+        }
 
         appender.setContext(context);
         appender.setName(pluginWrapper.getPluginId().concat("-file"));
 
-        String fileName = logConfig.getFileName();
-        if (fileName == null || "".equals(fileName)) {
-            fileName = pluginWrapper.getPluginId();
-        }
-
-        String home = pluginWrapper.getPluginPath().toString();
-        String logPrefix = home.concat("/logs/").concat(pluginWrapper.getPluginId()).concat("/").concat(fileName);
+        String logPrefix = getLogFile(pluginWrapper, logConfig);
         appender.setFile(OptionHelper.substVars(logPrefix.concat(".log"), context));
 
         appender.setAppend(true);
@@ -158,29 +160,32 @@ public class LogConfigProcess {
         return appender;
     }
 
-    private static class LogFilter extends Filter<ILoggingEvent> {
-
-        private final String packageName;
-        private final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-
-        private LogFilter(String packageName) {
-            this.packageName = packageName;
-        }
-
-        @Override
-        public FilterReply decide(ILoggingEvent event) {
-            Logger logger = loggerContext.getLogger(packageName);
-            if (event.getLoggerName().startsWith(packageName) && event.getLevel().isGreaterOrEqual(logger.getLevel())) {
-                return FilterReply.ACCEPT;
+    private String getLogFile(PluginWrapper pluginWrapper, LogConfig logConfig){
+        String rootDir = logConfig.getRootDir();
+        String home;
+        String pluginPath = pluginWrapper.getPluginPath().toString();
+        if(StringUtils.isNullOrEmpty(rootDir)){
+           home = CommonUtils.joiningFilePath(pluginPath, "logs");
+        } else {
+            if(rootDir.startsWith(LogConfig.ROOT_PLUGIN_SIGN)){
+                // 如果root路径中开始存在ROOT_PLUGIN_SIGN,则说明进行插件根路绝替换
+                home = rootDir.replaceFirst("\\" + LogConfig.ROOT_PLUGIN_SIGN, "");
+                home = CommonUtils.joiningFilePath(pluginPath, home);
+            } else {
+                home = rootDir;
             }
-            return FilterReply.DENY;
         }
+        String fileName = logConfig.getFileName();
+        if (StringUtils.isNullOrEmpty(fileName)) {
+            fileName = pluginWrapper.getPluginId();
+        }
+        return CommonUtils.joiningFilePath(home, pluginWrapper.getPluginId(), fileName);
     }
 
     private void checkLogConfig(LogConfig logConfig, String pluginId) {
         String fileName = logConfig.getFileName();
-        if (fileName == null || "".equals(fileName)) {
-            logConfig.setFileName(pluginId.concat("Log"));
+        if (StringUtils.isNullOrEmpty(fileName)) {
+            logConfig.setFileName(pluginId.concat("-log"));
         }
         Field[] fields = LogConfig.class.getDeclaredFields();
         for (Field field : fields) {
@@ -193,11 +198,8 @@ public class LogConfigProcess {
             }
             try {
                 Object fieldValue = field.get(logConfig);
-                if(fieldValue == null){
-                    continue;
-                }
                 Class<?> fieldType = field.getType();
-                if ("".equals(fieldValue.toString()) ||
+                if (fieldValue == null || "".equals(fieldValue.toString()) ||
                         ObjectUtil.isEmptyObject(fieldType, fieldValue)) {
                     String defaultValue = configItem.defaultValue();
                     log.debug("Field {} is not config or invalid in log config of plugin {}, set it to default value {}.", field.getName(), defaultValue, pluginId);
@@ -228,7 +230,6 @@ public class LogConfigProcess {
     private Object xml2object(String xml) throws Exception {
         Object object;
         try {
-            System.out.println(xml);
             JAXBContext context = JAXBContext.newInstance(LogConfig.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             StringReader stringReader = new StringReader(xml);
@@ -238,6 +239,26 @@ public class LogConfigProcess {
             throw new Exception("Invalid xml definition");
         }
         return object;
+    }
+
+
+    private static class LogFilter extends Filter<ILoggingEvent> {
+
+        private final String packageName;
+        private final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+
+        private LogFilter(String packageName) {
+            this.packageName = packageName;
+        }
+
+        @Override
+        public FilterReply decide(ILoggingEvent event) {
+            Logger logger = loggerContext.getLogger(packageName);
+            if (event.getLoggerName().startsWith(packageName) && event.getLevel().isGreaterOrEqual(logger.getLevel())) {
+                return FilterReply.ACCEPT;
+            }
+            return FilterReply.DENY;
+        }
     }
 
 }

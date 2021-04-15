@@ -11,15 +11,13 @@ import java.util.Set;
  * description
  *
  * @author sousouki
- * @version 1.0
+ * @version 2.4.3
  */
-public class LogPlugin extends BasePlugin implements SpringBootLogConfig {
+public class LogPlugin extends BasePlugin {
 
-    private Set<String> locations = new HashSet<>();
 
     public LogPlugin(PluginWrapper wrapper) {
         super(wrapper);
-        locations.add("classpath:log.xml");
     }
 
     @Override
@@ -37,9 +35,5 @@ public class LogPlugin extends BasePlugin implements SpringBootLogConfig {
 
     }
 
-    @Override
-    public Set<String> logConfigLocations() {
-        return locations;
-    }
 }
 
