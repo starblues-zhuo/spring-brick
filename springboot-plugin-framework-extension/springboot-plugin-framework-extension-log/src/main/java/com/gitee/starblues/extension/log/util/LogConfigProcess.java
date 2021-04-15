@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 日志配置处理者
@@ -38,24 +39,17 @@ import java.util.Map;
  */
 public class LogConfigProcess {
 
-    private org.slf4j.Logger log = LoggerFactory.getLogger(LogConfigProcess.class);
+    private final org.slf4j.Logger log = LoggerFactory.getLogger(LogConfigProcess.class);
 
-    private final Map<String, LogConfig> pluginLogMap = new HashMap<>();
+    private final Map<String, LogConfig> pluginLogMap = new ConcurrentHashMap<>();
 
-    private static LogConfigProcess instance = null;
+    private final static LogConfigProcess INSTANCE = new LogConfigProcess();
 
     private LogConfigProcess() {
     }
 
-    public static LogConfigProcess getInstance() {
-        if (instance == null) {
-            synchronized (LogConfigProcess.class) {
-                if (instance == null) {
-                    instance = new LogConfigProcess();
-                }
-            }
-        }
-        return instance;
+    public LogConfigProcess getInstance() {
+        return INSTANCE;
     }
 
     public void loadLogConfig(List<Resource> resources, PluginWrapper pluginWrapper) {
@@ -191,21 +185,22 @@ public class LogConfigProcess {
             logConfig.setFileName(pluginId.concat("Log"));
         }
         Field[] fields = LogConfig.class.getDeclaredFields();
-        Arrays.stream(fields).forEach(field -> {
+        for (Field field : fields) {
             if (!field.isAccessible()) {
                 field.setAccessible(true);
             }
             ConfigItem configItem = field.getDeclaredAnnotation(ConfigItem.class);
             if (configItem == null) {
-                return;
+                continue;
             }
             try {
                 Object fieldValue = field.get(logConfig);
                 if(fieldValue == null){
-                    return;
+                    continue;
                 }
                 Class<?> fieldType = field.getType();
-                if ("".equals(fieldValue.toString()) || ObjectUtil.isEmptyObject(fieldType, fieldValue)) {
+                if ("".equals(fieldValue.toString()) ||
+                        ObjectUtil.isEmptyObject(fieldType, fieldValue)) {
                     String defaultValue = configItem.defaultValue();
                     log.debug("Field {} is not config or invalid in log config of plugin {}, set it to default value {}.", field.getName(), defaultValue, pluginId);
                     Object fixedValue = ObjectUtil.parseBasicTypeValue(fieldType, defaultValue);
@@ -214,25 +209,21 @@ public class LogConfigProcess {
             } catch (IllegalAccessException e) {
                 log.error("Failed to check config item {} in log config.", field.getName());
             }
-        });
-    }
-
-    public Map<String, LogConfig> getPluginLogMap() {
-        return pluginLogMap;
+        }
     }
 
     private String readConfigText(Resource resource) throws IOException {
         String fileContent;
         try (InputStream inputStream = resource.getInputStream();
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            byte[] buff = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buff)) != -1) {
-                baos.write(buff, 0, len);
+             ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+                byte[] buff = new byte[1024];
+                int len;
+                while ((len = inputStream.read(buff)) != -1) {
+                    stream.write(buff, 0, len);
+                }
+                byte[] data = stream.toByteArray();
+                fileContent = new String(data);
             }
-            byte[] data = baos.toByteArray();
-            fileContent = new String(data);
-        }
         return fileContent;
     }
 
@@ -246,7 +237,7 @@ public class LogConfigProcess {
             object = unmarshaller.unmarshal(stringReader);
         } catch (JAXBException e) {
             e.printStackTrace();
-            throw new Exception("Invalid xml definition", e);
+            throw new Exception("Invalid xml definition");
         }
         return object;
     }
