@@ -26,6 +26,14 @@
             <groupId>com.gitee.starblues</groupId>
             <artifactId>basic-example-main</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+            <version>2.4.5</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

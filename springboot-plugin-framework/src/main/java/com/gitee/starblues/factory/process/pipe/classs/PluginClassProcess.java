@@ -50,6 +50,7 @@ public class PluginClassProcess implements PluginPipeProcessor {
         pluginClassGroups.add(new CallerGroup());
         pluginClassGroups.add(new OneselfListenerGroup());
         pluginClassGroups.add(new WebSocketGroup());
+        pluginClassGroups.add(new AutoConfigurationSelectorGroup());
         // 添加扩展
         pluginClassGroups.addAll(ExtensionInitializer.getClassGroupExtends());
     }

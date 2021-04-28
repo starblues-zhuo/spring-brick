@@ -3,15 +3,12 @@ package com.gitee.starblues.factory.process.pipe;
 import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.bean.*;
+import com.gitee.starblues.factory.process.pipe.classs.group.AutoConfigurationSelectorGroup;
+import com.gitee.starblues.realize.AutoConfigurationSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.web.servlet.HandlerExecutionChain;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.handler.AbstractHandlerMapping;
-
-import javax.servlet.ServletContext;
 import java.util.*;
 
 /**
@@ -51,6 +48,7 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         }
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
+            installPluginAutoConfiguration(pluginApplicationContext, pluginRegistryInfo);
             Thread.currentThread().setContextClassLoader(pluginRegistryInfo.getPluginClassLoader());
             pluginApplicationContext.refresh();
         } finally {
@@ -60,6 +58,38 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         // 向插件静态容器中新增插件的ApplicationContext
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         PluginInfoContainers.addPluginApplicationContext(pluginId, pluginApplicationContext);
+    }
+
+    /**
+     * 安装插件定义的自动装载配置类
+     * @param pluginApplicationContext 插件ApplicationContext
+     * @param pluginRegistryInfo 插件注册信息
+     */
+    private void installPluginAutoConfiguration(GenericApplicationContext pluginApplicationContext,
+                                                PluginRegistryInfo pluginRegistryInfo) {
+        List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(AutoConfigurationSelectorGroup.ID);
+        if(groupClasses == null || groupClasses.isEmpty()){
+            return;
+        }
+        PluginAutoConfigurationInstaller installer = new PluginAutoConfigurationInstaller();
+        for (Class<?> groupClass : groupClasses) {
+            try {
+                Object o = groupClass.newInstance();
+                if(o instanceof AutoConfigurationSelector){
+                    AutoConfigurationSelector selector = (AutoConfigurationSelector) o;
+                    selector.select(installer);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Set<Class<?>> autoConfigurationClassSet = installer.getAutoConfigurationClassSet();
+        if(autoConfigurationClassSet.isEmpty()){
+            return;
+        }
+        for (Class<?> autoConfigurationClass : autoConfigurationClassSet) {
+            pluginApplicationContext.registerBean(autoConfigurationClass);
+        }
     }
 
     @Override
