@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>com.gitee.starblues</groupId>
-    <version>2.4.2-RELEASE</version>
+    <version>2.4.3-RELEASE</version>
     <artifactId>integration-log-main</artifactId>
     <packaging>jar</packaging>
     <description>集成插件日志 案例--主程序</description>
@@ -22,8 +22,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-        <springboot-plugin-framework.version>2.4.2-RELEASE</springboot-plugin-framework.version>
-        <extension-log.version>2.4.2-RELEASE</extension-log.version>
+        <springboot-plugin-framework.version>2.4.3-RELEASE</springboot-plugin-framework.version>
+        <extension-log.version>2.4.3-RELEASE</extension-log.version>
     </properties>
 
     <dependencies>

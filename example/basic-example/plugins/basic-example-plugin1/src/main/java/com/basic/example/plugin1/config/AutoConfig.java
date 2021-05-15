@@ -2,6 +2,7 @@ package com.basic.example.plugin1.config;
 
 import com.gitee.starblues.factory.process.pipe.PluginAutoConfigurationInstaller;
 import com.gitee.starblues.realize.AutoConfigurationSelector;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
 
 /**
@@ -13,5 +14,6 @@ public class AutoConfig implements AutoConfigurationSelector {
     @Override
     public void select(PluginAutoConfigurationInstaller installer) {
         installer.install(QuartzAutoConfiguration.class);
+        installer.install(RedisAutoConfiguration.class);
     }
 }
