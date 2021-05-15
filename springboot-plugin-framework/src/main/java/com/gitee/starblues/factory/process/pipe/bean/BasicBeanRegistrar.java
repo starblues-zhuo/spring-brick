@@ -50,7 +50,7 @@ public class BasicBeanRegistrar implements PluginBeanRegistrar {
             if(aClass == null){
                 continue;
             }
-            springBeanRegister.register(pluginId, aClass);
+            springBeanRegister.register(aClass);
         }
     }
 

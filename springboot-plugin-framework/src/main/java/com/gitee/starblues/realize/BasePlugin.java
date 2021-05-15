@@ -12,6 +12,7 @@ import org.pf4j.PluginWrapper;
 public abstract class BasePlugin extends Plugin {
 
     private final BasePluginExtend basePluginExtend;
+    private String springBootConfigFilePath;
 
     public BasePlugin(PluginWrapper wrapper) {
         super(wrapper);
@@ -61,6 +62,14 @@ public abstract class BasePlugin extends Plugin {
     public String scanPackage(){
         // 获取当前实现类的包名
         return this.getClass().getPackage().getName();
+    }
+
+    /**
+     * 可设置插件对应的springBoot中*.prop或者*.yml配置文件。必须为全路径
+     * @return 包名
+     */
+    public String springBootConfigFilePath(){
+        return null;
     }
 
     /**

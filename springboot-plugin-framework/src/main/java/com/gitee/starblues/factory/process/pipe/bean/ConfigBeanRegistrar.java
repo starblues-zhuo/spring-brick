@@ -28,13 +28,12 @@ public class ConfigBeanRegistrar implements PluginBeanRegistrar {
         if(configBeans == null || configBeans.isEmpty()){
             return;
         }
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         SpringBeanRegister springBeanRegister = pluginRegistryInfo.getSpringBeanRegister();
         for (Class<?> aClass : configBeans) {
             if(aClass == null){
                 continue;
             }
-            springBeanRegister.register(pluginId, aClass);
+            springBeanRegister.register(aClass);
         }
     }
 

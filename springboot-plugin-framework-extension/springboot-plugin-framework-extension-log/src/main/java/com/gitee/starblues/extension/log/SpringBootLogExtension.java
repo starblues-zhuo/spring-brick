@@ -10,12 +10,19 @@ import java.util.List;
 
 /**
  * 日志扩展
- * @author sousouki
+ * @author sousouki starBlues
  * @version 2.4.3
  */
 public class SpringBootLogExtension extends AbstractExtension {
 
-    public static final String KEY = "SpringBootLogExtension";
+    private static final String KEY = "SpringBootLogExtension";
+
+    private final Type type;
+
+    public SpringBootLogExtension(Type type){
+        this.type = type;
+    }
+
 
     @Override
     public String key() {
@@ -25,7 +32,19 @@ public class SpringBootLogExtension extends AbstractExtension {
     @Override
     public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext applicationContext) {
         List<PluginPipeProcessorExtend> pipeProcessorExtends = new ArrayList<>();
-        pipeProcessorExtends.add(new PluginLogConfigProcessor());
+        pipeProcessorExtends.add(new PluginLogConfigProcessor(type));
         return pipeProcessorExtends;
+    }
+
+    public enum Type{
+        /**
+         * 集成log4j
+         **/
+        LOG4J,
+
+        /**
+         * 集成 logback
+         **/
+        LOGBACK
     }
 }

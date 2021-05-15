@@ -28,4 +28,9 @@ public class DefinePlugin extends BasePlugin {
     protected void stopEvent() {
 
     }
+
+    @Override
+    public String springBootConfigFilePath() {
+        return "pluginOfSpringBoot.yml";
+    }
 }

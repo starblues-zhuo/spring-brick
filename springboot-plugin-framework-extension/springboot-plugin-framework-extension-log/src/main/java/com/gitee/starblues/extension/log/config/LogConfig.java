@@ -67,7 +67,7 @@ public class LogConfig {
     private String pattern;
 
     /**
-     * 包名
+     * 包名, 自定义当前插件的日志包名, 默认为 BasePlugin 实现类的 包名
      **/
     @XmlTransient
     private String packageName;

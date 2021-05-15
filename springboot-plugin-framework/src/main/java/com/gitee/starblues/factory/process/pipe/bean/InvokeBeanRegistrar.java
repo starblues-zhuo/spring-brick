@@ -53,7 +53,6 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
         if(supperClasses.isEmpty()){
             return;
         }
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         SpringBeanRegister springBeanRegister = pluginRegistryInfo.getSpringBeanRegister();
         Set<String> beanNames = new HashSet<>(supperClasses.size());
         for (Class<?> supperClass : supperClasses) {
@@ -71,7 +70,7 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
                         pluginRegistryInfo.getPluginWrapper().getPluginId(), beanName, supperClass.getName());
                 throw new Exception(error);
             }
-            springBeanRegister.registerOfSpecifyName(pluginId, beanName, supperClass);
+            springBeanRegister.registerOfSpecifyName(beanName, supperClass);
             beanNames.add(beanName);
         }
         pluginRegistryInfo.addExtension(SUPPLIER_KEY, beanNames);
@@ -83,14 +82,13 @@ public class InvokeBeanRegistrar implements PluginBeanRegistrar{
         if(callerClasses == null || callerClasses.isEmpty()){
             return;
         }
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         SpringBeanRegister springBeanRegister = pluginRegistryInfo.getSpringBeanRegister();
         for (Class<?> callerClass : callerClasses) {
             Caller caller = callerClass.getAnnotation(Caller.class);
             if(caller == null){
                 continue;
             }
-            springBeanRegister.register(pluginId, callerClass, (beanDefinition) ->{
+            springBeanRegister.register(callerClass, (beanDefinition) ->{
                 beanDefinition.getPropertyValues().add("callerInterface", callerClass);
                 beanDefinition.getPropertyValues().add("callerAnnotation", caller);
                 beanDefinition.setBeanClass(CallerInterfaceFactory.class);

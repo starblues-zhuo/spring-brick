@@ -1,14 +1,13 @@
 package com.gitee.starblues.extension.log;
 
 import com.gitee.starblues.extension.log.config.SpringBootLogConfig;
-import com.gitee.starblues.extension.log.util.LogConfigProcess;
+import com.gitee.starblues.extension.log.log4j.Log4jLogRegistry;
+import com.gitee.starblues.extension.log.logback.LogbackLogRegistry;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
-import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.utils.OrderPriority;
 import com.gitee.starblues.utils.ResourceUtils;
 import com.gitee.starblues.utils.SpringBeanUtils;
-import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -30,7 +29,17 @@ class PluginLogConfigProcessor implements PluginPipeProcessorExtend {
 
     private Logger log = LoggerFactory.getLogger(PluginLogConfigProcessor.class);
 
-    private final LogConfigProcess logConfigProcess = LogConfigProcess.getInstance();
+    private final LogRegistry logRegistry;
+
+    public PluginLogConfigProcessor(SpringBootLogExtension.Type type){
+        if(type == SpringBootLogExtension.Type.LOG4J){
+            logRegistry = new Log4jLogRegistry();
+        } else if(type == SpringBootLogExtension.Type.LOGBACK){
+            logRegistry = new LogbackLogRegistry();
+        } else {
+            logRegistry = null;
+        }
+    }
 
     @Override
     public String key() {
@@ -49,21 +58,29 @@ class PluginLogConfigProcessor implements PluginPipeProcessorExtend {
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        if (logConfigProcess == null) {
+        if (logRegistry == null) {
             return;
         }
         List<Resource> pluginResources = getLogConfigFile(pluginRegistryInfo);
         if (pluginResources == null || pluginResources.isEmpty()) {
             return;
         }
-        logConfigProcess.loadLogConfig(pluginResources, pluginRegistryInfo.getPluginWrapper());
+        logRegistry.registry(pluginResources, pluginRegistryInfo);
     }
 
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        logConfigProcess.unloadLogConfig(pluginRegistryInfo.getPluginWrapper());
+        if (logRegistry == null) {
+            return;
+        }
+        logRegistry.unRegistry(pluginRegistryInfo);
     }
 
+    /**
+     * 加载日志配置文件资源
+     * @param pluginRegistryInfo 当前插件注册的信息
+     * @throws IOException 获取不到配置文件异常
+     **/
     private List<Resource> getLogConfigFile(PluginRegistryInfo pluginRegistryInfo) throws IOException {
         SpringBootLogConfig config = SpringBeanUtils.getObjectByInterfaceClass(
                 pluginRegistryInfo.getConfigSingletons(),
