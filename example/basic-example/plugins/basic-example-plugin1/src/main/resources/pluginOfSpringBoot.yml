@@ -1,11 +1,22 @@
 c:
-  configYmlValue: zhangzhuo
+  configYmlValue: test
+
+logging-config: classpath:log.xml
+
 
 spring:
   quartz:
     auto-startup: false
     startup-delay: 30
-  redis:
+    scheduler-name: custom-plugin-scheduler
+    properties:
+      org:
+        quartz:
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 1
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
     host: 127.0.0.1
     port: 6379
     timeout: 10000

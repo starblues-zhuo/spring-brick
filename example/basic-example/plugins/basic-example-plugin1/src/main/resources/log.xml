@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log>
+    <rootDir>~\logs\</rootDir>
+    <fileName>current</fileName>
+    <level>INFO</level>
+    <maxFileSize>10MB</maxFileSize>
+    <totalFileSize>10GB</totalFileSize>
+    <maxHistory>30</maxHistory>
+    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} -%5p --- [%t] %-40.40logger{39} : %m%n</pattern>
+</log>
