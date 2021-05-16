@@ -143,7 +143,7 @@ public class LogbackLogRegistry implements LogRegistry {
 
         SizeAndTimeBasedRollingPolicy<ILoggingEvent> policy = new SizeAndTimeBasedRollingPolicy<>();
 
-        String fp = OptionHelper.substVars(logFilePrefix.concat(".%d{yyyy-MM-dd}%i.log"), context);
+        String fp = OptionHelper.substVars(logFilePrefix.concat(".%d{yyyy-MM-dd}%-i.log"), context);
         policy.setMaxFileSize(FileSize.valueOf(logConfig.getMaxFileSize()));
         policy.setFileNamePattern(fp);
         policy.setMaxHistory(logConfig.getMaxHistory());

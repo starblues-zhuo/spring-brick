@@ -13,8 +13,10 @@ import org.apache.logging.log4j.core.*;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.rolling.*;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.message.Message;
@@ -22,6 +24,10 @@ import org.pf4j.PluginWrapper;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,7 +63,7 @@ public class Log4jLogRegistry implements LogRegistry {
             Set<Appender> appenderSet = getAppender(pluginRegistryInfo, logConfig);
             for (Appender appender : appenderSet) {
                 configuration.addAppender(appender);
-                rootLogger.addAppender(appender, Level.ALL, null);
+                rootLogger.addAppender(appender, Level.toLevel(logConfig.getLevel()), null);
                 allAppender.add(appender);
             }
         }
@@ -73,13 +79,18 @@ public class Log4jLogRegistry implements LogRegistry {
                 .withCharset(Charset.defaultCharset())
                 .build();
 
-        final TriggeringPolicy policy = SizeBasedTriggeringPolicy.createPolicy(
-                logConfig.getMaxFileSize()
-        );
+        final TriggeringPolicy policy =
+                CompositeTriggeringPolicy.createPolicy(
+                        SizeBasedTriggeringPolicy.createPolicy(
+                                logConfig.getMaxFileSize()
+                        ),
+                        TimeBasedTriggeringPolicy.createPolicy("1", "true")
+                );
 
         RolloverStrategy strategy = DefaultRolloverStrategy.newBuilder()
                 .withFileIndex(logConfig.getTotalFileSize())
                 .withConfig(new DefaultConfiguration())
+                .withMax(String.valueOf(logConfig.getMaxHistory()))
                 .build();
 
         RollingFileAppender appender = RollingFileAppender.newBuilder()
@@ -87,8 +98,8 @@ public class Log4jLogRegistry implements LogRegistry {
                 .withName(pluginWrapper.getPluginId())
                 .withLayout(patternLayout)
                 .withIgnoreExceptions(false)
-                .withFileName(LogConfigUtil.getLogFile(pluginWrapper, logConfig))
-                .withFilePattern(".%d{yyyy-MM-dd}%i.log")
+                .withFileName(LogConfigUtil.getLogFile(pluginWrapper, logConfig).concat(".log"))
+                .withFilePattern(".%d{yyyy-MM-dd}%-i.log")
                 .withAppend(true)
                 .withPolicy(policy)
                 .withStrategy(strategy)
@@ -198,5 +209,7 @@ public class Log4jLogRegistry implements LogRegistry {
             return Result.DENY;
         }
     }
+
+
 
 }

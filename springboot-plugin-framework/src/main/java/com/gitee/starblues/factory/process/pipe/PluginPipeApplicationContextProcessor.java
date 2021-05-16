@@ -55,12 +55,12 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
 
     @Override
     public void initialize() throws Exception {
+        pluginBeanDefinitionRegistrars.add(new SpringBootConfigFileRegistrar());
         pluginBeanDefinitionRegistrars.add(new PluginInsetBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new ConfigBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new ConfigFileBeanRegistrar(mainApplicationContext));
         pluginBeanDefinitionRegistrars.add(new BasicBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new InvokeBeanRegistrar());
-        pluginBeanDefinitionRegistrars.add(new SpringBootConfigFileRegistrar());
         pluginBeanDefinitionRegistrars.addAll(ExtensionInitializer.getPluginBeanRegistrarExtends());
     }
 
