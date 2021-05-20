@@ -7,10 +7,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TreeTraversingParser;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
+import com.gitee.starblues.annotation.ConfigDefinition;
 import com.gitee.starblues.factory.PluginRegistryInfo;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.env.*;
-import org.springframework.core.io.ClassPathResource;
+import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
+import com.gitee.starblues.factory.process.pipe.loader.load.PluginConfigFileLoader;
+import com.gitee.starblues.integration.IntegrationConfiguration;
+import com.gitee.starblues.realize.BasePlugin;
+import com.gitee.starblues.utils.PluginConfigUtils;
+import org.pf4j.RuntimeMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
@@ -25,13 +36,22 @@ import java.util.*;
  */
 public class SpringBootConfigFileRegistrar implements PluginBeanRegistrar{
 
+    private final Logger logger = LoggerFactory.getLogger(SpringBootConfigFileRegistrar.class);
+
     private final YAMLFactory yamlFactory;
     private final ObjectMapper objectMapper;
 
     private static final String[] PROP_FILE_SUFFIX = new String[]{".prop", ".PROP", ".properties", ".PROPERTIES"};
     private static final String[] YML_FILE_SUFFIX = new String[]{".yml", ".YML", "yaml", "YAML"};
 
-    public SpringBootConfigFileRegistrar(){
+    public static final String CONFIG_PROP = "PLUGIN_SPRING_BOOT_CONFIG-";
+
+
+    private final IntegrationConfiguration integrationConfiguration;
+
+    public SpringBootConfigFileRegistrar(ApplicationContext mainApplicationContext){
+        integrationConfiguration =
+                mainApplicationContext.getBean(IntegrationConfiguration.class);
         yamlFactory = new YAMLFactory();
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -52,27 +72,44 @@ public class SpringBootConfigFileRegistrar implements PluginBeanRegistrar{
     }
 
     private List<PropertySource<?>> loadProfiles(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        Resource resource = getResource(pluginRegistryInfo);
-        if(resource == null){
+        List<Resource> resources = getResource(pluginRegistryInfo);
+        if(ObjectUtils.isEmpty(resources)){
             return null;
         }
-        String filename = resource.getFilename();
-        if(ObjectUtils.isEmpty(filename)){
-            return null;
-        }
-        List<PropertySource<?>> propProfiles = null;
-        for (String propFileSuffix : PROP_FILE_SUFFIX) {
-            if(filename.endsWith(propFileSuffix)){
-                propProfiles = getPropProfiles(resource, pluginRegistryInfo);
+        List<PropertySource<?>> propProfiles = new ArrayList<>();
+        for (Resource resource : resources) {
+            if(resource == null || !resource.exists()){
+                continue;
+            }
+            String filename = resource.getFilename();
+            if(ObjectUtils.isEmpty(filename)){
+                return null;
+            }
+
+            for (String propFileSuffix : PROP_FILE_SUFFIX) {
+                if(!filename.endsWith(propFileSuffix)){
+                   continue;
+                }
+                List<PropertySource<?>> propertySources = getPropProfiles(resource, pluginRegistryInfo);
+                if(ObjectUtils.isEmpty(propertySources)){
+                    continue;
+                }
+                propProfiles.addAll(propertySources);
+                break;
+            }
+            for (String propFileSuffix : YML_FILE_SUFFIX) {
+                if(!filename.endsWith(propFileSuffix)){
+                   continue;
+                }
+                List<PropertySource<?>> propertySources = getYmlProfiles(resource, pluginRegistryInfo);
+                if(ObjectUtils.isEmpty(propertySources)){
+                    continue;
+                }
+                propProfiles.addAll(propertySources);
                 break;
             }
         }
-        for (String propFileSuffix : YML_FILE_SUFFIX) {
-            if(filename.endsWith(propFileSuffix)){
-                propProfiles = getYmlProfiles(resource, pluginRegistryInfo);
-                break;
-            }
-        }
+
         return propProfiles;
     }
 
@@ -85,9 +122,9 @@ public class SpringBootConfigFileRegistrar implements PluginBeanRegistrar{
         Map<String, Object> result = new HashMap<>();
         buildFlattenedMap(result, source, null);
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-        return Collections.unmodifiableList(
-                Collections.singletonList(new MapPropertySource(pluginId + "-config", result))
-        );
+        List<PropertySource<?>> propertySources = new ArrayList<>(1);
+        propertySources.add(new MapPropertySource(CONFIG_PROP.concat(pluginId), result));
+        return Collections.unmodifiableList(propertySources);
     }
 
     private List<PropertySource<?>> getPropProfiles(Resource resource,
@@ -96,23 +133,23 @@ public class SpringBootConfigFileRegistrar implements PluginBeanRegistrar{
         properties.load(resource.getInputStream());
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         return Collections.unmodifiableList(
-                Collections.singletonList(new PropertiesPropertySource(pluginId + "-config", properties))
+                Collections.singletonList(new PropertiesPropertySource(pluginId.concat("-config"), properties))
         );
     }
 
-    private Resource getResource(PluginRegistryInfo pluginRegistryInfo){
-        ClassLoader pluginClassLoader = pluginRegistryInfo.getPluginWrapper().getPluginClassLoader();
-        String springBootConfigFilePath = pluginRegistryInfo.getBasePlugin().springBootConfigFilePath();
-        if(org.pf4j.util.StringUtils.isNullOrEmpty(springBootConfigFilePath)){
+    private List<Resource> getResource(PluginRegistryInfo pluginRegistryInfo) throws Exception{
+        BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
+        ConfigDefinition configDefinition = basePlugin.getClass().getAnnotation(ConfigDefinition.class);
+        if(configDefinition == null){
             return null;
         }
-        Resource resource = new ClassPathResource(
-                springBootConfigFilePath, pluginClassLoader
+        RuntimeMode runtimeMode = pluginRegistryInfo.getPluginWrapper().getRuntimeMode();
+        String fileName = PluginConfigUtils.getConfigFileName(configDefinition, runtimeMode);
+        PluginConfigFileLoader pluginConfigFileLoader = new PluginConfigFileLoader(
+                integrationConfiguration.pluginConfigFilePath(), fileName
         );
-        if (!resource.exists()) {
-            throw new IllegalArgumentException("资源" + resource + "不存在");
-        }
-        return resource;
+        ResourceWrapper resourceWrapper = pluginConfigFileLoader.load(pluginRegistryInfo);
+        return resourceWrapper.getResources();
     }
 
     private void buildFlattenedMap(Map<String, Object> result,

@@ -10,13 +10,11 @@ import com.gitee.starblues.factory.process.pipe.classs.group.ConfigDefinitionGro
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.realize.ConfigDefinitionTip;
 import com.gitee.starblues.utils.ClassUtils;
-import org.pf4j.RuntimeMode;
+import com.gitee.starblues.utils.PluginConfigUtils;
 import org.pf4j.util.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ReflectionUtils;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -53,15 +51,14 @@ public class ConfigFileBeanRegistrar implements PluginBeanRegistrar {
      * 注册配置文件
      * @param pluginRegistryInfo 插件注册的信息
      * @param aClass 配置文件类
-     * @return 注册的bean名称
      * @throws Exception Exception
      */
-    private String registry(PluginRegistryInfo pluginRegistryInfo, Class<?> aClass) throws Exception{
+    private void registry(PluginRegistryInfo pluginRegistryInfo, Class<?> aClass) throws Exception{
         ConfigDefinition configDefinition = aClass.getAnnotation(ConfigDefinition.class);
         if(configDefinition == null){
-            return null;
+            return;
         }
-        String fileName = getConfigFileName(configDefinition);
+        String fileName = PluginConfigUtils.getConfigFileName(configDefinition, integrationConfiguration.environment());
         Object parseObject = null;
         if(!StringUtils.isNullOrEmpty(fileName)){
             PluginConfigDefinition pluginConfigDefinition =
@@ -81,7 +78,6 @@ public class ConfigFileBeanRegistrar implements PluginBeanRegistrar {
         setConfigDefinitionTip(pluginRegistryInfo, parseObject);
         springBeanRegister.registerSingleton(name, parseObject);
         pluginRegistryInfo.addConfigSingleton(parseObject);
-        return name;
     }
 
     /**
@@ -98,44 +94,6 @@ public class ConfigFileBeanRegistrar implements PluginBeanRegistrar {
                 ReflectionUtils.setField(field, parseObject, configDefinitionTip);
             }
         }
-    }
-
-    /**
-     * 根据项目运行环境模式来获取配置文件
-     * @param configDefinition 配置的注解
-     * @return 文件名称
-     */
-    private String getConfigFileName(ConfigDefinition configDefinition){
-        // TODO 后期移除 value
-        String fileName = configDefinition.value();
-        if(StringUtils.isNullOrEmpty(fileName)){
-            fileName = configDefinition.fileName();
-            if(StringUtils.isNullOrEmpty(fileName)){
-                return null;
-            }
-        }
-
-        String fileNamePrefix;
-        String fileNamePrefixSuffix;
-
-        if(fileName.lastIndexOf(".") == -1) {
-            fileNamePrefix = fileName;
-            fileNamePrefixSuffix = "";
-        } else {
-            int index = fileName.lastIndexOf(".");
-            fileNamePrefix = fileName.substring(0, index);
-            fileNamePrefixSuffix = fileName.substring(index);
-        }
-
-        RuntimeMode environment = integrationConfiguration.environment();
-        if(environment == RuntimeMode.DEPLOYMENT){
-            // 生产环境
-            fileNamePrefix = fileNamePrefix + configDefinition.prodSuffix();
-        } else if(environment == RuntimeMode.DEVELOPMENT){
-            // 开发环境
-            fileNamePrefix = fileNamePrefix + configDefinition.devSuffix();
-        }
-        return fileNamePrefix + fileNamePrefixSuffix;
     }
 
 }

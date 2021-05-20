@@ -20,3 +20,26 @@ spring:
     host: 127.0.0.1
     port: 6379
     timeout: 10000
+
+logConfigLocation: classpath:log.xml
+
+list:
+  - a
+  - n
+  - c
+
+map:
+  a: 1
+  b: 2
+
+spring-config:
+  name: starblues
+  age: 26
+  sex: 男
+  list:
+    - a
+    - b
+    - c
+  map:
+    a: 1
+    b: 2

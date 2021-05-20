@@ -13,7 +13,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import javax.annotation.Resource;
 
 /**
- * @author starBlues
+ *
+ * 
  * @version 1.0
  */
 @Configuration

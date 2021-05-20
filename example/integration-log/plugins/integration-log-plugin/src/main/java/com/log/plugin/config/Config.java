@@ -1,9 +1,7 @@
 package com.log.plugin.config;
 
 import com.gitee.starblues.annotation.ConfigDefinition;
-import com.gitee.starblues.extension.log.config.SpringBootLogConfig;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 

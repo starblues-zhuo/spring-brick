@@ -1,11 +1,5 @@
 package com.gitee.starblues.factory.process.pipe;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TreeTraversingParser;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.bean.*;
@@ -13,27 +7,13 @@ import com.gitee.starblues.factory.process.pipe.classs.group.AutoConfigurationSe
 import com.gitee.starblues.realize.AutoConfigurationSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.DefaultApplicationArguments;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.context.event.ApplicationPreparedEvent;
-import org.springframework.boot.env.EnvironmentPostProcessor;
-import org.springframework.boot.env.EnvironmentPostProcessorApplicationListener;
-import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.event.SmartApplicationListener;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.env.*;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 插件的ApplicationContext 处理
@@ -55,7 +35,7 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
 
     @Override
     public void initialize() throws Exception {
-        pluginBeanDefinitionRegistrars.add(new SpringBootConfigFileRegistrar());
+        pluginBeanDefinitionRegistrars.add(new SpringBootConfigFileRegistrar(mainApplicationContext));
         pluginBeanDefinitionRegistrars.add(new PluginInsetBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new ConfigBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new ConfigFileBeanRegistrar(mainApplicationContext));
@@ -74,7 +54,6 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             installPluginAutoConfiguration(pluginApplicationContext, pluginRegistryInfo);
-            Thread.currentThread().setContextClassLoader(pluginRegistryInfo.getPluginClassLoader());
             pluginApplicationContext.refresh();
         } finally {
             Thread.currentThread().setContextClassLoader(contextClassLoader);

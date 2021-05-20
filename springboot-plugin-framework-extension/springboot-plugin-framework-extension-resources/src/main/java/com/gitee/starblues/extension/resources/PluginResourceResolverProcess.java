@@ -7,8 +7,14 @@ import com.gitee.starblues.utils.OrderPriority;
 import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.util.ObjectUtils;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 插件资源处理器
@@ -48,13 +54,21 @@ public class PluginResourceResolverProcess implements PluginPostProcessorExtend 
             }
             String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
             try {
-                StaticResourceConfig config = SpringBeanUtils.getObjectByInterfaceClass(
-                        pluginRegistryInfo.getConfigSingletons(),
-                        StaticResourceConfig.class);
-                if(config == null){
+                // 直接从配置文件获取, 后续版本移除从实现类中获取配置
+                ConfigurableEnvironment environment = pluginRegistryInfo.getPluginApplicationContext().getEnvironment();
+                Set<String> locations = Binder.get(environment).bind(PropertyKey.LOG_CONFIG_LOCATION, Bindable.setOf(String.class)).get();
+                if(ObjectUtils.isEmpty(locations)){
+                    StaticResourceConfig config = SpringBeanUtils.getObjectByInterfaceClass(
+                            pluginRegistryInfo.getConfigSingletons(),
+                            StaticResourceConfig.class);
+                    if(config != null){
+                        locations = config.locations();
+                    }
+                }
+                if(ObjectUtils.isEmpty(locations)){
                     return;
                 }
-                PluginResourceResolver.parse(pluginRegistryInfo, config);
+                PluginResourceResolver.parse(pluginRegistryInfo, locations);
             } catch (Exception e){
                 LOGGER.error("Parse plugin '{}' static resource failure.", pluginId, e);
             }

@@ -1,24 +1,21 @@
 package com.gitee.starblues.extension.log;
 
-import com.gitee.starblues.extension.log.config.SpringBootLogConfig;
 import com.gitee.starblues.extension.log.log4j.Log4jLogRegistry;
 import com.gitee.starblues.extension.log.logback.LogbackLogRegistry;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.utils.OrderPriority;
 import com.gitee.starblues.utils.ResourceUtils;
-import com.gitee.starblues.utils.SpringBeanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 接口处理者
@@ -26,8 +23,6 @@ import java.util.Set;
  * @version 2.4.3
  */
 class PluginLogConfigProcessor implements PluginPipeProcessorExtend {
-
-    private Logger log = LoggerFactory.getLogger(PluginLogConfigProcessor.class);
 
     private final LogRegistry logRegistry;
 
@@ -78,40 +73,28 @@ class PluginLogConfigProcessor implements PluginPipeProcessorExtend {
 
     /**
      * 加载日志配置文件资源
+     *      文件路径配置为 <p>file:D://log.xml<p> <br>
+     *      resources路径配置为 <p>classpath:log.xml<p> <br>
      * @param pluginRegistryInfo 当前插件注册的信息
      * @throws IOException 获取不到配置文件异常
      **/
     private List<Resource> getLogConfigFile(PluginRegistryInfo pluginRegistryInfo) throws IOException {
-        SpringBootLogConfig config = SpringBeanUtils.getObjectByInterfaceClass(
-                pluginRegistryInfo.getConfigSingletons(),
-                SpringBootLogConfig.class);
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-
-        if(config == null){
-            log.warn("Not found 'SpringBootLogConfig' in plugin[{}]. " +
-                    "If you need to use log in the plugin, " +
-                    "Please implements 'SpringBootLogConfig' interface", pluginId);
-            return null;
-        }
-        Set<String> logConfigLocations = config.logConfigLocations();
-        if (logConfigLocations == null || logConfigLocations.isEmpty()) {
-            log.warn("SpringBootLogConfig -> logConfigLocations return is empty in plugin[{}], " +
-                    "Please check configuration", pluginId);
+        GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
+        String logConfigLocation = pluginApplicationContext.getEnvironment().getProperty(PropertyKey.LOG_CONFIG_LOCATION);
+        if (ObjectUtils.isEmpty(logConfigLocation)) {
             return null;
         }
 
         ResourcePatternResolver resourcePatternResolver =
                 new PathMatchingResourcePatternResolver(pluginRegistryInfo.getPluginClassLoader());
         List<Resource> resources = new ArrayList<>();
-        for (String logConfigLocation : logConfigLocations) {
-            String matchLocation = ResourceUtils.getMatchLocation(logConfigLocation);
-            if (matchLocation == null || "".equals(matchLocation)) {
-                continue;
-            }
-            Resource[] logConfigResources = resourcePatternResolver.getResources(matchLocation);
-            if (logConfigResources.length != 0) {
-                resources.addAll(Arrays.asList(logConfigResources));
-            }
+        String matchLocation = ResourceUtils.getMatchLocation(logConfigLocation);
+        if (matchLocation == null || "".equals(matchLocation)) {
+            return null;
+        }
+        Resource[] logConfigResources = resourcePatternResolver.getResources(matchLocation);
+        if (logConfigResources.length != 0) {
+            resources.addAll(Arrays.asList(logConfigResources));
         }
         return resources;
     }

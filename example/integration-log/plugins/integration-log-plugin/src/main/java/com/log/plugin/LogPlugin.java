@@ -1,11 +1,7 @@
 package com.log.plugin;
 
-import com.gitee.starblues.extension.log.config.SpringBootLogConfig;
 import com.gitee.starblues.realize.BasePlugin;
 import org.pf4j.PluginWrapper;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * description

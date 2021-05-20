@@ -65,14 +65,6 @@ public abstract class BasePlugin extends Plugin {
     }
 
     /**
-     * 可设置插件对应的springBoot中*.prop或者*.yml配置文件。必须为全路径
-     * @return 包名
-     */
-    public String springBootConfigFilePath(){
-        return null;
-    }
-
-    /**
      * 得到插件扩展的信息
      * @return BasePluginExtend
      */

@@ -4,6 +4,7 @@ import com.gitee.starblues.annotation.ConfigDefinition;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassGroup;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.AnnotationsUtils;
+import org.springframework.util.ObjectUtils;
 
 /**
  * 分组存在注解: @ConfigDefinition
@@ -31,6 +32,9 @@ public class ConfigDefinitionGroup implements PluginClassGroup {
 
     @Override
     public boolean filter(Class<?> aClass) {
+        if(BasePlugin.class.isAssignableFrom(aClass)){
+            return false;
+        }
         return AnnotationsUtils.haveAnnotations(aClass, false, ConfigDefinition.class);
     }
 

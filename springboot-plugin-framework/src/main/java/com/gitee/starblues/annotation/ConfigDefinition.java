@@ -32,6 +32,7 @@ public @interface ConfigDefinition {
      * 自定义 bean 名称
      * @return String
      */
+    @Deprecated
     String beanName() default "";
 
     /**
