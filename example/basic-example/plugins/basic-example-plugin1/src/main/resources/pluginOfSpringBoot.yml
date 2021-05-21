@@ -1,7 +1,7 @@
 c:
   configYmlValue: test
-
-logging-config: classpath:log.xml
+plugin:
+  logConfigLocation: classpath:log.xml
 
 
 spring:

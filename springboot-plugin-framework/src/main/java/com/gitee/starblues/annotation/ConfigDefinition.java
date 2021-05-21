@@ -16,24 +16,10 @@ public @interface ConfigDefinition {
 
 
     /**
-     * 插件中的配置文件的名称. 建议使用 fileName 进行文件名称配置.
-     * @return String
-     */
-    @Deprecated
-    String value() default "";
-
-    /**
      * 插件中的配置文件的名称, 新版本替换 value 值
      * @return String
      */
     String fileName() default "";
-
-    /**
-     * 自定义 bean 名称
-     * @return String
-     */
-    @Deprecated
-    String beanName() default "";
 
     /**
      * 开发环境下文件后缀

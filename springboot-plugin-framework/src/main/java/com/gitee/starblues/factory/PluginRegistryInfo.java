@@ -8,6 +8,7 @@ import org.pf4j.*;
 import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ClassUtils;
@@ -31,6 +32,7 @@ public class PluginRegistryInfo {
     private final PluginManager pluginManager;
     private final GenericApplicationContext mainApplicationContext;
     private final AnnotationConfigApplicationContext pluginApplicationContext;
+    private final Binder pluginBinder;
     private final SpringBeanRegister springBeanRegister;
 
     /**
@@ -84,6 +86,7 @@ public class PluginRegistryInfo {
         // 生成插件Application
         this.pluginApplicationContext = new AnnotationConfigApplicationContext();
         this.pluginApplicationContext.setClassLoader(basePlugin.getWrapper().getPluginClassLoader());
+        this.pluginBinder = Binder.get(this.pluginApplicationContext.getEnvironment());
         this.springBeanRegister = new SpringBeanRegister(pluginApplicationContext);
     }
 
@@ -251,6 +254,14 @@ public class PluginRegistryInfo {
      */
     public GenericApplicationContext getPluginApplicationContext() {
         return pluginApplicationContext;
+    }
+
+    /**
+     * 得到当前插件的Binder
+     * @return Binder
+     */
+    public Binder getPluginBinder() {
+        return pluginBinder;
     }
 
     /**

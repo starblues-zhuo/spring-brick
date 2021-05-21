@@ -1,0 +1,10 @@
+plugin:
+  static:
+    locations:
+      - classpath:static
+      - file:D:\aa
+  thymeleaf:
+    prefix: tf
+    suffix: html
+    mode: html
+    encoding: gbk

@@ -11,6 +11,11 @@ public class PropertyKey {
      *  classpath: static/
      *  file: D://path/test
      */
-    public final static String LOG_CONFIG_LOCATION = "plugin.static.locations";
+    public final static String STATIC_LOCATIONS = "plugin.static.locations";
 
+
+    /**
+     * Thymeleaf 配置前缀
+     */
+    public final static String THYMELEAF_CONFIG = "plugin.thymeleaf";
 }

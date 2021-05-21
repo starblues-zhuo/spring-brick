@@ -23,13 +23,9 @@ public class PluginConfigUtils {
      * @return 文件名称
      */
     public static String getConfigFileName(ConfigDefinition configDefinition, RuntimeMode runtimeMode){
-        // TODO 后期移除 value
-        String fileName = configDefinition.value();
+        String fileName = configDefinition.fileName();
         if(StringUtils.isNullOrEmpty(fileName)){
-            fileName = configDefinition.fileName();
-            if(StringUtils.isNullOrEmpty(fileName)){
-                return null;
-            }
+            return null;
         }
 
         String fileNamePrefix;

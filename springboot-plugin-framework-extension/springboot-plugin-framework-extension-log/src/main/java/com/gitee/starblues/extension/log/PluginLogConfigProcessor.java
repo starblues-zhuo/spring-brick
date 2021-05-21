@@ -80,7 +80,8 @@ class PluginLogConfigProcessor implements PluginPipeProcessorExtend {
      **/
     private List<Resource> getLogConfigFile(PluginRegistryInfo pluginRegistryInfo) throws IOException {
         GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
-        String logConfigLocation = pluginApplicationContext.getEnvironment().getProperty(PropertyKey.LOG_CONFIG_LOCATION);
+        String logConfigLocation = pluginApplicationContext.getEnvironment()
+                .getProperty(PropertyKey.LOG_CONFIG_LOCATION);
         if (ObjectUtils.isEmpty(logConfigLocation)) {
             return null;
         }

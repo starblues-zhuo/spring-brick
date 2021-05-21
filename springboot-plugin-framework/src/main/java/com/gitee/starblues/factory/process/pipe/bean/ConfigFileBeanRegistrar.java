@@ -69,11 +69,7 @@ public class ConfigFileBeanRegistrar implements PluginBeanRegistrar {
             parseObject = aClass.newInstance();
         }
 
-        String name = configDefinition.beanName();
-        if(StringUtils.isNullOrEmpty(name)){
-            name = aClass.getName();
-        }
-        name = name + "@" + pluginRegistryInfo.getPluginWrapper().getPluginId();
+        String name = aClass.getName();
         SpringBeanRegister springBeanRegister = pluginRegistryInfo.getSpringBeanRegister();
         setConfigDefinitionTip(pluginRegistryInfo, parseObject);
         springBeanRegister.registerSingleton(name, parseObject);
