@@ -1,9 +1,11 @@
 package com.basic.example.plugin1.config;
 
 import com.basic.example.plugin1.job.QuartzJob1;
+import com.gitee.starblues.factory.process.pipe.PluginPipeApplicationContextProcessor;
 import org.quartz.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * @Description TODO

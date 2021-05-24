@@ -6,9 +6,18 @@ import com.gitee.starblues.factory.PropertyKey;
 import com.gitee.starblues.factory.process.pipe.bean.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
@@ -78,6 +87,10 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         if(ObjectUtils.isEmpty(installAutoConfigClassString)){
             return;
         }
+
+        // 注册AutoConfigurationPackages, 用于插件可自动配置
+        AutoConfigurationPackages.register(pluginApplicationContext.getDefaultListableBeanFactory(),
+                pluginRegistryInfo.getBasePlugin().scanPackage());
 
         Set<Class<?>> autoConfigurationClassSet = new HashSet<>(installAutoConfigClassString.size());
         ClassLoader pluginClassLoader = pluginRegistryInfo.getPluginClassLoader();

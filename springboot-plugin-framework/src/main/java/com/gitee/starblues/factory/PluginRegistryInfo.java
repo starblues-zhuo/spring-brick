@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.ClassUtils;
 
 import java.io.Closeable;
