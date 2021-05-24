@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,7 +71,7 @@ public class ConfigDefinitionTip {
     public <T> T getConfigOfBean(String prefix, Class<T> type){
         return pluginRegistryInfo.getPluginBinder()
                 .bind(prefix, Bindable.of(type))
-                .get();
+                .orElseGet(() -> null);
     }
 
     /**
@@ -84,7 +85,7 @@ public class ConfigDefinitionTip {
     public <T> List<T> getConfigOfList(String prefix, Class<T> type){
         return pluginRegistryInfo.getPluginBinder()
                 .bind(prefix, Bindable.listOf(type))
-                .get();
+                .orElseGet(() -> Collections.emptyList());
     }
 
     /**
@@ -98,7 +99,7 @@ public class ConfigDefinitionTip {
     public <T> Set<T> getConfigOfSet(String prefix, Class<T> type){
         return pluginRegistryInfo.getPluginBinder()
                 .bind(prefix, Bindable.setOf(type))
-                .get();
+                .orElseGet(() -> Collections.emptySet());
     }
 
 
@@ -115,7 +116,7 @@ public class ConfigDefinitionTip {
     public <K, V> Map<K, V> getConfigOfSet(String prefix, Class<K> keyType, Class<V> valueType){
         return pluginRegistryInfo.getPluginBinder()
                 .bind(prefix, Bindable.mapOf(keyType, valueType))
-                .get();
+                .orElseGet(() -> Collections.emptyMap());
     }
 
 

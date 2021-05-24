@@ -141,6 +141,10 @@ public class SpringBootConfigFileRegistrar implements PluginBeanRegistrar{
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
         ConfigDefinition configDefinition = basePlugin.getClass().getAnnotation(ConfigDefinition.class);
         if(configDefinition == null){
+            logger.warn("Plugin '{}' not config annotation : @ConfigDefinition, " +
+                    "If you want to use the plugin spring boot configuration file, " +
+                    "please configure the annotation: @ConfigDefinition to BasePlugin subclasses",
+                    pluginRegistryInfo.getPluginWrapper().getPluginId());
             return null;
         }
         RuntimeMode runtimeMode = pluginRegistryInfo.getPluginWrapper().getRuntimeMode();

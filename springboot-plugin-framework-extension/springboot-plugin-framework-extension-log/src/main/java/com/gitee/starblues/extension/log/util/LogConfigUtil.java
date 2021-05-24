@@ -2,7 +2,6 @@ package com.gitee.starblues.extension.log.util;
 
 import com.gitee.starblues.extension.log.annotation.ConfigItem;
 import com.gitee.starblues.extension.log.config.LogConfig;
-import com.gitee.starblues.extension.log.logback.LogbackLogRegistry;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.utils.CommonUtils;
 import org.pf4j.PluginWrapper;

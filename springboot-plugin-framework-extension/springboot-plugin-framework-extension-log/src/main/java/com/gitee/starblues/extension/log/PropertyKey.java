@@ -6,6 +6,6 @@ package com.gitee.starblues.extension.log;
  */
 public class PropertyKey {
 
-    public final static String LOG_CONFIG_LOCATION = "plugin.logConfigLocation";
+    public final static String LOG_CONFIG_LOCATION = "plugin.log-config-location";
 
 }

@@ -57,7 +57,7 @@ public class PluginResourceResolverProcess implements PluginPostProcessorExtend 
                 // 直接从配置文件获取, 后续版本移除从实现类中获取配置
                 Set<String> locations = pluginRegistryInfo.getPluginBinder()
                         .bind(PropertyKey.STATIC_LOCATIONS, Bindable.setOf(String.class))
-                        .get();
+                        .orElseGet(()->null);
                 if(ObjectUtils.isEmpty(locations)){
                     StaticResourceConfig config = SpringBeanUtils.getObjectByInterfaceClass(
                             pluginRegistryInfo.getConfigSingletons(),

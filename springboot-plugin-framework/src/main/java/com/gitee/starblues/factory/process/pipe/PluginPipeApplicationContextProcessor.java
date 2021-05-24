@@ -2,16 +2,17 @@ package com.gitee.starblues.factory.process.pipe;
 
 import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.factory.PropertyKey;
 import com.gitee.starblues.factory.process.pipe.bean.*;
-import com.gitee.starblues.factory.process.pipe.classs.group.AutoConfigurationSelectorGroup;
-import com.gitee.starblues.realize.AutoConfigurationSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -70,26 +71,19 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
      * @param pluginRegistryInfo 插件注册信息
      */
     private void installPluginAutoConfiguration(GenericApplicationContext pluginApplicationContext,
-                                                PluginRegistryInfo pluginRegistryInfo) {
-        List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(AutoConfigurationSelectorGroup.ID);
-        if(groupClasses == null || groupClasses.isEmpty()){
+                                                PluginRegistryInfo pluginRegistryInfo) throws ClassNotFoundException {
+        Set<String> installAutoConfigClassString = pluginRegistryInfo.getPluginBinder()
+                .bind(PropertyKey.INSTALL_AUTO_CONFIG_CLASS, Bindable.setOf(String.class))
+                .orElseGet(()->null);
+        if(ObjectUtils.isEmpty(installAutoConfigClassString)){
             return;
         }
-        PluginAutoConfigurationInstaller installer = new PluginAutoConfigurationInstaller();
-        for (Class<?> groupClass : groupClasses) {
-            try {
-                Object o = groupClass.newInstance();
-                if(o instanceof AutoConfigurationSelector){
-                    AutoConfigurationSelector selector = (AutoConfigurationSelector) o;
-                    selector.select(installer);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        Set<Class<?>> autoConfigurationClassSet = installer.getAutoConfigurationClassSet();
-        if(autoConfigurationClassSet.isEmpty()){
-            return;
+
+        Set<Class<?>> autoConfigurationClassSet = new HashSet<>(installAutoConfigClassString.size());
+        ClassLoader pluginClassLoader = pluginRegistryInfo.getPluginClassLoader();
+        for (String autoConfigClassPackage : installAutoConfigClassString) {
+            Class<?> aClass = Class.forName(autoConfigClassPackage, false, pluginClassLoader);
+            autoConfigurationClassSet.add(aClass);
         }
         for (Class<?> autoConfigurationClass : autoConfigurationClassSet) {
             pluginApplicationContext.registerBean(autoConfigurationClass);

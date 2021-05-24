@@ -1,8 +1,10 @@
 c:
   configYmlValue: test
 plugin:
-  logConfigLocation: classpath:log.xml
-
+  log-config-location: classpath:log.xml
+  auto-config-class:
+    - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
+    - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 
 spring:
   quartz:

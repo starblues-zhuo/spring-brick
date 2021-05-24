@@ -1,1 +1,2 @@
-logLocation: classpath:log.xml
+plugin:
+  logConfigLocation: classpath:log.xml

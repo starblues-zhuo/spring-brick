@@ -1,5 +1,6 @@
 package com.log.plugin;
 
+import com.gitee.starblues.annotation.ConfigDefinition;
 import com.gitee.starblues.realize.BasePlugin;
 import org.pf4j.PluginWrapper;
 
@@ -9,6 +10,7 @@ import org.pf4j.PluginWrapper;
  * @author sousouki
  * @version 2.4.3
  */
+@ConfigDefinition(fileName = "config.yml")
 public class LogPlugin extends BasePlugin {
 
 
