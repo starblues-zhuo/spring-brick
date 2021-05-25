@@ -99,7 +99,7 @@ public class Log4jLogRegistry implements LogRegistry {
                 .withLayout(patternLayout)
                 .withIgnoreExceptions(false)
                 .withFileName(LogConfigUtil.getLogFile(pluginWrapper, logConfig).concat(".log"))
-                .withFilePattern(".%d{yyyy-MM-dd}%-i.log")
+                .withFilePattern(".%d{yyyy-MM-dd}-%i.log")
                 .withAppend(true)
                 .withPolicy(policy)
                 .withStrategy(strategy)

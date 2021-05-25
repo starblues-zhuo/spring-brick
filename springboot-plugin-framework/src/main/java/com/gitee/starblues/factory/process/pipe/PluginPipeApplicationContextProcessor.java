@@ -21,7 +21,7 @@ import java.util.Set;
  * 插件的ApplicationContext 处理
  * 主要进行插件bean的扫描
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.3
  */
 public class PluginPipeApplicationContextProcessor implements PluginPipeProcessor{
 

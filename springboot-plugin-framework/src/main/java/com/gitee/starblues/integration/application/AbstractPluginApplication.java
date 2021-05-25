@@ -14,7 +14,7 @@ import java.util.List;
  * 公用的的插件应用
  *
  * @author starBlues
- * @version 2.2.0
+ * @version 2.4.3
  */
 public abstract class AbstractPluginApplication implements PluginApplication {
 
@@ -22,12 +22,13 @@ public abstract class AbstractPluginApplication implements PluginApplication {
 
 
     @Override
-    public void addExtension(AbstractExtension extension) {
+    public PluginApplication addExtension(AbstractExtension extension) {
         if(extension == null){
-            return;
+            return this;
         }
         extension.setPluginApplication(this);
         ExtensionFactory.addExtension(extension);
+        return this;
     }
 
     @Override
