@@ -5,6 +5,6 @@ plugin:
       - file:D:\aa
   thymeleaf:
     prefix: tf
-    suffix: html
+    suffix: .html
     mode: html
-    encoding: gbk
+    encoding: utf-8

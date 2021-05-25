@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * 插件静态资源访问的扩展插件
  *
  * @author starBlues
- * @version 2.3
+ * @version 2.4.3
  */
 public class StaticResourceExtension extends AbstractExtension {
 
@@ -80,23 +80,27 @@ public class StaticResourceExtension extends AbstractExtension {
     /**
      * 设置访问插件静态资源前缀
      * @param pluginStaticResourcePathPrefix 静态资源前缀。默认为: static-plugin。
+     * @return StaticResourceExtension
      */
-    public void setPathPrefix(String pluginStaticResourcePathPrefix){
+    public StaticResourceExtension setPathPrefix(String pluginStaticResourcePathPrefix){
         if(pluginStaticResourcePathPrefix != null && !"".equals(pluginStaticResourcePathPrefix)){
             StaticResourceExtension.pluginStaticResourcePathPrefix = pluginStaticResourcePathPrefix;
         }
+        return this;
     }
 
     /**
      * 设置缓存控制
      * @param pluginStaticResourcesCacheControl 访问静态资源的缓存控制。默认最大1小时。主要针对http协议的缓存。
+     * @return StaticResourceExtension
      */
-    public void setCacheControl(CacheControl pluginStaticResourcesCacheControl){
+    public StaticResourceExtension setCacheControl(CacheControl pluginStaticResourcesCacheControl){
         if(pluginStaticResourcesCacheControl == null){
             StaticResourceExtension.pluginStaticResourcesCacheControl = null;
         } else {
             StaticResourceExtension.pluginStaticResourcesCacheControl = pluginStaticResourcesCacheControl;
         }
+        return this;
     }
 
     public static String getPluginStaticResourcePathPrefix() {
