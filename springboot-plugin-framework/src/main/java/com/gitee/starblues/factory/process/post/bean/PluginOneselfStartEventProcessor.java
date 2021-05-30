@@ -21,7 +21,7 @@ import java.util.List;
 public class PluginOneselfStartEventProcessor implements PluginPostProcessor {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final static String KEY = "OneselfListeners";
+    public final static String KEY = "OneselfListeners";
 
     public PluginOneselfStartEventProcessor(){
     }
@@ -65,21 +65,9 @@ public class PluginOneselfStartEventProcessor implements PluginPostProcessor {
 
     @Override
     public void unRegistry(List<PluginRegistryInfo> pluginRegistryInfos) {
-        for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
-            BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
-            List<OneselfListener> oneselfListeners = pluginRegistryInfo.getExtension(KEY);
-            if(oneselfListeners == null || oneselfListeners.isEmpty()){
-                continue;
-            }
-            for (OneselfListener oneselfListener : oneselfListeners) {
-                try {
-                    oneselfListener.stopEvent(basePlugin);
-                } catch (Exception e){
-                    log.error("OneselfListener {} execute stopEvent exception. {}",
-                            oneselfListener.getClass().getName(), e.getMessage(), e);
-                }
-            }
-        }
+        // 当前不执行停止事件
+        // 由类 com.gitee.starblues.factory.process.pipe.PluginOneselfStopEventProcessor 实现停止
+        // 主要考虑到停止时, 需要先执行, 自主来关闭当前插件某些资源
     }
 
 

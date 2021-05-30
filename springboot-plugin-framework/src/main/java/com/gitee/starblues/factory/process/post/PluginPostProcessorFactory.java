@@ -39,11 +39,11 @@ public class PluginPostProcessorFactory implements PluginPostProcessor {
             // 如果配置启用webSocket的功能, 则进行引入
             pluginPostProcessors.add(new PluginWebSocketProcessor(mainApplicationContext));
         }
-        // 主要触发启动监听事件，因此在最后一个执行。配合 OneselfListenerStopEventProcessor 该类触发启动、停止事件。
-        pluginPostProcessors.add(new PluginOneselfStartEventProcessor());
         // 添加扩展
         pluginPostProcessors.addAll(ExtensionInitializer.getPostProcessorExtends());
 
+        // 主要触发启动监听事件，因此在最后一个执行。配合 OneselfListenerStopEventProcessor 该类触发启动、停止事件。
+        pluginPostProcessors.add(new PluginOneselfStartEventProcessor());
         // 进行初始化
         for (PluginPostProcessor pluginPostProcessor : pluginPostProcessors) {
             pluginPostProcessor.initialize();
