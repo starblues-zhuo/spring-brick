@@ -6,6 +6,8 @@ import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.utils.OrderPriority;
 import com.gitee.starblues.utils.ResourceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -24,6 +26,7 @@ import java.util.List;
  */
 class PluginLogConfigProcessor implements PluginPipeProcessorExtend {
 
+    private final static Logger LOG = LoggerFactory.getLogger(PluginLogConfigProcessor.class);
     private final LogRegistry logRegistry;
 
     public PluginLogConfigProcessor(SpringBootLogExtension.Type type){
@@ -86,16 +89,22 @@ class PluginLogConfigProcessor implements PluginPipeProcessorExtend {
             return null;
         }
 
+        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         ResourcePatternResolver resourcePatternResolver =
                 new PathMatchingResourcePatternResolver(pluginRegistryInfo.getPluginClassLoader());
         List<Resource> resources = new ArrayList<>();
         String matchLocation = ResourceUtils.getMatchLocation(logConfigLocation);
         if (matchLocation == null || "".equals(matchLocation)) {
+            LOG.warn("Plugin '{}' not match {}: {}", pluginId, PropertyKey.LOG_CONFIG_LOCATION,
+                    logConfigLocation);
             return null;
         }
         Resource[] logConfigResources = resourcePatternResolver.getResources(matchLocation);
-        if (logConfigResources.length != 0) {
+        if (logConfigResources.length > 0) {
             resources.addAll(Arrays.asList(logConfigResources));
+        } else {
+            LOG.error("Plugin '{}' not found {}: {}", pluginId, PropertyKey.LOG_CONFIG_LOCATION,
+                    logConfigLocation);
         }
         return resources;
     }

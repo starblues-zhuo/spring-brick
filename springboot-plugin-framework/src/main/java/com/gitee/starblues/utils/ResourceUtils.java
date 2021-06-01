@@ -26,6 +26,7 @@ public class ResourceUtils {
     public final static String TYPE_CLASSPATH = "classpath";
     public final static String TYPE_PACKAGE = "package";
 
+    public final static String TYPE_SPLIT = ":";
 
     /**
      * 获取匹配路绝
@@ -36,20 +37,21 @@ public class ResourceUtils {
         if(StringUtils.isNullOrEmpty(locationMatch)){
             return null;
         }
-        String[] split = locationMatch.split(":");
-        if(split.length != 2){
-            return null;
+        String classPathType = TYPE_CLASSPATH + TYPE_SPLIT;
+        if(locationMatch.startsWith(classPathType)){
+            return locationMatch.replaceFirst(classPathType, "");
         }
-        String type = split[0].trim();
-        String location = split[1];
-        if(TYPE_CLASSPATH.equalsIgnoreCase(type) || TYPE_FILE.equalsIgnoreCase(type)){
-            return locationMatch;
-        } else if(TYPE_PACKAGE.equalsIgnoreCase(type)){
+        String fileType = TYPE_FILE + TYPE_SPLIT;
+        if(locationMatch.startsWith(fileType)){
+            return locationMatch.replaceFirst(fileType, "");
+        }
+        String packageType = TYPE_PACKAGE + TYPE_SPLIT;
+        if(locationMatch.startsWith(packageType)){
+            String location = locationMatch.replaceFirst(packageType, "");
             return location.replace(".", "/");
-        } else {
-            LOGGER.error("locationMatch {} illegal", locationMatch);
-            return null;
         }
+        LOGGER.error("locationMatch {} illegal", locationMatch);
+        return null;
     }
 
 }
