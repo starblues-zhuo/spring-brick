@@ -30,7 +30,7 @@ public class SpringBootLogExtension extends AbstractExtension {
     }
 
     @Override
-    public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext applicationContext) {
+    public List<PluginPipeProcessorExtend> getPluginPipeProcessor(ApplicationContext mainApplicationContext) {
         List<PluginPipeProcessorExtend> pipeProcessorExtends = new ArrayList<>();
         pipeProcessorExtends.add(new PluginLogConfigProcessor(type));
         return pipeProcessorExtends;

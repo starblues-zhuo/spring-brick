@@ -38,20 +38,33 @@ public class ResourceUtils {
             return null;
         }
         String classPathType = TYPE_CLASSPATH + TYPE_SPLIT;
-        if(locationMatch.startsWith(classPathType)){
+        if(isClasspath(locationMatch)){
             return locationMatch.replaceFirst(classPathType, "");
         }
         String fileType = TYPE_FILE + TYPE_SPLIT;
-        if(locationMatch.startsWith(fileType)){
+        if(isFile(locationMatch)){
             return locationMatch.replaceFirst(fileType, "");
         }
         String packageType = TYPE_PACKAGE + TYPE_SPLIT;
-        if(locationMatch.startsWith(packageType)){
+        if(isPackage(locationMatch)){
             String location = locationMatch.replaceFirst(packageType, "");
             return location.replace(".", "/");
         }
         LOGGER.error("locationMatch {} illegal", locationMatch);
         return null;
     }
+
+    public static boolean isClasspath(String locationMatch){
+        return locationMatch.startsWith(TYPE_CLASSPATH + TYPE_SPLIT);
+    }
+
+    public static boolean isFile(String locationMatch){
+        return locationMatch.startsWith(TYPE_FILE + TYPE_SPLIT);
+    }
+
+    public static boolean isPackage(String locationMatch){
+        return locationMatch.startsWith(TYPE_PACKAGE + TYPE_SPLIT);
+    }
+
 
 }

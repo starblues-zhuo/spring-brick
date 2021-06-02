@@ -3,6 +3,7 @@ package com.gitee.starblues.factory;
 import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
 import com.gitee.starblues.factory.process.pipe.PluginPipeApplicationContextProcessor;
 import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.realize.BasePlugin;
 import org.pf4j.*;
 import org.pf4j.util.StringUtils;
@@ -32,6 +33,7 @@ public class PluginRegistryInfo {
 
     private final PluginWrapper pluginWrapper;
     private final PluginManager pluginManager;
+    private final IntegrationConfiguration configuration;
     private final GenericApplicationContext mainApplicationContext;
     private final AnnotationConfigApplicationContext pluginApplicationContext;
     private final Binder pluginBinder;
@@ -83,6 +85,7 @@ public class PluginRegistryInfo {
         this.pluginManager = pluginManager;
         this.basePlugin = (BasePlugin) pluginWrapper.getPlugin();
         this.mainApplicationContext = mainApplicationContext;
+        this.configuration = mainApplicationContext.getBean(IntegrationConfiguration.class);
         this.followingInitial = followingInitial;
 
         ClassLoader pluginClassLoader = basePlugin.getWrapper().getPluginClassLoader();
@@ -309,6 +312,9 @@ public class PluginRegistryInfo {
         return followingInitial;
     }
 
+    public IntegrationConfiguration getConfiguration() {
+        return configuration;
+    }
 
     void destroy(){
         // 关闭ApplicationContext

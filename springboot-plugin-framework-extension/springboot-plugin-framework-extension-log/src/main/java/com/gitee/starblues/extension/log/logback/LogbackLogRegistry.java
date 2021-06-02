@@ -39,13 +39,12 @@ public class LogbackLogRegistry implements LogRegistry {
 
     private final Map<String, Set<Appender<ILoggingEvent>>> pluginAppenderInfo = new ConcurrentHashMap<>();
 
-
     @Override
     public void registry(List<Resource> resources, PluginRegistryInfo pluginRegistryInfo) throws Exception {
         Set<Appender<ILoggingEvent>> appenderSet = new HashSet<>();
         PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
         for (Resource resource : resources) {
-            if(resource == null || !resource.exists()){
+            if(resource == null){
                 continue;
             }
             LogConfig logConfig;
@@ -55,7 +54,7 @@ public class LogbackLogRegistry implements LogRegistry {
                 log.error("Failed to read log configuration.", e);
                 continue;
             }
-            Set<Appender<ILoggingEvent>> logAppenderSet = addAppender(pluginWrapper, logConfig);
+            Set<Appender<ILoggingEvent>> logAppenderSet = addAppender(pluginRegistryInfo, logConfig);
             appenderSet.addAll(logAppenderSet);
         }
         pluginAppenderInfo.put(pluginWrapper.getPluginId(), appenderSet);
@@ -77,15 +76,15 @@ public class LogbackLogRegistry implements LogRegistry {
         pluginAppenderInfo.remove(pluginWrapper.getPluginId());
     }
 
-    private Set<Appender<ILoggingEvent>> addAppender(PluginWrapper pluginWrapper, LogConfig logConfig) {
+    private Set<Appender<ILoggingEvent>> addAppender(PluginRegistryInfo pluginRegistryInfo, LogConfig logConfig) {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         String packageName = logConfig.getPackageName();
         Logger logger = context.getLogger(packageName);
         logger.detachAndStopAllAppenders();
 
-        ConsoleAppender<ILoggingEvent> consoleAppender = createConsoleAppender(pluginWrapper,
+        ConsoleAppender<ILoggingEvent> consoleAppender = createConsoleAppender(pluginRegistryInfo.getPluginWrapper(),
                 logConfig, packageName);
-        RollingFileAppender<ILoggingEvent> fileAppender = createFileAppender(pluginWrapper,
+        RollingFileAppender<ILoggingEvent> fileAppender = createFileAppender(pluginRegistryInfo,
                 logConfig, packageName);
 
         logger.setAdditive(false);
@@ -120,7 +119,7 @@ public class LogbackLogRegistry implements LogRegistry {
         return appender;
     }
 
-    private RollingFileAppender<ILoggingEvent> createFileAppender(PluginWrapper pluginWrapper,
+    private RollingFileAppender<ILoggingEvent> createFileAppender(PluginRegistryInfo pluginRegistryInfo,
                                                                   LogConfig logConfig,
                                                                   String packageName) {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -132,10 +131,11 @@ public class LogbackLogRegistry implements LogRegistry {
             appender.addFilter(filter);
         }
 
+        PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
         appender.setContext(context);
         appender.setName(pluginWrapper.getPluginId());
 
-        String logFilePrefix = LogConfigUtil.getLogFile(pluginWrapper, logConfig);
+        String logFilePrefix = LogConfigUtil.getLogFile(pluginRegistryInfo, logConfig);
         appender.setFile(OptionHelper.substVars(logFilePrefix.concat(".log"), context));
 
         appender.setAppend(true);

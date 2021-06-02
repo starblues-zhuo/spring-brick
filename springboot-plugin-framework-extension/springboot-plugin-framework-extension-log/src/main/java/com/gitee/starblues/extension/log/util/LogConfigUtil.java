@@ -3,8 +3,10 @@ package com.gitee.starblues.extension.log.util;
 import com.gitee.starblues.extension.log.annotation.ConfigItem;
 import com.gitee.starblues.extension.log.config.LogConfig;
 import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.utils.CommonUtils;
 import org.pf4j.PluginWrapper;
+import org.pf4j.RuntimeMode;
 import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,17 +45,25 @@ public class LogConfigUtil {
     }
 
 
-    public static String getLogFile(PluginWrapper pluginWrapper, LogConfig logConfig){
+    public static String getLogFile(PluginRegistryInfo pluginRegistryInfo, LogConfig logConfig){
         String rootDir = logConfig.getRootDir();
         String home;
-        String pluginPath = pluginWrapper.getPluginPath().toString();
+        PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
+        IntegrationConfiguration configuration = pluginRegistryInfo.getConfiguration();
+        String pluginRootDir;
+        RuntimeMode runtimeMode = pluginWrapper.getRuntimeMode();
+        if(runtimeMode == RuntimeMode.DEVELOPMENT){
+            pluginRootDir = pluginWrapper.getPluginPath().toString();
+        } else {
+            pluginRootDir =  configuration.pluginPath();
+        }
         if(StringUtils.isNullOrEmpty(rootDir)){
-            home = CommonUtils.joiningFilePath(pluginPath, "logs");
+            home = CommonUtils.joiningFilePath(pluginRootDir, "logs");
         } else {
             if(rootDir.startsWith(LogConfig.ROOT_PLUGIN_SIGN)){
                 // 如果root路径中开始存在ROOT_PLUGIN_SIGN,则说明进行插件根路替换
                 home = rootDir.replaceFirst("\\" + LogConfig.ROOT_PLUGIN_SIGN, "");
-                home = CommonUtils.joiningFilePath(pluginPath, home);
+                home = CommonUtils.joiningFilePath(pluginRootDir, home);
             } else {
                 home = rootDir;
             }

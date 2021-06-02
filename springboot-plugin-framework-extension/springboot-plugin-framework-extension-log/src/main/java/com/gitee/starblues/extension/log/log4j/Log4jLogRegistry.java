@@ -1,6 +1,5 @@
 package com.gitee.starblues.extension.log.log4j;
 
-import ch.qos.logback.core.spi.FilterReply;
 import com.gitee.starblues.extension.log.LogRegistry;
 import com.gitee.starblues.extension.log.config.LogConfig;
 import com.gitee.starblues.extension.log.logback.LogbackLogRegistry;
@@ -13,10 +12,8 @@ import org.apache.logging.log4j.core.*;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.rolling.*;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.message.Message;
@@ -24,10 +21,6 @@ import org.pf4j.PluginWrapper;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,6 +35,7 @@ public class Log4jLogRegistry implements LogRegistry {
     private final org.slf4j.Logger log = LoggerFactory.getLogger(LogbackLogRegistry.class);
     private final Map<String, Set<Appender>> pluginAppenderInfo = new ConcurrentHashMap<>();
 
+
     @Override
     public void registry(List<Resource> resources, PluginRegistryInfo pluginRegistryInfo) throws Exception {
         PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
@@ -50,7 +44,7 @@ public class Log4jLogRegistry implements LogRegistry {
         LoggerConfig rootLogger = configuration.getRootLogger();
         Set<Appender> allAppender = new HashSet<>();
         for (Resource resource : resources) {
-            if(resource == null || !resource.exists()){
+            if(resource == null){
                 continue;
             }
             LogConfig logConfig;
@@ -98,7 +92,7 @@ public class Log4jLogRegistry implements LogRegistry {
                 .withName(pluginWrapper.getPluginId())
                 .withLayout(patternLayout)
                 .withIgnoreExceptions(false)
-                .withFileName(LogConfigUtil.getLogFile(pluginWrapper, logConfig).concat(".log"))
+                .withFileName(LogConfigUtil.getLogFile(pluginRegistryInfo, logConfig).concat(".log"))
                 .withFilePattern(".%d{yyyy-MM-dd}-%i.log")
                 .withAppend(true)
                 .withPolicy(policy)

@@ -9,14 +9,13 @@ import com.gitee.starblues.utils.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -59,11 +58,10 @@ class PluginLogConfigProcessor implements PluginPipeProcessorExtend {
         if (logRegistry == null) {
             return;
         }
-        List<Resource> pluginResources = getLogConfigFile(pluginRegistryInfo);
-        if (pluginResources == null || pluginResources.isEmpty()) {
-            return;
-        }
-        logRegistry.registry(pluginResources, pluginRegistryInfo);
+        Resource resource = getLogConfigFile(pluginRegistryInfo);
+        List<Resource> resources = new ArrayList<>(1);
+        resources.add(resource);
+        logRegistry.registry(resources, pluginRegistryInfo);
     }
 
     @Override
@@ -81,32 +79,25 @@ class PluginLogConfigProcessor implements PluginPipeProcessorExtend {
      * @param pluginRegistryInfo 当前插件注册的信息
      * @throws IOException 获取不到配置文件异常
      **/
-    private List<Resource> getLogConfigFile(PluginRegistryInfo pluginRegistryInfo) throws IOException {
+    private Resource getLogConfigFile(PluginRegistryInfo pluginRegistryInfo) throws IOException {
         GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
         String logConfigLocation = pluginApplicationContext.getEnvironment()
                 .getProperty(PropertyKey.LOG_CONFIG_LOCATION);
         if (ObjectUtils.isEmpty(logConfigLocation)) {
             return null;
         }
-
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-        ResourcePatternResolver resourcePatternResolver =
-                new PathMatchingResourcePatternResolver(pluginRegistryInfo.getPluginClassLoader());
-        List<Resource> resources = new ArrayList<>();
         String matchLocation = ResourceUtils.getMatchLocation(logConfigLocation);
         if (matchLocation == null || "".equals(matchLocation)) {
             LOG.warn("Plugin '{}' not match {}: {}", pluginId, PropertyKey.LOG_CONFIG_LOCATION,
                     logConfigLocation);
             return null;
         }
-        Resource[] logConfigResources = resourcePatternResolver.getResources(matchLocation);
-        if (logConfigResources.length > 0) {
-            resources.addAll(Arrays.asList(logConfigResources));
+        if(ResourceUtils.isFile(logConfigLocation)){
+            return new FileSystemResource(matchLocation);
         } else {
-            LOG.error("Plugin '{}' not found {}: {}", pluginId, PropertyKey.LOG_CONFIG_LOCATION,
-                    logConfigLocation);
+            return new ClassPathResource(matchLocation, pluginRegistryInfo.getPluginClassLoader());
         }
-        return resources;
     }
 
 }
