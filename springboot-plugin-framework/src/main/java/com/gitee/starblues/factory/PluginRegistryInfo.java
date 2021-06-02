@@ -1,11 +1,11 @@
 package com.gitee.starblues.factory;
 
 import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
-import com.gitee.starblues.factory.process.pipe.PluginPipeApplicationContextProcessor;
 import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.realize.BasePlugin;
-import org.pf4j.*;
+import org.pf4j.PluginManager;
+import org.pf4j.PluginWrapper;
 import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,11 +13,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.util.ClassUtils;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
