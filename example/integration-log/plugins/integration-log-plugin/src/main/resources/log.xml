@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <log>
-    <fileName>integration-log-plugin</fileName>
+    <rootDir>~\logs\</rootDir>
+    <fileName>current</fileName>
     <level>INFO</level>
     <maxFileSize>10MB</maxFileSize>
     <totalFileSize>10GB</totalFileSize>

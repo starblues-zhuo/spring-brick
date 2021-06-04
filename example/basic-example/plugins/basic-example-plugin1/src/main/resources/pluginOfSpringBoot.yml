@@ -1,0 +1,47 @@
+c:
+  configYmlValue: test
+plugin:
+  log-config-location: classpath:log.xml
+  auto-config-class:
+    - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
+    - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+
+spring:
+  quartz:
+    auto-startup: false
+    startup-delay: 30
+    scheduler-name: custom-plugin-scheduler
+    properties:
+      org:
+        quartz:
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 1
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
+    host: 127.0.0.1
+    port: 6379
+    timeout: 10000
+
+logConfigLocation: classpath:log.xml
+
+list:
+  - a
+  - n
+  - c
+
+map:
+  a: 1
+  b: 2
+
+spring-config:
+  name: starblues
+  age: 26
+  sex: 男
+  list:
+    - a
+    - b
+    - c
+  map:
+    a: 1
+    b: 2

@@ -1,5 +1,6 @@
 package com.basic.example.plugin1;
 
+import com.gitee.starblues.annotation.ConfigDefinition;
 import com.gitee.starblues.realize.BasePlugin;
 import org.pf4j.PluginWrapper;
 
@@ -9,6 +10,7 @@ import org.pf4j.PluginWrapper;
  * @author starBlues
  * @version 1.0
  */
+@ConfigDefinition(fileName = "pluginOfSpringBoot.yml")
 public class DefinePlugin extends BasePlugin {
     public DefinePlugin(PluginWrapper wrapper) {
         super(wrapper);

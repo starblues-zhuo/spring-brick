@@ -34,7 +34,9 @@ public class PluginPipeProcessorFactory implements PluginPipeProcessor {
     @Override
     public void initialize() throws Exception{
         // 以下顺序不能更改
-        // 插件资源加载者, 必须放在第一位
+        // 停止事件放在第一位
+        pluginPipeProcessors.add(new PluginOneselfStopEventProcessor());
+        // 插件资源加载者, 必须放在第二位
         pluginPipeProcessors.add(new PluginResourceLoadFactory());
         // 插件类处理者
         pluginPipeProcessors.add(new PluginClassProcess());

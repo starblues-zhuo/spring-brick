@@ -1,11 +1,11 @@
 package com.gitee.starblues.factory;
 
-import com.gitee.starblues.factory.process.pipe.bean.name.PluginAnnotationBeanNameGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.text.MessageFormat;
@@ -32,30 +32,43 @@ public class SpringBeanRegister {
         return applicationContext.containsBean(name);
     }
 
+
     /**
-     * 默认注册
+     * 基于class注册一个bean
+     *
+     * @param aClass     类名
+     * @return 注册的bean名称
+     */
+    public String register(Class<?> aClass) {
+        return register(aClass, null);
+    }
+
+
+    /**
+     * 基于class注册一个bean
      *
      * @param pluginId   插件id
      * @param aClass     类名
      * @return 注册的bean名称
      */
+    @Deprecated
     public String register(String pluginId, Class<?> aClass) {
         return register(pluginId, aClass, null);
     }
 
+
     /**
-     * 默认注册
-     * @param pluginId 插件id
+     * 基于class注册一个bean, 可自定义 BeanDefinition
+     *
      * @param aClass 注册的类
      * @param consumer 自定义处理AnnotatedGenericBeanDefinition
      * @return 注册的bean名称
      */
-    public String register(String pluginId, Class<?> aClass,
+    public String register(Class<?> aClass,
                            Consumer<AnnotatedGenericBeanDefinition> consumer) {
         AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(aClass);
         beanDefinition.setBeanClass(aClass);
-        BeanNameGenerator beanNameGenerator =
-                new PluginAnnotationBeanNameGenerator(pluginId);
+        BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
         String beanName = beanNameGenerator.generateBeanName(beanDefinition, applicationContext);
 
         if(applicationContext.containsBean(beanName)){
@@ -71,14 +84,28 @@ public class SpringBeanRegister {
         return beanName;
     }
 
+
+    /**
+     * 基于class注册一个bean, 可自定义 BeanDefinition
+     *
+     * @param pluginId 插件id
+     * @param aClass 注册的类
+     * @param consumer 自定义处理AnnotatedGenericBeanDefinition
+     * @return 注册的bean名称
+     */
+    @Deprecated
+    public String register(String pluginId, Class<?> aClass,
+                           Consumer<AnnotatedGenericBeanDefinition> consumer) {
+        return register(aClass, consumer);
+    }
+
     /**
      * 指定bean名称注册
-     * @param pluginId 插件id
      * @param beanName 指定的bean名称
      * @param aClass 注册的类
      */
-    public void registerOfSpecifyName(String pluginId, String beanName, Class<?> aClass){
-        registerOfSpecifyName(pluginId, beanName, aClass, null);
+    public void registerOfSpecifyName(String beanName, Class<?> aClass){
+        registerOfSpecifyName(beanName, aClass, null);
     }
 
     /**
@@ -86,10 +113,20 @@ public class SpringBeanRegister {
      * @param pluginId 插件id
      * @param beanName 指定的bean名称
      * @param aClass 注册的类
-     * @param consumer 注册异常
      */
-    public void registerOfSpecifyName(String pluginId,
-                                      String beanName,
+    @Deprecated
+    public void registerOfSpecifyName(String pluginId, String beanName, Class<?> aClass){
+        registerOfSpecifyName(pluginId, beanName, aClass, null);
+    }
+
+
+    /**
+     * 指定bean名称注册, 可自定义 BeanDefinition
+     * @param beanName 指定的bean名称
+     * @param aClass 注册的类
+     * @param consumer 自定义处理AnnotatedGenericBeanDefinition
+     */
+    public void registerOfSpecifyName(String beanName,
                                       Class<?> aClass,
                                       Consumer<AnnotatedGenericBeanDefinition> consumer) {
         AnnotatedGenericBeanDefinition beanDefinition = new
@@ -103,6 +140,22 @@ public class SpringBeanRegister {
             consumer.accept(beanDefinition);
         }
         applicationContext.registerBeanDefinition(beanName, beanDefinition);
+    }
+
+
+    /**
+     * 指定bean名称注册, 可自定义 BeanDefinition
+     * @param pluginId 插件id
+     * @param beanName 指定的bean名称
+     * @param aClass 注册的类
+     * @param consumer 自定义处理AnnotatedGenericBeanDefinition
+     */
+    @Deprecated
+    public void registerOfSpecifyName(String pluginId,
+                                      String beanName,
+                                      Class<?> aClass,
+                                      Consumer<AnnotatedGenericBeanDefinition> consumer) {
+        registerOfSpecifyName(beanName, aClass, consumer);
     }
 
     /**

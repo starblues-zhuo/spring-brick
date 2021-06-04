@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * 插件应用。
  * @author starBlues
- * @version 2.2.0
+ * @version 2.4.3
  */
 public interface PluginApplication extends PluginListenerContext {
 
@@ -37,7 +37,8 @@ public interface PluginApplication extends PluginListenerContext {
     /**
      * 添加扩展
      * @param extension 扩展类
+     * @return PluginApplication
      */
-    void addExtension(AbstractExtension extension);
+    PluginApplication addExtension(AbstractExtension extension);
 
 }

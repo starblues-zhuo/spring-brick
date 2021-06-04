@@ -1,5 +1,6 @@
 package com.basic.example.main.config;
 
+import com.gitee.starblues.extension.log.SpringBootLogExtension;
 import com.gitee.starblues.extension.support.SpringDocControllerProcessor;
 import com.gitee.starblues.integration.application.PluginApplication;
 import com.gitee.starblues.integration.application.AutoPluginApplication;
@@ -27,6 +28,8 @@ public class PluginBeanConfig {
         AutoPluginApplication autoPluginApplication = new AutoPluginApplication();
         autoPluginApplication.setPluginInitializerListener(pluginListener);
         autoPluginApplication.addListener(ExamplePluginListener.class);
+        // 添加插件log4j支持
+        autoPluginApplication.addExtension(new SpringBootLogExtension(SpringBootLogExtension.Type.LOG4J));
         return autoPluginApplication;
     }
 

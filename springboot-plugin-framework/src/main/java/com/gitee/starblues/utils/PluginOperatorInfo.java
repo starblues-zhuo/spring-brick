@@ -21,7 +21,7 @@ public class PluginOperatorInfo {
      * 该参数主要解决在安装插件时 setOperatorType 一次操作类型，但是它又调用了启动插件，而启动插件也要 setOperatorType 一次操作类型
      *   所以, 使用该参数, 用于在安装插件时, 锁定 setOperatorType, 在启动时就无法再 setOperatorType 了, 就不会覆盖该值
      */
-    private AtomicBoolean isLock = new AtomicBoolean(false);
+    private final AtomicBoolean isLock = new AtomicBoolean(false);
 
     /**
      * 设置操作类型

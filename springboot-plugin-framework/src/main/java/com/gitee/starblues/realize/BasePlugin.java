@@ -12,6 +12,7 @@ import org.pf4j.PluginWrapper;
 public abstract class BasePlugin extends Plugin {
 
     private final BasePluginExtend basePluginExtend;
+    private String springBootConfigFilePath;
 
     public BasePlugin(PluginWrapper wrapper) {
         super(wrapper);

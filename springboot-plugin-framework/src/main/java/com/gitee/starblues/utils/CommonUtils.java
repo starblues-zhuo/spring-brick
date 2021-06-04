@@ -3,6 +3,7 @@ package com.gitee.starblues.utils;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.pf4j.util.StringUtils;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -102,7 +103,7 @@ public class CommonUtils {
 
 
     /**
-     * 拼接路径
+     * 拼接url路径
      * @param paths 拼接的路径
      * @return 拼接的路径
      */
@@ -124,6 +125,37 @@ public class CommonUtils {
                 stringBuilder.append(path);
             } else {
                 stringBuilder.append("/").append(path);
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 拼接file路径
+     * @param paths 拼接的路径
+     * @return 拼接的路径
+     */
+    public static String joiningFilePath(String ...paths){
+        if(paths == null || paths.length == 0){
+            return "";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        int length = paths.length;
+        for (int i = 0; i < length; i++) {
+            String path = paths[i];
+            if(StringUtils.isNullOrEmpty(path)) {
+                continue;
+            }
+            if(i > 0){
+                if(path.startsWith(File.separator) || path.startsWith("/") ||
+                        path.startsWith("\\") || path.startsWith("//")){
+                    stringBuilder.append(path);
+                } else {
+                    stringBuilder.append(File.separator).append(path);
+                }
+            } else {
+                stringBuilder.append(path);
             }
         }
 

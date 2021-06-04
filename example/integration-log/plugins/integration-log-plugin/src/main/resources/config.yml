@@ -1,0 +1,2 @@
+plugin:
+  logConfigLocation: classpath:log.xml

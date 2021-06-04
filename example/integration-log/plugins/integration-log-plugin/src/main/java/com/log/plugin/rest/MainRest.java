@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 插件jar 包测试功能
  * @author sousouki
- * @version 1.0
+ * @version 2.4.3
  */
 @RestController
 @RequestMapping("/log/main")

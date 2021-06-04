@@ -2,12 +2,17 @@ package com.basic.example.plugin1.rest;
 
 import com.basic.example.plugin1.config.ConfigBean;
 import com.basic.example.plugin1.config.PluginConfig1;
+import com.basic.example.plugin1.config.SpringConfigBean;
 import com.basic.example.plugin1.service.HelloService;
 import com.gitee.starblues.realize.PluginUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.pf4j.PluginDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,9 +40,20 @@ public class HelloPlugin1 {
     @Autowired
     private ConfigBean.ConfigBeanTest configBeanTest;
 
+    @Value("${c.configYmlValue}")
+    private String configYmlValue;
+
+    @Autowired
+    private SpringConfigBean springConfigBean;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+
     @GetMapping("plugin1")
     @ApiOperation(value = "hello", notes = "hello")
     public String sya(){
+        System.out.println("configYmlValue="+configYmlValue);
         return "hello plugin1 example";
     }
 
@@ -66,6 +82,11 @@ public class HelloPlugin1 {
     @GetMapping("configBeanTest")
     public ConfigBean.ConfigBeanTest getConfigBeanTest(){
         return configBeanTest;
+    }
+
+    @GetMapping("spring-config")
+    public SpringConfigBean getSpringConfigBean(){
+        return springConfigBean;
     }
 
 }

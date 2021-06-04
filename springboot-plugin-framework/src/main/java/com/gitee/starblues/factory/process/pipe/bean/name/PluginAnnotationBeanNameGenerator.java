@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
  * @author starBlues
  * @version 1.0
  */
+@Deprecated
 public class PluginAnnotationBeanNameGenerator extends AnnotationBeanNameGenerator {
 
     /**

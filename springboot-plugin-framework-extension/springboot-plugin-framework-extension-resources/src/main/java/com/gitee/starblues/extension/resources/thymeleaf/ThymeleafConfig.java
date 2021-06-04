@@ -42,14 +42,12 @@ public class ThymeleafConfig {
     /**
      * 是否启用模板引擎的缓存
      */
-    private boolean cache = true;
+    private Boolean cache = true;
 
     /**
      * 模板解析器的执行顺序, 数字越小越先执行
      */
     private Integer templateResolverOrder;
-
-
 
     public String getPrefix() {
         return prefix;
@@ -71,23 +69,23 @@ public class ThymeleafConfig {
         return mode;
     }
 
-    public void setMode(TemplateMode mode) {
-        this.mode = mode;
+    public void setMode(String mode) {
+        this.mode = TemplateMode.parse(mode);
     }
 
     public Charset getEncoding() {
         return encoding;
     }
 
-    public void setEncoding(Charset encoding) {
-        this.encoding = encoding;
+    public void setEncoding(String encoding) {
+        this.encoding = Charset.forName(encoding);
     }
 
-    public boolean isCache() {
+    public Boolean getCache() {
         return cache;
     }
 
-    public void setCache(boolean cache) {
+    public void setCache(Boolean cache) {
         this.cache = cache;
     }
 
@@ -99,4 +97,15 @@ public class ThymeleafConfig {
         this.templateResolverOrder = templateResolverOrder;
     }
 
+    @Override
+    public String toString() {
+        return "ThymeleafConfig{" +
+                "prefix='" + prefix + '\'' +
+                ", suffix='" + suffix + '\'' +
+                ", mode=" + mode.name() +
+                ", encoding=" + encoding.name() +
+                ", cache=" + cache +
+                ", templateResolverOrder=" + templateResolverOrder +
+                '}';
+    }
 }

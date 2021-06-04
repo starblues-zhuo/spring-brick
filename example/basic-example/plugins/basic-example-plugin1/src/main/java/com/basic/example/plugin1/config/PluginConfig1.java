@@ -11,7 +11,7 @@ import java.util.Set;
  * @author starBlues
  * @version 1.0
  */
-@ConfigDefinition("plugin1.yml")
+@ConfigDefinition(fileName = "plugin1.yml")
 public class PluginConfig1 {
 
     private String name;

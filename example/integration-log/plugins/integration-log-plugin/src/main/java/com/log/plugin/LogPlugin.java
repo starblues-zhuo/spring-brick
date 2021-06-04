@@ -1,25 +1,21 @@
 package com.log.plugin;
 
-import com.gitee.starblues.extension.log.config.SpringBootLogConfig;
+import com.gitee.starblues.annotation.ConfigDefinition;
 import com.gitee.starblues.realize.BasePlugin;
 import org.pf4j.PluginWrapper;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * description
  *
  * @author sousouki
- * @version 1.0
+ * @version 2.4.3
  */
-public class LogPlugin extends BasePlugin implements SpringBootLogConfig {
+@ConfigDefinition(fileName = "config.yml")
+public class LogPlugin extends BasePlugin {
 
-    private Set<String> locations = new HashSet<>();
 
     public LogPlugin(PluginWrapper wrapper) {
         super(wrapper);
-        locations.add("classpath:log.xml");
     }
 
     @Override
@@ -37,9 +33,5 @@ public class LogPlugin extends BasePlugin implements SpringBootLogConfig {
 
     }
 
-    @Override
-    public Set<String> logConfigLocations() {
-        return locations;
-    }
 }
 

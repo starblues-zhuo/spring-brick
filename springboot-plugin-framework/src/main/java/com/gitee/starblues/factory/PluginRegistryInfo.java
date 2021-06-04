@@ -1,19 +1,19 @@
 package com.gitee.starblues.factory;
 
 import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
-import com.gitee.starblues.factory.process.pipe.PluginPipeApplicationContextProcessor;
 import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.realize.BasePlugin;
-import org.pf4j.*;
+import org.pf4j.PluginManager;
+import org.pf4j.PluginWrapper;
 import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.util.ClassUtils;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,8 +29,10 @@ public class PluginRegistryInfo {
 
     private final PluginWrapper pluginWrapper;
     private final PluginManager pluginManager;
+    private final IntegrationConfiguration configuration;
     private final GenericApplicationContext mainApplicationContext;
     private final AnnotationConfigApplicationContext pluginApplicationContext;
+    private final Binder pluginBinder;
     private final SpringBeanRegister springBeanRegister;
 
     /**
@@ -79,11 +81,17 @@ public class PluginRegistryInfo {
         this.pluginManager = pluginManager;
         this.basePlugin = (BasePlugin) pluginWrapper.getPlugin();
         this.mainApplicationContext = mainApplicationContext;
+        this.configuration = mainApplicationContext.getBean(IntegrationConfiguration.class);
         this.followingInitial = followingInitial;
 
-        // 生成插件Application
-        this.pluginApplicationContext = new AnnotationConfigApplicationContext();
-        this.pluginApplicationContext.setClassLoader(basePlugin.getWrapper().getPluginClassLoader());
+        ClassLoader pluginClassLoader = basePlugin.getWrapper().getPluginClassLoader();
+        // 生成插件ApplicationContext-DefaultListableBeanFactory
+        DefaultListableBeanFactory defaultListableBeanFactory = new DefaultListableBeanFactory();
+        this.pluginApplicationContext = new AnnotationConfigApplicationContext(defaultListableBeanFactory);
+        // 设置插件ApplicationContext的classLoader
+        this.pluginApplicationContext.setClassLoader(pluginClassLoader);
+
+        this.pluginBinder = Binder.get(this.pluginApplicationContext.getEnvironment());
         this.springBeanRegister = new SpringBeanRegister(pluginApplicationContext);
     }
 
@@ -254,6 +262,14 @@ public class PluginRegistryInfo {
     }
 
     /**
+     * 得到当前插件的Binder
+     * @return Binder
+     */
+    public Binder getPluginBinder() {
+        return pluginBinder;
+    }
+
+    /**
      * 得到当前插件Bean注册者
      * @return SpringBeanRegister
      */
@@ -292,6 +308,9 @@ public class PluginRegistryInfo {
         return followingInitial;
     }
 
+    public IntegrationConfiguration getConfiguration() {
+        return configuration;
+    }
 
     void destroy(){
         // 关闭ApplicationContext

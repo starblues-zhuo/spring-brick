@@ -2,23 +2,26 @@ package com.gitee.starblues.factory.process.pipe;
 
 import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.factory.PropertyKey;
 import com.gitee.starblues.factory.process.pipe.bean.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.web.servlet.HandlerExecutionChain;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.handler.AbstractHandlerMapping;
+import org.springframework.util.ObjectUtils;
 
-import javax.servlet.ServletContext;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 插件的ApplicationContext 处理
  * 主要进行插件bean的扫描
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.3
  */
 public class PluginPipeApplicationContextProcessor implements PluginPipeProcessor{
 
@@ -34,6 +37,7 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
 
     @Override
     public void initialize() throws Exception {
+        pluginBeanDefinitionRegistrars.add(new SpringBootConfigFileRegistrar(mainApplicationContext));
         pluginBeanDefinitionRegistrars.add(new PluginInsetBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new ConfigBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new ConfigFileBeanRegistrar(mainApplicationContext));
@@ -51,7 +55,7 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         }
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(pluginRegistryInfo.getPluginClassLoader());
+            installPluginAutoConfiguration(pluginApplicationContext, pluginRegistryInfo);
             pluginApplicationContext.refresh();
         } finally {
             Thread.currentThread().setContextClassLoader(contextClassLoader);
@@ -61,6 +65,36 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
         PluginInfoContainers.addPluginApplicationContext(pluginId, pluginApplicationContext);
     }
+
+    /**
+     * 安装插件定义的自动装载配置类
+     * @param pluginApplicationContext 插件ApplicationContext
+     * @param pluginRegistryInfo 插件注册信息
+     */
+    private void installPluginAutoConfiguration(GenericApplicationContext pluginApplicationContext,
+                                                PluginRegistryInfo pluginRegistryInfo) throws ClassNotFoundException {
+        Set<String> installAutoConfigClassString = pluginRegistryInfo.getPluginBinder()
+                .bind(PropertyKey.INSTALL_AUTO_CONFIG_CLASS, Bindable.setOf(String.class))
+                .orElseGet(()->null);
+        if(ObjectUtils.isEmpty(installAutoConfigClassString)){
+            return;
+        }
+
+        // 注册AutoConfigurationPackages, 用于插件可自动配置
+        AutoConfigurationPackages.register(pluginApplicationContext.getDefaultListableBeanFactory(),
+                pluginRegistryInfo.getBasePlugin().scanPackage());
+
+        Set<Class<?>> autoConfigurationClassSet = new HashSet<>(installAutoConfigClassString.size());
+        ClassLoader pluginClassLoader = pluginRegistryInfo.getPluginClassLoader();
+        for (String autoConfigClassPackage : installAutoConfigClassString) {
+            Class<?> aClass = Class.forName(autoConfigClassPackage, false, pluginClassLoader);
+            autoConfigurationClassSet.add(aClass);
+        }
+        for (Class<?> autoConfigurationClass : autoConfigurationClassSet) {
+            pluginApplicationContext.registerBean(autoConfigurationClass);
+        }
+    }
+
 
     @Override
     public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {

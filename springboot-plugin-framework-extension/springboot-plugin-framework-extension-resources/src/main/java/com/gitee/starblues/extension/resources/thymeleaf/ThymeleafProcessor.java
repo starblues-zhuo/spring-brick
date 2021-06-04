@@ -1,5 +1,6 @@
 package com.gitee.starblues.extension.resources.thymeleaf;
 
+import com.gitee.starblues.extension.resources.PropertyKey;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessorExtend;
 import com.gitee.starblues.utils.ClassUtils;
@@ -7,7 +8,10 @@ import com.gitee.starblues.utils.OrderPriority;
 import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -51,14 +55,21 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
         if(springTemplateEngine == null){
             return;
         }
-        SpringBootThymeleafConfig config = SpringBeanUtils.getObjectByInterfaceClass(
-                pluginRegistryInfo.getConfigSingletons(),
-                SpringBootThymeleafConfig.class);
-        if(config == null){
-            return;
+
+        ThymeleafConfig thymeleafConfig = pluginRegistryInfo.getPluginBinder()
+                .bind(PropertyKey.THYMELEAF_CONFIG, ThymeleafConfig.class)
+                .orElse(null);
+        if(thymeleafConfig == null){
+            SpringBootThymeleafConfig config = SpringBeanUtils.getObjectByInterfaceClass(
+                    pluginRegistryInfo.getConfigSingletons(),
+                    SpringBootThymeleafConfig.class);
+            if(config == null){
+                return;
+            }
+            thymeleafConfig = new ThymeleafConfig();
+            config.config(thymeleafConfig);
         }
-        ThymeleafConfig thymeleafConfig = new ThymeleafConfig();
-        config.config(thymeleafConfig);
+
         String prefix = thymeleafConfig.getPrefix();
         if(StringUtils.isEmpty(prefix)){
             throw new IllegalArgumentException("prefix can't be empty");
@@ -83,7 +94,7 @@ public class ThymeleafProcessor implements PluginPipeProcessorExtend {
         resolver.setSuffix(thymeleafConfig.getSuffix());
         resolver.setTemplateMode(thymeleafConfig.getMode());
 
-        resolver.setCacheable(thymeleafConfig.isCache());
+        resolver.setCacheable(thymeleafConfig.getCache());
         if(thymeleafConfig.getEncoding() != null){
             resolver.setCharacterEncoding(thymeleafConfig.getEncoding().name());
         }

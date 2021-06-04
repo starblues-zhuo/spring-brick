@@ -8,7 +8,7 @@ import com.gitee.starblues.annotation.ConfigDefinition;
  * @author starBlues
  * @version 1.0
  */
-@ConfigDefinition("plugin1.yml")
+@ConfigDefinition(fileName = "plugin1.yml")
 public class Plugin1Config {
 
     private String name;
