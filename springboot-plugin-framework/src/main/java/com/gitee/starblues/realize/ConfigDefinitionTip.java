@@ -61,7 +61,7 @@ public class ConfigDefinitionTip {
     }
 
     /**
-     * 将配置文件中的值映射为bean
+     * 将Springboot类型的配置文件中的值映射为bean
      * 注意: 只针对插件扩展的 springboot 配置文件生效
      * @param prefix 配置文件中的前置, 比如: plugin.config
      * @param type 配置文件中结构对应的类类型, 比如: plugin.config 下定义的键值对和type类类型一致
@@ -75,7 +75,7 @@ public class ConfigDefinitionTip {
     }
 
     /**
-     * 将配置文件中的值映射为 List
+     * 将Springboot类型的配置文件中的值映射为 List
      * 注意: 只针对插件扩展的 springboot 配置文件生效
      * @param prefix 配置文件中的前置, 比如: plugin.config
      * @param type List元素的类类型
@@ -89,7 +89,7 @@ public class ConfigDefinitionTip {
     }
 
     /**
-     * 将配置文件中的值映射为 Set
+     * 将Springboot类型的配置文件中的值映射为 Set
      * 注意: 只针对插件扩展的 springboot 配置文件生效
      * @param prefix 配置文件中的前置, 比如: plugin.config
      * @param type Set元素的类类型
@@ -104,7 +104,7 @@ public class ConfigDefinitionTip {
 
 
     /**
-     * 将配置文件中的值映射为 Map
+     * 将Springboot类型的配置文件中的值映射为 Map
      * 注意: 只针对插件扩展的 springboot 配置文件生效
      * @param prefix 配置文件中的前置, 比如: plugin.config
      * @param keyType map的key元素类型
