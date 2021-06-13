@@ -41,11 +41,6 @@ public abstract class AbstractSpringBeanRefresh<T> implements PluginListener {
         unRegistryEvent(beans);
     }
 
-    @Override
-    public void failure(String pluginId, Throwable throwable) {
-
-    }
-
     /**
      * 注册事件
      * @param beans 当前所有实现的bean

@@ -68,6 +68,10 @@ public class DefaultPf4jFactory implements Pf4jFactory {
                             configuration.disablePluginIds());
                 }
 
+                @Override
+                public PluginState stopPlugin(String pluginId) {
+                    return stopPlugin(pluginId, configuration.stopDependents());
+                }
             };
         } else if(RuntimeMode.DEPLOYMENT == environment){
             // 运行环境下的插件管理者
@@ -97,6 +101,11 @@ public class DefaultPf4jFactory implements Pf4jFactory {
                     return new CompoundPluginLoader()
                             .add(new JarPluginLoader(this), this::isNotDevelopment)
                             .add(new DefaultPluginLoader(this), this::isNotDevelopment);
+                }
+
+                @Override
+                public PluginState stopPlugin(String pluginId) {
+                    return stopPlugin(pluginId, configuration.stopDependents());
                 }
 
             };

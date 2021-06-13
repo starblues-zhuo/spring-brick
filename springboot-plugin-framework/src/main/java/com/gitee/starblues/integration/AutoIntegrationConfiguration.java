@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * 自动集成的配置
  * @author starBlues
- * @version 2.4.2
+ * @version 2.4.4
  */
 @Component
 @ConfigurationProperties(prefix = "plugin")
@@ -92,6 +92,13 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
      */
     @Value("${exactVersionAllowed:false}")
     private Boolean exactVersionAllowed;
+
+    /**
+     * 停止插件时, 是否停止依赖的插件
+     * 默认不停止
+     **/
+    @Value("${exactVersionAllowed:false}")
+    private Boolean stopDependents;
 
     /**
      * 启用的插件id
@@ -213,6 +220,14 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         return enableWebSocket;
     }
 
+    @Override
+    public boolean stopDependents() {
+        if(stopDependents == null){
+            return super.stopDependents();
+        }
+        return stopDependents;
+    }
+
     public String getRunMode() {
         return runMode;
     }
@@ -331,5 +346,13 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     public void setEnableWebSocket(Boolean enableWebSocket) {
         this.enableWebSocket = enableWebSocket;
+    }
+
+    public Boolean getStopDependents() {
+        return stopDependents;
+    }
+
+    public void setStopDependents(Boolean stopDependents) {
+        this.stopDependents = stopDependents;
     }
 }

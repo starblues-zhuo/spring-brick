@@ -33,6 +33,16 @@ public class SwaggerListeningListener implements PluginListener{
         refresh();
     }
 
+    @Override
+    public void registryFailure(String pluginId, Throwable throwable) {
+
+    }
+
+    @Override
+    public void unRegistryFailure(String pluginId, Throwable throwable) {
+
+    }
+
     private void refresh(){
         try {
             DocumentationPluginsBootstrapper documentationPluginsBootstrapper = SpringBeanUtils.getExistBean(mainApplicationContext,
@@ -49,8 +59,5 @@ public class SwaggerListeningListener implements PluginListener{
         }
     }
 
-    @Override
-    public void failure(String pluginId, Throwable throwable) {
 
-    }
 }

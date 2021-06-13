@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * 插件集成时的配置接口。插件集成的配置接口
  * @author starBlues
- * @version 2.4.2
+ * @version 2.4.4
  */
 public interface IntegrationConfiguration {
 
@@ -111,5 +111,11 @@ public interface IntegrationConfiguration {
      * @return 启用返回true,不启用返回false
      */
     boolean enableWebSocket();
+
+    /**
+     * 停止插件时, 是否停止依赖的插件
+     * @return 停止返回true,不停止返回false
+     */
+    boolean stopDependents();
 
 }

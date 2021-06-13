@@ -11,7 +11,7 @@ import java.util.Set;
  * 通过构造者进行配置插件初始化配置
  *
  * @author starBlues
- * @version 2.4.2
+ * @version 2.4.4
  */
 public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
@@ -36,6 +36,8 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     private Boolean exactVersionAllowed;
 
     private Boolean enableWebSocket;
+
+    private Boolean stopDependents;
 
     public ConfigurationBuilder(Builder builder) {
         this.runtimeMode = Objects.requireNonNull(builder.runtimeMode, "runtimeMode can't be empty");
@@ -66,6 +68,11 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         } else {
             this.enableWebSocket = builder.enableWebSocket;
         }
+        if(builder.stopDependents == null){
+            this.stopDependents = false;
+        } else {
+            this.stopDependents = builder.stopDependents;
+        }
     }
 
     public static Builder toBuilder(){
@@ -94,6 +101,8 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         private Boolean exactVersionAllowed;
 
         private Boolean enableWebSocket;
+
+        private Boolean stopDependents;
 
         public Builder runtimeMode(RuntimeMode runtimeMode){
             this.runtimeMode = runtimeMode;
@@ -167,6 +176,11 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
         public Builder enableWebSocket(Boolean enableWebSocket){
             this.enableWebSocket = enableWebSocket;
+            return this;
+        }
+
+        public Builder stopDependents(Boolean stopDependents){
+            this.stopDependents = stopDependents;
             return this;
         }
 
@@ -279,6 +293,15 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             return super.enableWebSocket();
         } else {
             return enableWebSocket;
+        }
+    }
+
+    @Override
+    public boolean stopDependents() {
+        if(stopDependents == null){
+            return super.stopDependents();
+        } else {
+            return stopDependents;
         }
     }
 }

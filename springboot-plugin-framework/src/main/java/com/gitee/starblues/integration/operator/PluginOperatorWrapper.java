@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * 插件操作包装者
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.4
  */
 public class PluginOperatorWrapper implements PluginOperator{
 
@@ -50,11 +50,35 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean install(Path jarPath) throws Exception {
+    public PluginInfo install(Path jarPath) throws Exception {
+        if(isDisable()){
+            return null;
+        }
+        return pluginOperator.install(jarPath);
+    }
+
+    @Override
+    public PluginInfo load(Path jarPath) throws Exception {
+        if(isDisable()){
+            return null;
+        }
+        return pluginOperator.install(jarPath);
+    }
+
+    @Override
+    public PluginInfo load(MultipartFile pluginFile) throws Exception {
+        if(isDisable()){
+            return null;
+        }
+        return pluginOperator.load(pluginFile);
+    }
+
+    @Override
+    public boolean unload(String pluginId, boolean isBackup) throws Exception {
         if(isDisable()){
             return false;
         }
-        return pluginOperator.install(jarPath);
+        return pluginOperator.unload(pluginId, isBackup);
     }
 
     @Override
@@ -84,9 +108,9 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean uploadPluginAndStart(MultipartFile pluginFile) throws Exception {
+    public PluginInfo uploadPluginAndStart(MultipartFile pluginFile) throws Exception {
         if(isDisable()){
-            return false;
+            return null;
         }
         return pluginOperator.uploadPluginAndStart(pluginFile);
     }

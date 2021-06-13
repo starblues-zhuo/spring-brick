@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * 操作插件的接口
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.4
  * @see DefaultPluginOperator
  */
 public interface PluginOperator {
@@ -37,11 +37,35 @@ public interface PluginOperator {
      * 通过路径安装插件(会启用), 该插件文件必须存在于服务器 [适用于生产环境]
      * 如果在插件目录存在同名的插件包, 系统会自动备份该插件包。备份文件命名规则为；[install-backup][时间]_原jar名.jar
      * @param jarPath 插件路径
-     * @return 成功: 返回true; 失败: 抛出异常或者返回false
+     * @return 成功: 返回插件信息PluginInfo; 失败: 抛出异常或者返回null
      * @throws Exception 异常信息
      */
-    boolean install(Path jarPath) throws Exception;
+    PluginInfo install(Path jarPath) throws Exception;
 
+    /**
+     * 加载插件, 但不启动 [适用于生产环境]
+     * @param jarPath 插件路径
+     * @return 成功: 返回插件信息PluginInfo; 失败: 抛出异常或者返回null
+     * @throws Exception 异常信息
+     */
+    PluginInfo load(Path jarPath) throws Exception;
+
+    /**
+     * 加载插件, 但不启动 [适用于生产环境]
+     * @param pluginFile 插件文件
+     * @return 成功: 返回插件信息PluginInfo; 失败: 抛出异常或者返回null
+     * @throws Exception 异常信息
+     */
+    PluginInfo load(MultipartFile pluginFile) throws Exception;
+
+    /**
+     * 配合load使用. 针对load的插件进行unload [适用于生产环境]
+     * @param pluginId 插件id
+     * @param isBackup 是否备份原来的插件。备份文件命名规则为；[uninstall][时间]_原jar名.jar
+     * @return 成功返回true.不成功抛出异常或者返回false
+     * @throws Exception 异常信息
+     */
+    boolean unload(String pluginId, boolean isBackup) throws Exception;
 
     /**
      * 卸载插件 [适用于生产环境]
@@ -73,11 +97,11 @@ public interface PluginOperator {
     /**
      * 上传插件并启用插件。[适用于生产环境]
      * 如果在插件目录存在同名的插件包, 系统会自动备份该插件包。备份文件命名规则为；[install-backup][时间]_原jar名.jar
-     * @param pluginFile 配置文件
-     * @return 成功: 返回true; 失败: 抛出异常或者返回false
+     * @param pluginFile 插件文件
+     * @return 成功: 返回插件信息PluginInfo; 失败: 抛出异常或者返回null
      * @throws Exception 异常信息
      */
-    boolean uploadPluginAndStart(MultipartFile pluginFile) throws Exception;
+    PluginInfo uploadPluginAndStart(MultipartFile pluginFile) throws Exception;
 
     /**
      * 通过路径安装插件的配置文件。该文件必须存在于服务器。[适用于生产环境]

@@ -1,23 +1,25 @@
 package com.gitee.starblues.integration.operator;
 
+import com.gitee.starblues.factory.DefaultPluginFactory;
+import com.gitee.starblues.factory.PluginFactory;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.listener.PluginInitializerListenerFactory;
 import com.gitee.starblues.integration.listener.PluginListenerFactory;
+import com.gitee.starblues.integration.listener.PluginStateListenerFactory;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
-import com.gitee.starblues.integration.operator.verify.PluginLegalVerify;
 import com.gitee.starblues.integration.operator.verify.DefaultPluginVerify;
-import com.gitee.starblues.factory.DefaultPluginFactory;
-import com.gitee.starblues.factory.PluginFactory;
+import com.gitee.starblues.integration.operator.verify.PluginLegalVerify;
 import com.gitee.starblues.utils.GlobalRegistryInfo;
-import com.gitee.starblues.utils.PluginOperatorInfo;
 import com.gitee.starblues.utils.PluginFileUtils;
+import com.gitee.starblues.utils.PluginOperatorInfo;
 import org.pf4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * 默认的插件操作者
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.4
  */
 public class DefaultPluginOperator implements PluginOperator {
 
@@ -69,6 +71,8 @@ public class DefaultPluginOperator implements PluginOperator {
 
         this.pluginLegalVerify = new DefaultPluginVerify(pluginManager);
     }
+
+
 
     /**
      * 设置插件校验器
@@ -107,6 +111,7 @@ public class DefaultPluginOperator implements PluginOperator {
             List<PluginWrapper> pluginWrappers = pluginManager.getStartedPlugins();
             if(pluginWrappers == null || pluginWrappers.isEmpty()){
                 log.warn("Not found plugin!");
+                pluginInitializerListenerFactory.complete();
                 return false;
             }
             boolean isFoundException = false;
@@ -127,6 +132,7 @@ public class DefaultPluginOperator implements PluginOperator {
             isInit = true;
             if(isFoundException){
                 log.error("Plugins initialize failure");
+                pluginInitializerListenerFactory.failure(new Exception("Plugins initialize failure"));
                 return false;
             } else {
                 log.info("Plugins initialize success");
@@ -147,7 +153,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
 
     @Override
-    public synchronized boolean install(Path jarPath) throws Exception {
+    public synchronized PluginInfo install(Path jarPath) throws Exception {
         if(isDev()){
             throw new RuntimeException("Plugin cannot be installed in 'dev' environment");
         }
@@ -156,48 +162,33 @@ public class DefaultPluginOperator implements PluginOperator {
         }
         String pluginId = null;
         try {
-            if(!Files.exists(jarPath)){
-                throw new FileNotFoundException("Not found this path " + jarPath);
+            PluginInfo pluginInfo  = load(jarPath);
+            if(pluginInfo == null){
+                log.error("Plugin '{}' install failure, this pluginInfo id is empty.", pluginId);
+                return null;
             }
-            // 校验插件文件
-            pluginLegalVerify.verify(jarPath);
-            Path pluginsRoot = pluginManager.getPluginsRoot();
-            if(jarPath.getParent().compareTo(pluginsRoot) == 0){
-                // 说明该插件文件存在于插件root目录下。直接加载该插件
-                pluginId = pluginManager.loadPlugin(jarPath);
-            } else {
-                File sourceFile = jarPath.toFile();
-                String targetPathString = pluginsRoot.toString() + File.separator +
-                        sourceFile.getName();
-                Path targetPath = Paths.get(targetPathString);
-                if(Files.exists(targetPath)){
-                    // 如果存在该文件, 则移动备份
-                    backup(targetPath, "install-backup", 1);
-                }
-                PluginFileUtils.createExistFile(targetPath);
-                Files.copy(jarPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                pluginId = pluginManager.loadPlugin(targetPath);
+            PluginDescriptor pluginDescriptor = pluginInfo.getPluginDescriptor();
+            if(pluginDescriptor == null){
+                log.error("Plugin install failure.");
+                return null;
             }
-            if(StringUtils.isEmpty(pluginId)){
-                log.error("Plugin '{}' install failure, this plugin id is empty.", pluginId);
-                return false;
-            }
+            pluginId = pluginDescriptor.getPluginId();
             GlobalRegistryInfo.addOperatorPluginInfo(pluginId, PluginOperatorInfo.OperatorType.INSTALL, true);
             if(start(pluginId)){
                 log.info("Plugin '{}' install success", pluginId);
-                return true;
+                return getPluginInfo(pluginId);
             } else {
                 try {
                     uninstall(pluginId, false);
                 } catch (Exception uninstallException){
                     log.error("Plugin '{}' uninstall failure. {}", pluginId, uninstallException.getMessage());
                 }
-                return false;
+                return null;
             }
         } catch (Exception e){
             // 说明load成功, 但是没有启动成功, 则卸载该插件
             log.error("Plugin '{}' install failure. {}", pluginId, e.getMessage());
-            if(!StringUtils.isEmpty(pluginId)){
+            if(!ObjectUtils.isEmpty(pluginId)){
                 try {
                     uninstall(pluginId, false);
                 } catch (Exception uninstallException){
@@ -206,10 +197,82 @@ public class DefaultPluginOperator implements PluginOperator {
             }
             throw e;
         } finally {
-            if(!StringUtils.isEmpty(pluginId)){
+            if(!ObjectUtils.isEmpty(pluginId)){
                 GlobalRegistryInfo.setOperatorPluginInfo(pluginId, false);
             }
         }
+    }
+
+    @Override
+    public PluginInfo load(Path jarPath) throws Exception {
+        if(!Files.exists(jarPath)){
+            throw new FileNotFoundException("Not found this path " + jarPath);
+        }
+        // 校验插件文件
+        pluginLegalVerify.verify(jarPath);
+        Path pluginsRoot = pluginManager.getPluginsRoot();
+        Path pluginPath = null;
+        if(jarPath.getParent().compareTo(pluginsRoot) == 0){
+            // 说明该插件文件存在于插件root目录下。直接加载该插件
+            pluginPath = jarPath;
+        } else {
+            File sourceFile = jarPath.toFile();
+            String targetPathString = pluginsRoot.toString() + File.separator +
+                    sourceFile.getName();
+            Path targetPath = Paths.get(targetPathString);
+            if(Files.exists(targetPath)){
+                // 如果存在该文件, 则移动备份
+                backup(targetPath, "install-backup", 1);
+            }
+            PluginFileUtils.createExistFile(targetPath);
+            Files.copy(jarPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            pluginPath = targetPath;
+        }
+        String pluginId = null;
+        try {
+            pluginId = pluginManager.loadPlugin(pluginPath);
+            if(pluginId != null){
+                return getPluginInfo(pluginId);
+            }
+            return null;
+        } catch (Exception e){
+            if(pluginId != null){
+                log.error("Load plugin success, but get pluginInfo failure. so remove plugin '{}'", pluginId);
+                try {
+                    pluginManager.unloadPlugin(pluginId);
+                } finally {
+                    Files.delete(pluginPath);
+                }
+            } else {
+                log.error("Load plugin failure");
+            }
+            return null;
+        }
+    }
+
+    @Override
+    public PluginInfo load(MultipartFile pluginFile) throws Exception {
+        if(isDev()){
+            throw new RuntimeException("Plugin cannot uploadPluginAndStart in the 'dev' environment");
+        }
+        if(pluginFile == null){
+            throw new IllegalArgumentException("Method:uploadPluginAndStart param 'pluginFile' can not be null");
+        }
+        Path jarPath = uploadPlugin(pluginFile);
+        return load(jarPath);
+    }
+
+    @Override
+    public boolean unload(String pluginId, boolean isBackup) throws Exception {
+        PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
+        if(pluginWrapper == null){
+            throw new Exception("Plugin unload failure, Not found plugin '" + pluginId + "'");
+        }
+        pluginManager.unloadPlugin(pluginId);
+        if(isBackup){
+            backup(pluginWrapper.getPluginPath(), "unload", 1);
+        }
+        return true;
     }
 
 
@@ -218,7 +281,7 @@ public class DefaultPluginOperator implements PluginOperator {
         if(isDev()){
             throw new RuntimeException("Plugin cannot be uninstalled in 'dev' environment");
         }
-        if(StringUtils.isEmpty(pluginId)){
+        if(ObjectUtils.isEmpty(pluginId)){
             throw new IllegalArgumentException("Method:uninstall param 'pluginId' can not be empty");
         }
         PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
@@ -269,7 +332,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public synchronized boolean start(String pluginId) throws Exception {
-        if(StringUtils.isEmpty(pluginId)){
+        if(ObjectUtils.isEmpty(pluginId)){
             throw new IllegalArgumentException("Method:start param 'pluginId' can not be empty");
         }
         PluginWrapper pluginWrapper = getPluginWrapper(pluginId, "Start");
@@ -303,7 +366,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public synchronized boolean stop(String pluginId) throws Exception {
-        if(StringUtils.isEmpty(pluginId)){
+        if(ObjectUtils.isEmpty(pluginId)){
             throw new IllegalArgumentException("Method:stop param 'pluginId' can not be empty");
         }
         PluginWrapper pluginWrapper = getPluginWrapper(pluginId, "Stop");
@@ -329,7 +392,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
 
     @Override
-    public synchronized boolean uploadPluginAndStart(MultipartFile pluginFile) throws Exception {
+    public synchronized PluginInfo uploadPluginAndStart(MultipartFile pluginFile) throws Exception {
         if(isDev()){
             throw new RuntimeException("Plugin cannot uploadPluginAndStart in the 'dev' environment");
         }
@@ -337,12 +400,7 @@ public class DefaultPluginOperator implements PluginOperator {
             throw new IllegalArgumentException("Method:uploadPluginAndStart param 'pluginFile' can not be null");
         }
         Path path = uploadPlugin(pluginFile);
-        if(this.install(path)){
-            log.info("Plugin upload and start success");
-            return true;
-        } else {
-            return false;
-        }
+        return this.install(path);
     }
 
     @Override
@@ -560,7 +618,7 @@ public class DefaultPluginOperator implements PluginOperator {
             }
             String fileName = sourcePath.getFileName().toString();
             String targetName = integrationConfiguration.backupPath() + File.separator;
-            if(!StringUtils.isEmpty(sign)){
+            if(!ObjectUtils.isEmpty(sign)){
                 targetName = targetName + sign;
             }
             targetName = targetName + "_" +getNowTimeByFormat();

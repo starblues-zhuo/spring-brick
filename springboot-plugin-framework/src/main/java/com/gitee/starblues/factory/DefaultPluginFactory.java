@@ -20,7 +20,7 @@ import java.util.Map;
  * 默认的插件处理者
  *
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.4
  */
 public class DefaultPluginFactory implements PluginFactory {
 
@@ -88,8 +88,7 @@ public class DefaultPluginFactory implements PluginFactory {
             buildContainer.add(pluginRegistryInfo);
             return this;
         } catch (Exception e) {
-
-            pluginListenerFactory.failure(pluginWrapper.getPluginId(), e);
+            pluginListenerFactory.registryFailure(pluginWrapper.getPluginId(), e);
             throw e;
         } finally {
             buildType = 1;
@@ -111,7 +110,7 @@ public class DefaultPluginFactory implements PluginFactory {
             return this;
         } catch (Exception e) {
             registerPluginInfo.destroy();
-            pluginListenerFactory.failure(pluginId, e);
+            pluginListenerFactory.unRegistryFailure(pluginId, e);
             throw e;
         } finally {
             registerPluginInfoMap.remove(pluginId);

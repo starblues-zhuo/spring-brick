@@ -12,7 +12,7 @@ import java.util.Objects;
  * 插件监听工厂
  *
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.4
  */
 public class PluginListenerFactory implements PluginListener {
 
@@ -43,15 +43,27 @@ public class PluginListenerFactory implements PluginListener {
     }
 
     @Override
-    public void failure(String pluginId, Throwable throwable) {
+    public void registryFailure(String pluginId, Throwable throwable) {
         for (PluginListener listener : listeners) {
             try {
-                listener.failure(pluginId, throwable);
+                listener.registryFailure(pluginId, throwable);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
+    @Override
+    public void unRegistryFailure(String pluginId, Throwable throwable) {
+        for (PluginListener listener : listeners) {
+            try {
+                listener.unRegistryFailure(pluginId, throwable);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     /**
      * 添加监听者

@@ -10,12 +10,15 @@ import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.user.DefaultPluginUser;
 import com.gitee.starblues.integration.user.PluginUser;
 import org.pf4j.PluginManager;
+import org.pf4j.PluginStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.util.ObjectUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -23,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 默认的插件 PluginApplication
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.4
  */
 public class DefaultPluginApplication extends AbstractPluginApplication {
 
@@ -56,6 +59,7 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
             integrationFactory = new DefaultPf4jFactory(configuration);
         }
         PluginManager pluginManager = integrationFactory.getPluginManager();
+        addPf4jStateListener(pluginManager, applicationContext);
         pluginUser = createPluginUser(applicationContext, pluginManager);
         pluginOperator = createPluginOperator(applicationContext, pluginManager, configuration);
         try {
@@ -109,6 +113,23 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
         assertInjected();
         return pluginUser;
     }
+
+    /**
+     * 将pf4j中的监听器加入
+     * @param pluginManager pluginManager
+     * @param applicationContext ApplicationContext
+     */
+    private void addPf4jStateListener(PluginManager pluginManager, ApplicationContext applicationContext){
+        List<PluginStateListener> pluginStateListeners = pluginStateListenerFactory
+                .buildListenerClass((GenericApplicationContext) applicationContext);
+        if(ObjectUtils.isEmpty(pluginStateListeners)){
+            return;
+        }
+        for (PluginStateListener pluginStateListener : pluginStateListeners) {
+            pluginManager.addPluginStateListener(pluginStateListener);
+        }
+    }
+
 
     /**
      * 直接将 PluginOperator 和 PluginUser 注入到ApplicationContext容器中
