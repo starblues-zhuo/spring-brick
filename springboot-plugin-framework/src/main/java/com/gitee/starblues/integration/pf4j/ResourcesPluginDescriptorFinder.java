@@ -35,6 +35,7 @@ public class ResourcesPluginDescriptorFinder extends PropertiesPluginDescriptorF
         return super.find(propFilePath);
     }
 
+    @Override
     protected Properties readProperties(Path pluginPath) {
         Path propertiesPath = getPropertiesPath(pluginPath, propertiesFileName);
         return ResolvePropertiesPluginDescriptorFinder.getProperties(propertiesPath);

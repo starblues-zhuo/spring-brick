@@ -8,14 +8,15 @@ import java.util.Objects;
 /**
  * 执行器坐标
  * @author starBlues
- * @version 2.4.1
+ * @version 2.4.4
  */
 public class ExtractCoordinate {
 
-    private String bus;
-    private String scene;
-    private String useCase;
-    private Class<?> extractClass;
+    private final String bus;
+    private final String scene;
+    private final String useCase;
+    private final Class<?> extractClass;
+    private int order;
 
     ExtractCoordinate(String bus, String scene, String useCase, Class<?> extractClass) {
         this.bus = bus;
@@ -29,6 +30,7 @@ public class ExtractCoordinate {
         this.bus = extract.bus();
         this.scene = extract.scene();
         this.useCase = extract.useCase();
+        this.order = extract.order();
         this.extractClass = extractClass;
     }
 
@@ -44,6 +46,10 @@ public class ExtractCoordinate {
         return new ExtractCoordinate(bus, scene, useCase, null);
     }
 
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
     public String getBus() {
         return bus;
     }
@@ -56,14 +62,22 @@ public class ExtractCoordinate {
         return useCase;
     }
 
+    public int getOrder() {
+        return order;
+    }
+
     public Class<?> getExtractClass() {
         return extractClass;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ExtractCoordinate)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ExtractCoordinate)) {
+            return false;
+        }
         ExtractCoordinate that = (ExtractCoordinate) o;
         if(StringUtils.isNotNullOrEmpty(bus) &&
                 StringUtils.isNotNullOrEmpty(scene) &&

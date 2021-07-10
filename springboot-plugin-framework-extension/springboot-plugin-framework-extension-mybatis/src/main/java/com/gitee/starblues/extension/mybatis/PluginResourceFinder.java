@@ -2,11 +2,11 @@ package com.gitee.starblues.extension.mybatis;
 
 
 import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.factory.process.pipe.loader.PathMatchingResourcePatternResolver;
 import com.gitee.starblues.utils.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
@@ -83,7 +83,8 @@ public class PluginResourceFinder {
         }
         Set<Class<?>> aliasesClasses = new HashSet<>();
         for (String packagePattern : packagePatterns) {
-            Resource[] resources = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
+            Resource[] resources = resourcePatternResolver.getResources(
+                    ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
                     + ClassUtils.convertClassNameToResourcePath(packagePattern) + "/**/*.class");
             for (Resource resource : resources) {
                 try {

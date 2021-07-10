@@ -9,15 +9,15 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 扩展工厂
  * @author starBlues
- * @version 2.4.1
+ * @version 2.4.4
  */
 public class ExtractFactory {
 
     public static final String MAIN_EXTRACT_KEY = ExtractFactory.class.getName() + UUID.randomUUID().toString();
 
-    private Map<String, Map<ExtractCoordinate, Object>> extractMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<ExtractCoordinate, Object>> extractMap = new ConcurrentHashMap<>();
 
-    private static ExtractFactory EXTRACT_FACTORY = new ExtractFactory();
+    private final static ExtractFactory EXTRACT_FACTORY = new ExtractFactory();
 
     private ExtractFactory(){}
 
@@ -71,11 +71,19 @@ public class ExtractFactory {
      */
     public <T> T getExtractByCoordinate(ExtractCoordinate coordinate){
         Objects.requireNonNull(coordinate, "ExtractCoordinate can't be null");
+        int currentOrder = Integer.MIN_VALUE;
+        Object currentObject = null;
         for (Map<ExtractCoordinate, Object> value : extractMap.values()) {
             Object o = value.get(coordinate);
             if(o != null){
-                return (T) o;
+                int order = coordinate.getOrder();
+                if(order > currentOrder){
+                    currentObject = o;
+                }
             }
+        }
+        if(currentObject != null){
+            return (T) currentObject;
         }
         throw new RuntimeException("Not found " + coordinate);
     }
