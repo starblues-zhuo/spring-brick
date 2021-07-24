@@ -43,6 +43,15 @@ public interface PluginOperator {
     PluginInfo install(Path jarPath) throws Exception;
 
     /**
+     * 卸载插件 [适用于生产环境]
+     * @param pluginId 插件id
+     * @param isBackup 是否备份原来的插件。备份文件命名规则为；[uninstall][时间]_原jar名.jar
+     * @return 成功: 返回true; 失败: 抛出异常或者返回false
+     * @throws Exception 异常信息
+     */
+    boolean uninstall(String pluginId, boolean isBackup) throws Exception;
+
+    /**
      * 加载插件, 但不启动 [适用于生产环境]
      * @param jarPath 插件路径
      * @return 成功: 返回插件信息PluginInfo; 失败: 抛出异常或者返回null
@@ -67,15 +76,6 @@ public interface PluginOperator {
      */
     boolean unload(String pluginId, boolean isBackup) throws Exception;
 
-    /**
-     * 卸载插件 [适用于生产环境]
-     * @param pluginId 插件id
-     * @param isBackup 是否备份原来的插件。备份文件命名规则为；[uninstall][时间]_原jar名.jar
-     * @return 成功: 返回true; 失败: 抛出异常或者返回false
-     * @throws Exception 异常信息
-     */
-    boolean uninstall(String pluginId, boolean isBackup) throws Exception;
-    
     /**
      * 启用插件 [适用于生产环境、开发环境]
      * @param pluginId 插件id
@@ -152,7 +152,6 @@ public interface PluginOperator {
      * @return 插件信息
      */
     PluginInfo getPluginInfo(String pluginId);
-
 
     /**
      * 得到插件文件的路径 [适用于生产环境]

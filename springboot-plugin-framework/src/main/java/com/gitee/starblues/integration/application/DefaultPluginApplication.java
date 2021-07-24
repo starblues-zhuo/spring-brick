@@ -37,7 +37,7 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
     private PluginUser pluginUser;
     private PluginOperator pluginOperator;
 
-    private AtomicBoolean beInitialized = new AtomicBoolean(false);
+    private final AtomicBoolean beInitialized = new AtomicBoolean(false);
 
     public DefaultPluginApplication() {
     }

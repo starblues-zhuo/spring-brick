@@ -204,6 +204,60 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
     @Override
+    public synchronized boolean uninstall(String pluginId, boolean isBackup) throws Exception {
+        if(isDev()){
+            throw new RuntimeException("Plugin cannot be uninstalled in 'dev' environment");
+        }
+        if(ObjectUtils.isEmpty(pluginId)){
+            throw new IllegalArgumentException("Method:uninstall param 'pluginId' can not be empty");
+        }
+        PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
+        if(pluginWrapper == null){
+            throw new Exception("Plugin uninstall failure, Not found plugin '" + pluginId + "'");
+        }
+
+        Exception exception = null;
+        if(pluginWrapper.getPluginState() == PluginState.STARTED){
+            try {
+                pluginFactory.unRegistry(pluginId);
+                pluginFactory.build();
+            } catch (Exception e){
+                log.error("Plugin '{}' uninstall failure, {}", pluginId, e.getMessage());
+                exception = e;
+            }
+        }
+
+        try {
+            if (pluginManager.unloadPlugin(pluginId)) {
+                Path pluginPath = pluginWrapper.getPluginPath();
+                boolean opPluginFile;
+                if(isBackup){
+                    // 将插件文件移到备份文件中
+                    opPluginFile = backup(pluginPath, "uninstall", 1);
+                } else {
+                    // 不备份的话。直接删除该文件
+                    opPluginFile = Files.deleteIfExists(pluginPath);
+                }
+                if(opPluginFile){
+                    log.info("Plugin '{}' uninstall success", pluginId);
+                } else {
+                    log.error("Plugin '{}' uninstall failure. process plugin file failure", pluginId);
+                }
+                return opPluginFile;
+            } else {
+                log.error("Plugin '{}' uninstall failure", pluginId);
+                return false;
+            }
+        } catch (Exception e){
+            if(exception != null){
+                exception.printStackTrace();
+            }
+            log.error("Plugin '{}' uninstall failure. {}", pluginId, e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
     public PluginInfo load(Path jarPath) throws Exception {
         if(!Files.exists(jarPath)){
             throw new FileNotFoundException("Not found this path " + jarPath);
@@ -273,61 +327,6 @@ public class DefaultPluginOperator implements PluginOperator {
             backup(pluginWrapper.getPluginPath(), "unload", 1);
         }
         return true;
-    }
-
-
-    @Override
-    public synchronized boolean uninstall(String pluginId, boolean isBackup) throws Exception {
-        if(isDev()){
-            throw new RuntimeException("Plugin cannot be uninstalled in 'dev' environment");
-        }
-        if(ObjectUtils.isEmpty(pluginId)){
-            throw new IllegalArgumentException("Method:uninstall param 'pluginId' can not be empty");
-        }
-        PluginWrapper pluginWrapper = pluginManager.getPlugin(pluginId);
-        if(pluginWrapper == null){
-            throw new Exception("Plugin uninstall failure, Not found plugin '" + pluginId + "'");
-        }
-
-        Exception exception = null;
-        if(pluginWrapper.getPluginState() == PluginState.STARTED){
-            try {
-                pluginFactory.unRegistry(pluginId);
-                pluginFactory.build();
-            } catch (Exception e){
-                log.error("Plugin '{}' uninstall failure, {}", pluginId, e.getMessage());
-                exception = e;
-            }
-        }
-
-        try {
-            if (pluginManager.unloadPlugin(pluginId)) {
-                Path pluginPath = pluginWrapper.getPluginPath();
-                boolean opPluginFile;
-                if(isBackup){
-                    // 将插件文件移到备份文件中
-                    opPluginFile = backup(pluginPath, "uninstall", 1);
-                } else {
-                    // 不备份的话。直接删除该文件
-                    opPluginFile = Files.deleteIfExists(pluginPath);
-                }
-                if(opPluginFile){
-                    log.info("Plugin '{}' uninstall success", pluginId);
-                } else {
-                    log.error("Plugin '{}' uninstall failure. process plugin file failure", pluginId);
-                }
-                return opPluginFile;
-            } else {
-                log.error("Plugin '{}' uninstall failure", pluginId);
-                return false;
-            }
-        } catch (Exception e){
-            if(exception != null){
-                exception.printStackTrace();
-            }
-            log.error("Plugin '{}' uninstall failure. {}", pluginId, e.getMessage());
-            throw e;
-        }
     }
 
     @Override
