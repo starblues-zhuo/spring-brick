@@ -34,7 +34,7 @@ public class PluginInfoContainers {
     static public List<GenericApplicationContext> getPluginApplicationContexts() {
         Collection<GenericApplicationContext> values = PLUGIN_APPLICATION_CONTEXTS.values();
         if(values.isEmpty()){
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         return new ArrayList<>(values);
     }
