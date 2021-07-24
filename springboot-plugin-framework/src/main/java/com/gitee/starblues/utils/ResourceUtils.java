@@ -1,22 +1,20 @@
 package com.gitee.starblues.utils;
 
+import com.gitee.starblues.factory.PluginRegistryInfo;
+import com.gitee.starblues.integration.IntegrationConfiguration;
+import org.pf4j.PluginWrapper;
+import org.pf4j.RuntimeMode;
 import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.nio.file.Paths;
 
 /**
  * 对资源解析的工具类
  *
  * @author starBlues
- * @version 2.2.3
+ * @version 2.4.4
  */
 public class ResourceUtils {
 
@@ -25,6 +23,8 @@ public class ResourceUtils {
     public final static String TYPE_FILE = "file";
     public final static String TYPE_CLASSPATH = "classpath";
     public final static String TYPE_PACKAGE = "package";
+
+    public static final String ROOT_PLUGIN_SIGN = "~";
 
     public final static String TYPE_SPLIT = ":";
 
@@ -66,5 +66,31 @@ public class ResourceUtils {
         return locationMatch.startsWith(TYPE_PACKAGE + TYPE_SPLIT);
     }
 
+    /**
+     * 根据 ~ 标记获取, 得到绝对路径
+     * @return java.lang.String
+     **/
+    public static String getAbsolutePath(PluginRegistryInfo pluginRegistryInfo, String rootDir){
+        if(StringUtils.isNullOrEmpty(rootDir)){
+            return rootDir;
+        }
+        String home = null;
+        if(rootDir.startsWith(ResourceUtils.ROOT_PLUGIN_SIGN)){
+            String pluginRootDir;
+            PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
+            RuntimeMode runtimeMode = pluginWrapper.getRuntimeMode();
+            if(runtimeMode == RuntimeMode.DEVELOPMENT){
+                pluginRootDir = pluginWrapper.getPluginPath().toString();
+            } else {
+                pluginRootDir = System.getProperty("user.dir");
+            }
+            // 如果root路径中开始存在ROOT_PLUGIN_SIGN,则说明进行插件根路替换
+            home = rootDir.replaceFirst("\\" + ResourceUtils.ROOT_PLUGIN_SIGN, "");
+            home = CommonUtils.joiningFilePath(pluginRootDir, home);
+        } else {
+            home = rootDir;
+        }
+        return home;
+    }
 
 }

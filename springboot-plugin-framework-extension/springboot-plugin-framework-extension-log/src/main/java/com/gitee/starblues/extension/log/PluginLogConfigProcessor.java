@@ -94,7 +94,8 @@ class PluginLogConfigProcessor implements PluginPipeProcessorExtend {
             return null;
         }
         if(ResourceUtils.isFile(logConfigLocation)){
-            return new FileSystemResource(matchLocation);
+            String absolutePath = ResourceUtils.getAbsolutePath(pluginRegistryInfo, matchLocation);
+            return new FileSystemResource(absolutePath);
         } else {
             return new ClassPathResource(matchLocation, pluginRegistryInfo.getPluginClassLoader());
         }

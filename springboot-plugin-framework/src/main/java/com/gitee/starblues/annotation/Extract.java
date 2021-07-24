@@ -33,7 +33,7 @@ public @interface Extract {
     String useCase() default "";
 
     /**
-     * 不同插件存在不同业务时, 用于指定优先级别. 数字越大, 优先级别越高
+     * 不同插件存在同一业务时, 用于指定优先级别. 数字越大, 优先级别越高
      * @return 优先级别
      */
     int order() default 0;

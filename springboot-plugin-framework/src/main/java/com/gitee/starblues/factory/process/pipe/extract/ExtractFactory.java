@@ -15,7 +15,7 @@ public class ExtractFactory {
 
     public static final String MAIN_EXTRACT_KEY = ExtractFactory.class.getName() + UUID.randomUUID().toString();
 
-    private final Map<String, Map<ExtractCoordinate, Object>> extractMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<ExtractCoordinate, ExtractWrapper>> extractMap = new ConcurrentHashMap<>();
 
     private final static ExtractFactory EXTRACT_FACTORY = new ExtractFactory();
 
@@ -51,8 +51,9 @@ public class ExtractFactory {
         if(extract == null){
             return;
         }
-        Map<ExtractCoordinate, Object> extractObjects = extractMap.computeIfAbsent(pluginId, k -> new ConcurrentHashMap<>());
-        extractObjects.put(new ExtractCoordinate(extract, extractObject.getClass()), extractObject);
+        Map<ExtractCoordinate, ExtractWrapper> extractObjects = extractMap.computeIfAbsent(pluginId, k -> new ConcurrentHashMap<>());
+        ExtractWrapper extractWrapper = new ExtractWrapper(extractObject, extract.order());
+        extractObjects.put(new ExtractCoordinate(extract, extractObject.getClass()), extractWrapper);
     }
 
     /**
@@ -73,12 +74,12 @@ public class ExtractFactory {
         Objects.requireNonNull(coordinate, "ExtractCoordinate can't be null");
         int currentOrder = Integer.MIN_VALUE;
         Object currentObject = null;
-        for (Map<ExtractCoordinate, Object> value : extractMap.values()) {
-            Object o = value.get(coordinate);
-            if(o != null){
-                int order = coordinate.getOrder();
+        for (Map<ExtractCoordinate, ExtractWrapper> value : extractMap.values()) {
+            ExtractWrapper extractWrapper = value.get(coordinate);
+            if(extractWrapper != null){
+                int order = extractWrapper.getOrder();
                 if(order > currentOrder){
-                    currentObject = o;
+                    currentObject = extractWrapper.getObject();
                 }
             }
         }
@@ -97,7 +98,7 @@ public class ExtractFactory {
      */
     public <T> T getExtractByCoordinate(String pluginId, ExtractCoordinate coordinate){
         Objects.requireNonNull(coordinate, "ExtractCoordinate can't be null");
-        Map<ExtractCoordinate, Object> extractCoordinates = extractMap.get(pluginId);
+        Map<ExtractCoordinate, ExtractWrapper> extractCoordinates = extractMap.get(pluginId);
         if(extractCoordinates  == null){
             throw new RuntimeException("Not found " + coordinate + " from plugin '" + pluginId + "'");
         }
@@ -118,7 +119,7 @@ public class ExtractFactory {
      */
     public <T> T getExtractByCoordinateOfMain(ExtractCoordinate coordinate){
         Objects.requireNonNull(coordinate, "ExtractCoordinate can't be null");
-        Map<ExtractCoordinate, Object> extractCoordinates = extractMap.get(MAIN_EXTRACT_KEY);
+        Map<ExtractCoordinate, ExtractWrapper> extractCoordinates = extractMap.get(MAIN_EXTRACT_KEY);
         if(extractCoordinates  == null){
             throw new RuntimeException("Not found " + coordinate + " from main");
         }
@@ -140,7 +141,7 @@ public class ExtractFactory {
             return Collections.emptyList();
         }
         List<T> extracts = new ArrayList<>();
-        for (Map<ExtractCoordinate, Object> value : extractMap.values()) {
+        for (Map<ExtractCoordinate, ExtractWrapper> value : extractMap.values()) {
             for (Object o : value.values()) {
                 Set<Class<?>> allInterfacesForClassAsSet = ClassUtils.getAllInterfacesForClassAsSet(o.getClass());
                 if(allInterfacesForClassAsSet.contains(interfaceClass)){
@@ -163,7 +164,7 @@ public class ExtractFactory {
             return Collections.emptyList();
         }
         List<T> extracts = new ArrayList<>();
-        Map<ExtractCoordinate, Object> extractCoordinateObjectMap = extractMap.get(pluginId);
+        Map<ExtractCoordinate, ExtractWrapper> extractCoordinateObjectMap = extractMap.get(pluginId);
         if(extractCoordinateObjectMap == null || extractCoordinateObjectMap.isEmpty()){
             return Collections.emptyList();
         }
@@ -212,6 +213,27 @@ public class ExtractFactory {
             return null;
         }
         return annotation;
+    }
+
+    /**
+     * 扩展对象包装类型
+     **/
+    private class ExtractWrapper{
+        private final Object object;
+        private final int order;
+
+        public ExtractWrapper(Object object, int order) {
+            this.object = object;
+            this.order = order;
+        }
+
+        public Object getObject() {
+            return object;
+        }
+
+        public int getOrder() {
+            return order;
+        }
     }
 
 }

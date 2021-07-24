@@ -5,6 +5,7 @@ import com.gitee.starblues.extension.log.config.LogConfig;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.ResourceUtils;
 import org.pf4j.PluginWrapper;
 import org.pf4j.RuntimeMode;
 import org.pf4j.util.StringUtils;
@@ -29,7 +30,7 @@ import java.lang.reflect.Field;
 public class LogConfigUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogConfigUtil.class);
-
+    public static final String ROOT_PLUGIN_SIGN = "~";
 
     public static LogConfig getLogConfig(Resource xmlResource, PluginRegistryInfo pluginRegistryInfo)
             throws Exception{
@@ -60,13 +61,7 @@ public class LogConfigUtil {
         if(StringUtils.isNullOrEmpty(rootDir)){
             home = CommonUtils.joiningFilePath(pluginRootDir, "logs");
         } else {
-            if(rootDir.startsWith(LogConfig.ROOT_PLUGIN_SIGN)){
-                // 如果root路径中开始存在ROOT_PLUGIN_SIGN,则说明进行插件根路替换
-                home = rootDir.replaceFirst("\\" + LogConfig.ROOT_PLUGIN_SIGN, "");
-                home = CommonUtils.joiningFilePath(pluginRootDir, home);
-            } else {
-                home = rootDir;
-            }
+            home = ResourceUtils.getAbsolutePath(pluginRegistryInfo, rootDir);
         }
         String fileName = logConfig.getFileName();
         if (StringUtils.isNullOrEmpty(fileName)) {

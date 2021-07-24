@@ -41,7 +41,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     /**
      * 插件文件的路径
      */
-    @Value("${pluginConfigFilePath:pluginConfigs}")
+    @Value("${pluginConfigFilePath:plugin-configs}")
     private String pluginConfigFilePath;
 
     /**

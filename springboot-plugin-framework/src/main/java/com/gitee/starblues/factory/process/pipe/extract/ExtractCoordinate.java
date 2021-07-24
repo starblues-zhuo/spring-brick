@@ -16,7 +16,6 @@ public class ExtractCoordinate {
     private final String scene;
     private final String useCase;
     private final Class<?> extractClass;
-    private int order;
 
     ExtractCoordinate(String bus, String scene, String useCase, Class<?> extractClass) {
         this.bus = bus;
@@ -30,7 +29,6 @@ public class ExtractCoordinate {
         this.bus = extract.bus();
         this.scene = extract.scene();
         this.useCase = extract.useCase();
-        this.order = extract.order();
         this.extractClass = extractClass;
     }
 
@@ -46,10 +44,6 @@ public class ExtractCoordinate {
         return new ExtractCoordinate(bus, scene, useCase, null);
     }
 
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
     public String getBus() {
         return bus;
     }
@@ -60,10 +54,6 @@ public class ExtractCoordinate {
 
     public String getUseCase() {
         return useCase;
-    }
-
-    public int getOrder() {
-        return order;
     }
 
     public Class<?> getExtractClass() {

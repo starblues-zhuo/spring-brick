@@ -15,29 +15,29 @@ import java.util.Set;
  */
 public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
-    private boolean enable;
+    private final boolean enable;
 
-    private RuntimeMode runtimeMode = RuntimeMode.DEVELOPMENT;
-    private String pluginPath = "";
-    private String pluginConfigFilePath = "";
+    private final RuntimeMode runtimeMode;
+    private final String pluginPath;
+    private final String pluginConfigFilePath;
 
-    private String uploadTempPath;
-    private String backupPath;
-    private String pluginRestPathPrefix;
+    private final String uploadTempPath;
+    private final String backupPath;
+    private final String pluginRestPathPrefix;
 
-    private Boolean enablePluginIdRestPathPrefix;
+    private final Boolean enablePluginIdRestPathPrefix;
 
-    private Set<String> enablePluginIds;
-    private Set<String> disablePluginIds;
-    private List<String> sortInitPluginIds;
-    private Boolean enableSwaggerRefresh;
+    private final Set<String> enablePluginIds;
+    private final Set<String> disablePluginIds;
+    private final List<String> sortInitPluginIds;
+    private final Boolean enableSwaggerRefresh;
 
-    private String version;
-    private Boolean exactVersionAllowed;
+    private final String version;
+    private final Boolean exactVersionAllowed;
 
-    private Boolean enableWebSocket;
+    private final Boolean enableWebSocket;
 
-    private Boolean stopDependents;
+    private final Boolean stopDependents;
 
     public ConfigurationBuilder(Builder builder) {
         this.runtimeMode = Objects.requireNonNull(builder.runtimeMode, "runtimeMode can't be empty");
@@ -265,9 +265,6 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     @Override
     public boolean enableSwaggerRefresh() {
-        if(enableSwaggerRefresh == null){
-            super.enableSwaggerRefresh();
-        }
         return enableSwaggerRefresh;
     }
 
@@ -289,19 +286,11 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     @Override
     public boolean enableWebSocket() {
-        if(enableWebSocket == null){
-            return super.enableWebSocket();
-        } else {
-            return enableWebSocket;
-        }
+        return enableWebSocket;
     }
 
     @Override
     public boolean stopDependents() {
-        if(stopDependents == null){
-            return super.stopDependents();
-        } else {
-            return stopDependents;
-        }
+        return stopDependents;
     }
 }
