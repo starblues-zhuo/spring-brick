@@ -46,6 +46,8 @@
 
 详见 [插件静态资源访问扩展](http://www.starblues.cn/extension-doc/Log%E6%89%A9%E5%B1%95.html)
 
+感谢 [sousouki](https://gitee.com/caoshx_sousouki) 的开发提供
+
 ### 运行环境
 1. jdk1.8+
 2. apache maven 3.6+

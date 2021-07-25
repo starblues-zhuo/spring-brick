@@ -48,8 +48,10 @@ See details: [Static Resource Access Extension](http://www.starblues.cn/extensio
 
 See details: [Plugin Log Extension](http://www.starblues.cn/extension-doc/Log%E6%89%A9%E5%B1%95.html)
 
+Thank for [sousouki](https://gitee.com/caoshx_sousouki) development
+
 ### Environment
-1. jdk1.8+
+1. jdk1.8+d
 2. apache maven 3.6+
 3. spring-boot 2.0.0+
 
