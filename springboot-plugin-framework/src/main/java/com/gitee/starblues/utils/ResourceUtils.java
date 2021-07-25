@@ -68,6 +68,8 @@ public class ResourceUtils {
 
     /**
      * 根据 ~ 标记获取, 得到绝对路径
+     * @param pluginRegistryInfo pluginRegistryInfo
+     * @param rootDir 根目录
      * @return java.lang.String
      **/
     public static String getAbsolutePath(PluginRegistryInfo pluginRegistryInfo, String rootDir){
