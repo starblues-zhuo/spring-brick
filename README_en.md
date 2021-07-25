@@ -8,15 +8,15 @@ and can define extension functions such as interface, static file and `Mybatis-x
 - Based on `Pf4j` development.
 - Plugin configuration plug in SpringBoot project.
 - Plugin development can be carried out on springboot with strong expansibility. 
-Different plug-ins can be developed for different projects and different plugin jar packages can be deployed.
-- You can specify whether to enable or disable plug-ins through the configuration file, and you can specify the order in which plug-ins are started.
-- It supports uploading plug-ins and plugin configuration files to the server, and dynamically deploying and updating plug-ins without restarting the main program.
-- It supports viewing plugin operation status and plug-in installation location.
-- Without restarting the main program, dynamically install, uninstall, enable, stop, backup and delete plug-ins through the interface.
+Different plugins can be developed for different projects and different plugin jar packages can be deployed.
+- You can specify whether to enable or disable plugins through the configuration file, and you can specify the order in which plugins are started.
+- It supports uploading plugins and plugin configuration files to the server, and dynamically deploying and updating plugins without restarting the main program.
+- It supports viewing plugin operation status and plugin installation location.
+- Without restarting the main program, dynamically install, uninstall, enable, stop, backup and delete plugins through the interface.
 - On the plugin application module, `spring annotations` can be used to define components for dependency injection.
 - Supports the development of `Http-Restful` interfaces in plugins
 - Support to define persistence layer access and other requirements separately in the plugin.
-- You can follow the plug-in interface provided by the main program to develop any extended functions.
+- You can follow the plugin interface provided by the main program to develop any extended functions.
 - It supports annotation for any business scenario extension, and uses defined coordinates for scenario hit.
 - Plugin can customize independent configuration files according to the production and development environment. Currently only `YML files` are supported.
 - It supports user-defined extension development interface, and users can extend additional functions on the reserved interface.
@@ -35,15 +35,15 @@ Different plug-ins can be developed for different projects and different plugin 
 
 #### `Static resource access` Extension
 
-1. Supports accessing static resources in plug-ins through HTTP
-2. Support `Thymeleaf` template engine for interface plug-in development
+1. Supports accessing static resources in plugins through HTTP
+2. Support `Thymeleaf` template engine for interface plugin development
 
 - See details: [Static Resource Access Extension](http://www.starblues.cn/extension-doc/%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E8%AE%BF%E9%97%AE%E6%89%A9%E5%B1%95.html)
 
 #### `Plugin Log` Extension
 
-1. The plug-in can independently configure the integrated `logback` log
-2. The plug-in can independently configure the integrated `log4j2` log
+1. The plugin can independently configure the integrated `logback` log
+2. The plugin can independently configure the integrated `log4j2` log
 
 - See details: [Plugin Log Extension](http://www.starblues.cn/extension-doc/Log%E6%89%A9%E5%B1%95.html)
 - Thank for [sousouki](https://gitee.com/caoshx_sousouki) development
