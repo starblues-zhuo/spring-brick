@@ -19,11 +19,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -100,8 +96,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         }
     }
 
-
-
     @Override
     public void unRegistry(List<PluginRegistryInfo> pluginRegistryInfos) {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
@@ -166,7 +160,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         }
     }
 
-
     /**
      * 卸载具体的Controller操作
      * @param controllerBeanWrapper controllerBean包装
@@ -201,7 +194,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
     private String getKey(PluginRegistryInfo registerPluginInfo){
         return KEY + "_" + registerPluginInfo.getPluginWrapper().getPluginId();
     }
-
 
     /**
      * 设置请求路径前缀
@@ -242,7 +234,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         }
     }
 
-
     /**
      * 方法上是否存在 @RequestMapping 注解
      * @param method method
@@ -255,8 +246,4 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             return false;
         }
     }
-
-
-
-
 }
