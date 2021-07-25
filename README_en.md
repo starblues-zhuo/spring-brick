@@ -5,6 +5,7 @@ This framework can develop plugins for extension projects on the `SpringBoot` pr
 and can define extension functions such as interface, static file and `Mybatis-xml` separately in the plugin module.
 
 ### Core
+- Based on `Pf4j` development.
 - Plugin configuration plug in SpringBoot project.
 - Plugin development can be carried out on springboot with strong expansibility. 
 Different plug-ins can be developed for different projects and different plugin jar packages can be deployed.
