@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * 插件配置的参数定义
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class PluginConfigDefinition {

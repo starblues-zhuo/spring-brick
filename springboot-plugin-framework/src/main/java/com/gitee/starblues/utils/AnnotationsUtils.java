@@ -5,7 +5,7 @@ import java.lang.annotation.Annotation;
 /**
  * 注解工具
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class AnnotationsUtils {
@@ -22,6 +22,7 @@ public class AnnotationsUtils {
      * @param annotationClasses 注解类
      * @return boolean
      */
+    @SafeVarargs
     public static boolean haveAnnotations(Class<?> aClass, boolean isAllMatch,
                                           Class<? extends Annotation> ...annotationClasses){
         if(aClass == null){

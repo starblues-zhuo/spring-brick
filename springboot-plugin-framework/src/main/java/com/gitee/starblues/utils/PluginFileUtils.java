@@ -1,7 +1,8 @@
 package com.gitee.starblues.utils;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
+import com.gitee.starblues.annotation.ConfigDefinition;
+import org.pf4j.RuntimeMode;
+import org.pf4j.util.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +18,7 @@ import java.security.MessageDigest;
 /**
  * 插件文件工具类
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public final class PluginFileUtils {
@@ -65,7 +66,11 @@ public final class PluginFileUtils {
                         }
                         long length = file.length();
                         if(length == 0){
-                            FileUtils.deleteQuietly(file);
+                            try {
+                                Files.deleteIfExists(subPath);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
         } catch (IOException e) {
@@ -77,12 +82,12 @@ public final class PluginFileUtils {
 
 
     /**
-     * 得到存在的文件
+     * 如果文件不存在, 则会创建
      * @param path 插件路径
      * @return 插件路径
      * @throws IOException 没有发现文件异常
      */
-    public static Path getExistPath(Path path) throws IOException {
+    public static Path createExistFile(Path path) throws IOException {
         Path parent = path.getParent();
         if(!Files.exists(parent)){
             Files.createDirectories(parent);

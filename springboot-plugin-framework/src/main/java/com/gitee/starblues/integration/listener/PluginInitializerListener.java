@@ -1,11 +1,10 @@
 package com.gitee.starblues.integration.listener;
 
-import org.pf4j.Plugin;
 
 /**
  * 插件初始化监听者
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public interface PluginInitializerListener {

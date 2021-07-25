@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  * 插件包合法校验
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class PluginLegalVerify implements PluginVerify{
@@ -32,13 +32,13 @@ public class PluginLegalVerify implements PluginVerify{
         }
         PluginDescriptor pluginDescriptor = pluginDescriptorFinder.find(path);
         if(pluginDescriptor == null){
-            throw new Exception(path.toString() + " : Not found Plugin Descriptor");
+            throw new Exception(path.toString() + " : Not found plugin Descriptor");
         }
         if(StringUtils.isEmpty(pluginDescriptor.getPluginId())){
-            throw new Exception(path.toString() + " : Not found Plugin Id");
+            throw new Exception(path.toString() + " : Plugin id can't be empty");
         }
         if(StringUtils.isEmpty(pluginDescriptor.getPluginClass())){
-            throw new Exception(path.toString() + " : Not found Plugin Class");
+            throw new Exception(path.toString() + " : Not found plugin Class");
         }
         return postVerify(path, pluginDescriptor);
     }

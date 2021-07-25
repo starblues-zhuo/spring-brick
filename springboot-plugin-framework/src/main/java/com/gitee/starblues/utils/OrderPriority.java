@@ -3,27 +3,24 @@ package com.gitee.starblues.utils;
 /**
  * 顺序优先级
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class OrderPriority {
-
     /**
-     * 低优先级
+     * 高优先级
      */
-    private static final Integer LOW_PRIORITY = -1000;
-
+    private static final Integer HIGH_PRIORITY = 1000;
 
     /**
      * 中优先级
      */
     private static final Integer MIDDLE_PRIORITY = 0;
 
-
     /**
-     * 高优先级
+     * 低优先级
      */
-    private static final Integer HIGH_PRIORITY = 1000;
+    private static final Integer LOW_PRIORITY = -1000;
 
 
     private Integer priority;

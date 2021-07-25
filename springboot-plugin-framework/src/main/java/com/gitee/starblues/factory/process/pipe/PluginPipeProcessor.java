@@ -5,10 +5,17 @@ import com.gitee.starblues.factory.PluginRegistryInfo;
 /**
  * 插件管道处理者接口
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public interface PluginPipeProcessor {
+
+
+    /**
+     * 初始化
+     * @throws Exception 初始化异常
+     */
+    void initialize() throws Exception;
 
 
     /**

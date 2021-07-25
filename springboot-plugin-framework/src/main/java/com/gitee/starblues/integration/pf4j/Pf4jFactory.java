@@ -5,7 +5,7 @@ import org.pf4j.PluginManager;
 
 /**
  * Pf4j 集成工厂。获取Pf4j的PluginManager对象
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.0
  * @see DefaultPluginApplication
  */

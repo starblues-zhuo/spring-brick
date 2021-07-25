@@ -2,6 +2,7 @@ package com.gitee.starblues.integration.application;
 
 import com.gitee.starblues.extension.AbstractExtension;
 import com.gitee.starblues.integration.PluginListenerContext;
+import com.gitee.starblues.integration.PluginStateListenerContext;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.user.PluginUser;
@@ -9,10 +10,10 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * 插件应用。
- * @author zhangzhuo
- * @version 2.2.0
+ * @author starBlues
+ * @version 2.4.3
  */
-public interface PluginApplication extends PluginListenerContext {
+public interface PluginApplication extends PluginListenerContext, PluginStateListenerContext {
 
     /**
      * 初始化
@@ -37,7 +38,8 @@ public interface PluginApplication extends PluginListenerContext {
     /**
      * 添加扩展
      * @param extension 扩展类
+     * @return PluginApplication
      */
-    void addExtension(AbstractExtension extension);
+    PluginApplication addExtension(AbstractExtension extension);
 
 }

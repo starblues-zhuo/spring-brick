@@ -6,7 +6,7 @@ import org.pf4j.PluginState;
 
 /**
  * 插件信息
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class PluginInfo {
@@ -26,21 +26,49 @@ public class PluginInfo {
      */
     private String path;
 
-    public PluginInfo(PluginDescriptor pluginDescriptor, PluginState pluginState, String path) {
+    /**
+     * 运行模式
+     */
+    private String runMode;
+
+
+    public PluginInfo(PluginDescriptor pluginDescriptor,
+                      PluginState pluginState,
+                      String path,
+                      String runMode) {
         this.pluginDescriptor = pluginDescriptor;
         this.pluginState = pluginState;
         this.path = path;
+        this.runMode = runMode;
     }
 
     public PluginDescriptor getPluginDescriptor() {
         return pluginDescriptor;
     }
 
-    public String getPluginState() {
+    public PluginState getPluginState() {
+        return pluginState;
+    }
+
+    public String getPluginStateString() {
         return pluginState.toString();
     }
 
     public String getPath() {
         return path;
+    }
+
+    public String getRunMode() {
+        return runMode;
+    }
+
+    @Override
+    public String toString() {
+        return "PluginInfo{" +
+                "pluginDescriptor=" + pluginDescriptor +
+                ", pluginState=" + pluginState +
+                ", path='" + path + '\'' +
+                ", runMode='" + runMode + '\'' +
+                '}';
     }
 }

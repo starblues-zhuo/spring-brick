@@ -9,12 +9,11 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.springframework.core.io.Resource;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 /**
  * yaml 配置解析者
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class YamlConfigurationParser extends AbstractConfigurationParser {
@@ -26,20 +25,35 @@ public class YamlConfigurationParser extends AbstractConfigurationParser {
         super(configuration);
         this.yamlFactory = new YAMLFactory();
         this.objectMapper = new ObjectMapper();
-        objectMapper.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
 
     @Override
     protected Object parse(Resource resource, Class<?> pluginConfigClass)
             throws Exception{
-        InputStream input = new FileInputStream(resource.getFile());
-        YAMLParser yamlParser = yamlFactory.createParser(input);
-        final JsonNode node = objectMapper.readTree(yamlParser);
-        if(node == null){
-            return pluginConfigClass.newInstance();
+        InputStream inputStream = null;
+        YAMLParser yamlParser = null;
+        TreeTraversingParser treeTraversingParser = null;
+        try {
+            inputStream = resource.getInputStream();
+            yamlParser = yamlFactory.createParser(inputStream);
+            final JsonNode node = objectMapper.readTree(yamlParser);
+            if(node == null){
+                return pluginConfigClass.newInstance();
+            }
+            treeTraversingParser = new TreeTraversingParser(node);
+            return objectMapper.readValue(treeTraversingParser, pluginConfigClass);
+        } finally {
+            if(treeTraversingParser != null){
+                treeTraversingParser.close();
+            }
+            if(yamlParser != null){
+                yamlParser.close();
+            }
+            if(inputStream != null){
+                inputStream.close();
+            }
         }
-        TreeTraversingParser treeTraversingParser = new TreeTraversingParser(node);
-        return objectMapper.readValue(treeTraversingParser, pluginConfigClass);
     }
 }

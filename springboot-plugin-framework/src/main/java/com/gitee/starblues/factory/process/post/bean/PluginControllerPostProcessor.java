@@ -1,102 +1,125 @@
 package com.gitee.starblues.factory.process.post.bean;
 
-import com.gitee.starblues.extension.PluginControllerProcessor;
+import com.gitee.starblues.extension.ExtensionFactory;
+import com.gitee.starblues.extension.PluginControllerProcessorExtend;
 import com.gitee.starblues.factory.PluginRegistryInfo;
-import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.factory.process.pipe.classs.group.ControllerGroup;
 import com.gitee.starblues.factory.process.post.PluginPostProcessor;
+import com.gitee.starblues.factory.process.post.bean.model.ControllerWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
-import com.gitee.starblues.utils.AopUtils;
+import com.gitee.starblues.utils.ClassUtils;
+import com.gitee.starblues.utils.CommonUtils;
+import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * 插件中controller处理者
  *
- * @author zhangzhuo
- * @version 2.1.0
+ * @author starBlues
+ * @version 2.4.0
  */
 public class PluginControllerPostProcessor implements PluginPostProcessor {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final String KEY = "PluginControllerPostProcessor";
+    private static final String KEY = "PluginControllerPostProcessor";
 
-    private final SpringBeanRegister springBeanRegister;
-    private final GenericApplicationContext applicationContext;
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
-    private final IntegrationConfiguration integrationConfiguration;
+    private final IntegrationConfiguration configuration;
 
-    public PluginControllerPostProcessor(ApplicationContext applicationContext){
-        Objects.requireNonNull(applicationContext);
-        this.springBeanRegister = new SpringBeanRegister(applicationContext);
-        this.applicationContext = (GenericApplicationContext) applicationContext;
-        this.requestMappingHandlerMapping = applicationContext.getBean(RequestMappingHandlerMapping.class);
-        this.integrationConfiguration = applicationContext.getBean(IntegrationConfiguration.class);
+    private final List<PluginControllerProcessorExtend> pluginControllerProcessors;
+
+    public PluginControllerPostProcessor(ApplicationContext mainApplicationContext){
+        Objects.requireNonNull(mainApplicationContext);
+        this.requestMappingHandlerMapping = mainApplicationContext.getBean(RequestMappingHandlerMapping.class);
+        this.configuration = mainApplicationContext.getBean(IntegrationConfiguration.class);
+        this.pluginControllerProcessors = ExtensionFactory
+                .getPluginControllerProcessorExtend(mainApplicationContext);
     }
 
+
+    @Override
+    public void initialize() throws Exception {
+        resolveProcessExtend(extend->{
+            try {
+                extend.initialize();
+            }catch (Exception e){
+                log.error("'{}' initialize error",
+                        extend.getClass().getName(),
+                        e);
+            }
+        });
+    }
 
     @Override
     public void registry(List<PluginRegistryInfo> pluginRegistryInfos) throws Exception {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
-            AopUtils.resolveAop(pluginRegistryInfo.getPluginWrapper());
-            try {
-                List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(ControllerGroup.SPRING_CONTROLLER);
-                if(groupClasses == null || groupClasses.isEmpty()){
+            List<Class<?>> groupClasses = pluginRegistryInfo.getGroupClasses(ControllerGroup.GROUP_ID);
+            if(groupClasses == null || groupClasses.isEmpty()){
+                continue;
+            }
+            String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
+            List<ControllerWrapper> controllerBeanWrappers = new ArrayList<>();
+            for (Class<?> groupClass : groupClasses) {
+                if(groupClass == null){
                     continue;
                 }
-                List<ControllerBeanWrapper> controllerBeanWrappers = new ArrayList<>();
-                for (Class<?> groupClass : groupClasses) {
-                    if(groupClass == null){
-                        continue;
-                    }
-                    ControllerBeanWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
+                try {
+                    ControllerWrapper controllerBeanWrapper = registry(pluginRegistryInfo, groupClass);
                     controllerBeanWrappers.add(controllerBeanWrapper);
-                    process(1, pluginRegistryInfo.getPluginWrapper().getPluginId(), groupClass);
+                } catch (Exception e){
+                    pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
+                    throw e;
                 }
-                pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
-            } finally {
-                AopUtils.recoverAop();
             }
-
+            resolveProcessExtend(extend->{
+                try {
+                    extend.registry(pluginId, controllerBeanWrappers);
+                }catch (Exception e){
+                    log.error("'{}' process plugin[{}] error in registry",
+                            extend.getClass().getName(),
+                            pluginId,  e);
+                }
+            });
+            pluginRegistryInfo.addProcessorInfo(getKey(pluginRegistryInfo), controllerBeanWrappers);
         }
     }
-
-
 
     @Override
     public void unRegistry(List<PluginRegistryInfo> pluginRegistryInfos) {
         for (PluginRegistryInfo pluginRegistryInfo : pluginRegistryInfos) {
-            List<ControllerBeanWrapper> controllerBeanWrappers =
+            List<ControllerWrapper> controllerBeanWrappers =
                     pluginRegistryInfo.getProcessorInfo(getKey(pluginRegistryInfo));
             if(controllerBeanWrappers == null || controllerBeanWrappers.isEmpty()){
                 continue;
             }
             String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-            for (ControllerBeanWrapper controllerBeanWrapper : controllerBeanWrappers) {
+            for (ControllerWrapper controllerBeanWrapper : controllerBeanWrappers) {
                 if(controllerBeanWrapper == null){
                     continue;
                 }
-                unregister(pluginId, controllerBeanWrapper);
-                process(2,
-                        pluginRegistryInfo.getPluginWrapper().getPluginId(),
-                        controllerBeanWrapper.getBeanClass());
+                unregister(controllerBeanWrapper);
             }
-
+            resolveProcessExtend(extend->{
+                try {
+                    extend.unRegistry(pluginId, controllerBeanWrappers);
+                }catch (Exception e){
+                    log.error("'{}' process plugin[{}] error in unRegistry",
+                            extend.getClass().getName(),
+                            pluginId,  e);
+                }
+            });
         }
     }
 
@@ -107,21 +130,13 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
      * @return ControllerBeanWrapper
      * @throws Exception  Exception
      */
-    private ControllerBeanWrapper registry(PluginRegistryInfo pluginRegistryInfo, Class<?> aClass)
+    private ControllerWrapper registry(PluginRegistryInfo pluginRegistryInfo, Class<?> aClass)
             throws Exception {
         String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-        String beanName = springBeanRegister.register(pluginId, aClass);
-        if(beanName == null || "".equals(beanName)){
-            throw new IllegalArgumentException("registry "+ aClass.getName() + "failure!");
-        }
+        GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
         try {
-            Object object = applicationContext.getBean(beanName);
-            if(object == null){
-                throw new Exception("registry "+ aClass.getName() + "failure! " +
-                        "Not found The instance of" + aClass.getName());
-            }
-            ControllerBeanWrapper controllerBeanWrapper = new ControllerBeanWrapper();
-            controllerBeanWrapper.setBeanName(beanName);
+            Object object = pluginApplicationContext.getBean(aClass);
+            ControllerWrapper controllerBeanWrapper = new ControllerWrapper();
             setPathPrefix(pluginId, aClass);
             Method getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
                     "getMappingForMethod", Method.class, Class.class);
@@ -141,31 +156,35 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             return controllerBeanWrapper;
         } catch (Exception e){
             // 出现异常, 卸载该 controller bean
-            springBeanRegister.unregister(pluginId, beanName);
             throw e;
         }
     }
 
-
     /**
      * 卸载具体的Controller操作
-     * @param pluginId 插件id
      * @param controllerBeanWrapper controllerBean包装
      */
-    private void unregister(String pluginId, ControllerBeanWrapper controllerBeanWrapper) {
+    private void unregister(ControllerWrapper controllerBeanWrapper) {
         Set<RequestMappingInfo> requestMappingInfos = controllerBeanWrapper.getRequestMappingInfos();
         if(requestMappingInfos != null && !requestMappingInfos.isEmpty()){
             for (RequestMappingInfo requestMappingInfo : requestMappingInfos) {
                 requestMappingHandlerMapping.unregisterMapping(requestMappingInfo);
             }
         }
-        String beanName = controllerBeanWrapper.getBeanName();
-        if(!StringUtils.isEmpty(beanName)){
-            springBeanRegister.unregister(pluginId, beanName);
-        }
     }
 
-
+    /**
+     * 调用扩展出的接口控制器
+     * @param extendConsumer 扩展消费者
+     */
+    private void resolveProcessExtend(Consumer<PluginControllerProcessorExtend> extendConsumer){
+        if(pluginControllerProcessors == null || pluginControllerProcessors.isEmpty()){
+            return;
+        }
+        for (PluginControllerProcessorExtend pluginControllerProcessor : pluginControllerProcessors) {
+            extendConsumer.accept(pluginControllerProcessor);
+        }
+    }
 
     /**
      * 得到往RegisterPluginInfo->processorInfo 保存的key
@@ -175,7 +194,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
     private String getKey(PluginRegistryInfo registerPluginInfo){
         return KEY + "_" + registerPluginInfo.getPluginWrapper().getPluginId();
     }
-
 
     /**
      * 设置请求路径前缀
@@ -187,27 +205,15 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
         if(requestMapping == null){
             return;
         }
-        String pathPrefix = integrationConfiguration.pluginRestControllerPathPrefix();
-        if(integrationConfiguration.enablePluginIdRestControllerPathPrefix()){
-            if(pathPrefix != null && !"".equals(pathPrefix)){
-                pathPrefix = joiningPath(pathPrefix, pluginId);
-            } else {
-                pathPrefix = pluginId;
-            }
-        } else {
-            if(pathPrefix == null || "".equals(pathPrefix)){
-                // 不启用插件id作为路径前缀, 并且路径前缀为空, 则直接返回。
-                return;
-            }
+        String pathPrefix = CommonUtils.getPluginRestPrefix(configuration, pluginId);
+        if(StringUtils.isNullOrEmpty(pathPrefix)){
+            return;
         }
-        InvocationHandler invocationHandler = Proxy.getInvocationHandler(requestMapping);
         Set<String> definePaths = new HashSet<>();
         definePaths.addAll(Arrays.asList(requestMapping.path()));
         definePaths.addAll(Arrays.asList(requestMapping.value()));
         try {
-            Field field = invocationHandler.getClass().getDeclaredField("memberValues");
-            field.setAccessible(true);
-            Map<String, Object> memberValues = (Map<String, Object>) field.get(invocationHandler);
+            Map<String, Object> memberValues = ClassUtils.getAnnotationsUpdater(requestMapping);
             String[] newPath = new String[definePaths.size()];
             int i = 0;
             for (String definePath : definePaths) {
@@ -215,7 +221,7 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
                 if(definePath.contains(pathPrefix)){
                     newPath[i++] = definePath;
                 } else {
-                    newPath[i++] = joiningPath(pathPrefix, definePath);
+                    newPath[i++] = CommonUtils.restJoiningPath(pathPrefix, definePath);
                 }
             }
             if(newPath.length == 0){
@@ -227,33 +233,6 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             log.error("Define Plugin RestController pathPrefix error : {}", e.getMessage(), e);
         }
     }
-
-
-
-    /**
-     * 拼接路径
-     * @param path1 路径1
-     * @param path2 路径2
-     * @return 拼接的路径
-     */
-    private String joiningPath(String path1, String path2){
-        if(path1 != null && path2 != null){
-            if(path1.endsWith("/") && path2.startsWith("/")){
-                return path1 + path2.substring(1);
-            } else if(!path1.endsWith("/") && !path2.startsWith("/")){
-                return path1 + "/" + path2;
-            } else {
-                return path1 + path2;
-            }
-        } else if(path1 != null){
-            return path1;
-        } else if(path2 != null){
-            return path2;
-        } else {
-            return "";
-        }
-    }
-
 
     /**
      * 方法上是否存在 @RequestMapping 注解
@@ -267,75 +246,4 @@ public class PluginControllerPostProcessor implements PluginPostProcessor {
             return false;
         }
     }
-
-    private void process(int type, String pluginId, Class<?> aClass){
-        PluginControllerProcessor pluginControllerProcessor = null;
-        try {
-            pluginControllerProcessor = applicationContext.getBean(PluginControllerProcessor.class);
-        }catch (Exception e){
-            pluginControllerProcessor = null;
-        }
-        if(pluginControllerProcessor == null){
-            return;
-        }
-        if(type == 1){
-            try {
-                pluginControllerProcessor.registry(pluginId, aClass);
-            }catch (Exception e){
-                log.error("PluginControllerProcessor process {} {} error of registry",
-                        pluginId, aClass.getName());
-            }
-        } else {
-            try {
-                pluginControllerProcessor.unRegistry(pluginId, aClass);
-            }catch (Exception e){
-                log.error("PluginControllerProcessor process {} {} error of unRegistry",
-                        pluginId, aClass.getName());
-            }
-        }
-
-    }
-
-    /**
-     * Controller Bean的包装
-     */
-    public static final class ControllerBeanWrapper{
-        /**
-         * controller bean 名称
-         */
-        private String beanName;
-
-        private Class<?> beanClass;
-
-        /**
-         * controller 的 RequestMappingInfo 集合
-         */
-        private Set<RequestMappingInfo> requestMappingInfos;
-
-        public Class<?> getBeanClass() {
-            return beanClass;
-        }
-
-        public void setBeanClass(Class<?> beanClass) {
-            this.beanClass = beanClass;
-        }
-
-        public String getBeanName() {
-            return beanName;
-        }
-
-        public void setBeanName(String beanName) {
-            this.beanName = beanName;
-        }
-
-        public Set<RequestMappingInfo> getRequestMappingInfos() {
-            return requestMappingInfos;
-        }
-
-        public void setRequestMappingInfos(Set<RequestMappingInfo> requestMappingInfos) {
-            this.requestMappingInfos = requestMappingInfos;
-        }
-    }
-
-
 }

@@ -9,22 +9,19 @@ import org.springframework.util.StringUtils;
 /**
  *  插件注解名称生成者
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
+@Deprecated
 public class PluginAnnotationBeanNameGenerator extends AnnotationBeanNameGenerator {
 
     /**
-     * 后缀名称
+     * 插件id
      */
-    private final String suffixName;
+    private final String pluginId;
 
-    public PluginAnnotationBeanNameGenerator(String suffixName) {
-        if(StringUtils.isEmpty(suffixName)){
-            this.suffixName = "";
-        } else {
-            this.suffixName =  "@" + suffixName;
-        }
+    public PluginAnnotationBeanNameGenerator(String pluginId) {
+        this.pluginId = pluginId;
     }
 
     @Override
@@ -32,10 +29,10 @@ public class PluginAnnotationBeanNameGenerator extends AnnotationBeanNameGenerat
         if (definition instanceof AnnotatedBeanDefinition) {
             String beanName = determineBeanNameFromAnnotation((AnnotatedBeanDefinition) definition);
             if (StringUtils.hasText(beanName)) {
-                return beanName;
+                return beanName.concat("@").concat(pluginId);
             }
         }
-        return buildDefaultBeanName(definition, registry) + suffixName;
+        return buildDefaultBeanName(definition, registry).concat("@").concat(pluginId);
     }
 
 

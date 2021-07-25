@@ -15,11 +15,12 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * AOP 无法找到插件类的解决工具类
+ * AOP 无法找到插件类的解决工具类(被遗弃)
  *
- * @author zhangzhuo
- * @version 1.0
+ * @author starBlues
+ * @version 2.4.0
  */
+@Deprecated
 public class AopUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(AopUtils.class);

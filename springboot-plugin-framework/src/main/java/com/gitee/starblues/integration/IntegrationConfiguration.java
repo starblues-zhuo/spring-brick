@@ -2,11 +2,14 @@ package com.gitee.starblues.integration;
 
 import org.pf4j.RuntimeMode;
 
+import java.util.List;
+import java.util.Set;
+
 
 /**
  * 插件集成时的配置接口。插件集成的配置接口
- * @author zhangzhuo
- * @version 1.0
+ * @author starBlues
+ * @version 2.4.4
  */
 public interface IntegrationConfiguration {
 
@@ -43,17 +46,76 @@ public interface IntegrationConfiguration {
     String backupPath();
 
     /**
-     * 插件 RestController 统一请求的路径前缀。只有 pluginRestControllerPathPrefix
+     * 插件 RestController 统一请求的路径前缀
      * @return path
      */
-    String pluginRestControllerPathPrefix();
+    String pluginRestPathPrefix();
 
     /**
-     * 启用插件id作为RestController的路径前缀。
-     * 如果启用。则路径前缀为 pluginRestControllerPathPrefix() 返回的路径拼接插件id,
+     * 是否启用插件id作为RestController的路径前缀。
+     * 如果启用。则路径前缀为 pluginRestPathPrefix() 返回的路径拼接插件id,
      * 即为: /pathPrefix/pluginId/**
      * @return boolean
      */
-    boolean enablePluginIdRestControllerPathPrefix();
+    boolean enablePluginIdRestPathPrefix();
+
+
+    /**
+     * 是否启用该插件框架
+     * @return true 启用, false 禁用
+     */
+    boolean enable();
+
+    /**
+     * 启用的插件id
+     * @return Set
+     */
+    Set<String> enablePluginIds();
+
+    /**
+     * 禁用的插件id, 禁用后系统不会启动该插件
+     * 如果禁用所有插件, 则Set集合中返回一个字符: *
+     * @return Set
+     */
+    Set<String> disablePluginIds();
+
+    /**
+     * 是否启用Swagger刷新机制
+     * @return 启用返回true, 不启用返回 false
+     */
+    boolean enableSwaggerRefresh();
+
+    /**
+     * 设置初始化时插件启动的顺序.
+     * @return 有顺序的插件id
+     */
+    List<String> sortInitPluginIds();
+
+    /**
+     * 当前主程序的版本号, 用于校验插件是否可安装.
+     * 插件中可通过插件配置信息 requires 来指定可安装的主程序版本
+     * @return 系统版本号, 如果为: 0.0.0 的话, 表示不校验
+     */
+    String version();
+
+    /**
+     * 设置为true表示插件设置的requires的版本号完全匹配version版本号才可允许插件安装, 即: [requires]=[x.y.z]
+     * 设置为false表示插件设置的requires的版本号小于等于version值, 插件就可安装, 即[requires]小于等于[x.y.z]
+     * 默认为false
+     * @return true or false
+     */
+    boolean exactVersionAllowed();
+
+    /**
+     * 是否启用webSocket功能. 如需启用, 则需要引入springboot支持的WebSocket依赖
+     * @return 启用返回true,不启用返回false
+     */
+    boolean enableWebSocket();
+
+    /**
+     * 停止插件时, 是否停止依赖的插件
+     * @return 停止返回true,不停止返回false
+     */
+    boolean stopDependents();
 
 }

@@ -1,28 +1,26 @@
 package com.gitee.starblues.factory.process.pipe.classs;
 
-import com.gitee.starblues.extension.ExtensionFactory;
+import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.PluginPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.classs.group.*;
-import com.gitee.starblues.loader.PluginResourceLoadFactory;
-import com.gitee.starblues.loader.ResourceWrapper;
-import com.gitee.starblues.loader.load.PluginClassLoader;
+import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
+import com.gitee.starblues.factory.process.pipe.loader.load.PluginClassLoader;
 import com.gitee.starblues.realize.BasePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 插件类加载处理者
  *
- * @author zhangzhuo
- * @version 2.1.0
+ * @author starBlues
+ * @version 2.4.0
  */
 public class PluginClassProcess implements PluginPipeProcessor {
 
@@ -38,38 +36,28 @@ public class PluginClassProcess implements PluginPipeProcessor {
     private final List<PluginClassGroup> pluginClassGroups = new ArrayList<>();
 
 
-    public PluginClassProcess(ApplicationContext applicationContext){
+    public PluginClassProcess(){}
+
+
+    @Override
+    public void initialize() {
         pluginClassGroups.add(new ComponentGroup());
         pluginClassGroups.add(new ControllerGroup());
         pluginClassGroups.add(new RepositoryGroup());
-        pluginClassGroups.add(new ConfigurationGroup());
         pluginClassGroups.add(new ConfigDefinitionGroup());
+        pluginClassGroups.add(new ConfigBeanGroup());
         pluginClassGroups.add(new SupplierGroup());
         pluginClassGroups.add(new CallerGroup());
-        addExtension(applicationContext);
+        pluginClassGroups.add(new OneselfListenerGroup());
+        pluginClassGroups.add(new WebSocketGroup());
+        // 添加扩展
+        pluginClassGroups.addAll(ExtensionInitializer.getClassGroupExtends());
     }
-
-    /**
-     * 添加扩展
-     * @param applicationContext applicationContext
-     */
-    private void addExtension(ApplicationContext applicationContext) {
-        ExtensionFactory extensionFactory = ExtensionFactory.getSingleton();
-        extensionFactory.iteration(abstractExtension -> {
-            List<PluginClassGroupExtend> pluginClassGroups = abstractExtension.getPluginClassGroup(applicationContext);
-            extensionFactory.iteration(pluginClassGroups, pluginClassGroup -> {
-                this.pluginClassGroups.add(pluginClassGroup);
-                log.info("Register Extension PluginClassGroup : {}", pluginClassGroup.key());
-            });
-        });
-    }
-
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
-        PluginResourceLoadFactory pluginResourceLoadFactory = basePlugin.getPluginResourceLoadFactory();
-        ResourceWrapper resourceWrapper = pluginResourceLoadFactory.getPluginResources(PluginClassLoader.KEY);
+        ResourceWrapper resourceWrapper = pluginRegistryInfo.getPluginLoadResource(PluginClassLoader.KEY);
         if(resourceWrapper == null){
             return;
         }
@@ -77,13 +65,21 @@ public class PluginClassProcess implements PluginPipeProcessor {
         if(pluginResources == null){
             return;
         }
-        for (Resource pluginResource : pluginResources) {
-            String path = pluginResource.getURL().getPath();
-            String packageName = path.substring(0, path.indexOf(".class"))
-                    .replace("/", ".");
-            packageName = packageName.substring(packageName.indexOf(basePlugin.scanPackage()));
-            Class<?> aClass = Class.forName(packageName, false,
-                    basePlugin.getWrapper().getPluginClassLoader());
+        for (PluginClassGroup pluginClassGroup : pluginClassGroups) {
+            try {
+                pluginClassGroup.initialize(basePlugin);
+            } catch (Exception e){
+                log.error("PluginClassGroup {} initialize exception. {}", pluginClassGroup.getClass(),
+                        e.getMessage(), e);
+            }
+        }
+        Set<String> classPackageNames = resourceWrapper.getClassPackageNames();
+        ClassLoader classLoader = basePlugin.getWrapper().getPluginClassLoader();
+        for (String classPackageName : classPackageNames) {
+            Class<?> aClass = Class.forName(classPackageName, false, classLoader);
+            if(aClass == null){
+                continue;
+            }
             boolean findGroup = false;
             for (PluginClassGroup pluginClassGroup : pluginClassGroups) {
                 if(pluginClassGroup == null || StringUtils.isEmpty(pluginClassGroup.groupId())){

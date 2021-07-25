@@ -4,30 +4,37 @@ package com.gitee.starblues.integration.listener;
 /**
  * 插件bean监听者
  *
- * @author zhangzhuo
- * @version 1.0
+ * @author starBlues
+ * @version 2.4.4
  */
 public interface PluginListener {
 
 
     /**
-     * 注册插件
+     * 注册插件成功
      * @param pluginId 插件id
+     * @param isStartInitial 是否随着系统启动时而进行的插件注册
      */
-    void registry(String pluginId);
+    void registry(String pluginId, boolean isStartInitial);
 
     /**
-     * 卸载插件
+     * 卸载插件成功
      * @param pluginId 插件id
      */
     void unRegistry(String pluginId);
 
     /**
-     * 失败监听
+     * 注册错误
      * @param pluginId 插件id
      * @param throwable 异常信息
      */
-    void failure(String pluginId, Throwable throwable);
+    void registryFailure(String pluginId, Throwable throwable);
 
+    /**
+     * 注册错误
+     * @param pluginId 插件id
+     * @param throwable 异常信息
+     */
+    void unRegistryFailure(String pluginId, Throwable throwable);
 
 }

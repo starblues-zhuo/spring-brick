@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * 自动初始化的 PluginApplication。该PluginApplication 基于 Spring InitializingBean 自动初始化插件。
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.2.0
  */
 public class AutoPluginApplication extends DefaultPluginApplication
@@ -22,8 +22,8 @@ public class AutoPluginApplication extends DefaultPluginApplication
         super();
     }
 
-    public AutoPluginApplication(Pf4jFactory integrationFactory) {
-        super(integrationFactory);
+    public AutoPluginApplication(Pf4jFactory pf4jFactory) {
+        super(pf4jFactory);
     }
 
     /**

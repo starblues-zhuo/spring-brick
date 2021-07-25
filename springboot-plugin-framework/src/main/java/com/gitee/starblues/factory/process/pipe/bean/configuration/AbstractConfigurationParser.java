@@ -1,10 +1,10 @@
 package com.gitee.starblues.factory.process.pipe.bean.configuration;
 
+import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.integration.IntegrationConfiguration;
-import com.gitee.starblues.loader.PluginResourceLoader;
-import com.gitee.starblues.loader.ResourceWrapper;
-import com.gitee.starblues.loader.load.PluginConfigFileLoader;
-import com.gitee.starblues.realize.BasePlugin;
+import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoader;
+import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
+import com.gitee.starblues.factory.process.pipe.loader.load.PluginConfigFileLoader;
 import org.springframework.core.io.Resource;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.Objects;
 
 /**
  * 抽象的插件配置文件解析者
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public abstract class AbstractConfigurationParser implements ConfigurationParser {
@@ -25,7 +25,7 @@ public abstract class AbstractConfigurationParser implements ConfigurationParser
     }
 
     @Override
-    public Object parse(BasePlugin basePlugin, PluginConfigDefinition pluginConfigDefinition) throws Exception {
+    public Object parse(PluginRegistryInfo pluginRegistryInfo, PluginConfigDefinition pluginConfigDefinition) throws Exception {
         Class<?> configClass = pluginConfigDefinition.getConfigClass();
         if(pluginConfigDefinition.getConfigClass() == null){
             throw new IllegalArgumentException("pluginConfigDefinition : " + pluginConfigDefinition + " " +
@@ -37,17 +37,16 @@ public abstract class AbstractConfigurationParser implements ConfigurationParser
                     "fileName can not be empty");
         }
 
-        PluginResourceLoader pluginResourceLoader = new PluginConfigFileLoader(
+        PluginResourceLoader resourceLoader = new PluginConfigFileLoader(
                 configuration.pluginConfigFilePath(),
-                fileName,
-                configuration.environment()
+                fileName
         );
-        ResourceWrapper resourceWrapper = pluginResourceLoader.load(basePlugin);
+        ResourceWrapper resourceWrapper = resourceLoader.load(pluginRegistryInfo);
         if(resourceWrapper == null){
             return null;
         }
         List<Resource> resources = resourceWrapper.getResources();
-        if(resources.isEmpty() || resources.size() != 1){
+        if(resources.size() != 1){
             return null;
         }
         Object o = parse(resources.get(0), configClass);

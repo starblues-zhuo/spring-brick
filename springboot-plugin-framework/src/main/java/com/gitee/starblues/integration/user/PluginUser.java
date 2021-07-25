@@ -6,8 +6,8 @@ import java.util.Map;
 /**
  * 该接口用于在主程序操作Spring管理的插件bean.
  *  主要用途: 在主程序定义接口。插件中实现该接口做扩展, 主程序通过接口class可以获取到插件中的实现类。
- * @author zhangzhuo
- * @version 2.0.2
+ * @author starBlues
+ * @version 2.2.2
  */
 public interface PluginUser {
 
@@ -85,6 +85,19 @@ public interface PluginUser {
      * @return 实现 aClass 接口的实现类的集合
      */
     <T> List<T> getPluginBeans(String pluginId, Class<T> aClass);
+
+
+    /**
+     * 生成一个新的Spring实例Bean.
+     * 使用场景：主要用于非单例对象的生成。
+     * @param object 旧实例对象
+     * @param <T> 实例泛型
+     * @return 新实例对象
+     */
+    @Deprecated
+    <T> T generateNewInstance(T object);
+
+
 
     /**
      * 使用场景:

@@ -1,9 +1,18 @@
 package com.gitee.starblues.factory;
 
+import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
+import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.realize.BasePlugin;
-import org.pf4j.Plugin;
-import org.pf4j.PluginState;
+import org.pf4j.PluginManager;
 import org.pf4j.PluginWrapper;
+import org.pf4j.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,36 +20,92 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 注册的插件信息
  *
- * @author zhangzhuo
- * @version 2.1.0
+ * @author starBlues
+ * @version 2.4.1
  */
 public class PluginRegistryInfo {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final PluginWrapper pluginWrapper;
+    private final PluginManager pluginManager;
+    private final IntegrationConfiguration configuration;
+    private final GenericApplicationContext mainApplicationContext;
+    private final AnnotationConfigApplicationContext pluginApplicationContext;
+    private final Binder pluginBinder;
+    private final SpringBeanRegister springBeanRegister;
+
+    /**
+     * 是否跟随主程序启动而初始化
+     */
+    private final boolean followingInitial;
+    private final BasePlugin basePlugin;
 
 
     /**
      * 扩展存储项
      */
-    private Map<String, Object> extensionMap = new ConcurrentHashMap<>();
+    private final Map<String, Object> extensionMap = new ConcurrentHashMap<>();
 
-    private PluginWrapper pluginWrapper;
-    private BasePlugin basePlugin;
+    /**
+     * 插件中的配置单例bean
+     */
+    private final Set<Object> configSingletonObjects = new HashSet<>(4);
 
     /**
      * 插件中的Class
      */
-    private List<Class<?>> classes = new ArrayList<>();
+    private final List<Class<?>> classes = new ArrayList<>(8);
+
+    /**
+     * 插件加载的资源
+     */
+    private final Map<String, ResourceWrapper> pluginLoadResources = new ConcurrentHashMap<>(8);
+
     /**
      * 插件中分类的Class
      */
-    private Map<String, List<Class<?>>> groupClasses = new HashMap<>();
-    private Map<String, Object> processorInfo = new HashMap<>();
+    private final Map<String, List<Class<?>>> groupClasses = new ConcurrentHashMap<>(8);
+
+    /**
+     * 处理者信息
+     */
+    private final Map<String, Object> processorInfo = new ConcurrentHashMap<>(8);
 
 
-    public PluginRegistryInfo(PluginWrapper pluginWrapper) {
+    private PluginRegistryInfo(PluginWrapper pluginWrapper,
+                               PluginManager pluginManager,
+                               GenericApplicationContext mainApplicationContext,
+                               boolean followingInitial) {
         this.pluginWrapper = pluginWrapper;
+        this.pluginManager = pluginManager;
         this.basePlugin = (BasePlugin) pluginWrapper.getPlugin();
+        this.mainApplicationContext = mainApplicationContext;
+        this.configuration = mainApplicationContext.getBean(IntegrationConfiguration.class);
+        this.followingInitial = followingInitial;
+
+        ClassLoader pluginClassLoader = basePlugin.getWrapper().getPluginClassLoader();
+        // 生成插件ApplicationContext-DefaultListableBeanFactory
+        DefaultListableBeanFactory defaultListableBeanFactory = new DefaultListableBeanFactory();
+        this.pluginApplicationContext = new AnnotationConfigApplicationContext(defaultListableBeanFactory);
+        // 设置插件ApplicationContext的classLoader
+        this.pluginApplicationContext.setClassLoader(pluginClassLoader);
+
+        this.pluginBinder = Binder.get(this.pluginApplicationContext.getEnvironment());
+        this.springBeanRegister = new SpringBeanRegister(pluginApplicationContext);
     }
+
+    public static PluginRegistryInfo build(PluginWrapper pluginWrapper,
+                                           PluginManager pluginManager,
+                                           GenericApplicationContext parentApplicationContext,
+                                           boolean followingInitial){
+        Objects.requireNonNull(pluginWrapper, "PluginWrapper can't is null");
+        Objects.requireNonNull(pluginWrapper, "PluginManager can't is null");
+        Objects.requireNonNull(pluginWrapper, "parentApplicationContext can't is null");
+        return new PluginRegistryInfo(pluginWrapper, pluginManager,
+                parentApplicationContext, followingInitial);
+    }
+
 
     public PluginWrapper getPluginWrapper() {
         return pluginWrapper;
@@ -72,9 +137,31 @@ public class PluginRegistryInfo {
      * @return 类集合容器
      */
     public List<Class<?>> getClasses(){
-        List<Class<?>> result = new ArrayList<>();
-        result.addAll(classes);
-        return result;
+        return Collections.unmodifiableList(classes);
+    }
+
+    /**
+     * 添加插件中加载的资源
+     * @param key key
+     * @param resourceWrapper 资源包装者
+     */
+    public void addPluginLoadResource(String key, ResourceWrapper resourceWrapper){
+        if(StringUtils.isNullOrEmpty(key)){
+            return;
+        }
+        if(resourceWrapper == null){
+            return;
+        }
+        pluginLoadResources.put(key, resourceWrapper);
+    }
+
+    /**
+     * 得到插件中加载的资源
+     * @param key 资源key
+     * @return ResourceWrapper
+     */
+    public ResourceWrapper getPluginLoadResource(String key) {
+        return pluginLoadResources.get(key);
     }
 
     /**
@@ -83,11 +170,13 @@ public class PluginRegistryInfo {
      * @param aClass 类
      */
     public void addGroupClasses(String key, Class<?> aClass){
-        List<Class<?>> classes = groupClasses.get(key);
-        if(classes == null){
-            classes = new ArrayList<>();
-            groupClasses.put(key, classes);
+        if(StringUtils.isNullOrEmpty(key)){
+            return;
         }
+        if(aClass == null){
+            return;
+        }
+        List<Class<?>> classes = groupClasses.computeIfAbsent(key, k -> new ArrayList<>());
         classes.add(aClass);
     }
 
@@ -120,15 +209,29 @@ public class PluginRegistryInfo {
     }
 
     /**
-     * 添加插件bean注册者信息
-     * @param key 扩展的key
-     * @param value 扩展值
+     * 添加插件中的配置对象
+     * @param singletonObject 单例对象
+     */
+    public void addConfigSingleton(Object singletonObject){
+        configSingletonObjects.add(singletonObject);
+    }
+
+    /**
+     * 添加插件中的配置对象
+     * @return 配置的实现对象
+     */
+    public Set<Object> getConfigSingletons(){
+        return Collections.unmodifiableSet(configSingletonObjects);
+    }
+
+    /**
+     * 添加处理者信息
+     * @param key key
+     * @param value value
      */
     public void addProcessorInfo(String key, Object value){
         processorInfo.put(key, value);
     }
-
-
 
     /**
      * 添加扩展数据
@@ -136,7 +239,50 @@ public class PluginRegistryInfo {
      * @param value 扩展值
      */
     public void addExtension(String key, Object value){
+        if(extensionMap.containsKey(key)){
+            throw new RuntimeException("The extension key ' " + key + " 'already exists");
+        }
         extensionMap.put(key, value);
+    }
+
+    /**
+     * 得到主程序的ApplicationContext
+     * @return GenericApplicationContext
+     */
+    public GenericApplicationContext getMainApplicationContext() {
+        return mainApplicationContext;
+    }
+
+    /**
+     * 得到当前插件的ApplicationContext
+     * @return AnnotationConfigApplicationContext
+     */
+    public GenericApplicationContext getPluginApplicationContext() {
+        return pluginApplicationContext;
+    }
+
+    /**
+     * 得到当前插件的Binder
+     * @return Binder
+     */
+    public Binder getPluginBinder() {
+        return pluginBinder;
+    }
+
+    /**
+     * 得到当前插件Bean注册者
+     * @return SpringBeanRegister
+     */
+    public SpringBeanRegister getSpringBeanRegister() {
+        return springBeanRegister;
+    }
+
+    /**
+     * 移除扩展数据
+     * @param key 扩展的key
+     */
+    public void removeExtension(String key){
+        extensionMap.remove(key);
     }
 
     /**
@@ -154,6 +300,47 @@ public class PluginRegistryInfo {
         }
     }
 
+    public ClassLoader getPluginClassLoader(){
+        return pluginWrapper.getPluginClassLoader();
+    }
 
+    public boolean isFollowingInitial() {
+        return followingInitial;
+    }
+
+    public IntegrationConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    void destroy(){
+        // 关闭ApplicationContext
+        try {
+            PluginInfoContainers.removePluginApplicationContext(getPluginWrapper().getPluginId());
+            closePluginApplicationContext();
+        } catch (Exception e){
+            logger.error("Close plugin '{}'-ApplicationContext failure", getPluginWrapper().getPluginId(), e);
+        }
+
+        // 清除数据集合
+        try {
+            extensionMap.clear();
+            classes.clear();
+            groupClasses.clear();
+            processorInfo.clear();
+            pluginLoadResources.clear();
+            configSingletonObjects.clear();
+        } catch (Exception e){
+            logger.error("Clear plugin '{}' failure", getPluginWrapper().getPluginId(), e);
+        }
+    }
+
+    private void closePluginApplicationContext() {
+        try {
+            getSpringBeanRegister().destroySingletons();
+            pluginApplicationContext.close();
+        } catch (Exception e){
+            logger.error("Close plugin '{}' ApplicationContext failure", getPluginWrapper().getPluginId(), e);
+        }
+    }
 
 }

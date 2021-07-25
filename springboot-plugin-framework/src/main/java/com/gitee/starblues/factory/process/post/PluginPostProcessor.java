@@ -7,10 +7,16 @@ import java.util.List;
 /**
  * 插件后置处理者接口
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.1.0
  */
 public interface PluginPostProcessor {
+
+    /**
+     * 初始化
+     * @throws Exception 初始化异常
+     */
+    void initialize() throws Exception;
 
 
     /**

@@ -8,17 +8,19 @@ import java.util.List;
 /**
  * 插件初始化监听者工厂
  *
- * @author zhangzhuo
+ * @author starBlues
  * @version 1.0
  */
 public class PluginInitializerListenerFactory implements PluginInitializerListener {
 
     private final List<PluginInitializerListener> pluginInitializerListeners = new ArrayList<>();
 
-    public final ApplicationContext mainApplicationContext;
+    public final ApplicationContext applicationContext;
 
-    public PluginInitializerListenerFactory(ApplicationContext mainApplicationContext) {
-        this.mainApplicationContext = mainApplicationContext;
+    public PluginInitializerListenerFactory(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+        // 添加默认的初始化监听者
+        pluginInitializerListeners.add(new DefaultInitializerListener(applicationContext));
     }
 
     @Override

@@ -1,21 +1,22 @@
 package com.gitee.starblues.realize;
 
-import com.gitee.starblues.loader.PluginResourceLoadFactory;
 import org.pf4j.Plugin;
 import org.pf4j.PluginWrapper;
 
 /**
- * 插件包要继承的抽象类
- * @author zhangzhuo
- * @version 2.2.0
+ * 插件包要继承的抽象类。
+ * 注意: 实现该类的子类无法使用依赖注入
+ * @author starBlues
+ * @version 2.4.0
  */
 public abstract class BasePlugin extends Plugin {
 
-    private final PluginResourceLoadFactory pluginResourceLoadFactory;
+    private final BasePluginExtend basePluginExtend;
+    private String springBootConfigFilePath;
 
     public BasePlugin(PluginWrapper wrapper) {
         super(wrapper);
-        this.pluginResourceLoadFactory = new PluginResourceLoadFactory();
+        this.basePluginExtend = new BasePluginExtend(this);
     }
 
 
@@ -26,7 +27,7 @@ public abstract class BasePlugin extends Plugin {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            pluginResourceLoadFactory.load(this);
+            basePluginExtend.startEvent();
         }
     }
 
@@ -38,7 +39,7 @@ public abstract class BasePlugin extends Plugin {
         } catch (Exception e){
             e.printStackTrace();
         } finally {
-            pluginResourceLoadFactory.unload(this);
+            basePluginExtend.deleteEvent();
         }
 
     }
@@ -50,7 +51,7 @@ public abstract class BasePlugin extends Plugin {
         } catch (Exception e){
             e.printStackTrace();
         } finally {
-            pluginResourceLoadFactory.unload(this);
+            basePluginExtend.startEvent();
         }
     }
 
@@ -63,29 +64,33 @@ public abstract class BasePlugin extends Plugin {
         return this.getClass().getPackage().getName();
     }
 
-
     /**
-     * 插件资源加载者。
-     * @return PluginResourceLoadFactory
+     * 得到插件扩展的信息
+     * @return BasePluginExtend
      */
-    public final PluginResourceLoadFactory getPluginResourceLoadFactory() {
-        return pluginResourceLoadFactory;
+    public final BasePluginExtend getBasePluginExtend() {
+        return basePluginExtend;
     }
-
 
     /**
      * 启动事件. Spring 容器都没有准备。无法使用注入。
      */
-    protected abstract void startEvent();
+    protected void startEvent(){
+
+    }
 
     /**
      * 删除事件. 在插件删除时触发。
      */
-    protected abstract void deleteEvent();
+    protected void deleteEvent(){
+
+    }
 
     /**
      * 停止事件. 在插件停止时触发。
      */
-    protected abstract void stopEvent();
+    protected void stopEvent(){
+
+    }
 
 }
