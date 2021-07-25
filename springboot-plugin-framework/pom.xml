@@ -68,7 +68,7 @@
         <jackson.version>2.10.1</jackson.version>
         <slf4j.version>1.7.7</slf4j.version>
 
-        <spring-version>5.0.7.RELEASE</spring-version>
+        <spring-version>5.0.17.RELEASE</spring-version>
         <spring-boot-version>2.4.1</spring-boot-version>
         <swagger-spring-web.version>2.10.5</swagger-spring-web.version>
         <springdoc.version>1.5.2</springdoc.version>
