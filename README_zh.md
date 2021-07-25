@@ -23,31 +23,28 @@
 - 插件支持`拦截器`的定制开发。
 
 ### 扩展包功能
-1. `SpringBoot-Mybatis`扩展包
+#### `SpringBoot-Mybatis`扩展包
 
-- 支持在插件中自定义`Mapper`接口、`Mapper xml` 以及对应的实体`bean`
+1. 支持在插件中自定义`Mapper`接口、`Mapper xml` 以及对应的实体`bean`
+2. 支持集成`Mybatis`、`Mybatis-Plus`、`Tk-Mybatis`
+3. 支持可在插件中独立配置数据源
 
-- 支持集成`Mybatis`、`Mybatis-Plus`、`Tk-Mybatis`
+- 详见 [插件SpringBoot Mybatis扩展](http://www.starblues.cn/extension-doc/Mybatis%E6%89%A9%E5%B1%95.html)
 
-- 支持可在插件中独立配置数据源
+#### 静态资源访问扩展包
 
-详见 [插件SpringBoot Mybatis扩展](http://www.starblues.cn/extension-doc/Mybatis%E6%89%A9%E5%B1%95.html)
+1. 支持通过http访问插件中静态资源
+2. 支持`Thymeleaf`模板引擎进行界面插件式开发
 
-2. 静态资源访问扩展包
+- 详见 [插件静态资源访问扩展](http://www.starblues.cn/extension-doc/%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E8%AE%BF%E9%97%AE%E6%89%A9%E5%B1%95.html)
 
-- 支持通过http访问插件中静态资源
-- 支持`Thymeleaf`模板引擎进行界面插件式开发
+#### 插件日志扩展包
 
-详见 [插件静态资源访问扩展](http://www.starblues.cn/extension-doc/%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E8%AE%BF%E9%97%AE%E6%89%A9%E5%B1%95.html)
+1. 插件可自主配置集成`logback`日志
+2. 插件可自主配置集成`log4j2`日志
 
-3. 插件日志扩展包
-
-- 插件可自主配置集成`logback`日志
-- 插件可自主配置集成`log4j2`日志
-
-详见 [插件静态资源访问扩展](http://www.starblues.cn/extension-doc/Log%E6%89%A9%E5%B1%95.html)
-
-感谢 [sousouki](https://gitee.com/caoshx_sousouki) 的开发提供
+- 详见 [插件静态资源访问扩展](http://www.starblues.cn/extension-doc/Log%E6%89%A9%E5%B1%95.html)
+- 感谢 [sousouki](https://gitee.com/caoshx_sousouki) 的开发提供
 
 ### 运行环境
 1. jdk1.8+

@@ -25,31 +25,28 @@ Different plug-ins can be developed for different projects and different plugin 
 - The plugin supports custom development of the 'Spring-MVC interceptor`.
 
 ### Expansion pack
-1. `SpringBoot-Mybatis` Expansion
+#### `SpringBoot-Mybatis` Expansion
 
-- Supports customizing the `mapper` interface, `mapper XML` and the corresponding entity `Bean` in the plugin
+1. Supports customizing the `mapper` interface, `mapper XML` and the corresponding entity `Bean` in the plugin
+2. Support integration `Mybatis`、`Mybatis-Plus`、`Tk-Mybatis`
+3. Supports independent configuration of `DataSources` in plugin
 
-- Support integration `Mybatis`、`Mybatis-Plus`、`Tk-Mybatis`
+- See details: [SpringBoot Mybatis Expansion](http://www.starblues.cn/extension-doc/Mybatis%E6%89%A9%E5%B1%95.html)
 
-- Supports independent configuration of `DataSources` in plugin
+#### `Static resource access` Extension
 
-See details: [SpringBoot Mybatis Expansion](http://www.starblues.cn/extension-doc/Mybatis%E6%89%A9%E5%B1%95.html)
+1. Supports accessing static resources in plug-ins through HTTP
+2. Support `Thymeleaf` template engine for interface plug-in development
 
-2. `Static resource access` Extension
+- See details: [Static Resource Access Extension](http://www.starblues.cn/extension-doc/%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E8%AE%BF%E9%97%AE%E6%89%A9%E5%B1%95.html)
 
-- Supports accessing static resources in plug-ins through HTTP
-- Support `Thymeleaf` template engine for interface plug-in development
+#### `Plugin Log` Extension
 
-See details: [Static Resource Access Extension](http://www.starblues.cn/extension-doc/%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E8%AE%BF%E9%97%AE%E6%89%A9%E5%B1%95.html)
+1. The plug-in can independently configure the integrated `logback` log
+2. The plug-in can independently configure the integrated `log4j2` log
 
-3. `Plugin Log` Extension
-
-- The plug-in can independently configure the integrated `logback` log
-- The plug-in can independently configure the integrated `log4j2` log
-
-See details: [Plugin Log Extension](http://www.starblues.cn/extension-doc/Log%E6%89%A9%E5%B1%95.html)
-
-Thank for [sousouki](https://gitee.com/caoshx_sousouki) development
+- See details: [Plugin Log Extension](http://www.starblues.cn/extension-doc/Log%E6%89%A9%E5%B1%95.html)
+- Thank for [sousouki](https://gitee.com/caoshx_sousouki) development
 
 ### Environment
 1. jdk1.8+d
