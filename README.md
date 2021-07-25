@@ -71,7 +71,7 @@ Different plugins can be developed for different projects and different plugin j
 - [springboot-plugin-framework-example](https://gitee.com/starblues/springboot-plugin-framework-example)
 
 ### Contact
-859570617(**After you like the framework, you can enter the group. Please note the Gitee/GitHub nickname before entering the group**)
+QQ: 859570617(**After you like the framework, you can enter the group. Please note the Gitee/GitHub nickname before entering the group**)
 
 ### Framework maintenance
 **Welcome all development enthusiasts to participate in the maintenance and extension development of the framework**
