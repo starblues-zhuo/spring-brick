@@ -73,7 +73,7 @@
         <spring-boot-starter-thymeleaf.version>2.0.3.RELEASE</spring-boot-starter-thymeleaf.version>
         <spring-boot-starter-web.version>2.1.1.RELEASE</spring-boot-starter-web.version>
 
-        <junit.version>4.11</junit.version>
+        <junit.version>4.13.1</junit.version>
     </properties>
 
 
