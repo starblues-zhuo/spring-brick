@@ -21,6 +21,7 @@
 - 支持插件之间的方法调用。
 - 支持插件`Http`接口文档: `Swagger`、`SpringDoc`。
 - 插件支持`拦截器`的定制开发。
+- 插件对`Spring-Aop`进行支持。
 
 ### 扩展包功能
 #### `SpringBoot-Mybatis`扩展包

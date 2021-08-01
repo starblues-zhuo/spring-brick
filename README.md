@@ -23,6 +23,7 @@ Different plugins can be developed for different projects and different plugin j
 - Supports method calls between plugins.
 - Supporting plugin http interface documentation: `Swagger`、`SpringDoc`。
 - The plugin supports custom development of the 'Spring-MVC interceptor`.
+- The plugin supports 'Spring-Aop'.
 
 ### Expansion pack
 #### `SpringBoot-Mybatis` Expansion
