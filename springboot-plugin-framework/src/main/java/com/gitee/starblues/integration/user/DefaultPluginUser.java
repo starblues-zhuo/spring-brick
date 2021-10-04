@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.util.ObjectUtils;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
@@ -86,6 +88,33 @@ public class DefaultPluginUser implements PluginUser{
             return Collections.emptyList();
         }
         return SpringBeanUtils.getBeans(pluginApplicationContext, aClass);
+    }
+
+    @Override
+    public List<Object> getPluginBeansWithAnnotation(Class<? extends Annotation> annotationType) {
+        List<GenericApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+        List<Object> beans = new ArrayList<>();
+        for (GenericApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+            Map<String, Object> beanMap = pluginApplicationContext.getBeansWithAnnotation(annotationType);
+            if(!ObjectUtils.isEmpty(beanMap)){
+                beans.addAll(beanMap.values());
+            }
+        }
+        return beans;
+    }
+
+    @Override
+    public List<Object> getPluginBeansWithAnnotation(String pluginId, Class<? extends Annotation> annotationType) {
+        GenericApplicationContext genericApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
+        if(genericApplicationContext == null){
+            return Collections.emptyList();
+        }
+        Map<String, Object> beanMap = genericApplicationContext.getBeansWithAnnotation(annotationType);
+        if(!ObjectUtils.isEmpty(beanMap)){
+            return new ArrayList<>(beanMap.values());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override

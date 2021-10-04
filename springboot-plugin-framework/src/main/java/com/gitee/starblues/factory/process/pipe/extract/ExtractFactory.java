@@ -80,6 +80,8 @@ public class ExtractFactory {
                 int order = extractWrapper.getOrder();
                 if(order > currentOrder){
                     currentObject = extractWrapper.getObject();
+                    // fix: https://gitee.com/starblues/springboot-plugin-framework-parent/issues/I430R6
+                    currentOrder = order;
                 }
             }
         }
@@ -117,17 +119,18 @@ public class ExtractFactory {
      * @param <T> 扩展的泛型
      * @return 扩展实例, 如果不存在则抛出 RuntimeException 异常
      */
+    @SuppressWarnings("unchecked")
     public <T> T getExtractByCoordinateOfMain(ExtractCoordinate coordinate){
         Objects.requireNonNull(coordinate, "ExtractCoordinate can't be null");
         Map<ExtractCoordinate, ExtractWrapper> extractCoordinates = extractMap.get(MAIN_EXTRACT_KEY);
         if(extractCoordinates  == null){
             throw new RuntimeException("Not found " + coordinate + " from main");
         }
-        Object extracts = extractCoordinates.get(coordinate);
-        if(extracts == null){
+        ExtractWrapper extractWrapper = extractCoordinates.get(coordinate);
+        if(extractWrapper == null){
             throw new RuntimeException("Not found " + coordinate + " from main");
         }
-        return (T) extracts;
+        return (T) extractWrapper.getObject();
     }
 
     /**
@@ -136,16 +139,18 @@ public class ExtractFactory {
      * @param <T> 接口类型泛型
      * @return 扩展实现集合
      */
+    @SuppressWarnings("unchecked")
     public <T> List<T> getExtractByInterClass(Class<T> interfaceClass){
         if(interfaceClass == null){
             return Collections.emptyList();
         }
         List<T> extracts = new ArrayList<>();
         for (Map<ExtractCoordinate, ExtractWrapper> value : extractMap.values()) {
-            for (Object o : value.values()) {
-                Set<Class<?>> allInterfacesForClassAsSet = ClassUtils.getAllInterfacesForClassAsSet(o.getClass());
+            for (ExtractWrapper extractWrapper : value.values()) {
+                Set<Class<?>> allInterfacesForClassAsSet = ClassUtils.getAllInterfacesForClassAsSet(
+                        extractWrapper.getObject().getClass());
                 if(allInterfacesForClassAsSet.contains(interfaceClass)){
-                    extracts.add((T)o);
+                    extracts.add((T)extractWrapper.getObject());
                 }
             }
         }

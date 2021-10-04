@@ -1,5 +1,6 @@
 package com.gitee.starblues.integration.user;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 
@@ -85,6 +86,21 @@ public interface PluginUser {
      * @return 实现 aClass 接口的实现类的集合
      */
     <T> List<T> getPluginBeans(String pluginId, Class<T> aClass);
+
+    /**
+     * 通过注解获取所有插件中的bean。（Spring管理的bean）
+     * @param annotationType 注解类型
+     * @return 该注解的bean集合
+     */
+    List<Object> getPluginBeansWithAnnotation(Class<? extends Annotation> annotationType);
+
+    /**
+     * 通过注解获取具体插件中的bean。（Spring管理的bean）
+     * @param pluginId  插件id
+     * @param annotationType 注解类型
+     * @return 该注解的bean集合
+     */
+    List<Object> getPluginBeansWithAnnotation(String pluginId, Class<? extends Annotation> annotationType);
 
 
     /**
