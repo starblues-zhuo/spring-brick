@@ -9,7 +9,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 /**
- * 扩展 ManifestPluginDescriptorFinderExtend
+ * 扩展 ManifestPluginDescriptorFinderExtend 的功能
  * @author starBlues
  * @version 2.4.5
  */

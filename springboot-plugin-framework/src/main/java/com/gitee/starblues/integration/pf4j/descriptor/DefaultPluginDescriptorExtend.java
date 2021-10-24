@@ -3,7 +3,7 @@ package com.gitee.starblues.integration.pf4j.descriptor;
 import org.pf4j.DefaultPluginDescriptor;
 
 /**
- * 扩展 DefaultPluginDescriptor
+ * 扩展 DefaultPluginDescriptor 的功能
  * @author starBlues
  * @version 2.4.5
  */

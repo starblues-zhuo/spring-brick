@@ -1,6 +1,8 @@
 package com.gitee.starblues.extension.resources;
 
 /**
+ * 配置文件key
+ *
  * @author starBlues
  * @version 2.4.3
  */

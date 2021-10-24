@@ -1,6 +1,7 @@
 package com.gitee.starblues.factory;
 
 /**
+ * 配置文件key
  * @author starBlues
  * @version 2.4.3
  */
