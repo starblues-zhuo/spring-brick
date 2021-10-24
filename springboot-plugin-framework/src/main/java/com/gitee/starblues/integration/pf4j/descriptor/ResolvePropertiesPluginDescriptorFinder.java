@@ -17,7 +17,7 @@ import java.util.Properties;
  * 解决乱码问题
  *
  * @author starBlues
- * @version 2.4.0
+ * @version 2.4.5
  */
 public class ResolvePropertiesPluginDescriptorFinder extends PropertiesPluginDescriptorFinder {
 

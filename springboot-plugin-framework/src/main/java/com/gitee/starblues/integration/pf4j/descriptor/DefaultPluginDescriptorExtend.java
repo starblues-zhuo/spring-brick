@@ -3,9 +3,9 @@ package com.gitee.starblues.integration.pf4j.descriptor;
 import org.pf4j.DefaultPluginDescriptor;
 
 /**
- * @author zhangzhuo@acoinfo.com
- * @version 1.0
- * @date 2021-10-23
+ * 扩展 DefaultPluginDescriptor
+ * @author starBlues
+ * @version 2.4.5
  */
 public class DefaultPluginDescriptorExtend extends DefaultPluginDescriptor implements PluginDescriptorExtend{
 

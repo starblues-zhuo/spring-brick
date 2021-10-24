@@ -9,9 +9,9 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 /**
- * @author zhangzhuo@acoinfo.com
- * @version 1.0
- * @date 2021-10-23
+ * 扩展 ManifestPluginDescriptorFinderExtend
+ * @author starBlues
+ * @version 2.4.5
  */
 public class ManifestPluginDescriptorFinderExtend extends ManifestPluginDescriptorFinder {
 

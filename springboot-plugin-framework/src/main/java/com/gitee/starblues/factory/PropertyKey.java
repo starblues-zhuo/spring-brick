@@ -1,7 +1,7 @@
 package com.gitee.starblues.factory;
 
 /**
- * @author zhangzhuo
+ * @author starBlues
  * @version 2.4.3
  */
 public class PropertyKey {
