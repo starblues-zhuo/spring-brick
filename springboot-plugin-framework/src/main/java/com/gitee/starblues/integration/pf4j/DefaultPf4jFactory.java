@@ -1,12 +1,15 @@
 package com.gitee.starblues.integration.pf4j;
 
 import com.gitee.starblues.integration.IntegrationConfiguration;
+import com.gitee.starblues.integration.pf4j.descriptor.ManifestPluginDescriptorFinderExtend;
+import com.gitee.starblues.integration.pf4j.descriptor.ResolvePropertiesPluginDescriptorFinder;
+import com.gitee.starblues.integration.pf4j.descriptor.ResourcesPluginDescriptorFinder;
 import org.pf4j.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 默认的插件集成工厂
@@ -33,10 +36,13 @@ public class DefaultPf4jFactory implements Pf4jFactory {
         }
         List<String> sortInitPluginIds = configuration.sortInitPluginIds();
         DefaultPluginManager defaultPluginManager = null;
+
+        List<String> pluginDir = configuration.pluginPath();
+        List<Path> pluginDirPath = pluginDir.stream().map(Paths::get).collect(Collectors.toList());
+
         if(RuntimeMode.DEVELOPMENT == environment){
             // 开发环境下的插件管理者
-            Path path = Paths.get(getDevPluginDir(configuration));
-            defaultPluginManager = new DefaultPluginManager(path){
+            defaultPluginManager = new DefaultPluginManager(pluginDirPath){
 
                 @Override
                 protected void initialize() {
@@ -75,8 +81,7 @@ public class DefaultPf4jFactory implements Pf4jFactory {
             };
         } else if(RuntimeMode.DEPLOYMENT == environment){
             // 运行环境下的插件管理者
-            Path path = Paths.get(getProdPluginDir(configuration));
-            defaultPluginManager = new DefaultPluginManager(path){
+            defaultPluginManager = new DefaultPluginManager(pluginDirPath){
 
                 @Override
                 protected void initialize() {
@@ -119,35 +124,18 @@ public class DefaultPf4jFactory implements Pf4jFactory {
     }
 
 
-    private String getDevPluginDir(IntegrationConfiguration configuration){
-        String pluginDir = configuration.pluginPath();
-        if(Objects.equals("", pluginDir)){
-            pluginDir = "./plugins/";
-        }
-        return pluginDir;
-    }
-
-
-    private String getProdPluginDir(IntegrationConfiguration configuration){
-        String pluginDir = configuration.pluginPath();
-        if(Objects.equals("", pluginDir)){
-            pluginDir = "plugins";
-        }
-        return pluginDir;
-    }
-
     public static PluginDescriptorFinder getPluginDescriptorFinder(RuntimeMode runtimeMode){
         if(runtimeMode == RuntimeMode.DEPLOYMENT){
             // 生产
             return new CompoundPluginDescriptorFinder()
                     .add(new ResourcesPluginDescriptorFinder(runtimeMode))
-                    .add(new ManifestPluginDescriptorFinder());
+                    .add(new ManifestPluginDescriptorFinderExtend());
         } else {
             // 开发
             return new CompoundPluginDescriptorFinder()
                     .add(new ResourcesPluginDescriptorFinder(runtimeMode))
                     .add(new ResolvePropertiesPluginDescriptorFinder())
-                    .add(new ManifestPluginDescriptorFinder());
+                    .add(new ManifestPluginDescriptorFinderExtend());
         }
     }
 

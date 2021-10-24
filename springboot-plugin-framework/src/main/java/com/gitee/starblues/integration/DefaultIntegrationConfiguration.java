@@ -1,5 +1,8 @@
 package com.gitee.starblues.integration;
 
+import org.pf4j.RuntimeMode;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +13,17 @@ import java.util.Set;
  * @version 2.4.4
  */
 public abstract class DefaultIntegrationConfiguration implements IntegrationConfiguration{
+
+    @Override
+    public List<String> pluginPath() {
+        List<String> pluginPath = new ArrayList<>(1);
+        if(environment() == RuntimeMode.DEPLOYMENT){
+            pluginPath.add("plugins");
+        } else if(environment() == RuntimeMode.DEVELOPMENT){
+            pluginPath.add("./plugins/");
+        }
+        return pluginPath;
+    }
 
     @Override
     public boolean enable() {

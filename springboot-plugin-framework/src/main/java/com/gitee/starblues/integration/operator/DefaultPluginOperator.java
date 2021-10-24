@@ -7,7 +7,6 @@ import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.listener.PluginInitializerListenerFactory;
 import com.gitee.starblues.integration.listener.PluginListenerFactory;
-import com.gitee.starblues.integration.listener.PluginStateListenerFactory;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
 import com.gitee.starblues.integration.operator.verify.DefaultPluginVerify;
 import com.gitee.starblues.integration.operator.verify.PluginLegalVerify;
@@ -15,6 +14,7 @@ import com.gitee.starblues.utils.GlobalRegistryInfo;
 import com.gitee.starblues.utils.PluginFileUtils;
 import com.gitee.starblues.utils.PluginOperatorInfo;
 import org.pf4j.*;
+import org.pf4j.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -490,16 +490,21 @@ public class DefaultPluginOperator implements PluginOperator {
     @Override
     public Set<String> getPluginFilePaths() throws Exception {
         RuntimeMode environment = integrationConfiguration.environment();
-        Set<String> paths = new HashSet<>();
         if(environment == RuntimeMode.DEVELOPMENT){
-            paths.add(integrationConfiguration.pluginPath());
-            return paths;
+            return new HashSet<>(integrationConfiguration.pluginPath());
         }
-        List<File> files = org.pf4j.util.FileUtils.getJars(Paths.get(integrationConfiguration.pluginPath()));
-        return files.stream()
-                .filter(file -> file != null)
-                .map(file -> file.getAbsolutePath())
-                .collect(Collectors.toSet());
+        List<String> pluginPath = integrationConfiguration.pluginPath();
+        Set<String> pathString = new HashSet<>(pluginPath.size());
+        for (String path : pluginPath) {
+            if(ObjectUtils.isEmpty(path)){
+                continue;
+            }
+            List<File> jars = FileUtils.getJars(Paths.get(path));
+            for (File jar : jars) {
+                pathString.add(jar.getAbsolutePath());
+            }
+        }
+        return pathString;
     }
 
     @Override

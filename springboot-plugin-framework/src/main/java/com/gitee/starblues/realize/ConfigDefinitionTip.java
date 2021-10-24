@@ -85,7 +85,7 @@ public class ConfigDefinitionTip {
     public <T> List<T> getConfigOfList(String prefix, Class<T> type){
         return pluginRegistryInfo.getPluginBinder()
                 .bind(prefix, Bindable.listOf(type))
-                .orElseGet(() -> Collections.emptyList());
+                .orElseGet(Collections::emptyList);
     }
 
     /**
@@ -99,7 +99,7 @@ public class ConfigDefinitionTip {
     public <T> Set<T> getConfigOfSet(String prefix, Class<T> type){
         return pluginRegistryInfo.getPluginBinder()
                 .bind(prefix, Bindable.setOf(type))
-                .orElseGet(() -> Collections.emptySet());
+                .orElseGet(Collections::emptySet);
     }
 
 
@@ -116,7 +116,7 @@ public class ConfigDefinitionTip {
     public <K, V> Map<K, V> getConfigOfSet(String prefix, Class<K> keyType, Class<V> valueType){
         return pluginRegistryInfo.getPluginBinder()
                 .bind(prefix, Bindable.mapOf(keyType, valueType))
-                .orElseGet(() -> Collections.emptyMap());
+                .orElseGet(Collections::emptyMap);
     }
 
 

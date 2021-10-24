@@ -5,6 +5,7 @@ import org.pf4j.util.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -35,8 +36,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     /**
      * 插件的路径
      */
-    @Value("${pluginPath:plugins}")
-    private String pluginPath;
+    private List<String> pluginPath;
 
     /**
      * 插件文件的路径
@@ -94,7 +94,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     private Boolean exactVersionAllowed;
 
     /**
-     * 停止插件时, 是否停止依赖的插件
+     * 停止插件时, 是否停止当前插件依赖的插件
      * 默认不停止
      **/
     @Value("${exactVersionAllowed:false}")
@@ -128,7 +128,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     }
 
     @Override
-    public String pluginPath() {
+    public List<String> pluginPath() {
         return pluginPath;
     }
 
@@ -244,11 +244,14 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         this.enable = enable;
     }
 
-    public String getPluginPath() {
+    public List<String> getPluginPath() {
+        if(ObjectUtils.isEmpty(pluginPath)){
+            return super.pluginPath();
+        }
         return pluginPath;
     }
 
-    public void setPluginPath(String pluginPath) {
+    public void setPluginPath(List<String> pluginPath) {
         this.pluginPath = pluginPath;
     }
 

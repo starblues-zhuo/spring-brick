@@ -2,6 +2,7 @@ package com.gitee.starblues.integration;
 
 import org.pf4j.RuntimeMode;
 import org.pf4j.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +19,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     private final boolean enable;
 
     private final RuntimeMode runtimeMode;
-    private final String pluginPath;
+    private final List<String> pluginPath;
     private final String pluginConfigFilePath;
 
     private final String uploadTempPath;
@@ -41,7 +42,10 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     public ConfigurationBuilder(Builder builder) {
         this.runtimeMode = Objects.requireNonNull(builder.runtimeMode, "runtimeMode can't be empty");
-        this.pluginPath = Objects.requireNonNull(builder.pluginPath, "pluginPath can't be empty");
+        if(ObjectUtils.isEmpty(builder.pluginPath)){
+            throw new IllegalArgumentException("pluginPath can't be empty");
+        }
+        this.pluginPath = builder.pluginPath;
         this.pluginConfigFilePath = Objects.requireNonNull(builder.pluginConfigFilePath,
                 "pluginConfigFilePath can't be empty");
         this.uploadTempPath = builder.uploadTempPath;
@@ -84,7 +88,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
         private Boolean enable;
 
         private RuntimeMode runtimeMode = RuntimeMode.DEVELOPMENT;
-        private String pluginPath = "";
+        private List<String> pluginPath;
         private String pluginConfigFilePath = "";
 
         private String uploadTempPath;
@@ -114,7 +118,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
             return this;
         }
 
-        public Builder pluginPath(String pluginPath){
+        public Builder pluginPath(List<String> pluginPath){
             this.pluginPath = pluginPath;
             return this;
         }
@@ -197,7 +201,10 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     }
 
     @Override
-    public String pluginPath() {
+    public List<String> pluginPath() {
+        if(ObjectUtils.isEmpty(pluginPath)){
+            return super.pluginPath();
+        }
         return pluginPath;
     }
 

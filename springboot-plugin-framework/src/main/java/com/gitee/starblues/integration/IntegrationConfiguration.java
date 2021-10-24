@@ -20,10 +20,11 @@ public interface IntegrationConfiguration {
     RuntimeMode environment();
 
     /**
-     * 插件的路径。开发环境建议直接配置为插件模块的父级目录。例如: plugins。如果启动主程序时, 插件为加载, 请检查该配置是否正确。
+     * 插件的路径。可设置多个插件路径
+     * 开发环境建议直接配置为插件模块的父级目录。例如: plugins。如果启动主程序时, 插件为加载, 请检查该配置是否正确。
      * @return 插件的路径
      */
-    String pluginPath();
+    List<String> pluginPath();
 
     /**
      * 插件文件的配置路径。在生产环境下, 插件的配置文件路径。

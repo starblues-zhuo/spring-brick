@@ -58,7 +58,9 @@ public class ConfigFileBeanRegistrar implements PluginBeanRegistrar {
         if(configDefinition == null){
             return;
         }
-        String fileName = PluginConfigUtils.getConfigFileName(configDefinition, integrationConfiguration.environment());
+        PluginConfigUtils.FileNamePack fileNamePack = PluginConfigUtils.getConfigFileName(configDefinition,
+                integrationConfiguration.environment());
+        String fileName = PluginConfigUtils.joinConfigFileName(fileNamePack);
         Object parseObject = null;
         if(!StringUtils.isNullOrEmpty(fileName)){
             PluginConfigDefinition pluginConfigDefinition =

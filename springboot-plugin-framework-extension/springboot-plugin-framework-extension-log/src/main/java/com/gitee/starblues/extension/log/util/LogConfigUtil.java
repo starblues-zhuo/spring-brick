@@ -56,7 +56,7 @@ public class LogConfigUtil {
         if(runtimeMode == RuntimeMode.DEVELOPMENT){
             pluginRootDir = pluginWrapper.getPluginPath().toString();
         } else {
-            pluginRootDir =  configuration.pluginPath();
+            pluginRootDir = configuration.pluginPath().get(0);
         }
         if(StringUtils.isNullOrEmpty(rootDir)){
             home = CommonUtils.joiningFilePath(pluginRootDir, "logs");

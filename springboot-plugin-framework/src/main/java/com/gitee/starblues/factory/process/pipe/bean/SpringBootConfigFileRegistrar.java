@@ -1,201 +1,306 @@
 package com.gitee.starblues.factory.process.pipe.bean;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TreeTraversingParser;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import com.gitee.starblues.annotation.ConfigDefinition;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.loader.ResourceWrapper;
 import com.gitee.starblues.factory.process.pipe.loader.load.PluginConfigFileLoader;
 import com.gitee.starblues.integration.IntegrationConfiguration;
+import com.gitee.starblues.integration.pf4j.descriptor.DefaultPluginDescriptorExtend;
 import com.gitee.starblues.realize.BasePlugin;
 import com.gitee.starblues.utils.PluginConfigUtils;
+import org.pf4j.PluginDescriptor;
 import org.pf4j.RuntimeMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.env.PropertiesPropertySourceLoader;
+import org.springframework.boot.env.PropertySourceLoader;
+import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
-import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * 插件互相调用的bean注册者
+ * 解析springboot中的插件中的配置文件。目前支持: prop、yaml
  * @author starBlues
- * @version 2.4.3
+ * @version 2.4.5
  */
 public class SpringBootConfigFileRegistrar implements PluginBeanRegistrar{
 
+    /**
+     * The "active profiles" property name.
+     */
+    private static final String ACTIVE_PROFILES_PROPERTY = "spring.profiles.active";
+
+    /**
+     * The "includes profiles" property name.
+     */
+    private static final String INCLUDE_PROFILES_PROPERTY = "spring.profiles.include";
+
     private final Logger logger = LoggerFactory.getLogger(SpringBootConfigFileRegistrar.class);
 
-    private final YAMLFactory yamlFactory;
-    private final ObjectMapper objectMapper;
-
-    private static final String[] PROP_FILE_SUFFIX = new String[]{".prop", ".PROP", ".properties", ".PROPERTIES"};
-    private static final String[] YML_FILE_SUFFIX = new String[]{".yml", ".YML", "yaml", "YAML"};
-
-    public static final String CONFIG_PROP = "PLUGIN_SPRING_BOOT_CONFIG-";
-
-
     private final IntegrationConfiguration integrationConfiguration;
+    private final List<PropertySourceLoader> propertySourceLoaders;
 
     public SpringBootConfigFileRegistrar(ApplicationContext mainApplicationContext){
         integrationConfiguration =
                 mainApplicationContext.getBean(IntegrationConfiguration.class);
-        yamlFactory = new YAMLFactory();
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.propertySourceLoaders = new ArrayList<>();
+        addPropertySourceLoader();
     }
 
+    protected void addPropertySourceLoader(){
+        this.propertySourceLoaders.add(new YamlPropertySourceLoader());
+        this.propertySourceLoaders.add(new PropertiesPropertySourceLoader());
+    }
 
     @Override
     public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
         ConfigurableEnvironment environment = pluginRegistryInfo.getPluginApplicationContext().getEnvironment();
-        //加载成PropertySource对象，并添加到Environment环境中
-        List<PropertySource<?>> propertySources = loadProfiles(pluginRegistryInfo);
-        if(ObjectUtils.isEmpty(propertySources)){
+
+        PluginConfigUtils.FileNamePack fileNamePack = getConfigFileName(pluginRegistryInfo);
+        if(fileNamePack == null){
             return;
         }
-        for (PropertySource<?> propertySource : propertySources) {
+        String configFileName = PluginConfigUtils.joinConfigFileName(fileNamePack);
+
+        PluginConfigFileLoader pluginConfigFileLoader = new PluginConfigFileLoader(
+                integrationConfiguration.pluginConfigFilePath(), configFileName
+        );
+
+        ResourceWrapper resourceWrapper = pluginConfigFileLoader.load(pluginRegistryInfo);
+        List<Resource> resources = resourceWrapper.getResources();
+        if(ObjectUtils.isEmpty(resources)){
+            return;
+        }
+        // 获取注解中原始文件配置
+        List<PropertySource<?>> propProfiles = getPropProfiles(resources);
+        if(ObjectUtils.isEmpty(propProfiles)){
+            return;
+        }
+        for (PropertySource<?> propertySource : propProfiles) {
             environment.getPropertySources().addLast(propertySource);
+        }
+        // 发现原始文件中配置的 profiles
+        List<Profile> profiles = getProfiles(environment);
+        if(!ObjectUtils.isEmpty(profiles)){
+            loadProfilesConfig(pluginRegistryInfo, fileNamePack, environment, profiles);
         }
     }
 
-    private List<PropertySource<?>> loadProfiles(PluginRegistryInfo pluginRegistryInfo) throws Exception {
-        List<Resource> resources = getResource(pluginRegistryInfo);
-        if(ObjectUtils.isEmpty(resources)){
+    /**
+     * 获取插件中定义的配置文件名称信息
+     * @param pluginRegistryInfo PluginRegistryInfo
+     * @return 配置文件信息
+     */
+    private PluginConfigUtils.FileNamePack getConfigFileName(PluginRegistryInfo pluginRegistryInfo){
+        // 先从插件引导配置获取配置文件
+        PluginDescriptor descriptor = pluginRegistryInfo.getPluginWrapper().getDescriptor();
+        if(descriptor instanceof DefaultPluginDescriptorExtend){
+            DefaultPluginDescriptorExtend descriptorExtend = (DefaultPluginDescriptorExtend) descriptor;
+            String configFileName = descriptorExtend.getConfigFileName();
+            if(!ObjectUtils.isEmpty(configFileName)){
+                return new PluginConfigUtils.FileNamePack(configFileName, descriptorExtend.getConfigFileProfile());
+            }
+        }
+
+        // 如果插件引导文件未设置, 则从引导类的注解添加 ConfigDefinition
+        //加载成PropertySource对象，并添加到Environment环境中
+        BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
+        ConfigDefinition configDefinition = basePlugin.getClass().getAnnotation(ConfigDefinition.class);
+        if(configDefinition == null){
             return null;
         }
+        RuntimeMode runtimeMode = pluginRegistryInfo.getPluginWrapper().getRuntimeMode();
+        return PluginConfigUtils.getConfigFileName(configDefinition, runtimeMode);
+    }
+
+    /**
+     * 从 Resource 中解析出 PropertySource
+     * @param resources resources
+     * @return List
+     * @throws IOException 加载文件 IOException 异常
+     */
+    private List<PropertySource<?>> getPropProfiles(List<Resource> resources) throws IOException {
         List<PropertySource<?>> propProfiles = new ArrayList<>();
+        if(resources == null || resources.isEmpty()){
+            return propProfiles;
+        }
         for (Resource resource : resources) {
             if(resource == null || !resource.exists()){
                 continue;
             }
             String filename = resource.getFilename();
             if(ObjectUtils.isEmpty(filename)){
+                logger.error("File name is empty!");
                 return null;
             }
-
-            for (String propFileSuffix : PROP_FILE_SUFFIX) {
-                if(!filename.endsWith(propFileSuffix)){
-                   continue;
+            for (PropertySourceLoader propertySourceLoader : propertySourceLoaders) {
+                if(!canLoadFileExtension(propertySourceLoader, filename)){
+                    continue;
                 }
-                List<PropertySource<?>> propertySources = getPropProfiles(resource, pluginRegistryInfo);
+                List<PropertySource<?>> propertySources = propertySourceLoader.load(filename, resource);
                 if(ObjectUtils.isEmpty(propertySources)){
                     continue;
                 }
                 propProfiles.addAll(propertySources);
-                break;
-            }
-            for (String propFileSuffix : YML_FILE_SUFFIX) {
-                if(!filename.endsWith(propFileSuffix)){
-                   continue;
-                }
-                List<PropertySource<?>> propertySources = getYmlProfiles(resource, pluginRegistryInfo);
-                if(ObjectUtils.isEmpty(propertySources)){
-                    continue;
-                }
-                propProfiles.addAll(propertySources);
-                break;
             }
         }
-
         return propProfiles;
     }
 
-    private List<PropertySource<?>> getYmlProfiles(Resource resource,
-                                                   PluginRegistryInfo pluginRegistryInfo) throws Exception{
-        YAMLParser yamlParser = yamlFactory.createParser(resource.getInputStream());
-        final JsonNode node = objectMapper.readTree(yamlParser);
-        Map<String, Object> source = objectMapper.readValue(new TreeTraversingParser(node),
-                new TypeReference<Map<String, Object>>(){});
-        Map<String, Object> result = new HashMap<>();
-        buildFlattenedMap(result, source, null);
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-        List<PropertySource<?>> propertySources = new ArrayList<>(1);
-        propertySources.add(new MapPropertySource(CONFIG_PROP.concat(pluginId), result));
-        return Collections.unmodifiableList(propertySources);
-    }
+    /**
+     * 加载 spring.profiles.active/spring.profiles.include 定义的配置
+     * @param pluginRegistryInfo 插件注册信息
+     * @param fileNamePack 配置文件包装
+     * @param environment ConfigurableEnvironment
+     * @param profiles 主配置文件中定义的值
+     * @throws Exception Exception
+     */
+    private void loadProfilesConfig(PluginRegistryInfo pluginRegistryInfo,
+                                    PluginConfigUtils.FileNamePack fileNamePack,
+                                    ConfigurableEnvironment environment, List<Profile> profiles) throws Exception {
+        // 解析当前文件名称
+        for (Profile profile : profiles) {
+            String name = profile.getName();
+            String fileName = PluginConfigUtils.joinConfigFileName(fileNamePack.getSourceFileName(), name);
+            PluginConfigFileLoader pluginConfigFileLoader = new PluginConfigFileLoader(
+                    integrationConfiguration.pluginConfigFilePath(), fileName
+            );
 
-    private List<PropertySource<?>> getPropProfiles(Resource resource,
-                                                    PluginRegistryInfo pluginRegistryInfo) throws Exception{
-        Properties properties = new Properties();
-        properties.load(resource.getInputStream());
-        String pluginId = pluginRegistryInfo.getPluginWrapper().getPluginId();
-        return Collections.unmodifiableList(
-                Collections.singletonList(new PropertiesPropertySource(pluginId.concat("-config"), properties))
-        );
-    }
-
-    private List<Resource> getResource(PluginRegistryInfo pluginRegistryInfo) throws Exception{
-        BasePlugin basePlugin = pluginRegistryInfo.getBasePlugin();
-        ConfigDefinition configDefinition = basePlugin.getClass().getAnnotation(ConfigDefinition.class);
-        if(configDefinition == null){
-            logger.warn("Plugin '{}' not config annotation : @ConfigDefinition, " +
-                    "If you want to use the plugin spring boot configuration file, " +
-                    "please configure the annotation: @ConfigDefinition to BasePlugin subclasses",
-                    pluginRegistryInfo.getPluginWrapper().getPluginId());
-            return null;
+            ResourceWrapper resourceWrapper = pluginConfigFileLoader.load(pluginRegistryInfo);
+            List<Resource> resources = resourceWrapper.getResources();
+            if(ObjectUtils.isEmpty(resources)){
+                continue;
+            }
+            List<PropertySource<?>> propProfiles = getPropProfiles(resources);
+            if(ObjectUtils.isEmpty(propProfiles)){
+                return;
+            }
+            for (PropertySource<?> propertySource : propProfiles) {
+                environment.getPropertySources().addLast(propertySource);
+            }
         }
-        RuntimeMode runtimeMode = pluginRegistryInfo.getPluginWrapper().getRuntimeMode();
-        String fileName = PluginConfigUtils.getConfigFileName(configDefinition, runtimeMode);
-        PluginConfigFileLoader pluginConfigFileLoader = new PluginConfigFileLoader(
-                integrationConfiguration.pluginConfigFilePath(), fileName
-        );
-        ResourceWrapper resourceWrapper = pluginConfigFileLoader.load(pluginRegistryInfo);
-        return resourceWrapper.getResources();
+        // 重新设置 ActiveProfiles
+        String[] names = profiles.stream()
+                .filter((profile) -> profile != null && !profile.isDefaultProfile())
+                .map(Profile::getName).toArray(String[]::new);
+        environment.setActiveProfiles(names);
     }
 
-    private void buildFlattenedMap(Map<String, Object> result,
-                                   Map<String, Object> source,
-                                   @Nullable String path) {
-        source.forEach((key, value) -> {
-            if (StringUtils.hasText(path)) {
-                if (key.startsWith("[")) {
-                    key = path + key;
-                }
-                else {
-                    key = path + '.' + key;
-                }
+    /**
+     * 根据文件后缀判断是否可解析
+     * @param loader PropertySourceLoader
+     * @param name 文件名称
+     * @return boolean
+     */
+    private boolean canLoadFileExtension(PropertySourceLoader loader, String name) {
+        return Arrays.stream(loader.getFileExtensions())
+                .anyMatch((fileExtension) -> StringUtils.endsWithIgnoreCase(name,
+                        fileExtension));
+    }
+
+
+    /**
+     * 得到主配置文件中的 Profile
+     * @param environment Environment
+     * @return List<Profile>
+     */
+    private List<Profile> getProfiles(Environment environment) {
+        List<Profile> profiles = new ArrayList<>();
+        Set<Profile> activatedViaProperty = getProfilesActivatedViaProperty(environment);
+        profiles.addAll(getOtherActiveProfiles(environment, activatedViaProperty));
+        profiles.addAll(activatedViaProperty);
+        profiles.removeIf(
+                (profile) -> (profile != null && profile.isDefaultProfile()));
+        return profiles;
+    }
+
+    private Set<Profile> getProfilesActivatedViaProperty(Environment environment) {
+        if (!environment.containsProperty(ACTIVE_PROFILES_PROPERTY)
+                && !environment.containsProperty(INCLUDE_PROFILES_PROPERTY)) {
+            return Collections.emptySet();
+        }
+        Binder binder = Binder.get(environment);
+        Set<Profile> activeProfiles = new LinkedHashSet<>();
+        activeProfiles.addAll(getProfiles(binder, INCLUDE_PROFILES_PROPERTY));
+        activeProfiles.addAll(getProfiles(binder, ACTIVE_PROFILES_PROPERTY));
+        return activeProfiles;
+    }
+
+    private List<Profile> getOtherActiveProfiles(Environment environment, Set<Profile> activatedViaProperty) {
+        return Arrays.stream(environment.getActiveProfiles()).map(Profile::new)
+                .filter((profile) -> !activatedViaProperty.contains(profile))
+                .collect(Collectors.toList());
+    }
+
+    private Set<Profile> getProfiles(Binder binder, String name) {
+        return binder.bind(name, String[].class).map(this::asProfileSet)
+                .orElse(Collections.emptySet());
+    }
+
+    private Set<Profile> asProfileSet(String[] profileNames) {
+        List<Profile> profiles = new ArrayList<>();
+        for (String profileName : profileNames) {
+            profiles.add(new Profile(profileName));
+        }
+        return new LinkedHashSet<>(profiles);
+    }
+
+    private static class Profile {
+
+        private final String name;
+
+        private final boolean defaultProfile;
+
+        Profile(String name) {
+            this(name, false);
+        }
+
+        Profile(String name, boolean defaultProfile) {
+            Assert.notNull(name, "Name must not be null");
+            this.name = name;
+            this.defaultProfile = defaultProfile;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public boolean isDefaultProfile() {
+            return this.defaultProfile;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
             }
-            if (value instanceof String) {
-                result.put(key, value);
+            if (obj == null || obj.getClass() != getClass()) {
+                return false;
             }
-            else if (value instanceof Map) {
-                // Need a compound key
-                @SuppressWarnings("unchecked")
-                Map<String, Object> map = (Map<String, Object>) value;
-                buildFlattenedMap(result, map, key);
-            }
-            else if (value instanceof Collection) {
-                // Need a compound key
-                @SuppressWarnings("unchecked")
-                Collection<Object> collection = (Collection<Object>) value;
-                if (collection.isEmpty()) {
-                    result.put(key, "");
-                }
-                else {
-                    int count = 0;
-                    for (Object object : collection) {
-                        buildFlattenedMap(result, Collections.singletonMap(
-                                "[" + (count++) + "]", object), key);
-                    }
-                }
-            }
-            else {
-                result.put(key, (value != null ? value : ""));
-            }
-        });
+            return ((Profile) obj).name.equals(this.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.name.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return this.name;
+        }
+
     }
 
 }
