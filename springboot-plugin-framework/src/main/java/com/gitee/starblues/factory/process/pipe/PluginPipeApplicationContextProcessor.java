@@ -7,6 +7,7 @@ import com.gitee.starblues.factory.process.pipe.bean.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
@@ -55,6 +56,7 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         }
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
+            registerMustDependencies(pluginApplicationContext, pluginRegistryInfo);
             installPluginAutoConfiguration(pluginApplicationContext, pluginRegistryInfo);
             pluginApplicationContext.refresh();
         } finally {
@@ -76,6 +78,7 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         Set<String> installAutoConfigClassString = pluginRegistryInfo.getPluginBinder()
                 .bind(PropertyKey.INSTALL_AUTO_CONFIG_CLASS, Bindable.setOf(String.class))
                 .orElseGet(()->null);
+
         if(ObjectUtils.isEmpty(installAutoConfigClassString)){
             return;
         }
@@ -93,6 +96,20 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         for (Class<?> autoConfigurationClass : autoConfigurationClassSet) {
             pluginApplicationContext.registerBean(autoConfigurationClass);
         }
+    }
+
+    /**
+     * 定义一些spring-boot中一些必要注册的依赖
+     * @param pluginApplicationContext pluginApplicationContext
+     * @param pluginRegistryInfo pluginRegistryInfo
+     */
+    private void registerMustDependencies(GenericApplicationContext pluginApplicationContext,
+                                          PluginRegistryInfo pluginRegistryInfo){
+        // 注册AutoConfigurationPackages, 用于插件可自动配置
+        AutoConfigurationPackages.register(pluginApplicationContext.getDefaultListableBeanFactory(),
+                pluginRegistryInfo.getBasePlugin().scanPackage());
+        // 注册 ConfigurationPropertiesBindingPostProcessor
+        ConfigurationPropertiesBindingPostProcessor.register(pluginApplicationContext);
     }
 
 

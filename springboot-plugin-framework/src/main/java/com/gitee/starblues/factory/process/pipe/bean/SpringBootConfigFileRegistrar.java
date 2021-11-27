@@ -121,7 +121,11 @@ public class SpringBootConfigFileRegistrar implements PluginBeanRegistrar{
             return null;
         }
         RuntimeMode runtimeMode = pluginRegistryInfo.getPluginWrapper().getRuntimeMode();
-        return PluginConfigUtils.getConfigFileName(configDefinition, runtimeMode);
+        return PluginConfigUtils.getConfigFileName(
+                configDefinition.fileName(),
+                configDefinition.prodSuffix(),
+                configDefinition.devSuffix(),
+                runtimeMode);
     }
 
     /**

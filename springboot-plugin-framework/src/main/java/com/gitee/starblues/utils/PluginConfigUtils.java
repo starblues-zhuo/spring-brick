@@ -17,23 +17,26 @@ public class PluginConfigUtils {
 
     /**
      * 根据项目运行环境模式来获取配置文件名称
-     * @param configDefinition 配置的注解
+     * @param fileName 文件名称
+     * @param prodSuffix 生产环境前缀
+     * @param devSuffix 开发环境前缀
      * @param runtimeMode 运行模式
      * @return 文件名称
      */
-    public static FileNamePack getConfigFileName(ConfigDefinition configDefinition,
+    public static FileNamePack getConfigFileName(String fileName,
+                                                 String prodSuffix,
+                                                 String devSuffix,
                                                  RuntimeMode runtimeMode){
-        String fileName = configDefinition.fileName();
         if(StringUtils.isNullOrEmpty(fileName)){
             return null;
         }
         String suffix = "";
         if(runtimeMode == RuntimeMode.DEPLOYMENT){
             // 生产环境
-            suffix = configDefinition.prodSuffix();
+            suffix = prodSuffix;
         } else if(runtimeMode == RuntimeMode.DEVELOPMENT){
             // 开发环境
-            suffix = configDefinition.devSuffix();
+            suffix = devSuffix;
         }
 
         return new FileNamePack(fileName, suffix);
@@ -47,6 +50,9 @@ public class PluginConfigUtils {
     }
 
     public static String joinConfigFileName(String fileName, String suffix){
+        if(StringUtils.isNullOrEmpty(fileName)){
+            return null;
+        }
         String fileNamePrefix;
         String fileNamePrefixSuffix;
 
@@ -61,7 +67,7 @@ public class PluginConfigUtils {
         if(suffix == null){
             suffix = "";
         }
-        if(!suffix.startsWith(DO)){
+        if(StringUtils.isNotNullOrEmpty(suffix) && !suffix.startsWith(DO)){
             suffix = DO + suffix;
         }
         return fileNamePrefix + suffix + fileNamePrefixSuffix;
