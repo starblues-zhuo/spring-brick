@@ -3,6 +3,7 @@ package com.gitee.starblues.factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
@@ -170,6 +171,22 @@ public class SpringBeanRegister {
         }
     }
 
+    /**
+     * 注册BeanDefinitionHolder
+     * @param definitionHolder BeanDefinitionHolder
+     */
+    public void registerBeanDefinition(BeanDefinitionHolder definitionHolder) {
+
+        String beanName = definitionHolder.getBeanName();
+        applicationContext.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
+
+        String[] aliases = definitionHolder.getAliases();
+        if (aliases != null) {
+            for (String alias : aliases) {
+                applicationContext.registerAlias(beanName, alias);
+            }
+        }
+    }
 
     /**
      * 销毁单例

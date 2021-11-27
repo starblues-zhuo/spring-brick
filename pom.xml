@@ -7,7 +7,7 @@
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework-parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.4.5-RELEASE</version>
+    <version>2.4.6-RELEASE</version>
 
     <description>spring boot 插件开发集成包</description>
 
