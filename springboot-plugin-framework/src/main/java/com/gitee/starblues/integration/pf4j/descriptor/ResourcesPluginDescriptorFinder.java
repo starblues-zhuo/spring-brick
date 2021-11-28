@@ -16,6 +16,7 @@ import java.util.Properties;
  * @author starBlues
  * @version 2.4.5
  */
+@Deprecated
 public class ResourcesPluginDescriptorFinder extends PropertiesPluginDescriptorFinder {
 
     public static final String PLUGIN_CONFIG_FILE_NAME = "plugin.configFileName";

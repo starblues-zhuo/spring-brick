@@ -1,6 +1,7 @@
 package com.gitee.starblues.integration;
 
-import org.pf4j.RuntimeMode;
+
+import com.gitee.starblues.core.RuntimeMode;
 
 import java.util.List;
 import java.util.Set;
@@ -14,10 +15,16 @@ import java.util.Set;
 public interface IntegrationConfiguration {
 
     /**
-     * 运行环境。运行项目时的模式。分为开发环境(DEVELOPMENT)、生产环境(DEPLOYMENT)
-     * @return RuntimeMode.DEVELOPMENT、RuntimeMode.DEPLOYMENT
+     * 运行环境。运行项目时的模式。分为开发环境(Dev)、生产环境(Prod)
+     * @return RuntimeMode.DEV、RuntimeMode.PROD
      */
     RuntimeMode environment();
+
+    /**
+     * 主程序包名
+     * @return String
+     */
+    String mainPackageName();
 
     /**
      * 插件的路径。可设置多个插件路径

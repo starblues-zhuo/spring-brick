@@ -1,22 +1,20 @@
 package com.gitee.starblues.integration.application;
 
+import com.gitee.starblues.core.PluginManager;
+import com.gitee.starblues.integration.manager.DefaultPluginManagerFactory;
+import com.gitee.starblues.integration.manager.PluginManagerFactory;
 import com.gitee.starblues.integration.operator.PluginOperatorWrapper;
-import com.gitee.starblues.integration.pf4j.DefaultPf4jFactory;
 import com.gitee.starblues.integration.IntegrationConfiguration;
-import com.gitee.starblues.integration.pf4j.Pf4jFactory;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.DefaultPluginOperator;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.user.DefaultPluginUser;
 import com.gitee.starblues.integration.user.PluginUser;
-import org.pf4j.PluginManager;
-import org.pf4j.PluginStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +30,7 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    protected Pf4jFactory integrationFactory;
+    protected PluginManagerFactory pluginManagerFactory;
 
     private PluginUser pluginUser;
     private PluginOperator pluginOperator;
@@ -42,8 +40,8 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
     public DefaultPluginApplication() {
     }
 
-    public DefaultPluginApplication(Pf4jFactory integrationFactory){
-        this.integrationFactory = integrationFactory;
+    public DefaultPluginApplication(PluginManagerFactory pluginManagerFactory){
+        this.pluginManagerFactory = pluginManagerFactory;
     }
 
 
@@ -55,11 +53,10 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
             throw new RuntimeException("Plugin has been initialized");
         }
         IntegrationConfiguration configuration = getConfiguration(applicationContext);
-        if(integrationFactory == null){
-            integrationFactory = new DefaultPf4jFactory(configuration);
+        if(pluginManagerFactory == null){
+            pluginManagerFactory = new DefaultPluginManagerFactory(configuration);
         }
-        PluginManager pluginManager = integrationFactory.getPluginManager();
-        addPf4jStateListener(pluginManager, applicationContext);
+        PluginManager pluginManager = pluginManagerFactory.getPluginManager();
         pluginUser = createPluginUser(applicationContext, pluginManager);
         pluginOperator = createPluginOperator(applicationContext, pluginManager, configuration);
         try {
@@ -114,21 +111,21 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
         return pluginUser;
     }
 
-    /**
-     * 将pf4j中的监听器加入
-     * @param pluginManager pluginManager
-     * @param applicationContext ApplicationContext
-     */
-    private void addPf4jStateListener(PluginManager pluginManager, ApplicationContext applicationContext){
-        List<PluginStateListener> pluginStateListeners = pluginStateListenerFactory
-                .buildListenerClass((GenericApplicationContext) applicationContext);
-        if(ObjectUtils.isEmpty(pluginStateListeners)){
-            return;
-        }
-        for (PluginStateListener pluginStateListener : pluginStateListeners) {
-            pluginManager.addPluginStateListener(pluginStateListener);
-        }
-    }
+//    /**
+//     * 将pf4j中的监听器加入
+//     * @param pluginManager pluginManager
+//     * @param applicationContext ApplicationContext
+//     */
+//    private void addPf4jStateListener(PluginManager pluginManager, ApplicationContext applicationContext){
+//        List<PluginStateListener> pluginStateListeners = pluginStateListenerFactory
+//                .buildListenerClass((GenericApplicationContext) applicationContext);
+//        if(ObjectUtils.isEmpty(pluginStateListeners)){
+//            return;
+//        }
+//        for (PluginStateListener pluginStateListener : pluginStateListeners) {
+//            pluginManager.addPluginStateListener(pluginStateListener);
+//        }
+//    }
 
 
     /**

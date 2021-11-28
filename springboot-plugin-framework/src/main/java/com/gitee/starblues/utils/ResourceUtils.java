@@ -8,6 +8,8 @@ import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Paths;
 
 /**
@@ -27,6 +29,9 @@ public class ResourceUtils {
     public static final String ROOT_PLUGIN_SIGN = "~";
 
     public final static String TYPE_SPLIT = ":";
+
+    public static final String CLASSPATH_URL_PREFIX = "classpath:";
+    public static final String FILE_URL_PREFIX = "file:";
 
     /**
      * 获取匹配路绝
@@ -93,6 +98,23 @@ public class ResourceUtils {
             home = rootDir;
         }
         return home;
+    }
+
+
+    public static boolean isUrl(String resourceLocation) {
+        if (resourceLocation == null) {
+            return false;
+        }
+        if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
+            return true;
+        }
+        try {
+            new URL(resourceLocation);
+            return true;
+        }
+        catch (MalformedURLException ex) {
+            return false;
+        }
     }
 
 }

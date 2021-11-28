@@ -1,7 +1,6 @@
 package com.gitee.starblues.integration;
 
-import org.pf4j.RuntimeMode;
-import org.pf4j.util.StringUtils;
+import com.gitee.starblues.core.RuntimeMode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -32,6 +31,12 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
      */
     @Value("${enable:true}")
     private Boolean enable;
+
+    /**
+     * 主程序包名
+     */
+    @Value("${mainPackageName:}")
+    private String mainPackageName;
 
     /**
      * 插件的路径
@@ -124,7 +129,12 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     @Override
     public RuntimeMode environment() {
-        return RuntimeMode.byName(runMode);
+        return RuntimeMode.valueOf(runMode);
+    }
+
+    @Override
+    public String mainPackageName() {
+        return mainPackageName;
     }
 
     @Override
@@ -147,7 +157,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     @Override
     public String uploadTempPath() {
-        if(StringUtils.isNullOrEmpty(uploadTempPath)){
+        if(!ObjectUtils.isEmpty(uploadTempPath)){
             return super.uploadTempPath();
         }
         return uploadTempPath;
@@ -155,7 +165,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     @Override
     public String backupPath() {
-        if(StringUtils.isNullOrEmpty(backupPath)){
+        if(!ObjectUtils.isEmpty(backupPath)){
             return super.backupPath();
         }
         return backupPath;
@@ -163,7 +173,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     @Override
     public String pluginRestPathPrefix() {
-        if(StringUtils.isNullOrEmpty(pluginRestPathPrefix)){
+        if(!ObjectUtils.isEmpty(pluginRestPathPrefix)){
             return super.pluginRestPathPrefix();
         } else {
             return pluginRestPathPrefix;

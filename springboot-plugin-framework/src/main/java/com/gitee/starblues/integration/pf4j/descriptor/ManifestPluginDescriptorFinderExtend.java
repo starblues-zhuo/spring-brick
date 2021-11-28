@@ -13,6 +13,7 @@ import java.util.jar.Manifest;
  * @author starBlues
  * @version 2.4.5
  */
+@Deprecated
 public class ManifestPluginDescriptorFinderExtend extends ManifestPluginDescriptorFinder {
 
     public static final String PLUGIN_CONFIG_FILE_NAME = "Plugin-ConfigFileName";

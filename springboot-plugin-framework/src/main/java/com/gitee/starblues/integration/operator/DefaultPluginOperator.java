@@ -1,5 +1,7 @@
 package com.gitee.starblues.integration.operator;
 
+import com.gitee.starblues.core.PluginManager;
+import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.factory.DefaultPluginFactory;
 import com.gitee.starblues.factory.PluginFactory;
 import com.gitee.starblues.factory.PluginRegistryInfo;
@@ -11,16 +13,13 @@ import com.gitee.starblues.integration.operator.module.PluginInfo;
 import com.gitee.starblues.integration.operator.verify.DefaultPluginVerify;
 import com.gitee.starblues.integration.operator.verify.PluginLegalVerify;
 import com.gitee.starblues.utils.GlobalRegistryInfo;
+import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.PluginFileUtils;
 import com.gitee.starblues.utils.PluginOperatorInfo;
-import org.pf4j.*;
-import org.pf4j.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -103,32 +102,22 @@ public class DefaultPluginOperator implements PluginOperator {
             // 启动前, 清除空文件
             PluginFileUtils.cleanEmptyFile(pluginManager.getPluginsRoot());
 
-            // 开始初始化插件工厂
-            pluginFactory.initialize();
             // 开始加载插件
-            pluginManager.loadPlugins();
-            pluginManager.startPlugins();
-            List<PluginWrapper> pluginWrappers = pluginManager.getStartedPlugins();
-            if(pluginWrappers == null || pluginWrappers.isEmpty()){
-                log.warn("Not found plugin!");
+            List<PluginDescriptor> pluginDescriptors = pluginManager.loadPlugins();
+            if(ObjectUtils.isEmpty(pluginDescriptors)){
+                log.warn("没有发现插件!");
                 pluginInitializerListenerFactory.complete();
                 return false;
             }
             boolean isFoundException = false;
-            for (PluginWrapper pluginWrapper : pluginWrappers) {
-                String pluginId = pluginWrapper.getPluginId();
-                GlobalRegistryInfo.addOperatorPluginInfo(pluginId,
-                        PluginOperatorInfo.OperatorType.INSTALL, false);
+            for (PluginDescriptor descriptor : pluginDescriptors) {
                 try {
-                    // 依次注册插件信息到Spring boot
-                    pluginFactory.registry(PluginRegistryInfo.build(pluginWrapper, pluginManager,
-                            applicationContext, true));
+                    pluginManager.start(descriptor.getPluginId());
                 } catch (Exception e){
-                    log.error("Plugin '{}' registry failure. Reason : {}", pluginId, e.getMessage(), e);
+                    log.error("启动插件 '{}' 失败. {}", descriptor.getPluginId(), e.getMessage(), e);
                     isFoundException = true;
                 }
             }
-            pluginFactory.build();
             isInit = true;
             if(isFoundException){
                 log.error("Plugins initialize failure");

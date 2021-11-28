@@ -7,6 +7,7 @@ import org.pf4j.DefaultPluginDescriptor;
  * @author starBlues
  * @version 2.4.5
  */
+@Deprecated
 public class DefaultPluginDescriptorExtend extends DefaultPluginDescriptor implements PluginDescriptorExtend{
 
 

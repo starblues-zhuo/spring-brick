@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
  * @author starBlues
  * @version 2.4.0
  */
+@Deprecated
 public class DefaultPf4jFactory implements Pf4jFactory {
 
     private final IntegrationConfiguration configuration;
@@ -30,7 +31,7 @@ public class DefaultPf4jFactory implements Pf4jFactory {
         if(configuration == null){
             throw new NullPointerException("IntegrationConfiguration is null");
         }
-        RuntimeMode environment = configuration.environment();
+        RuntimeMode environment = null;
         if(environment == null){
             throw new RuntimeException("Configuration RuntimeMode is null" + configuration.environment());
         }

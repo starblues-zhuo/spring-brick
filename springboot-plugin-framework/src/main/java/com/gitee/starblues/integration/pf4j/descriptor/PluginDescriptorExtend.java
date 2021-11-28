@@ -7,6 +7,7 @@ import org.pf4j.PluginDescriptor;
  * @author starBlues
  * @version 2.4.5
  */
+@Deprecated
 public interface PluginDescriptorExtend extends PluginDescriptor {
 
 

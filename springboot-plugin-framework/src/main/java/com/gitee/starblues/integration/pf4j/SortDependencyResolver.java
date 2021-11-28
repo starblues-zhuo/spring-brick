@@ -18,6 +18,7 @@ import java.util.Objects;
  * @author starBlues
  * @version 2.4.0
  */
+@Deprecated
 public class SortDependencyResolver extends DependencyResolver {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SortDependencyResolver.class);

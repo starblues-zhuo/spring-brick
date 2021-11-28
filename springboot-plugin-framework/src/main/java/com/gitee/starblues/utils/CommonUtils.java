@@ -28,9 +28,9 @@ public class CommonUtils {
      */
     public static <T> List<T> order(List<T> list, Function<T, Integer> orderImpl){
         if(list == null){
-            return list;
+            return null;
         }
-        Collections.sort(list, Comparator.comparing(orderImpl, Comparator.nullsLast(Comparator.reverseOrder())));
+        list.sort(Comparator.comparing(orderImpl, Comparator.nullsLast(Comparator.reverseOrder())));
         return list;
     }
 

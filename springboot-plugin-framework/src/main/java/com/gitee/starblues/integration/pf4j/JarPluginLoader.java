@@ -11,6 +11,7 @@ import java.nio.file.Path;
  * @author starBlues
  * @version 2.4.0
  */
+@Deprecated
 public class JarPluginLoader implements PluginLoader {
 
     protected PluginManager pluginManager;

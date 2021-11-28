@@ -19,6 +19,7 @@ import java.util.Properties;
  * @author starBlues
  * @version 2.4.5
  */
+@Deprecated
 public class ResolvePropertiesPluginDescriptorFinder extends PropertiesPluginDescriptorFinder {
 
     @Override

@@ -9,6 +9,7 @@ import org.pf4j.PluginManager;
  * @version 2.2.0
  * @see DefaultPluginApplication
  */
+@Deprecated
 public interface Pf4jFactory {
 
     /**

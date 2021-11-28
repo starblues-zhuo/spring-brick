@@ -1,7 +1,6 @@
 package com.gitee.starblues.integration;
 
-import org.pf4j.RuntimeMode;
-import org.pf4j.util.StringUtils;
+import com.gitee.starblues.core.RuntimeMode;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -14,6 +13,7 @@ import java.util.Set;
  * @author starBlues
  * @version 2.4.4
  */
+@Deprecated
 public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     private final boolean enable;
@@ -87,7 +87,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
         private Boolean enable;
 
-        private RuntimeMode runtimeMode = RuntimeMode.DEVELOPMENT;
+        private RuntimeMode runtimeMode = RuntimeMode.DEV;
         private List<String> pluginPath;
         private String pluginConfigFilePath = "";
 
@@ -201,6 +201,11 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     }
 
     @Override
+    public String mainPackageName() {
+        return null;
+    }
+
+    @Override
     public List<String> pluginPath() {
         if(ObjectUtils.isEmpty(pluginPath)){
             return super.pluginPath();
@@ -216,7 +221,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     @Override
     public String uploadTempPath() {
-        if(StringUtils.isNullOrEmpty(uploadTempPath)){
+        if(!ObjectUtils.isEmpty(uploadTempPath)){
             return super.uploadTempPath();
         } else {
             return uploadTempPath;
@@ -225,7 +230,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     @Override
     public String backupPath() {
-        if(StringUtils.isNullOrEmpty(backupPath)){
+        if(!ObjectUtils.isEmpty(backupPath)){
             return super.backupPath();
         } else {
             return backupPath;
@@ -234,7 +239,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     @Override
     public String pluginRestPathPrefix() {
-        if(StringUtils.isNullOrEmpty(pluginRestPathPrefix)){
+        if(!ObjectUtils.isEmpty(pluginRestPathPrefix)){
             return super.pluginRestPathPrefix();
         } else {
             return pluginRestPathPrefix;
@@ -277,7 +282,7 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
 
     @Override
     public String version() {
-        if(StringUtils.isNullOrEmpty(version)){
+        if(!ObjectUtils.isEmpty(version)){
             return super.version();
         }
         return version;

@@ -9,6 +9,7 @@ import java.util.Set;
  * @author starBlues
  * @version 2.4.0
  */
+@Deprecated
 public class ConfigPluginStatusProvider implements PluginStatusProvider {
 
     private Set<String> enablePluginIds = new HashSet<>();

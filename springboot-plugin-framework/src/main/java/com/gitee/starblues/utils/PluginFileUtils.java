@@ -14,6 +14,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
+import java.util.List;
 
 /**
  * 插件文件工具类
@@ -50,35 +51,35 @@ public final class PluginFileUtils {
     }
 
 
-    public static void cleanEmptyFile(Path path){
-        if(path == null){
+    public static void cleanEmptyFile(List<Path> paths){
+        if(ObjectUtils.isEmpty(paths)){
             return;
         }
-        if(!Files.exists(path)){
-            return;
-        }
-        try {
-            Files.list(path)
-                    .forEach(subPath -> {
-                        File file = subPath.toFile();
-                        if(!file.isFile()){
-                            return;
-                        }
-                        long length = file.length();
-                        if(length == 0){
-                            try {
-                                Files.deleteIfExists(subPath);
-                            } catch (IOException e) {
-                                e.printStackTrace();
+        for (Path path : paths) {
+            if(!Files.exists(path)){
+                continue;
+            }
+            try {
+                Files.list(path)
+                        .forEach(subPath -> {
+                            File file = subPath.toFile();
+                            if(!file.isFile()){
+                                return;
                             }
-                        }
-                    });
-        } catch (IOException e) {
-            e.printStackTrace();
+                            long length = file.length();
+                            if(length == 0){
+                                try {
+                                    Files.deleteIfExists(subPath);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
     }
-
 
 
     /**
@@ -96,6 +97,24 @@ public final class PluginFileUtils {
             Files.createFile(path);
         }
         return path;
+    }
+
+    /**
+     * 是否为 zip 文件
+     * @param path 文件路径
+     * @return boolean
+     */
+    public static boolean isZipFile(Path path) {
+        return Files.isRegularFile(path) && path.toString().toLowerCase().endsWith(".zip");
+    }
+
+    /**
+     * 是否为 jar 文件
+     * @param path 文件路径
+     * @return boolean
+     */
+    public static boolean isJarFile(Path path) {
+        return Files.isRegularFile(path) && path.toString().toLowerCase().endsWith(".jar");
     }
 
 
