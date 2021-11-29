@@ -74,6 +74,16 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
         }
     }
 
+    @Override
+    public URL[] getURLs() {
+        List<Resource> resources = resourceLoaderFactory.getResources();
+        URL[] urls = new URL[resources.size()];
+        for (int i = 0; i < resources.size(); i++) {
+            urls[i] = resources.get(i).getUrl();
+        }
+        return urls;
+    }
+
     private Class<?> findPluginClass(String name) {
         synchronized (pluginClassCache){
             Class<?> aClass = null;

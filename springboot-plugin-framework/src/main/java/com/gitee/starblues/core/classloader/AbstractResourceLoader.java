@@ -2,6 +2,8 @@ package com.gitee.starblues.core.classloader;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,6 +47,10 @@ public abstract class AbstractResourceLoader {
         } else {
             return null;
         }
+    }
+
+    public List<Resource> getResources(){
+        return new ArrayList<>(resourceCache.values());
     }
 
     public void clear() {

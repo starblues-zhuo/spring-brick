@@ -54,6 +54,14 @@ public class ResourceLoaderFactory extends AbstractResourceLoader {
         }
     }
 
+    @Override
+    public List<Resource> getResources() {
+        List<Resource> resources = new ArrayList<>();
+        for (AbstractResourceLoader resourceLoader : resourceLoaders) {
+            resources.addAll(resourceLoader.getResources());
+        }
+        return resources;
+    }
 
     @Override
     public synchronized Resource findResource(String name) {
