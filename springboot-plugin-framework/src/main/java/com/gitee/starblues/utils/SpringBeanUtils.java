@@ -22,7 +22,7 @@ public class SpringBeanUtils {
     public static <T> List<T> getBeans(ApplicationContext applicationContext, Class<T> aClass) {
         Map<String, T> beansOfTypeMap = applicationContext.getBeansOfType(aClass);
         if(beansOfTypeMap.isEmpty()){
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         return new ArrayList<>(beansOfTypeMap.values());
     }

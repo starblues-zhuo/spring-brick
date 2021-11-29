@@ -58,7 +58,7 @@ public class DefaultSpringPlugin implements SpringPlugin {
 
     protected SpringPluginRegistryInfo createRegistryInfo(PluginWrapper pluginWrapper){
         PluginSpringApplication springApplication = createSpringApplication(pluginWrapper);
-        return new SpringPluginRegistryInfo(
+        return new DefaultSpringPluginRegistryInfo(
                 pluginWrapper, springApplication, mainApplicationContext
         );
     }

@@ -7,24 +7,11 @@ import org.springframework.context.support.GenericApplicationContext;
  * @author starBlues
  * @version 3.0.0
  */
-public class SpringPluginRegistryInfo {
+public interface SpringPluginRegistryInfo {
 
-    private final PluginWrapper pluginWrapper;
-    private final PluginSpringApplication pluginSpringApplication;
-    private final GenericApplicationContext mainApplicationContext;
+    PluginWrapper getPluginWrapper();
 
-    public SpringPluginRegistryInfo(PluginWrapper pluginWrapper, PluginSpringApplication springApplication,
-                                    GenericApplicationContext mainApplicationContext) {
-        this.pluginWrapper = pluginWrapper;
-        this.pluginSpringApplication = springApplication;
-        this.mainApplicationContext = mainApplicationContext;
-    }
+    PluginSpringApplication getPluginSpringApplication();
 
-    public PluginWrapper getPluginWrapper() {
-        return pluginWrapper;
-    }
-
-    public PluginSpringApplication getPluginSpringApplication() {
-        return pluginSpringApplication;
-    }
+    GenericApplicationContext getMainApplicationContext();
 }

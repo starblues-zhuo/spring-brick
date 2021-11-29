@@ -1,6 +1,7 @@
 package com.gitee.starblues.spring.process;
 
 import com.gitee.starblues.spring.SpringPluginRegistryInfo;
+import com.gitee.starblues.spring.process.after.ControllerAfterRefreshProcessor;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.OrderPriority;
 import com.gitee.starblues.utils.SpringBeanUtils;
@@ -21,9 +22,15 @@ public class AfterRefreshProcessorFactory implements AfterRefreshProcessor{
     private final List<AfterRefreshProcessor> afterRefreshProcessors;
 
     public AfterRefreshProcessorFactory(GenericApplicationContext mainApplicationContext) {
-        List<AfterRefreshProcessor> afterRefreshProcessors = SpringBeanUtils.getBeans(mainApplicationContext, AfterRefreshProcessor.class);
+        List<AfterRefreshProcessor> afterRefreshProcessors = SpringBeanUtils.getBeans(
+                mainApplicationContext, AfterRefreshProcessor.class);
+        addDefault(afterRefreshProcessors);
         afterRefreshProcessors.sort(CommonUtils.orderPriority(AfterRefreshProcessor::order));
         this.afterRefreshProcessors = afterRefreshProcessors;
+    }
+
+    protected void addDefault(List<AfterRefreshProcessor> afterRefreshProcessors){
+        afterRefreshProcessors.add(new ControllerAfterRefreshProcessor());
     }
 
     @Override

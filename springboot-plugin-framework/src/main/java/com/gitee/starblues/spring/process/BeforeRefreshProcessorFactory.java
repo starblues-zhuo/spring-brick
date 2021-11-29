@@ -21,7 +21,8 @@ public class BeforeRefreshProcessorFactory implements BeforeRefreshProcessor {
     private final List<BeforeRefreshProcessor> processors;
 
     public BeforeRefreshProcessorFactory(GenericApplicationContext mainApplicationContext) {
-        List<BeforeRefreshProcessor> processors = SpringBeanUtils.getBeans(mainApplicationContext, BeforeRefreshProcessor.class);
+        List<BeforeRefreshProcessor> processors = SpringBeanUtils.getBeans(
+                mainApplicationContext, BeforeRefreshProcessor.class);
         processors.sort(CommonUtils.orderPriority(BeforeRefreshProcessor::order));
         this.processors = processors;
     }
