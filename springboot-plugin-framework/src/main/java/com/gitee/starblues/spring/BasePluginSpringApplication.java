@@ -1,7 +1,7 @@
-package com.gitee.starblues.core.spring;
+package com.gitee.starblues.spring;
 
-import com.gitee.starblues.core.spring.environment.PluginEnvironmentProcessor;
-import com.gitee.starblues.core.spring.environment.PluginLocalConfigFileProcessor;
+import com.gitee.starblues.spring.environment.PluginEnvironmentProcessor;
+import com.gitee.starblues.spring.environment.PluginLocalConfigFileProcessor;
 import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
@@ -11,6 +11,7 @@ import org.springframework.core.Ordered;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * PluginSpringApplication
@@ -18,6 +19,8 @@ import java.util.List;
  * @version 3.0.0
  */
 public class BasePluginSpringApplication implements PluginSpringApplication{
+
+    private final AtomicBoolean isStarted = new AtomicBoolean(false);
 
     private final DefaultListableBeanFactory beanFactory;
     private final PluginApplicationContext applicationContext;
@@ -66,10 +69,17 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
 
     @Override
     public GenericApplicationContext run() {
-        processEnvironment();
-        loadBean();
-        refresh();
-        return applicationContext;
+        synchronized (isStarted){
+            if(isStarted.get()){
+                throw new RuntimeException("已经运行了PluginSpringApplication, 无法再运行");
+            }
+            processEnvironment();
+            loadBean();
+            refresh();
+            isStarted.set(true);
+            return applicationContext;
+        }
+
     }
 
 
@@ -92,7 +102,13 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
 
     @Override
     public void close() {
-        applicationContext.close();
+        synchronized (isStarted){
+            if(!isStarted.get()){
+                throw new RuntimeException("PluginSpringApplication没有运行, 不能close");
+            }
+            applicationContext.close();
+            isStarted.set(false);
+        }
     }
 
     @Override

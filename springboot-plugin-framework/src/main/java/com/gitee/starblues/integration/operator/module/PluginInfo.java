@@ -1,8 +1,8 @@
 package com.gitee.starblues.integration.operator.module;
 
-import org.pf4j.PluginDescriptor;
-import org.pf4j.PluginState;
 
+import com.gitee.starblues.core.PluginState;
+import com.gitee.starblues.core.descriptor.PluginDescriptor;
 
 /**
  * 插件信息
@@ -14,22 +14,22 @@ public class PluginInfo {
     /**
      * 插件基本信息
      */
-    private PluginDescriptor pluginDescriptor;
+    private final PluginDescriptor pluginDescriptor;
 
     /**
      * 插件状态
      */
-    private PluginState pluginState;
+    private final PluginState pluginState;
 
     /**
      * 插件路径
      */
-    private String path;
+    private final String path;
 
     /**
      * 运行模式
      */
-    private String runMode;
+    private final String runMode;
 
 
     public PluginInfo(PluginDescriptor pluginDescriptor,

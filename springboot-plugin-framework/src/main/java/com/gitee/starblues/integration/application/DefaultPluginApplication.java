@@ -1,8 +1,7 @@
 package com.gitee.starblues.integration.application;
 
-import com.gitee.starblues.core.PluginManager;
-import com.gitee.starblues.integration.manager.DefaultPluginManagerFactory;
-import com.gitee.starblues.integration.manager.PluginManagerFactory;
+import com.gitee.starblues.core.DefaultRealizeProvider;
+import com.gitee.starblues.core.RealizeProvider;
 import com.gitee.starblues.integration.operator.PluginOperatorWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
@@ -10,13 +9,12 @@ import com.gitee.starblues.integration.operator.DefaultPluginOperator;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.user.DefaultPluginUser;
 import com.gitee.starblues.integration.user.PluginUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.gitee.starblues.spring.DefaultSpringPlugin;
+import com.gitee.starblues.spring.SpringPlugin;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -28,9 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DefaultPluginApplication extends AbstractPluginApplication {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    protected PluginManagerFactory pluginManagerFactory;
 
     private PluginUser pluginUser;
     private PluginOperator pluginOperator;
@@ -40,11 +35,6 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
     public DefaultPluginApplication() {
     }
 
-    public DefaultPluginApplication(PluginManagerFactory pluginManagerFactory){
-        this.pluginManagerFactory = pluginManagerFactory;
-    }
-
-
     @Override
     public synchronized void initialize(ApplicationContext applicationContext,
                                         PluginInitializerListener listener) {
@@ -53,12 +43,8 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
             throw new RuntimeException("Plugin has been initialized");
         }
         IntegrationConfiguration configuration = getConfiguration(applicationContext);
-        if(pluginManagerFactory == null){
-            pluginManagerFactory = new DefaultPluginManagerFactory(configuration);
-        }
-        PluginManager pluginManager = pluginManagerFactory.getPluginManager();
-        pluginUser = createPluginUser(applicationContext, pluginManager);
-        pluginOperator = createPluginOperator(applicationContext, pluginManager, configuration);
+        pluginUser = createPluginUser(applicationContext);
+        pluginOperator = createPluginOperator(applicationContext, configuration);
         try {
             setBeanFactory(applicationContext);
             pluginOperator.initPlugins(listener);
@@ -71,33 +57,37 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
     /**
      * 创建插件使用者。子类可扩展
      * @param applicationContext Spring ApplicationContext
-     * @param pluginManager 插件管理器
      * @return PluginUser
      */
-    protected PluginUser createPluginUser(ApplicationContext applicationContext,
-                                          PluginManager pluginManager){
-        return new DefaultPluginUser(applicationContext, pluginManager);
+    protected PluginUser createPluginUser(ApplicationContext applicationContext){
+        return new DefaultPluginUser(applicationContext);
     }
 
     /**
      * 创建插件操作者。子类可扩展
      * @param applicationContext Spring ApplicationContext
-     * @param pluginManager 插件管理器
      * @param configuration 当前集成的配置
      * @return PluginOperator
      */
     protected PluginOperator createPluginOperator(ApplicationContext applicationContext,
-                                                  PluginManager pluginManager,
                                                   IntegrationConfiguration configuration){
+        GenericApplicationContext genericApplicationContext = (GenericApplicationContext) applicationContext;
         PluginOperator pluginOperator = new DefaultPluginOperator(
-                applicationContext,
-                configuration,
-                pluginManager,
-                this.listenerFactory
+                genericApplicationContext,
+                createSpringPlugin(genericApplicationContext),
+                createRealizeProvider(configuration),
+                configuration
         );
         return new PluginOperatorWrapper(pluginOperator, configuration);
     }
 
+    protected SpringPlugin createSpringPlugin(GenericApplicationContext applicationContext){
+        return new DefaultSpringPlugin(applicationContext);
+    }
+
+    protected RealizeProvider createRealizeProvider(IntegrationConfiguration configuration){
+        return new DefaultRealizeProvider(configuration.environment(), configuration.mainPackage());
+    }
 
     @Override
     public PluginOperator getPluginOperator() {

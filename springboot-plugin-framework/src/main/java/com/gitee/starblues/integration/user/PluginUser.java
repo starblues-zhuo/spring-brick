@@ -113,18 +113,4 @@ public interface PluginUser {
     @Deprecated
     <T> T generateNewInstance(T object);
 
-
-
-    /**
-     * 使用场景:
-     * 1. 在主程序定义接口(该接口需要继承 ExtensionPoint 接口)。
-     * 2. 插件包中实现该接口
-     * 3. 在主程序可以使用该方法获取到实现该接口的实现类。（实现类可以配合 @Extension 控制顺序）
-     * 注意: 该场景用于非Spring管理的bean, 使用Spring注解无效
-     * @param tClass bean的类型
-     * @param <T> bean的类型
-     * @return List
-     */
-    <T> List<T> getPluginExtensions(Class<T> tClass);
-
 }

@@ -2,9 +2,6 @@ package com.gitee.starblues.core.loader;
 
 import com.gitee.starblues.core.PluginState;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
-import com.gitee.starblues.core.spring.PluginSpringApplication;
-import org.apache.catalina.core.ApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 
 import java.nio.file.Path;
 
@@ -19,18 +16,15 @@ public class PluginWrapperInside implements PluginWrapper{
     private final ClassLoader pluginClassLoader;
     private final Class<?> pluginClass;
     private final Path pluginPath;
-    private final PluginSpringApplication pluginSpringApplication;
     private PluginState pluginState;
 
     public PluginWrapperInside(String pluginId, PluginDescriptor pluginDescriptor,
-                               ClassLoader pluginClassLoader, Class<?> pluginClass,
-                               Path pluginPath, PluginSpringApplication pluginSpringApplication) {
+                               ClassLoader pluginClassLoader, Class<?> pluginClass, Path pluginPath) {
         this.pluginId = pluginId;
         this.pluginDescriptor = pluginDescriptor;
         this.pluginClassLoader = pluginClassLoader;
         this.pluginClass = pluginClass;
         this.pluginPath = pluginPath;
-        this.pluginSpringApplication = pluginSpringApplication;
     }
 
     public void setPluginState(PluginState pluginState) {
@@ -60,11 +54,6 @@ public class PluginWrapperInside implements PluginWrapper{
     @Override
     public Path getPluginPath() {
         return pluginPath;
-    }
-
-    @Override
-    public PluginSpringApplication getPluginApplicationContext() {
-        return pluginSpringApplication;
     }
 
     @Override

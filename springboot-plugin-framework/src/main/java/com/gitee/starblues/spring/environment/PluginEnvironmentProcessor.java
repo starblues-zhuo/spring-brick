@@ -1,4 +1,4 @@
-package com.gitee.starblues.core.spring.environment;
+package com.gitee.starblues.spring.environment;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;

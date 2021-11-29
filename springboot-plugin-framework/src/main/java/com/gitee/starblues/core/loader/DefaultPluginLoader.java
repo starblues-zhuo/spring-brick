@@ -4,9 +4,6 @@ import com.gitee.starblues.core.PluginState;
 import com.gitee.starblues.core.classloader.MainResourceDefiner;
 import com.gitee.starblues.core.classloader.PluginClassLoader;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
-import com.gitee.starblues.core.spring.BasePluginSpringApplication;
-import com.gitee.starblues.core.spring.PluginSpringApplication;
-import com.gitee.starblues.core.spring.environment.PluginLocalConfigFileProcessor;
 import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.PluginFileUtils;
@@ -41,26 +38,16 @@ public class DefaultPluginLoader implements PluginLoader{
         PluginClassLoader classLoader = getClassLoader(descriptor);
         installLib(classLoader, descriptor.getPluginLibDir());
         Class<?> bootstrapClass = classLoader.loadClass(descriptor.getPluginClass());
-        PluginSpringApplication springApplication = getPluginSpringApplication(descriptor,
-                classLoader, bootstrapClass);
         PluginWrapperInside pluginWrapperInside = new PluginWrapperInside(
                 descriptor.getPluginId(),
                 descriptor,
                 classLoader,
                 bootstrapClass,
-                descriptor.getPluginPath(),
-                springApplication.getApplicationContext()
+                descriptor.getPluginPath()
         );
         pluginWrapperInside.setPluginState(PluginState.CREATED);
         return pluginWrapperInside;
     }
-
-    private PluginSpringApplication getPluginSpringApplication(PluginDescriptor descriptor,
-                                                               ClassLoader classLoader,
-                                                               Class<?> bootstrapClass) {
-        return new BasePluginSpringApplication(classLoader, bootstrapClass, descriptor.getConfigFileName());
-    }
-
 
     protected synchronized PluginClassLoader getClassLoader(PluginDescriptor descriptor){
         String pluginId = descriptor.getPluginId();

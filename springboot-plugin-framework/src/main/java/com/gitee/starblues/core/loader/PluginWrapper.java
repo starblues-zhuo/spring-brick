@@ -2,7 +2,6 @@ package com.gitee.starblues.core.loader;
 
 import com.gitee.starblues.core.PluginState;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
-import com.gitee.starblues.core.spring.PluginSpringApplication;
 
 import java.nio.file.Path;
 
@@ -42,12 +41,6 @@ public interface PluginWrapper {
      * @return Path
      */
     Path getPluginPath();
-
-    /**
-     * 得到插件 SpringApplication
-     * @return PluginSpringApplication
-     */
-    PluginSpringApplication getPluginApplicationContext();
 
     /**
      * 得到插件状态

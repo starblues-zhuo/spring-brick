@@ -1,8 +1,8 @@
 package com.gitee.starblues.integration.operator;
 
+import com.gitee.starblues.core.loader.PluginWrapper;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
-import org.pf4j.PluginWrapper;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;

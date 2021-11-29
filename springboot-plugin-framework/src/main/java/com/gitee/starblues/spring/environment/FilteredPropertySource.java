@@ -1,4 +1,4 @@
-package com.gitee.starblues.core.spring.environment;
+package com.gitee.starblues.spring.environment;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;

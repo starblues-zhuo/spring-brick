@@ -35,9 +35,10 @@ public class ConfigDefinitionTip {
     public PluginInfo getCurrentPluginInfo(){
         PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
         PluginManager pluginManager = pluginWrapper.getPluginManager();
-        return new PluginInfo(pluginWrapper.getDescriptor(), pluginWrapper.getPluginState(),
-                pluginWrapper.getPluginPath().toAbsolutePath().toString(),
-                pluginManager.getRuntimeMode().toString());
+//        return new PluginInfo(pluginWrapper.getDescriptor(), pluginWrapper.getPluginState(),
+//                pluginWrapper.getPluginPath().toAbsolutePath().toString(),
+//                pluginManager.getRuntimeMode().toString());
+        return null;
     }
 
     /**

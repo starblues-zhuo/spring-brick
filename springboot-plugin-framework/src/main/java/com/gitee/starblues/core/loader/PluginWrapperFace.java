@@ -45,11 +45,6 @@ public class PluginWrapperFace implements PluginWrapper{
     }
 
     @Override
-    public ApplicationContext getPluginApplicationContext() {
-        return pluginWrapper.getPluginApplicationContext();
-    }
-
-    @Override
     public PluginState getPluginState() {
         return pluginWrapper.getPluginState();
     }

@@ -1,12 +1,12 @@
 package com.gitee.starblues.integration.operator;
 
+import com.gitee.starblues.core.loader.PluginWrapper;
 import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
 import com.gitee.starblues.realize.UnRegistryValidator;
 import com.gitee.starblues.utils.SpringBeanUtils;
-import org.pf4j.PluginWrapper;
 import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

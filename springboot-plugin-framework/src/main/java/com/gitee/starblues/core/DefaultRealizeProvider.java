@@ -76,6 +76,11 @@ public class DefaultRealizeProvider implements RealizeProvider {
     }
 
     @Override
+    public RuntimeMode getRuntimeMode() {
+        return runtimeMode;
+    }
+
+    @Override
     public PluginScanner getPluginScanner() {
         return Assert.isNotNull(pluginScanner, "PluginScanner 实现不能为空");
     }

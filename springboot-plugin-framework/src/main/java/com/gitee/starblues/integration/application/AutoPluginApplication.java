@@ -18,13 +18,6 @@ public class AutoPluginApplication extends DefaultPluginApplication
     private ApplicationContext applicationContext;
     private PluginInitializerListener pluginInitializerListener;
 
-    public AutoPluginApplication() {
-        super();
-    }
-
-    public AutoPluginApplication(Pf4jFactory pf4jFactory) {
-        super(pf4jFactory);
-    }
 
     /**
      * 设置插件初始化监听器

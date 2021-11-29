@@ -1,8 +1,8 @@
 package com.gitee.starblues.integration.user;
 
+import com.gitee.starblues.core.PluginManager;
 import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
 import com.gitee.starblues.utils.SpringBeanUtils;
-import org.pf4j.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -23,13 +23,9 @@ public class DefaultPluginUser implements PluginUser{
 
     protected final GenericApplicationContext parentApplicationContext;
 
-    protected final PluginManager pluginManager;
-
-    public DefaultPluginUser(ApplicationContext parentApplicationContext, PluginManager pluginManager) {
+    public DefaultPluginUser(ApplicationContext parentApplicationContext) {
         Objects.requireNonNull(parentApplicationContext, "ApplicationContext can't be null");
-        Objects.requireNonNull(pluginManager, "PluginManager can't be null");
         this.parentApplicationContext = (GenericApplicationContext)parentApplicationContext;
-        this.pluginManager = pluginManager;
     }
 
     /**
@@ -137,18 +133,6 @@ public class DefaultPluginUser implements PluginUser{
             }
         }
         return null;
-    }
-
-
-    /**
-     * 得到插件扩展接口实现的bean。（非Spring管理）
-     * @param tClass 接口的类
-     * @param <T> bean的类型
-     * @return 返回bean
-     */
-    @Override
-    public <T> List<T> getPluginExtensions(Class<T> tClass){
-        return pluginManager.getExtensions(tClass);
     }
 
 

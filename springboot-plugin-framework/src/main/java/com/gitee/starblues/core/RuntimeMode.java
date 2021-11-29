@@ -23,6 +23,14 @@ public enum RuntimeMode {
         this.mode = mode;
     }
 
+    public static RuntimeMode byName(String model){
+        if(DEV.name().equalsIgnoreCase(model)){
+            return RuntimeMode.DEV;
+        } else {
+            return RuntimeMode.PROD;
+        }
+    }
+
     @Override
     public String toString() {
         return mode;

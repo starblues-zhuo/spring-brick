@@ -12,6 +12,12 @@ import com.gitee.starblues.core.version.VersionInspector;
 public interface RealizeProvider {
 
     /**
+     * 当前运行环境
+     * @return RuntimeMode
+     */
+    RuntimeMode getRuntimeMode();
+
+    /**
      * 得到 PluginScanner 实现
      * @return PluginScanner
      */

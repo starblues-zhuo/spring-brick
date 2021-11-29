@@ -1,4 +1,4 @@
-package com.gitee.starblues.core.spring.environment;
+package com.gitee.starblues.spring.environment;
 
 import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.ObjectUtils;
@@ -191,7 +191,7 @@ public class PluginLocalConfigFileProcessor implements PluginEnvironmentProcesso
 
     private class Loader {
 
-        private final Log logger = this.logger;
+        private final Log logger = PluginLocalConfigFileProcessor.this.logger;
 
         private final ConfigurableEnvironment environment;
 

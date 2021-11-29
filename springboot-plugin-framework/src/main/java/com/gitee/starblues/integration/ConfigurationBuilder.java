@@ -201,10 +201,9 @@ public class ConfigurationBuilder extends DefaultIntegrationConfiguration{
     }
 
     @Override
-    public String mainPackageName() {
+    public String mainPackage() {
         return null;
     }
-
     @Override
     public List<String> pluginPath() {
         if(ObjectUtils.isEmpty(pluginPath)){

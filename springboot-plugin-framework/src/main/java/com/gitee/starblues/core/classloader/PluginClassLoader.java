@@ -52,10 +52,17 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(className)) {
             Set<String> classNames = mainResourceDefiner.getClassNames();
+            Class<?> loadedClass = null;
             if(exist(classNames, className)){
-                return parent.loadClass(className);
+                try {
+                    loadedClass = parent.loadClass(className);
+                } catch (Exception e){
+                    // 忽略
+                }
             }
-            Class<?> loadedClass = findLoadedClass(className);
+            if(loadedClass == null){
+                loadedClass = findLoadedClass(className);
+            }
             if (loadedClass != null) {
                 return loadedClass;
             }

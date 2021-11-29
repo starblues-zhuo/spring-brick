@@ -17,7 +17,7 @@ public interface PluginManager {
      * 得到插件root目录
      * @return List
      */
-    List<Path> getPluginsRoot();
+    List<Path> getPluginsRoots();
 
     /**
      * 加载配置目录中全部插件
@@ -26,12 +26,19 @@ public interface PluginManager {
     List<PluginDescriptor> loadPlugins();
 
     /**
+     * 校验插件jar包
+     * @param jarPath 插件jar包
+     * @return 校验结果. true 成功, false 失败
+     */
+    boolean verify(Path jarPath);
+
+    /**
      * 安装具体插件路径来加载插件
      * @param pluginPath 插件路径
      * @return 加载的插件信息
      * @throws PluginException 插件异常
      */
-    PluginDescriptor load(String pluginPath) throws PluginException;
+    PluginDescriptor load(Path pluginPath) throws PluginException;
 
     /**
      * 卸载加载插件
@@ -45,7 +52,7 @@ public interface PluginManager {
      * @return 安装的插件信息
      * @throws PluginException 插件异常
      */
-    PluginDescriptor install(String pluginPath) throws PluginException;
+    PluginDescriptor install(Path pluginPath) throws PluginException;
 
     /**
      * 卸载插件
@@ -59,7 +66,7 @@ public interface PluginManager {
      * @param pluginPath 新版本插件路径
      * @throws PluginException 插件异常
      */
-    void upgrade(String pluginPath) throws PluginException;
+    void upgrade(Path pluginPath) throws PluginException;
 
     /**
      * 启动处于 RESOLVED 状态的插件
@@ -84,9 +91,23 @@ public interface PluginManager {
     List<PluginDescriptor> getPluginDescriptors();
 
     /**
+     * 根据插件id获取插件描述信息
+     * @param pluginId 插件id
+     * @return PluginDescriptor
+     */
+    PluginDescriptor getPluginDescriptor(String pluginId);
+
+    /**
      * 得到全部的插件信息
      * @return List PluginWrapper
      */
     List<PluginWrapper> getPluginWrappers();
+
+    /**
+     * 根据插件id获取插件 PluginWrapper
+     * @param pluginId 插件id
+     * @return PluginWrapper
+     */
+    PluginWrapper getPluginWrapper(String pluginId);
 
 }

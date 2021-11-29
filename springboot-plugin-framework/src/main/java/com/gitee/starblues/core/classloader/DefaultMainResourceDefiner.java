@@ -52,6 +52,9 @@ public class DefaultMainResourceDefiner implements MainResourceDefiner{
         // == main ==
         mainClass.add(mainPackageName);
 
+        // == springboot-plugin-framework ==
+        mainClass.add("com.gitee.starblues");
+
         // === spring-boot-starter ===
         // logback-classic
         mainClass.add("ch.qos.logback.classic");
@@ -84,6 +87,7 @@ public class DefaultMainResourceDefiner implements MainResourceDefiner{
 
     private void initDefaultResources(String mainPackageName) {
         mainResources.add(mainPackageName.replace(".", "/"));
+        mainResources.add("com/gitee/starblues");
         mainResources.add("org/springframework");
         mainResources.add("org/slf4j/Logger");
         mainResources.add("org/aopalliance");
@@ -93,6 +97,7 @@ public class DefaultMainResourceDefiner implements MainResourceDefiner{
     private void initDefaultSpringFactories() {
         springFactories.add("/spring-boot/");
         springFactories.add("/spring-beans/");
+        springFactories.add("/springboot-plugin-framework/");
         // 当前框架名称
         springFactories.add(mainPackageName);
     }

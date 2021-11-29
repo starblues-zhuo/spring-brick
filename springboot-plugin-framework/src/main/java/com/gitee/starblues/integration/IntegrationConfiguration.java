@@ -24,7 +24,7 @@ public interface IntegrationConfiguration {
      * 主程序包名
      * @return String
      */
-    String mainPackageName();
+    String mainPackage();
 
     /**
      * 插件的路径。可设置多个插件路径

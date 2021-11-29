@@ -35,8 +35,8 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     /**
      * 主程序包名
      */
-    @Value("${mainPackageName:}")
-    private String mainPackageName;
+    @Value("${mainPackage:}")
+    private String mainPackage;
 
     /**
      * 插件的路径
@@ -129,12 +129,12 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     @Override
     public RuntimeMode environment() {
-        return RuntimeMode.valueOf(runMode);
+        return RuntimeMode.byName(runMode);
     }
 
     @Override
-    public String mainPackageName() {
-        return mainPackageName;
+    public String mainPackage() {
+        return mainPackage;
     }
 
     @Override
@@ -252,6 +252,14 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     public void setEnable(Boolean enable) {
         this.enable = enable;
+    }
+
+    public String getMainPackage() {
+        return mainPackage;
+    }
+
+    public void setMainPackage(String mainPackage) {
+        this.mainPackage = mainPackage;
     }
 
     public List<String> getPluginPath() {

@@ -23,8 +23,8 @@ public class DefaultPluginManagerFactory implements PluginManagerFactory{
     public PluginManager getPluginManager() {
         RuntimeMode runtimeMode = Assert.isNotEmpty(configuration.environment(),
                 "配置[environment]不能为空");
-        String mainPackageName = Assert.isNotEmpty(configuration.mainPackageName(),
-                "配置[mainPackageName]不能为空");
+        String mainPackageName = Assert.isNotEmpty(configuration.mainPackage(),
+                "配置[mainPackage]不能为空");
         List<String> pluginPaths = Assert.isNotEmpty(configuration.pluginPath(),
                 "配置[pluginPath]不能为空");
         RealizeProvider realizeProvider = new DefaultRealizeProvider(runtimeMode, mainPackageName);

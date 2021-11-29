@@ -1,4 +1,4 @@
-package com.gitee.starblues.core.spring;
+package com.gitee.starblues.spring;
 
 import com.gitee.starblues.utils.Assert;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;

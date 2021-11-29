@@ -22,6 +22,13 @@
       "defaultValue": true
     },
     {
+      "name": "plugin.mainPackage",
+      "type": "java.lang.String",
+      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
+      "description": "主程序包名, 包名建议设置到范围最大级别, 主要用于插件依赖主程序时的类时, 进行包名匹配",
+      "defaultValue": true
+    },
+    {
       "name": "plugin.pluginPath",
       "type": "java.lang.String",
       "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",

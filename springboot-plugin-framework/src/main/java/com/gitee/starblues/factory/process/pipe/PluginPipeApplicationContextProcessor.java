@@ -41,7 +41,7 @@ public class PluginPipeApplicationContextProcessor implements PluginPipeProcesso
         pluginBeanDefinitionRegistrars.add(new SpringBootConfigFileRegistrar(mainApplicationContext));
         pluginBeanDefinitionRegistrars.add(new PluginInsetBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new ConfigBeanRegistrar());
-        pluginBeanDefinitionRegistrars.add(new ConfigFileBeanRegistrar(mainApplicationContext));
+        //pluginBeanDefinitionRegistrars.add(new ConfigFileBeanRegistrar(mainApplicationContext));
         pluginBeanDefinitionRegistrars.add(new BasicBeanRegistrar());
         pluginBeanDefinitionRegistrars.add(new InvokeBeanRegistrar());
         pluginBeanDefinitionRegistrars.addAll(ExtensionInitializer.getPluginBeanRegistrarExtends());

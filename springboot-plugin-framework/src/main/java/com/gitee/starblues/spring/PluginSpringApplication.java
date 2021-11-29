@@ -1,6 +1,5 @@
-package com.gitee.starblues.core.spring;
+package com.gitee.starblues.spring;
 
-import org.apache.catalina.core.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
 /**
