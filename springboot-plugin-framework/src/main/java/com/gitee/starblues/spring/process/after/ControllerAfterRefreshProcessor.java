@@ -3,7 +3,7 @@ package com.gitee.starblues.spring.process.after;
 import com.gitee.starblues.spring.SpringPluginRegistryInfo;
 import com.gitee.starblues.spring.process.AfterRefreshProcessor;
 import com.gitee.starblues.utils.OrderPriority;
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
 
 import java.util.Map;
@@ -16,10 +16,15 @@ public class ControllerAfterRefreshProcessor implements AfterRefreshProcessor {
 
     @Override
     public void registry(SpringPluginRegistryInfo registryInfo) {
-        GenericApplicationContext applicationContext = registryInfo.getPluginSpringApplication().getApplicationContext();
+        ConfigurableApplicationContext applicationContext = registryInfo.getPluginSpringApplication().getApplicationContext();
         String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
         for (String beanDefinitionName : beanDefinitionNames) {
             System.out.println(beanDefinitionName);
+        }
+
+        String[] singletonNames = applicationContext.getBeanFactory().getSingletonNames();
+        for (String singletonName : singletonNames) {
+            System.out.println(singletonName);
         }
 
 

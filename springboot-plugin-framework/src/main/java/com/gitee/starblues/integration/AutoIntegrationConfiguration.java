@@ -18,6 +18,9 @@ import java.util.Set;
 @ConfigurationProperties(prefix = "plugin")
 public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguration{
 
+    public static final String ENABLE_KEY = "plugin.enable";
+
+
     /**
      * 运行模式
      *  开发环境: development、dev

@@ -1,6 +1,7 @@
 package com.gitee.starblues.spring;
 
 import com.gitee.starblues.core.loader.PluginWrapper;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
 /**
@@ -13,5 +14,5 @@ public interface SpringPluginRegistryInfo {
 
     PluginSpringApplication getPluginSpringApplication();
 
-    GenericApplicationContext getMainApplicationContext();
+    ConfigurableApplicationContext getMainApplicationContext();
 }

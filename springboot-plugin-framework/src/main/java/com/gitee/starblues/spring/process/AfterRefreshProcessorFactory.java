@@ -7,6 +7,7 @@ import com.gitee.starblues.utils.OrderPriority;
 import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class AfterRefreshProcessorFactory implements AfterRefreshProcessor{
 
     private final List<AfterRefreshProcessor> afterRefreshProcessors;
 
-    public AfterRefreshProcessorFactory(GenericApplicationContext mainApplicationContext) {
+    public AfterRefreshProcessorFactory(ConfigurableApplicationContext mainApplicationContext) {
         List<AfterRefreshProcessor> afterRefreshProcessors = SpringBeanUtils.getBeans(
                 mainApplicationContext, AfterRefreshProcessor.class);
         addDefault(afterRefreshProcessors);

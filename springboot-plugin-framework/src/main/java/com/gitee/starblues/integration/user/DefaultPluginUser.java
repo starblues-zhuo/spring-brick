@@ -6,6 +6,7 @@ import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ObjectUtils;
 
@@ -78,7 +79,7 @@ public class DefaultPluginUser implements PluginUser{
 
     @Override
     public <T> List<T> getPluginBeans(String pluginId, Class<T> aClass) {
-        GenericApplicationContext pluginApplicationContext =
+        ConfigurableApplicationContext pluginApplicationContext =
                 PluginInfoContainers.getPluginApplicationContext(pluginId);
         if(pluginApplicationContext == null){
             return Collections.emptyList();
@@ -88,9 +89,9 @@ public class DefaultPluginUser implements PluginUser{
 
     @Override
     public List<Object> getPluginBeansWithAnnotation(Class<? extends Annotation> annotationType) {
-        List<GenericApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
         List<Object> beans = new ArrayList<>();
-        for (GenericApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
             Map<String, Object> beanMap = pluginApplicationContext.getBeansWithAnnotation(annotationType);
             if(!ObjectUtils.isEmpty(beanMap)){
                 beans.addAll(beanMap.values());
@@ -101,7 +102,7 @@ public class DefaultPluginUser implements PluginUser{
 
     @Override
     public List<Object> getPluginBeansWithAnnotation(String pluginId, Class<? extends Annotation> annotationType) {
-        GenericApplicationContext genericApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
+        ConfigurableApplicationContext genericApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
         if(genericApplicationContext == null){
             return Collections.emptyList();
         }
@@ -118,10 +119,10 @@ public class DefaultPluginUser implements PluginUser{
         if(object == null){
             return null;
         }
-        List<GenericApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
         pluginApplicationContexts.add(parentApplicationContext);
         Class<?> aClass = object.getClass();
-        for (GenericApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
             try {
                 // 判断是否存在
                 pluginApplicationContext.getBean(aClass);
@@ -137,11 +138,11 @@ public class DefaultPluginUser implements PluginUser{
 
 
     private <T> T getBean(String name, boolean haveParent){
-        List<GenericApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
         if(haveParent){
             pluginApplicationContexts.add(parentApplicationContext);
         }
-        for (GenericApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
             if(pluginApplicationContext.containsBean(name)){
                 return (T) pluginApplicationContext.getBean(name);
             }
@@ -150,11 +151,11 @@ public class DefaultPluginUser implements PluginUser{
     }
 
     private <T> T getBean(Class<T> aClass,  boolean haveParent) {
-        List<GenericApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
         if(haveParent){
             pluginApplicationContexts.add(parentApplicationContext);
         }
-        for (GenericApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
             try {
                 T bean = pluginApplicationContext.getBean(aClass);
                 if(bean != null){
@@ -175,7 +176,7 @@ public class DefaultPluginUser implements PluginUser{
      * @return List
      */
     private <T> List<T> getBeans(Class<T> aClass, int type) {
-        List<GenericApplicationContext> pluginApplicationContexts = new ArrayList<>(1);
+        List<ConfigurableApplicationContext> pluginApplicationContexts = new ArrayList<>(1);
 
         if(type == 1){
             pluginApplicationContexts.add(parentApplicationContext);
@@ -189,7 +190,7 @@ public class DefaultPluginUser implements PluginUser{
         }
 
         List<T> result = new ArrayList<>();
-        for (GenericApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
             List<T> pluginBeans = SpringBeanUtils.getBeans(pluginApplicationContext, aClass);
             if(!pluginBeans.isEmpty()){
                 result.addAll(pluginBeans);

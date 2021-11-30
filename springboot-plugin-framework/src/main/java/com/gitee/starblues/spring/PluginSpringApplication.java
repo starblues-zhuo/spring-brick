@@ -1,6 +1,6 @@
 package com.gitee.starblues.spring;
 
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * 插件 SpringApplication
@@ -9,12 +9,11 @@ import org.springframework.context.support.GenericApplicationContext;
  */
 public interface PluginSpringApplication {
 
-
     /**
      * 运行
-     * @return GenericApplicationContext
+     * @return ConfigurableApplicationContext
      */
-    GenericApplicationContext run();
+    ConfigurableApplicationContext run();
 
     /**
      * 关闭
@@ -26,7 +25,7 @@ public interface PluginSpringApplication {
      * 得到 ApplicationContext
      * @return GenericApplicationContext
      */
-    GenericApplicationContext getApplicationContext();
+    ConfigurableApplicationContext getApplicationContext();
 
 
 }

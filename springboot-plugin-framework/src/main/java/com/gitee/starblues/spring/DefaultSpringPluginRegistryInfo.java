@@ -1,6 +1,7 @@
 package com.gitee.starblues.spring;
 
 import com.gitee.starblues.core.loader.PluginWrapper;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
 /**
@@ -11,11 +12,11 @@ public class DefaultSpringPluginRegistryInfo implements SpringPluginRegistryInfo
 
     private final PluginWrapper pluginWrapper;
     private final PluginSpringApplication pluginSpringApplication;
-    private final GenericApplicationContext mainApplicationContext;
+    private final ConfigurableApplicationContext mainApplicationContext;
 
     public DefaultSpringPluginRegistryInfo(PluginWrapper pluginWrapper,
                                            PluginSpringApplication springApplication,
-                                           GenericApplicationContext mainApplicationContext) {
+                                           ConfigurableApplicationContext mainApplicationContext) {
         this.pluginWrapper = pluginWrapper;
         this.pluginSpringApplication = springApplication;
         this.mainApplicationContext = mainApplicationContext;
@@ -32,7 +33,7 @@ public class DefaultSpringPluginRegistryInfo implements SpringPluginRegistryInfo
     }
 
     @Override
-    public GenericApplicationContext getMainApplicationContext() {
+    public ConfigurableApplicationContext getMainApplicationContext() {
         return mainApplicationContext;
     }
 

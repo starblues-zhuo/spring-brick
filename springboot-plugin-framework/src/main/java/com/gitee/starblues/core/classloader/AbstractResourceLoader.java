@@ -1,7 +1,12 @@
 package com.gitee.starblues.core.classloader;
 
+import com.gitee.starblues.utils.Assert;
+import com.gitee.starblues.utils.ResourceUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbstractResourceLoader {
 
-
+    protected final URL baseUrl;
     private final Map<String, Resource> resourceCache = new ConcurrentHashMap<>();
+
+    protected AbstractResourceLoader(URL baseUrl) {
+        this.baseUrl = baseUrl;
+    }
 
     protected void addResource(String name, Resource resource) {
         if(resourceCache.containsKey(name)){
@@ -37,7 +46,11 @@ public abstract class AbstractResourceLoader {
     }
 
     public Resource findResource(final String name) {
-        return resourceCache.get(name);
+        String queryName = name;
+        if(name.endsWith(ResourceUtils.PACKAGE_SPLIT)){
+            queryName = name.substring(0, name.lastIndexOf(ResourceUtils.PACKAGE_SPLIT));
+        }
+        return resourceCache.get(queryName);
     }
 
     public InputStream getInputStream(final String name) {

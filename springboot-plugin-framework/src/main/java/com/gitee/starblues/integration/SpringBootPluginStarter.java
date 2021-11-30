@@ -4,6 +4,7 @@ import com.gitee.starblues.core.RealizeProvider;
 import com.gitee.starblues.integration.application.AutoPluginApplication;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.user.PluginUser;
+import com.gitee.starblues.realize.PluginUtils;
 import com.gitee.starblues.spring.SpringPlugin;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -19,7 +20,7 @@ import org.springframework.context.support.GenericApplicationContext;
  */
 @Configuration(proxyBeanMethods = true)
 @EnableConfigurationProperties(AutoIntegrationConfiguration.class)
-@ConditionalOnProperty(value = "plugin.enable", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(value = AutoIntegrationConfiguration.ENABLE_KEY, havingValue = "true", matchIfMissing = false)
 public class SpringBootPluginStarter extends AutoPluginApplication {
 
 
@@ -50,4 +51,5 @@ public class SpringBootPluginStarter extends AutoPluginApplication {
     protected RealizeProvider createRealizeProvider(IntegrationConfiguration configuration) {
         return super.createRealizeProvider(configuration);
     }
+
 }

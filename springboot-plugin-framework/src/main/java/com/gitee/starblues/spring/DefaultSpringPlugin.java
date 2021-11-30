@@ -65,6 +65,7 @@ public class DefaultSpringPlugin implements SpringPlugin {
 
     protected PluginSpringApplication createSpringApplication(PluginWrapper pluginWrapper){
         return new BasePluginSpringApplication(
+                mainApplicationContext,
                 pluginWrapper.getPluginClassLoader(), pluginWrapper.getPluginClass(),
                 pluginWrapper.getPluginDescriptor().getConfigFileName()
         );

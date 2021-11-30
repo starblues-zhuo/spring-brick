@@ -17,11 +17,10 @@ import java.util.jar.JarInputStream;
 public class JarResourceLoader extends AbstractResourceLoader{
 
     private final URL sourceUrl;
-    private final URL baseUrl;
 
     public JarResourceLoader(URL url)  throws Exception{
+        super(new URL("jar:" + url.toString() + "!/"));
         this.sourceUrl = Assert.isNotNull(url, "url 不能为空");
-        this.baseUrl = new URL("jar:" + url.toString() + "!/");
     }
 
     @Override

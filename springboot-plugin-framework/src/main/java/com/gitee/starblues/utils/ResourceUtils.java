@@ -33,6 +33,8 @@ public class ResourceUtils {
     public static final String CLASSPATH_URL_PREFIX = "classpath:";
     public static final String FILE_URL_PREFIX = "file:";
 
+    public static final String PACKAGE_SPLIT = "/";
+
     /**
      * 获取匹配路绝
      * @param locationMatch 原始匹配路径。规则为: file:xxx, classpath:xxx , package:xxx

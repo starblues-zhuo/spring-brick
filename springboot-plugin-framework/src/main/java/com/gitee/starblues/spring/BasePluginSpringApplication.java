@@ -6,6 +6,7 @@ import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.Ordered;
 
@@ -22,6 +23,7 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
 
     private final AtomicBoolean isStarted = new AtomicBoolean(false);
 
+
     private final DefaultListableBeanFactory beanFactory;
     private final PluginApplicationContext applicationContext;
     private final PluginBeanDefinitionLoader beanDefinitionLoader;
@@ -29,18 +31,20 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
     private final List<PluginEnvironmentProcessor> environmentProcessors;
 
 
-    public BasePluginSpringApplication(ClassLoader classLoader,
+    public BasePluginSpringApplication(GenericApplicationContext mainApplicationContext,
+                                       ClassLoader classLoader,
                                        Class<?> primarySources){
-        this(classLoader, primarySources, null);
+        this(mainApplicationContext, classLoader, primarySources, null);
     }
 
-    public BasePluginSpringApplication(ClassLoader classLoader,
+    public BasePluginSpringApplication(GenericApplicationContext mainApplicationContext,
+                                       ClassLoader classLoader,
                                        Class<?> primarySources,
                                        String configFileName){
         Assert.isNotNull(classLoader, "classLoader 不能为空");
         Assert.isNotNull(primarySources, "primarySources 不能为空");
 
-        this.beanFactory = new DefaultListableBeanFactory();
+        this.beanFactory = new PluginListableBeanFactory(mainApplicationContext);
         this.beanFactory.setBeanClassLoader(classLoader);
 
         this.applicationContext = new PluginApplicationContext(beanFactory, classLoader);
@@ -68,7 +72,7 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
 
 
     @Override
-    public GenericApplicationContext run() {
+    public ConfigurableApplicationContext run() {
         synchronized (isStarted){
             if(isStarted.get()){
                 throw new RuntimeException("已经运行了PluginSpringApplication, 无法再运行");
@@ -113,7 +117,7 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
     }
 
     @Override
-    public GenericApplicationContext getApplicationContext() {
+    public ConfigurableApplicationContext getApplicationContext() {
         return applicationContext;
     }
 }

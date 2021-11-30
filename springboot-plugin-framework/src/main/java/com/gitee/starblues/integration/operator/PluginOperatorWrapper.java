@@ -10,6 +10,7 @@ import com.gitee.starblues.utils.SpringBeanUtils;
 import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -206,7 +207,7 @@ public class PluginOperatorWrapper implements PluginOperator{
      * @throws Exception 检查异常
      */
     private void checkIsUnRegistry(String pluginId) throws Exception{
-        GenericApplicationContext pluginApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
+        ConfigurableApplicationContext pluginApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
         if(pluginApplicationContext == null){
             log.error("Plugin '{}' Not found ApplicationContext. So cannot found and execute unRegistryValidator",
                     pluginId);

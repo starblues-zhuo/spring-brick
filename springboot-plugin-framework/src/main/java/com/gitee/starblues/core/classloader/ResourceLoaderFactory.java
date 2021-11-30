@@ -18,6 +18,10 @@ public class ResourceLoaderFactory extends AbstractResourceLoader {
 
     private final List<AbstractResourceLoader> resourceLoaders = new ArrayList<>();
 
+    public ResourceLoaderFactory() {
+        super(null);
+    }
+
 
     public void addResource(String path) {
         if(path == null || "".equals(path)){

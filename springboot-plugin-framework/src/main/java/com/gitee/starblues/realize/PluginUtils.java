@@ -1,9 +1,10 @@
 package com.gitee.starblues.realize;
 
+import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.SpringBeanUtils;
-import org.pf4j.PluginDescriptor;
 import org.springframework.context.ApplicationContext;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -13,30 +14,39 @@ import java.util.List;
  */
 public class PluginUtils {
 
-    protected final ApplicationContext parentApplicationContext;
-    protected final ApplicationContext pluginApplicationContext;
-    protected final PluginDescriptor pluginDescriptor;
+    protected final ApplicationContext mainApplicationContext;
+    protected ApplicationContext pluginApplicationContext;
+    protected PluginDescriptor pluginDescriptor;
 
-    public PluginUtils(ApplicationContext parentApplicationContext,
+    @Deprecated
+    public PluginUtils(ApplicationContext mainApplicationContext,
                        ApplicationContext pluginApplicationContext,
                        PluginDescriptor pluginDescriptor) {
-        this.parentApplicationContext = parentApplicationContext;
+        this.mainApplicationContext = mainApplicationContext;
         this.pluginApplicationContext = pluginApplicationContext;
         this.pluginDescriptor = pluginDescriptor;
     }
+
+    public PluginUtils(ApplicationContext mainApplicationContext) {
+        this.mainApplicationContext = mainApplicationContext;
+        this.pluginApplicationContext = null;
+        this.pluginDescriptor = null;
+    }
+
 
     /**
      * 获取主程序的 ApplicationContext
      * @return ApplicationContext
      */
     public ApplicationContext getMainApplicationContext() {
-        return parentApplicationContext;
+        return mainApplicationContext;
     }
 
     /**
      * 获取当前插件的 ApplicationContext
      * @return ApplicationContext
      */
+    @Deprecated
     public ApplicationContext getPluginApplicationContext() {
         return pluginApplicationContext;
     }
@@ -45,6 +55,7 @@ public class PluginUtils {
      * 获取当前插件的描述信息
      * @return PluginDescriptor
      */
+    @Deprecated
     public PluginDescriptor getPluginDescriptor(){
         return pluginDescriptor;
     }
@@ -57,7 +68,7 @@ public class PluginUtils {
      * @return bean
      */
     public <T> T getMainBean(String name){
-        Object bean = parentApplicationContext.getBean(name);
+        Object bean = mainApplicationContext.getBean(name);
         if(bean == null){
             return null;
         }
@@ -71,7 +82,7 @@ public class PluginUtils {
      * @return bean
      */
     public <T> T getMainBean(Class<T> aClass) {
-        return parentApplicationContext.getBean(aClass);
+        return mainApplicationContext.getBean(aClass);
     }
 
     /**
@@ -81,7 +92,7 @@ public class PluginUtils {
      * @return bean
      */
     public <T> List<T> getMainBeans(Class<T> aClass){
-        return SpringBeanUtils.getBeans(parentApplicationContext, aClass);
+        return SpringBeanUtils.getBeans(mainApplicationContext, aClass);
     }
 
 }

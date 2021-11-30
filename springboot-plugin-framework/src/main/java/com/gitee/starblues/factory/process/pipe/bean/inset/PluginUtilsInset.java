@@ -21,6 +21,6 @@ public class PluginUtilsInset implements PluginInsetBean{
         GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
         return new PluginUtils(parentApplicationContext,
                 pluginApplicationContext,
-                pluginRegistryInfo.getPluginWrapper().getDescriptor());
+                null);
     }
 }

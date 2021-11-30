@@ -83,6 +83,9 @@ public class DefaultMainResourceDefiner implements MainResourceDefiner{
         mainClass.add("org.apache.commons.logging");
         // snakeyaml
         mainClass.add("org.yaml.snakeyaml");
+
+        // aop
+        mainClass.add("org.aspectj");
     }
 
     private void initDefaultResources(String mainPackageName) {
@@ -91,6 +94,7 @@ public class DefaultMainResourceDefiner implements MainResourceDefiner{
         mainResources.add("org/springframework");
         mainResources.add("org/slf4j/Logger");
         mainResources.add("org/aopalliance");
+        mainResources.add("org/aspectj");
         mainResources.add(SpringFactoriesLoader.FACTORIES_RESOURCE_LOCATION);
     }
 

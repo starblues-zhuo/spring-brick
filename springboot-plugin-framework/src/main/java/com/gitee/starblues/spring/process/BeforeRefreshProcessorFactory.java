@@ -1,13 +1,17 @@
 package com.gitee.starblues.spring.process;
 
 import com.gitee.starblues.spring.SpringPluginRegistryInfo;
+import com.gitee.starblues.spring.process.before.RegisterNecessaryBean;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.OrderPriority;
 import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,11 +24,21 @@ public class BeforeRefreshProcessorFactory implements BeforeRefreshProcessor {
 
     private final List<BeforeRefreshProcessor> processors;
 
-    public BeforeRefreshProcessorFactory(GenericApplicationContext mainApplicationContext) {
-        List<BeforeRefreshProcessor> processors = SpringBeanUtils.getBeans(
-                mainApplicationContext, BeforeRefreshProcessor.class);
+    public BeforeRefreshProcessorFactory(ConfigurableApplicationContext mainApplicationContext) {
+        List<BeforeRefreshProcessor> processors = null;
+        if(mainApplicationContext != null){
+            processors = SpringBeanUtils.getBeans(
+                    mainApplicationContext, BeforeRefreshProcessor.class);
+        } else {
+            processors = new ArrayList<>();
+        }
+        addDefault(processors);
         processors.sort(CommonUtils.orderPriority(BeforeRefreshProcessor::order));
         this.processors = processors;
+    }
+
+    private void addDefault(List<BeforeRefreshProcessor> processors) {
+        processors.add(new RegisterNecessaryBean());
     }
 
     @Override

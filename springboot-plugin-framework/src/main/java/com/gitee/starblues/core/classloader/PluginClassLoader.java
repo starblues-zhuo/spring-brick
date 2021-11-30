@@ -1,6 +1,7 @@
 package com.gitee.starblues.core.classloader;
 
 import com.gitee.starblues.utils.ObjectUtils;
+import com.gitee.starblues.utils.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -116,15 +117,25 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
 
     @Override
     public InputStream getResourceAsStream(String name) {
+        name = formatResourceName(name);
         Set<String> resources = mainResourceDefiner.getResources();
+        InputStream inputStream = null;
         if(exist(resources, name)){
-            return parent.getResourceAsStream(name);
+            try {
+                inputStream = parent.getResourceAsStream(name);
+            } catch (Exception e){
+                // 忽略
+            }
+        }
+        if(inputStream != null){
+            return inputStream;
         }
         return resourceLoaderFactory.getInputStream(name);
     }
 
     @Override
     public URL getResource(String name) {
+        name = formatResourceName(name);
         Set<String> resources = mainResourceDefiner.getResources();
         if(exist(resources, name)){
             return parent.getResource(name);
@@ -138,6 +149,7 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
 
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
+        name = formatResourceName(name);
         Vector<URL> vector = new Vector<>();
         Set<String> resources = mainResourceDefiner.getResources();
         Set<String> springFactories = mainResourceDefiner.getSpringFactories();
@@ -167,7 +179,28 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
         return className;
     }
 
+    private String formatResourceName(String resourceName){
+        if(ObjectUtils.isEmpty(resourceName)) {
+            return resourceName;
+        }
+        String[] split = resourceName.split("/");
+        StringBuilder newPath = new StringBuilder();
+        for (int i = 0; i < split.length; i++) {
+            String s = split[i];
+            if("".equals(s)){
+                continue;
+            }
+            if(i == 0){
+                newPath = new StringBuilder(s);
+            } else {
+                newPath.append(ResourceUtils.PACKAGE_SPLIT).append(s);
+            }
+        }
+        return newPath.toString();
+    }
+
     private boolean exist(Set<String> set, String name){
+        // TODO 匹配方式有问题
         if(ObjectUtils.isEmpty(set) || ObjectUtils.isEmpty(name)){
             return false;
         }
