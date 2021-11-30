@@ -14,6 +14,10 @@ import java.util.Set;
  */
 public abstract class DefaultIntegrationConfiguration implements IntegrationConfiguration{
 
+    public static final String DEFAULT_PLUGIN_REST_PATH_PREFIX = "plugins";
+    public static final boolean DEFAULT_ENABLE_PLUGIN_ID_REST_PATH_PREFIX = true;
+
+
     @Override
     public List<String> pluginPath() {
         List<String> pluginPath = new ArrayList<>(1);
@@ -42,12 +46,12 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
 
     @Override
     public String pluginRestPathPrefix(){
-        return "/plugins";
+        return DEFAULT_PLUGIN_REST_PATH_PREFIX;
     }
 
     @Override
     public boolean enablePluginIdRestPathPrefix() {
-        return true;
+        return DEFAULT_ENABLE_PLUGIN_ID_REST_PATH_PREFIX;
     }
 
     @Override
