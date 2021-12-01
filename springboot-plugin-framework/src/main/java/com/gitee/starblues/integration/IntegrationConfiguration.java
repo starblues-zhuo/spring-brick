@@ -15,6 +15,12 @@ import java.util.Set;
 public interface IntegrationConfiguration {
 
     /**
+     * 是否启用该插件框架
+     * @return true 启用, false 禁用
+     */
+    boolean enable();
+
+    /**
      * 运行环境。运行项目时的模式。分为开发环境(Dev)、生产环境(Prod)
      * @return RuntimeMode.DEV、RuntimeMode.PROD
      */
@@ -54,6 +60,12 @@ public interface IntegrationConfiguration {
     String backupPath();
 
     /**
+     * 是否启用插件的 rest controller 接口注册. 默认启用
+     * @return true 启用, false 禁用
+     */
+    boolean enablePluginRestController();
+
+    /**
      * 插件 RestController 统一请求的路径前缀
      * @return path
      */
@@ -66,13 +78,6 @@ public interface IntegrationConfiguration {
      * @return boolean
      */
     boolean enablePluginIdRestPathPrefix();
-
-
-    /**
-     * 是否启用该插件框架
-     * @return true 启用, false 禁用
-     */
-    boolean enable();
 
     /**
      * 启用的插件id

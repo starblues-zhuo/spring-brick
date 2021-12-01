@@ -11,11 +11,11 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author starBlues
  * @version 1.0
  */
-public class RegisterNecessaryBean implements BeforeRefreshProcessor {
+public class RegisterNecessaryBeanProcessor implements BeforeRefreshProcessor {
 
 
     @Override
-    public void registry(SpringPluginRegistryInfo registryInfo) {
+    public void registryOfBefore(SpringPluginRegistryInfo registryInfo) {
 
         ConfigurableApplicationContext applicationContext = registryInfo.getPluginSpringApplication().getApplicationContext();
 
@@ -26,12 +26,12 @@ public class RegisterNecessaryBean implements BeforeRefreshProcessor {
     }
 
     @Override
-    public void unRegistry(SpringPluginRegistryInfo registryInfo) {
+    public void unRegistryOfBefore(SpringPluginRegistryInfo registryInfo) {
 
     }
 
     @Override
-    public OrderPriority order() {
+    public OrderPriority orderOfBefore() {
         return OrderPriority.getHighPriority();
     }
 }

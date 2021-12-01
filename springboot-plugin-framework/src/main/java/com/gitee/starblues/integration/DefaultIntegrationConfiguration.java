@@ -17,6 +17,10 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     public static final String DEFAULT_PLUGIN_REST_PATH_PREFIX = "plugins";
     public static final boolean DEFAULT_ENABLE_PLUGIN_ID_REST_PATH_PREFIX = true;
 
+    @Override
+    public boolean enable() {
+        return true;
+    }
 
     @Override
     public List<String> pluginPath() {
@@ -30,11 +34,6 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     }
 
     @Override
-    public boolean enable() {
-        return true;
-    }
-
-    @Override
     public String uploadTempPath(){
         return "temp";
     }
@@ -42,6 +41,11 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     @Override
     public String backupPath(){
         return "backupPlugin";
+    }
+
+    @Override
+    public boolean enablePluginRestController() {
+        return true;
     }
 
     @Override

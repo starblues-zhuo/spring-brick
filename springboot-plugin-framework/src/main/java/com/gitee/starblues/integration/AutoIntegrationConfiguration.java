@@ -20,6 +20,11 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     public static final String ENABLE_KEY = "plugin.enable";
 
+    /**
+     * 是否启用插件功能
+     */
+    @Value("${enable:true}")
+    private Boolean enable;
 
     /**
      * 运行模式
@@ -28,12 +33,6 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
      */
     @Value("${runMode:dev}")
     private String runMode;
-
-    /**
-     * 是否启用插件功能
-     */
-    @Value("${enable:true}")
-    private Boolean enable;
 
     /**
      * 主程序包名
@@ -57,6 +56,12 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
      */
     @Value("${pluginRestPathPrefix:/plugins}")
     private String pluginRestPathPrefix;
+
+    /**
+     * 是否启用插件的 rest controller 接口注册. 默认启用
+     */
+    @Value("${enablePluginRestController:true}")
+    private Boolean enablePluginRestController;
 
     /**
      * 是否启用插件id作为rest接口前缀, 默认为启用.
@@ -131,6 +136,14 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     private Boolean enableWebSocket;
 
     @Override
+    public boolean enable() {
+        if(enable == null){
+            return true;
+        }
+        return enable;
+    }
+
+    @Override
     public RuntimeMode environment() {
         return RuntimeMode.byName(runMode);
     }
@@ -151,14 +164,6 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     }
 
     @Override
-    public boolean enable() {
-        if(enable == null){
-            return true;
-        }
-        return enable;
-    }
-
-    @Override
     public String uploadTempPath() {
         if(!ObjectUtils.isEmpty(uploadTempPath)){
             return super.uploadTempPath();
@@ -172,6 +177,14 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
             return super.backupPath();
         }
         return backupPath;
+    }
+
+    @Override
+    public boolean enablePluginRestController() {
+        if(enablePluginRestController == null){
+            return super.enablePluginRestController();
+        }
+        return enablePluginRestController;
     }
 
     @Override
@@ -241,20 +254,20 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         return stopDependents;
     }
 
-    public String getRunMode() {
-        return runMode;
-    }
-
-    public void setRunMode(String runMode) {
-        this.runMode = runMode;
-    }
-
     public Boolean getEnable() {
         return enable;
     }
 
     public void setEnable(Boolean enable) {
         this.enable = enable;
+    }
+
+    public String getRunMode() {
+        return runMode;
+    }
+
+    public void setRunMode(String runMode) {
+        this.runMode = runMode;
     }
 
     public String getMainPackage() {
@@ -282,6 +295,14 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     public void setPluginConfigFilePath(String pluginConfigFilePath) {
         this.pluginConfigFilePath = pluginConfigFilePath;
+    }
+
+    public Boolean getEnablePluginRestController() {
+        return enablePluginRestController;
+    }
+
+    public void setEnablePluginRestController(Boolean enablePluginRestController) {
+        this.enablePluginRestController = enablePluginRestController;
     }
 
     public String getPluginRestPathPrefix() {

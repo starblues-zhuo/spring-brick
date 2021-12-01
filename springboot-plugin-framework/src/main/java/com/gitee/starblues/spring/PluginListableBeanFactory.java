@@ -10,8 +10,9 @@ import org.springframework.lang.Nullable;
 import java.util.Set;
 
 /**
+ * 扩展 DefaultListableBeanFactory
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class PluginListableBeanFactory extends DefaultListableBeanFactory {
 

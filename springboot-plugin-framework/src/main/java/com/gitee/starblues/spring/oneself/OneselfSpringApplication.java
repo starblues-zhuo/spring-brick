@@ -22,12 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 插件自主运行时的SpringApplication环境, 对  SpringApplication 进行再次封装
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
+ * @see SpringApplication
  */
 public class OneselfSpringApplication extends SpringApplication {
-
-    public static final String ID = "OneselfPluginSpringApplication";
 
     private final Class<?> primarySource;
     private final PluginSpringApplication springApplication;
@@ -47,6 +47,7 @@ public class OneselfSpringApplication extends SpringApplication {
         } else {
             primarySource = null;
         }
+        // 运行之前, 从当前插件的 classpath 下获取插件引导信息
         pluginWrapper = tryGetPluginWrapper();
     }
 
@@ -59,6 +60,7 @@ public class OneselfSpringApplication extends SpringApplication {
     protected void bindToSpringApplication(ConfigurableEnvironment environment) {
         super.bindToSpringApplication(environment);
         Map<String, Object> env = new HashMap<>();
+        // 禁用插件的自动装配
         env.put(AutoIntegrationConfiguration.ENABLE_KEY, false);
         env.put("server.servlet.context-path", getContextPath(environment));
         environment.getPropertySources().addFirst(new MapPropertySource("springPluginRegistryInfo", env));
@@ -70,7 +72,7 @@ public class OneselfSpringApplication extends SpringApplication {
         BeforeRefreshProcessorFactory beforeRefreshProcessorFactory =
                 new BeforeRefreshProcessorFactory(null);
         SpringPluginRegistryInfo springPluginRegistryInfo = create(applicationContext);
-        beforeRefreshProcessorFactory.registry(springPluginRegistryInfo);
+        beforeRefreshProcessorFactory.registryOfBefore(springPluginRegistryInfo);
         super.refresh(applicationContext);
     }
 
@@ -93,6 +95,10 @@ public class OneselfSpringApplication extends SpringApplication {
         }, applicationContext);
     }
 
+    /**
+     * 尝试从 classpath 获取插件引导信息, 如果不存在, 则生成空的 PluginWrapper
+     * @return PluginWrapper
+     */
     private PluginWrapper tryGetPluginWrapper(){
         try {
             PluginDescriptorLoader pluginDescriptorLoader = new DevPluginDescriptorLoader();
@@ -142,6 +148,11 @@ public class OneselfSpringApplication extends SpringApplication {
         };
     }
 
+    /**
+     * 获取独立运行插件的接口 url 前缀
+     * @param environment environment
+     * @return String
+     */
     private String getContextPath(ConfigurableEnvironment environment){
         String pluginRestPathPrefix = environment.getProperty("plugin.pluginRestPathPrefix", String.class);
         Boolean enablePluginIdRestPathPrefix = environment.getProperty("plugin.enablePluginIdRestPathPrefix",

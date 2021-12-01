@@ -1,8 +1,8 @@
 package com.gitee.starblues.utils;
 
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.annotation.Annotation;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -92,11 +92,31 @@ public class ClassUtils {
      * @return 修改者集合
      * @throws Exception 异常
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> getAnnotationsUpdater(Object annotation) throws Exception {
         InvocationHandler invocationHandler = Proxy.getInvocationHandler(annotation);
-        Field field = invocationHandler.getClass().getDeclaredField("memberValues");
-        field.setAccessible(true);
+        Field field = getAnnotationsUpdaterField(invocationHandler);
+        if(field == null){
+            return null;
+        }
         return (Map<String, Object>) field.get(invocationHandler);
+    }
+
+    private static Field getAnnotationsUpdaterField(InvocationHandler invocationHandler){
+        Class<? extends InvocationHandler> aClass = invocationHandler.getClass();
+        Field field = ReflectionUtils.findField(aClass, "memberValues", Map.class);
+        if(field == null){
+            field = ReflectionUtils.findField(aClass, "valueCache", Map.class);
+        }
+        if(field == null){
+            field = ReflectionUtils.findField(aClass, Map.class);
+        }
+        if(field != null){
+            field.setAccessible(true);
+            return field;
+        } else {
+            return null;
+        }
     }
 
 }

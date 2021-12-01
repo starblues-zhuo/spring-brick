@@ -35,9 +35,9 @@ public class DefaultSpringPlugin implements SpringPlugin {
     @Override
     public synchronized void registry(PluginWrapper pluginWrapper) throws Exception {
         SpringPluginRegistryInfo registryInfo = createRegistryInfo(pluginWrapper);
-        beforeRefreshProcessor.registry(registryInfo);
+        beforeRefreshProcessor.registryOfBefore(registryInfo);
         registryInfo.getPluginSpringApplication().run();
-        afterRefreshProcessor.registry(registryInfo);
+        afterRefreshProcessor.registryOfAfter(registryInfo);
         registryInfoMap.put(pluginWrapper.getPluginId(), registryInfo);
         PluginInfoContainers.addPluginApplicationContext(pluginWrapper.getPluginId(),
                 registryInfo.getPluginSpringApplication().getApplicationContext());
@@ -49,8 +49,8 @@ public class DefaultSpringPlugin implements SpringPlugin {
         if(springPluginRegistryInfo == null){
             return;
         }
-        beforeRefreshProcessor.unRegistry(springPluginRegistryInfo);
-        afterRefreshProcessor.unRegistry(springPluginRegistryInfo);
+        afterRefreshProcessor.unRegistryOfAfter(springPluginRegistryInfo);
+        beforeRefreshProcessor.unRegistryOfBefore(springPluginRegistryInfo);
         springPluginRegistryInfo.getPluginSpringApplication().close();
         registryInfoMap.remove(pluginId);
         PluginInfoContainers.removePluginApplicationContext(pluginId);

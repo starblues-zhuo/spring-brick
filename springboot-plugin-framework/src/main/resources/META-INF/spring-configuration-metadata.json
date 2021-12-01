@@ -8,18 +8,18 @@
   ],
   "properties": [
     {
-      "name": "plugin.runMode",
-      "type": "java.lang.String",
-      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
-      "description": "运行模式. 开发环境: development、dev; 生产/部署 环境: deployment、prod",
-      "defaultValue": "dev"
-    },
-    {
       "name": "plugin.enable",
       "type": "java.lang.Boolean",
       "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
       "description": "是否启用插件功能",
       "defaultValue": true
+    },
+    {
+      "name": "plugin.runMode",
+      "type": "java.lang.String",
+      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
+      "description": "运行模式. 开发环境: development、dev; 生产/部署 环境: deployment、prod",
+      "defaultValue": "dev"
     },
     {
       "name": "plugin.mainPackage",
@@ -41,6 +41,13 @@
       "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
       "description": "插件对应的配置文件存放目录, 只作用于生产环境下",
       "defaultValue": "/plugin-config"
+    },
+    {
+      "name": "plugin.enablePluginRestController",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
+      "description": "是否启用插件的 rest controller 接口注册. 默认启用",
+      "defaultValue": true
     },
     {
       "name": "plugin.pluginRestPathPrefix",

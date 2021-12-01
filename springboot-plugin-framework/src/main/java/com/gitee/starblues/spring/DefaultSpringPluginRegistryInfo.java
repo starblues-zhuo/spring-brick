@@ -1,18 +1,19 @@
 package com.gitee.starblues.spring;
 
 import com.gitee.starblues.core.loader.PluginWrapper;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 
 /**
  * @author starBlues
  * @version 1.0
  */
-public class DefaultSpringPluginRegistryInfo implements SpringPluginRegistryInfo{
+public class DefaultSpringPluginRegistryInfo extends DefaultRegistryInfo implements SpringPluginRegistryInfo{
 
     private final PluginWrapper pluginWrapper;
     private final PluginSpringApplication pluginSpringApplication;
     private final ConfigurableApplicationContext mainApplicationContext;
+    private final IntegrationConfiguration configuration;
 
     public DefaultSpringPluginRegistryInfo(PluginWrapper pluginWrapper,
                                            PluginSpringApplication springApplication,
@@ -20,6 +21,7 @@ public class DefaultSpringPluginRegistryInfo implements SpringPluginRegistryInfo
         this.pluginWrapper = pluginWrapper;
         this.pluginSpringApplication = springApplication;
         this.mainApplicationContext = mainApplicationContext;
+        this.configuration = mainApplicationContext.getBean(IntegrationConfiguration.class);
     }
 
     @Override
@@ -35,6 +37,11 @@ public class DefaultSpringPluginRegistryInfo implements SpringPluginRegistryInfo
     @Override
     public ConfigurableApplicationContext getMainApplicationContext() {
         return mainApplicationContext;
+    }
+
+    @Override
+    public IntegrationConfiguration getConfiguration() {
+        return configuration;
     }
 
 }

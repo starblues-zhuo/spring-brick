@@ -4,8 +4,9 @@ import com.gitee.starblues.spring.PluginSpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
+ * 插件可主运行的 PluginSpringApplication 实现, 插件如果需要自动运行, 则使用该类进行引导启动
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class OneselfPluginSpringApplication implements PluginSpringApplication {
 
@@ -18,7 +19,7 @@ public class OneselfPluginSpringApplication implements PluginSpringApplication {
     }
 
     /**
-     * 插件自主调用
+     * 插件自主运行时, 引导入口
      * @param primarySources primarySources
      * @return ConfigurableApplicationContext
      */

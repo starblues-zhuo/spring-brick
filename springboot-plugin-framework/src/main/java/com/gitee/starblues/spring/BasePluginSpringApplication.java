@@ -97,7 +97,6 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
     }
 
     protected void loadBean() {
-        applicationContext.scan("com.gitee.starblues.example.basic");
         beanDefinitionLoader.load();
     }
 

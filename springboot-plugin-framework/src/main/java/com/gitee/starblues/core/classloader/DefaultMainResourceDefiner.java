@@ -48,6 +48,7 @@ public class DefaultMainResourceDefiner implements MainResourceDefiner{
         // == java ==
         mainClass.add("java.");
         mainClass.add("javax.");
+        mainClass.add("sun.reflect");
 
         // == main ==
         mainClass.add(mainPackageName);

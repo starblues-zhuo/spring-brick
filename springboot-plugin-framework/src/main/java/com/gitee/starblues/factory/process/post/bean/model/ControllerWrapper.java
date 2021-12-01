@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * controller 包装
  * @author starBlues
- * @version 2.4.0
+ * @version 3.0.0
  */
 public class ControllerWrapper {
 
@@ -15,6 +15,11 @@ public class ControllerWrapper {
      * controller bean 名称
      */
     private String beanName;
+
+    /**
+     * controller 路径前缀
+     */
+    private String[] pathPrefix;
 
     /**
      * controller bean 类型
@@ -40,6 +45,14 @@ public class ControllerWrapper {
 
     public void setBeanName(String beanName) {
         this.beanName = beanName;
+    }
+
+    public String[] getPathPrefix() {
+        return pathPrefix;
+    }
+
+    public void setPathPrefix(String[] pathPrefix) {
+        this.pathPrefix = pathPrefix;
     }
 
     public Set<RequestMappingInfo> getRequestMappingInfos() {
