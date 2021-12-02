@@ -1,5 +1,7 @@
 package com.gitee.starblues.spring.environment;
 
+import com.gitee.starblues.core.RuntimeMode;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.ResourceUtils;
@@ -44,7 +46,8 @@ import java.util.stream.Stream;
  */
 public class PluginLocalConfigFileProcessor implements PluginEnvironmentProcessor {
 
-    private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,classpath:/config/,file:./,file:./config/*/,file:./config/";
+    private static final String DEFAULT_SEARCH_LOCATIONS =
+            "classpath:/,classpath:/config/,file:./,file:./config/*/,file:./config/";
 
     private static final String DEFAULT_NAMES = "application";
 
@@ -98,11 +101,35 @@ public class PluginLocalConfigFileProcessor implements PluginEnvironmentProcesso
 
     private int order = DEFAULT_ORDER;
 
-    public PluginLocalConfigFileProcessor() {
+    public PluginLocalConfigFileProcessor(IntegrationConfiguration configuration) {
         Set<String> filteredProperties = new HashSet<>();
         filteredProperties.add("spring.profiles.active");
         filteredProperties.add("spring.profiles.include");
         LOAD_FILTERED_PROPERTY = Collections.unmodifiableSet(filteredProperties);
+
+        resolveSearchLocations(configuration);
+    }
+
+    /**
+     * 根据环境设置查询配置文件路径
+     * @param configuration IntegrationConfiguration
+     */
+    private void resolveSearchLocations(IntegrationConfiguration configuration) {
+        RuntimeMode runtimeMode = configuration.environment();
+        if(runtimeMode== RuntimeMode.DEV){
+            setSearchLocations("classpath:/");
+        } else {
+            String pluginConfigFilePath = configuration.pluginConfigFilePath();
+            if(ObjectUtils.isEmpty(pluginConfigFilePath)){
+                pluginConfigFilePath = "";
+            } else {
+                pluginConfigFilePath = "file:" + pluginConfigFilePath + ",";
+            }
+            // 生产环境读取文件顺序：
+            // pluginConfigFilePath配置的目录 > 当前插件jar包目录 > 当前插件jar包/config/*/ 目录 > 当前插件包/config/ 下的目录 > classpath:/
+            pluginConfigFilePath = pluginConfigFilePath + "file:./,file:./config/*/,file:./config/,classpath:/";
+            setSearchLocations(pluginConfigFilePath);
+        }
     }
 
     @Override
@@ -593,16 +620,8 @@ public class PluginLocalConfigFileProcessor implements PluginEnvironmentProcesso
             this.environment.addActiveProfile(profile);
         }
 
-        private Set<String> getSearchLocations() {
-            Set<String> locations = getSearchLocations(CONFIG_ADDITIONAL_LOCATION_PROPERTY);
-            if (this.environment.containsProperty(CONFIG_LOCATION_PROPERTY)) {
-                locations.addAll(getSearchLocations(CONFIG_LOCATION_PROPERTY));
-            }
-            else {
-                locations.addAll(
-                        asResolvedSet(PluginLocalConfigFileProcessor.this.searchLocations, DEFAULT_SEARCH_LOCATIONS));
-            }
-            return locations;
+        private List<String> getSearchLocations() {
+            return asResolvedList(PluginLocalConfigFileProcessor.this.searchLocations, DEFAULT_SEARCH_LOCATIONS);
         }
 
         private Set<String> getSearchLocations(String propertyName) {
@@ -648,6 +667,11 @@ public class PluginLocalConfigFileProcessor implements PluginEnvironmentProcesso
                     (value != null) ? this.environment.resolvePlaceholders(value) : fallback)));
             Collections.reverse(list);
             return new LinkedHashSet<>(list);
+        }
+
+        private List<String> asResolvedList(String value, String fallback) {
+            return Arrays.asList(ObjectUtils.trimArrayElements(ObjectUtils.commaDelimitedListToStringArray(
+                    (value != null) ? this.environment.resolvePlaceholders(value) : fallback)));
         }
 
         private void assertValidConfigName(String name) {

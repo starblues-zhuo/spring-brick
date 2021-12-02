@@ -24,6 +24,8 @@ import java.util.List;
  */
 public final class PluginFileUtils {
 
+    private static final String FILE_POINT = ".";
+
     private PluginFileUtils(){}
 
 
@@ -117,5 +119,20 @@ public final class PluginFileUtils {
         return Files.isRegularFile(path) && path.toString().toLowerCase().endsWith(".jar");
     }
 
+    /**
+     * 得到文件名称
+     * @param fileName 原始文件名称. 比如: file.txt
+     * @return String
+     */
+    public static String getFileName(String fileName){
+        if(ObjectUtils.isEmpty(fileName)){
+            return fileName;
+        }
+        if(fileName.lastIndexOf(FILE_POINT) > 0){
+            return fileName.substring(0, fileName.lastIndexOf(FILE_POINT));
+        } else {
+            return fileName;
+        }
+    }
 
 }

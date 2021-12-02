@@ -1,12 +1,16 @@
 package com.gitee.starblues.spring;
 
+import com.gitee.starblues.core.RuntimeMode;
 import com.gitee.starblues.integration.AutoIntegrationConfiguration;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.environment.PluginEnvironmentProcessor;
 import com.gitee.starblues.spring.environment.PluginLocalConfigFileProcessor;
 import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
+import com.gitee.starblues.utils.PluginFileUtils;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.Ordered;
@@ -31,6 +35,7 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
 
     private final DefaultListableBeanFactory beanFactory;
     private final PluginApplicationContext applicationContext;
+    private final IntegrationConfiguration configuration;
     private final PluginBeanDefinitionLoader beanDefinitionLoader;
     private final String configFileName;
     private final List<PluginEnvironmentProcessor> environmentProcessors;
@@ -52,6 +57,8 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
         this.beanFactory = new PluginListableBeanFactory(mainApplicationContext);
         this.beanFactory.setBeanClassLoader(classLoader);
 
+        this.configuration = mainApplicationContext.getBean(AutoIntegrationConfiguration.class);
+
         this.applicationContext = new PluginApplicationContext(beanFactory, classLoader);
         this.beanDefinitionLoader = new PluginBeanDefinitionLoader(beanFactory, primarySources);
         this.configFileName = configFileName;
@@ -61,9 +68,9 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
 
 
     protected void addDefaultEnvironmentProcessor(){
-        PluginLocalConfigFileProcessor configFileProcessor = new PluginLocalConfigFileProcessor();
+        PluginLocalConfigFileProcessor configFileProcessor = new PluginLocalConfigFileProcessor(configuration);
         if(!ObjectUtils.isEmpty(configFileName)){
-            configFileProcessor.setSearchNames(configFileName);
+            configFileProcessor.setSearchNames(PluginFileUtils.getFileName(configFileName));
         }
         addEnvironmentProcessor(configFileProcessor);
     }
@@ -84,6 +91,7 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
             }
             processEnvironment();
             addPluginEnvironment();
+            addDefaultProcessor();
             loadBean();
             refresh();
             isStarted.set(true);
@@ -108,7 +116,11 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
         pluginEnvironment.put(AutoIntegrationConfiguration.ENABLE_KEY, false);
         pluginEnvironment.put(AutoIntegrationConfiguration.ENABLE_STARTER_KEY, false);
         environment.getPropertySources().addFirst(new MapPropertySource("pluginEnvironment", pluginEnvironment));
+    }
 
+    private void addDefaultProcessor() {
+        // 注册 ConfigurationPropertiesBindingPostProcessor, 用于将配置信息绑定到Bean上
+        ConfigurationPropertiesBindingPostProcessor.register(applicationContext);
     }
 
 

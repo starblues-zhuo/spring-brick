@@ -14,7 +14,7 @@ import org.springframework.core.io.ResourceLoader;
  */
 public class PluginApplicationContext extends AnnotationConfigApplicationContext {
 
-    private ResourceLoader resourceLoader;
+    private final ResourceLoader resourceLoader;
 
     public PluginApplicationContext(DefaultListableBeanFactory beanFactory, ClassLoader classLoader) {
         super(beanFactory);
