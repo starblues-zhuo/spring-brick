@@ -39,6 +39,9 @@ public class PluginOperatorWrapper implements PluginOperator{
 
     @Override
     public boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws Exception {
+        if(isDisable()){
+            return false;
+        }
         return pluginOperator.initPlugins(pluginInitializerListener);
     }
 
@@ -197,7 +200,7 @@ public class PluginOperatorWrapper implements PluginOperator{
             return false;
         }
         // 如果禁用的话, 直接返回
-        log.info("The Plugin module is disabled!");
+        log.info("插件功能已被禁用!");
         return true;
     }
 

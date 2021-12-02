@@ -1,10 +1,11 @@
 package com.gitee.starblues.integration.application;
 
-import com.gitee.starblues.integration.pf4j.Pf4jFactory;
+import com.gitee.starblues.integration.IntegrationExtendPoint;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Import;
 
 /**
  * 自动初始化的 PluginApplication。该PluginApplication 基于 Spring InitializingBean 自动初始化插件。
@@ -12,6 +13,7 @@ import org.springframework.context.ApplicationContextAware;
  * @author starBlues
  * @version 2.2.0
  */
+@Import(IntegrationExtendPoint.class)
 public class AutoPluginApplication extends DefaultPluginApplication
         implements PluginApplication, InitializingBean, ApplicationContextAware {
 

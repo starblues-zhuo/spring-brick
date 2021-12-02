@@ -1,13 +1,18 @@
 package com.gitee.starblues.core.classloader;
 
+import com.gitee.starblues.core.ResourceClear;
+import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,28 +21,33 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author starBlues
  * @version 3.0.0
  */
-public class PluginClassLoader extends AbstractPluginClassLoader {
+public class PluginClassLoader extends AbstractPluginClassLoader implements ResourceClear {
 
     private final Map<String, Class<?>> pluginClassCache = new ConcurrentHashMap<>();
 
     private final String pluginId;
     private final ClassLoader parent;
     private final ResourceLoaderFactory resourceLoaderFactory;
-    private final MainResourceDefiner mainResourceDefiner;
 
-    public PluginClassLoader(String pluginId, Path classpath, ClassLoader parent) {
-        this(pluginId, classpath, parent, null);
-    }
+    private MainResourceMatcher mainResourceMatcher;
 
-    public PluginClassLoader(String pluginId, Path classpath, ClassLoader parent, MainResourceDefiner definer) {
+
+    public PluginClassLoader(String pluginId,
+                             Path classpath,
+                             ClassLoader parentClassLoader,
+                             MainResourcePatternDefiner mainResourcePatternDefiner) {
         resourceLoaderFactory = new ResourceLoaderFactory();
         resourceLoaderFactory.addResource(classpath);
-        this.pluginId = pluginId;
-        this.parent = parent;
-        if(definer == null){
-            definer = new EmptyMainResourceDefiner();
-        }
-        this.mainResourceDefiner = definer;
+
+        this.pluginId = Assert.isNotEmpty(pluginId, "参数 pluginId 不能为空");
+        this.parent = Assert.isNotNull(parentClassLoader, "参数 parentClassLoader 不能为空");
+        MainResourcePatternDefiner patternDefiner = Assert.isNotNull(mainResourcePatternDefiner,
+                "参数 mainResourcePatternDefiner 不能为空");
+        setMainResourceMatcher(new CacheMainResourceMatcher(patternDefiner));
+    }
+
+    protected void setMainResourceMatcher(MainResourceMatcher mainResourceMatcher){
+        this.mainResourceMatcher = Assert.isNotNull(mainResourceMatcher, "参数 mainResourceMatcher 不能为空");
     }
 
 
@@ -52,9 +62,8 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(className)) {
-            Set<String> classNames = mainResourceDefiner.getClassNames();
             Class<?> loadedClass = null;
-            if(exist(classNames, className)){
+            if(mainResourceMatcher.match(className.replace(".", "/"))){
                 try {
                     loadedClass = parent.loadClass(className);
                 } catch (Exception e){
@@ -75,19 +84,9 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
         }
     }
 
-    @Override
-    public URL[] getURLs() {
-        List<Resource> resources = resourceLoaderFactory.getResources();
-        URL[] urls = new URL[resources.size()];
-        for (int i = 0; i < resources.size(); i++) {
-            urls[i] = resources.get(i).getUrl();
-        }
-        return urls;
-    }
-
     private Class<?> findPluginClass(String name) {
         synchronized (pluginClassCache){
-            Class<?> aClass = null;
+            Class<?> aClass;
             String formatClassName = formatClassName(name);
             aClass = pluginClassCache.get(formatClassName);
             if (aClass != null) {
@@ -98,8 +97,7 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
             if(resource == null){
                 return null;
             }
-            byte[] bytes = null;
-            bytes = resource.getBytes();
+            byte[] bytes = resource.getBytes();
             aClass = defineClass(name, bytes, 0, bytes.length );
             if(aClass == null) {
                 return null;
@@ -107,20 +105,30 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
             if (aClass.getPackage() == null) {
                 int lastDotIndex = name.lastIndexOf( '.' );
                 String packageName = (lastDotIndex >= 0) ? name.substring( 0, lastDotIndex) : "";
-                definePackage(packageName, null, null, null, null, null, null, null );
+                definePackage(packageName, null, null, null,
+                        null, null, null, null );
             }
             pluginClassCache.put(name, aClass);
             return aClass;
         }
     }
 
+    @Override
+    public URL[] getURLs() {
+        List<Resource> resources = resourceLoaderFactory.getResources();
+        URL[] urls = new URL[resources.size()];
+        for (int i = 0; i < resources.size(); i++) {
+            urls[i] = resources.get(i).getUrl();
+        }
+        return urls;
+    }
+
 
     @Override
     public InputStream getResourceAsStream(String name) {
         name = formatResourceName(name);
-        Set<String> resources = mainResourceDefiner.getResources();
         InputStream inputStream = null;
-        if(exist(resources, name)){
+        if(mainResourceMatcher.match(name)){
             try {
                 inputStream = parent.getResourceAsStream(name);
             } catch (Exception e){
@@ -136,9 +144,12 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
     @Override
     public URL getResource(String name) {
         name = formatResourceName(name);
-        Set<String> resources = mainResourceDefiner.getResources();
-        if(exist(resources, name)){
-            return parent.getResource(name);
+        URL url = null;
+        if(mainResourceMatcher.match(name)){
+            url = parent.getResource(name);
+        }
+        if(url != null){
+            return url;
         }
         Resource resource = resourceLoaderFactory.findResource(name);
         if(resource == null){
@@ -151,15 +162,20 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
     public Enumeration<URL> getResources(String name) throws IOException {
         name = formatResourceName(name);
         Vector<URL> vector = new Vector<>();
-        Set<String> resources = mainResourceDefiner.getResources();
-        Set<String> springFactories = mainResourceDefiner.getSpringFactories();
-        if(exist(resources, name)){
+        if(mainResourceMatcher.match(name)){
             Enumeration<URL> enumeration = parent.getResources(name);
             while (enumeration.hasMoreElements()){
                 URL url = enumeration.nextElement();
-                String path = url.getPath();
-                if(exist(springFactories, path)){
-                    vector.add(url);
+                try {
+                    URI uri = url.toURI();
+                    String path = Paths.get(uri).toString();
+                    if(mainResourceMatcher.matchSpringFactories(path)){
+                        vector.add(url);
+                    }
+                } catch (Exception e) {
+                    if(mainResourceMatcher.matchSpringFactories(url.getPath())){
+                        vector.add(url);
+                    }
                 }
             }
         }
@@ -199,23 +215,14 @@ public class PluginClassLoader extends AbstractPluginClassLoader {
         return newPath.toString();
     }
 
-    private boolean exist(Set<String> set, String name){
-        // TODO 匹配方式有问题
-        if(ObjectUtils.isEmpty(set) || ObjectUtils.isEmpty(name)){
-            return false;
-        }
-        for (String value : set) {
-            if(name.contains(value)){
-                return true;
-            }
-        }
-        return false;
-    }
-
+    @Override
     public void clear(){
         synchronized (pluginClassCache){
             pluginClassCache.clear();
             resourceLoaderFactory.clear();
+            if(mainResourceMatcher instanceof ResourceClear){
+                ((ResourceClear) mainResourceMatcher).clear();
+            }
         }
     }
 

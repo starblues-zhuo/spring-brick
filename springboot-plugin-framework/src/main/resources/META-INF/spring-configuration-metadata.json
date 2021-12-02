@@ -15,6 +15,13 @@
       "defaultValue": true
     },
     {
+      "name": "plugin.enable-starter",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
+      "description": "是否启用starter自动装配功能",
+      "defaultValue": true
+    },
+    {
       "name": "plugin.runMode",
       "type": "java.lang.String",
       "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",

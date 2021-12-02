@@ -1,5 +1,6 @@
 package com.gitee.starblues.spring;
 
+import com.gitee.starblues.integration.AutoIntegrationConfiguration;
 import com.gitee.starblues.spring.environment.PluginEnvironmentProcessor;
 import com.gitee.starblues.spring.environment.PluginLocalConfigFileProcessor;
 import com.gitee.starblues.utils.Assert;
@@ -9,9 +10,13 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -78,6 +83,7 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
                 throw new RuntimeException("已经运行了PluginSpringApplication, 无法再运行");
             }
             processEnvironment();
+            addPluginEnvironment();
             loadBean();
             refresh();
             isStarted.set(true);
@@ -85,7 +91,6 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
         }
 
     }
-
 
     protected void processEnvironment() {
         List<PluginEnvironmentProcessor> orderPluginEnvironmentProcessor =
@@ -95,6 +100,17 @@ public class BasePluginSpringApplication implements PluginSpringApplication{
                     applicationContext.getResourceLoader());
         }
     }
+
+
+    private void addPluginEnvironment() {
+        ConfigurableEnvironment environment = applicationContext.getEnvironment();
+        Map<String, Object> pluginEnvironment = new HashMap<>();
+        pluginEnvironment.put(AutoIntegrationConfiguration.ENABLE_KEY, false);
+        pluginEnvironment.put(AutoIntegrationConfiguration.ENABLE_STARTER_KEY, false);
+        environment.getPropertySources().addFirst(new MapPropertySource("pluginEnvironment", pluginEnvironment));
+
+    }
+
 
     protected void loadBean() {
         beanDefinitionLoader.load();

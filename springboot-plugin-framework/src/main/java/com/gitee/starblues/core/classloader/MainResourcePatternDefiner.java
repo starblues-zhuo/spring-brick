@@ -7,26 +7,20 @@ import java.util.Set;
  * @author starBlues
  * @version 3.0.0
  */
-public interface MainResourceDefiner {
+public interface MainResourcePatternDefiner {
 
     /**
-     * 类名
-     * @return 类名前缀集合
-     */
-    Set<String> getClassNames();
-
-    /**
-     * 资源名称
+     * 资源名称.
      * @return 资源名称集合
      */
-    Set<String> getResources();
+    Set<String> getResourcePatterns();
 
 
     /**
      * spring spi 定义
      * @return spring spi 集合
      */
-    Set<String> getSpringFactories();
+    Set<String> getSpringFactoriesPatterns();
 
 
 }

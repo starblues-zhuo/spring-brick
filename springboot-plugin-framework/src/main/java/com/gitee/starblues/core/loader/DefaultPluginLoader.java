@@ -1,7 +1,7 @@
 package com.gitee.starblues.core.loader;
 
 import com.gitee.starblues.core.PluginState;
-import com.gitee.starblues.core.classloader.MainResourceDefiner;
+import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
 import com.gitee.starblues.core.classloader.PluginClassLoader;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.Assert;
@@ -24,12 +24,13 @@ import java.util.Objects;
  */
 public class DefaultPluginLoader implements PluginLoader{
 
-    private final MainResourceDefiner mainResourceDefiner;
+    private final MainResourcePatternDefiner mainResourcePatternDefiner;
 
     private final List<WeakReference<PluginClassLoader>> classLoaderCache = new ArrayList<>();
 
-    public DefaultPluginLoader(MainResourceDefiner mainResourceDefiner) {
-        this.mainResourceDefiner = mainResourceDefiner;
+    public DefaultPluginLoader(MainResourcePatternDefiner mainResourcePatternDefiner) {
+        this.mainResourcePatternDefiner = Assert.isNotNull(mainResourcePatternDefiner,
+                "参数 mainResourcePatternDefiner 不能为空");
     }
 
     @Override
@@ -68,7 +69,7 @@ public class DefaultPluginLoader implements PluginLoader{
         }
         if(pnClassLoader == null){
             pnClassLoader = new PluginClassLoader(pluginId, classPath, getParentClassLoader(),
-                    mainResourceDefiner);
+                    mainResourcePatternDefiner);
             classLoaderCache.add(new WeakReference<>(pnClassLoader));
         }
         return pnClassLoader;

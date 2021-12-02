@@ -58,6 +58,7 @@ public class DefaultPluginOperator implements PluginOperator {
             // 触发插件初始化监听器
             //pluginInitializerListenerFactory.before();
             if(!configuration.enable()){
+                log.info("插件功能已被禁用!");
                 // 如果禁用的话, 直接返回
                 //pluginInitializerListenerFactory.complete();
                 return false;

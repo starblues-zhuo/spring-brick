@@ -1,6 +1,7 @@
 package com.gitee.starblues.core;
 
-import com.gitee.starblues.core.classloader.DefaultMainResourceDefiner;
+import com.gitee.starblues.core.classloader.DefaultMainResourcePatternDefiner;
+import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
 import com.gitee.starblues.core.descriptor.DevPluginDescriptorLoader;
 import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
 import com.gitee.starblues.core.descriptor.ProdPluginDescriptorLoader;
@@ -22,21 +23,19 @@ public class DefaultRealizeProvider implements RealizeProvider {
 
     private PluginScanner pluginScanner;
     private PluginDescriptorLoader pluginDescriptorLoader;
+    private MainResourcePatternDefiner mainResourcePatternDefiner;
     private PluginLoader pluginLoader;
     private PluginChecker pluginChecker;
     private VersionInspector versionInspector;
 
-    private final RuntimeMode runtimeMode;
-    private final String mainPackage;
+    protected final RuntimeMode runtimeMode;
 
-    public DefaultRealizeProvider(RuntimeMode runtimeMode,
-                                  String mainPackage){
+    public DefaultRealizeProvider(RuntimeMode runtimeMode){
         this.runtimeMode = Assert.isNotNull(runtimeMode, "参数 runtimeMode 不能为空");
-        this.mainPackage = Assert.isNotEmpty(mainPackage, "参数 mainPackage 不能为空");
-        init();
     }
 
-    protected void init() {
+    @Override
+    public void init() {
         BasePluginScanner basePluginScanner = new BasePluginScanner();
         PluginDescriptorLoader pluginDescriptorLoader = null;
         if(runtimeMode == RuntimeMode.DEV){
@@ -49,9 +48,14 @@ public class DefaultRealizeProvider implements RealizeProvider {
 
         setPluginScanner(basePluginScanner);
         setPluginDescriptorLoader(pluginDescriptorLoader);
-        setPluginLoader(new DefaultPluginLoader(new DefaultMainResourceDefiner(mainPackage)));
+        setPluginLoader(new DefaultPluginLoader(this.mainResourcePatternDefiner));
         setPluginChecker(new DefaultPluginChecker());
         setVersionInspector(new SemverVersionInspector());
+    }
+
+    public void setMainResourcePatternDefiner(MainResourcePatternDefiner mainResourcePatternDefiner){
+        this.mainResourcePatternDefiner = Assert.isNotNull(mainResourcePatternDefiner,
+                "mainResourcePatternDefiner 不能为空");
     }
 
     public void setPluginScanner(PluginScanner pluginScanner) {
@@ -88,6 +92,11 @@ public class DefaultRealizeProvider implements RealizeProvider {
     @Override
     public PluginDescriptorLoader getPluginDescriptor() {
         return Assert.isNotNull(pluginDescriptorLoader, "PluginDescriptorLoader 实现不能为空");
+    }
+
+    @Override
+    public MainResourcePatternDefiner getMainResourcePatternDefiner() {
+        return Assert.isNotNull(mainResourcePatternDefiner, "MainResourcePatternDefiner 实现不能为空");
     }
 
     @Override

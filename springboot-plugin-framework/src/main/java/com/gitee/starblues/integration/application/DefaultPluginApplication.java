@@ -2,6 +2,8 @@ package com.gitee.starblues.integration.application;
 
 import com.gitee.starblues.core.DefaultRealizeProvider;
 import com.gitee.starblues.core.RealizeProvider;
+import com.gitee.starblues.core.classloader.DefaultMainResourcePatternDefiner;
+import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
 import com.gitee.starblues.integration.operator.PluginOperatorWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
@@ -11,6 +13,8 @@ import com.gitee.starblues.integration.user.DefaultPluginUser;
 import com.gitee.starblues.integration.user.PluginUser;
 import com.gitee.starblues.spring.DefaultSpringPlugin;
 import com.gitee.starblues.spring.SpringPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
@@ -26,6 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DefaultPluginApplication extends AbstractPluginApplication {
 
+    private final static Logger LOG = LoggerFactory.getLogger(DefaultPluginApplication.class);
 
     private PluginUser pluginUser;
     private PluginOperator pluginOperator;
@@ -42,10 +47,14 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
         if(beInitialized.get()){
             throw new RuntimeException("Plugin has been initialized");
         }
+        // 检查Configuration
         IntegrationConfiguration configuration = getConfiguration(applicationContext);
         pluginUser = createPluginUser(applicationContext);
-        pluginOperator = createPluginOperator(applicationContext, configuration);
+        pluginOperator = createPluginOperator(applicationContext);
         try {
+            if(!(pluginOperator instanceof PluginOperatorWrapper)){
+                pluginOperator = new PluginOperatorWrapper(pluginOperator, configuration);
+            }
             setBeanFactory(applicationContext);
             pluginOperator.initPlugins(listener);
             beInitialized.set(true);
@@ -60,33 +69,16 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
      * @return PluginUser
      */
     protected PluginUser createPluginUser(ApplicationContext applicationContext){
-        return new DefaultPluginUser(applicationContext);
+        return applicationContext.getBean(PluginUser.class);
     }
 
     /**
      * 创建插件操作者。子类可扩展
      * @param applicationContext Spring ApplicationContext
-     * @param configuration 当前集成的配置
      * @return PluginOperator
      */
-    protected PluginOperator createPluginOperator(ApplicationContext applicationContext,
-                                                  IntegrationConfiguration configuration){
-        GenericApplicationContext genericApplicationContext = (GenericApplicationContext) applicationContext;
-        PluginOperator pluginOperator = new DefaultPluginOperator(
-                genericApplicationContext,
-                createSpringPlugin(genericApplicationContext),
-                createRealizeProvider(configuration),
-                configuration
-        );
-        return new PluginOperatorWrapper(pluginOperator, configuration);
-    }
-
-    protected SpringPlugin createSpringPlugin(GenericApplicationContext applicationContext){
-        return new DefaultSpringPlugin(applicationContext);
-    }
-
-    protected RealizeProvider createRealizeProvider(IntegrationConfiguration configuration){
-        return new DefaultRealizeProvider(configuration.environment(), configuration.mainPackage());
+    protected PluginOperator createPluginOperator(ApplicationContext applicationContext){
+        return applicationContext.getBean(PluginOperator.class);
     }
 
     @Override

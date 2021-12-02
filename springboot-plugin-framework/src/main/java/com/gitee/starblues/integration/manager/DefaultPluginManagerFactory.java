@@ -11,6 +11,7 @@ import java.util.List;
  * @author starBlues
  * @version 3.0.0
  */
+@Deprecated
 public class DefaultPluginManagerFactory implements PluginManagerFactory{
 
     private final IntegrationConfiguration configuration;
@@ -27,7 +28,7 @@ public class DefaultPluginManagerFactory implements PluginManagerFactory{
                 "配置[mainPackage]不能为空");
         List<String> pluginPaths = Assert.isNotEmpty(configuration.pluginPath(),
                 "配置[pluginPath]不能为空");
-        RealizeProvider realizeProvider = new DefaultRealizeProvider(runtimeMode, mainPackageName);
+        RealizeProvider realizeProvider = new DefaultRealizeProvider(runtimeMode);
         return new DefaultPluginManager(realizeProvider, pluginPaths);
     }
 }

@@ -70,6 +70,7 @@ public class OneselfSpringApplication extends SpringApplication {
         Map<String, Object> env = new HashMap<>();
         // 禁用插件的自动装配
         env.put(AutoIntegrationConfiguration.ENABLE_KEY, false);
+        env.put(AutoIntegrationConfiguration.ENABLE_STARTER_KEY, false);
         String contextPath = getContextPath(environment);
         env.put("server.servlet.context-path", contextPath);
         LOG.info("当前应用接口前缀为: {}", contextPath);

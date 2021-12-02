@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -119,7 +120,7 @@ public class PluginBeanDefinitionLoader {
     }
 
     private void load(Resource source) {
-        if (source.getFilename().endsWith(".groovy")) {
+        if (Objects.requireNonNull(source.getFilename()).endsWith(".groovy")) {
             if (this.groovyReader == null) {
                 throw new BeanDefinitionStoreException("Cannot load Groovy beans without Groovy on classpath");
             }

@@ -1,5 +1,6 @@
 package com.gitee.starblues.core;
 
+import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
 import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
 import com.gitee.starblues.core.loader.PluginLoader;
 import com.gitee.starblues.core.scanner.PluginScanner;
@@ -10,6 +11,11 @@ import com.gitee.starblues.core.version.VersionInspector;
  * @version 3.0.0
  */
 public interface RealizeProvider {
+
+    /**
+     * 初始化
+     */
+    void init();
 
     /**
      * 当前运行环境
@@ -28,6 +34,12 @@ public interface RealizeProvider {
      * @return PluginDescriptorLoader
      */
     PluginDescriptorLoader getPluginDescriptor();
+
+    /**
+     * 得到 MainResourcePatternDefiner 实现
+     * @return MainResourcePatternDefiner
+     */
+    MainResourcePatternDefiner getMainResourcePatternDefiner();
 
     /**
      * 得到 PluginLoader 实现

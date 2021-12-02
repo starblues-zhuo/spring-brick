@@ -19,6 +19,7 @@ import java.util.Set;
 public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguration{
 
     public static final String ENABLE_KEY = "plugin.enable";
+    public static final String ENABLE_STARTER_KEY = "plugin.enable-starter";
 
     /**
      * 是否启用插件功能
