@@ -32,10 +32,15 @@ public class JarResourceLoader extends AbstractResourceLoader{
         ){
             JarEntry jarEntry = null;
             while ((jarEntry = jarStream.getNextJarEntry()) != null) {
+                String name = jarEntry.getName();
+                URL url = new URL(baseUrl.toString() + name);
                 if (jarEntry.isDirectory()) {
+                    Resource resource = new Resource(
+                            name, baseUrl, url, null
+                    );
+                    addResource(name, resource);
                     continue;
                 }
-                String name = jarEntry.getName();
                 if (existResource(name)) {
                     continue;
                 }
@@ -46,7 +51,6 @@ public class JarResourceLoader extends AbstractResourceLoader{
                     while ((len = jarStream.read(bytes)) > 0) {
                         out.write(bytes, 0, len);
                     }
-                    URL url = new URL(baseUrl.toString() + name);
                     Resource resource = new Resource(
                             name, baseUrl, url, out.toByteArray()
                     );

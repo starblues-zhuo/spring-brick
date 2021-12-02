@@ -31,6 +31,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -123,7 +124,12 @@ public class PluginLocalConfigFileProcessor implements PluginEnvironmentProcesso
             if(ObjectUtils.isEmpty(pluginConfigFilePath)){
                 pluginConfigFilePath = "";
             } else {
-                pluginConfigFilePath = "file:" + pluginConfigFilePath + ",";
+                Path path = Paths.get(pluginConfigFilePath);
+                if(Files.exists(path)){
+                    pluginConfigFilePath = path.toUri().toString() + ",";
+                } else {
+                    pluginConfigFilePath = "";
+                }
             }
             // 生产环境读取文件顺序：
             // pluginConfigFilePath配置的目录 > 当前插件jar包目录 > 当前插件jar包/config/*/ 目录 > 当前插件包/config/ 下的目录 > classpath:/

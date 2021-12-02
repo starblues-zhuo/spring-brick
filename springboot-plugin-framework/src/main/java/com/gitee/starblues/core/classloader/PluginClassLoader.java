@@ -212,6 +212,9 @@ public class PluginClassLoader extends AbstractPluginClassLoader implements Reso
                 newPath.append(ResourceUtils.PACKAGE_SPLIT).append(s);
             }
         }
+        if(resourceName.endsWith(ResourceUtils.PACKAGE_SPLIT)){
+            newPath.append(ResourceUtils.PACKAGE_SPLIT);
+        }
         return newPath.toString();
     }
 

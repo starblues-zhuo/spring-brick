@@ -56,7 +56,7 @@ public class ClassPathLoader extends AbstractResourceLoader{
 
     private void loadResource(File file, String packageName) throws Exception{
         if(file.isDirectory()){
-            addResource(file, packageName, null);
+            addResource(file, packageName + ResourceUtils.PACKAGE_SPLIT, null);
             return;
         }
         try (FileInputStream fileInputStream = new FileInputStream(file)) {

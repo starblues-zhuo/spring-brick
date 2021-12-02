@@ -31,7 +31,7 @@ public class ProdPathResolve implements PathResolve{
     public Path resolve(Path path) {
         String fileName = path.getFileName().toString();
         for (String extensionName : extensionNames) {
-            boolean exist = fileName.toLowerCase().endsWith(extensionName.toUpperCase());
+            boolean exist = fileName.toLowerCase().endsWith(extensionName.toLowerCase());
             if(exist){
                 return path;
             }

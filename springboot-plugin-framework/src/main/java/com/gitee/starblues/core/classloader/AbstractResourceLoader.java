@@ -46,11 +46,7 @@ public abstract class AbstractResourceLoader {
     }
 
     public Resource findResource(final String name) {
-        String queryName = name;
-        if(name.endsWith(ResourceUtils.PACKAGE_SPLIT)){
-            queryName = name.substring(0, name.lastIndexOf(ResourceUtils.PACKAGE_SPLIT));
-        }
-        return resourceCache.get(queryName);
+        return resourceCache.get(name);
     }
 
     public InputStream getInputStream(final String name) {

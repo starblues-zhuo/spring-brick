@@ -23,6 +23,9 @@ public class BasePluginScanner implements PluginScanner{
     @Override
     public List<Path> scan(List<String> rootDir) {
         List<Path> pluginPaths = new ArrayList<>();
+        if(pathResolve == null){
+            return pluginPaths;
+        }
         for (String dir : rootDir) {
             if(ObjectUtils.isEmpty(dir)){
                 continue;
@@ -38,9 +41,6 @@ public class BasePluginScanner implements PluginScanner{
 
     protected void resolve(File currentFile, List<Path> pluginPaths){
         if(currentFile == null || !currentFile.exists()){
-            return;
-        }
-        if(pathResolve == null){
             return;
         }
         Path currentPath = currentFile.toPath();
