@@ -6,7 +6,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class DefaultSpringPluginRegistryInfo extends DefaultRegistryInfo implements SpringPluginRegistryInfo{
 
@@ -17,11 +17,12 @@ public class DefaultSpringPluginRegistryInfo extends DefaultRegistryInfo impleme
 
     public DefaultSpringPluginRegistryInfo(PluginWrapper pluginWrapper,
                                            PluginSpringApplication springApplication,
-                                           ConfigurableApplicationContext mainApplicationContext) {
+                                           ConfigurableApplicationContext mainApplicationContext,
+                                           IntegrationConfiguration configuration) {
         this.pluginWrapper = pluginWrapper;
         this.pluginSpringApplication = springApplication;
         this.mainApplicationContext = mainApplicationContext;
-        this.configuration = mainApplicationContext.getBean(IntegrationConfiguration.class);
+        this.configuration = configuration;
     }
 
     @Override

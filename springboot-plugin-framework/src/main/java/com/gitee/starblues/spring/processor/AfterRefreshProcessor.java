@@ -1,26 +1,28 @@
-package com.gitee.starblues.spring.process;
+package com.gitee.starblues.spring.processor;
 
 import com.gitee.starblues.spring.SpringPluginRegistryInfo;
 import com.gitee.starblues.utils.OrderPriority;
 
 /**
- * ApplicationContext.refresh 刷新之后的处理扩展接口
+ * ApplicationContext.refresh 刷新之前的处理扩展接口
  * @author starBlues
  * @version 3.0.0
  */
-public interface BeforeRefreshProcessor {
+public interface AfterRefreshProcessor {
 
     /**
      * 插件注册时调用
      * @param registryInfo 注册插件信息
+     * @throws Exception Exception
      */
-    void registryOfBefore(SpringPluginRegistryInfo registryInfo);
+    void registryOfAfter(SpringPluginRegistryInfo registryInfo) throws Exception;
 
     /**
      * 插件卸载时调用
      * @param registryInfo 注册插件信息
+     * @throws Exception Exception
      */
-    default void unRegistryOfBefore(SpringPluginRegistryInfo registryInfo){
+    default void unRegistryOfAfter(SpringPluginRegistryInfo registryInfo) throws Exception{
 
     }
 
@@ -28,7 +30,7 @@ public interface BeforeRefreshProcessor {
      * 执行顺序 OrderPriority
      * @return OrderPriority
      */
-    default OrderPriority orderOfBefore(){
+    default OrderPriority orderOfAfter(){
         return OrderPriority.getMiddlePriority();
     }
 

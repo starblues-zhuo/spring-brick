@@ -8,9 +8,15 @@ import com.gitee.starblues.integration.DefaultIntegrationConfiguration;
 import com.gitee.starblues.spring.DefaultSpringPluginRegistryInfo;
 import com.gitee.starblues.spring.PluginSpringApplication;
 import com.gitee.starblues.spring.SpringPluginRegistryInfo;
-import com.gitee.starblues.spring.process.BeforeRefreshProcessorFactory;
+import com.gitee.starblues.spring.processor.AbstractProcessorFactory;
+import com.gitee.starblues.spring.processor.DefaultProcessorFactory;
+import com.gitee.starblues.spring.processor.ProcessorRunMode;
 import com.gitee.starblues.utils.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
@@ -28,6 +34,8 @@ import java.util.Map;
  * @see SpringApplication
  */
 public class OneselfSpringApplication extends SpringApplication {
+
+    private final static Logger LOG = LoggerFactory.getLogger(OneselfSpringApplication.class);
 
     private final Class<?> primarySource;
     private final PluginSpringApplication springApplication;
@@ -62,21 +70,37 @@ public class OneselfSpringApplication extends SpringApplication {
         Map<String, Object> env = new HashMap<>();
         // 禁用插件的自动装配
         env.put(AutoIntegrationConfiguration.ENABLE_KEY, false);
-        env.put("server.servlet.context-path", getContextPath(environment));
+        String contextPath = getContextPath(environment);
+        env.put("server.servlet.context-path", contextPath);
+        LOG.info("当前应用接口前缀为: {}", contextPath);
         environment.getPropertySources().addFirst(new MapPropertySource("springPluginRegistryInfo", env));
+
     }
 
     @Override
     protected void refresh(ConfigurableApplicationContext applicationContext) {
+        AutoIntegrationConfiguration configuration = getConfiguration(applicationContext);
         // 刷新之前
-        BeforeRefreshProcessorFactory beforeRefreshProcessorFactory =
-                new BeforeRefreshProcessorFactory(null);
-        SpringPluginRegistryInfo springPluginRegistryInfo = create(applicationContext);
-        beforeRefreshProcessorFactory.registryOfBefore(springPluginRegistryInfo);
+        AbstractProcessorFactory processorFactory =
+                new DefaultProcessorFactory(applicationContext, configuration, ProcessorRunMode.ONESELF);
+        SpringPluginRegistryInfo springPluginRegistryInfo = create(applicationContext, configuration);
+        processorFactory.registryOfBefore(springPluginRegistryInfo);
         super.refresh(applicationContext);
     }
 
-    private SpringPluginRegistryInfo create(ConfigurableApplicationContext applicationContext){
+    private AutoIntegrationConfiguration getConfiguration(ConfigurableApplicationContext applicationContext){
+        Binder binder = Binder.get(applicationContext.getEnvironment());
+        AutoIntegrationConfiguration autoIntegrationConfiguration =
+                binder.bind("plugin", Bindable.of(AutoIntegrationConfiguration.class))
+                .orElseGet(() -> null);
+        if(autoIntegrationConfiguration != null){
+            return autoIntegrationConfiguration;
+        }
+        return new AutoIntegrationConfiguration();
+    }
+
+    private SpringPluginRegistryInfo create(ConfigurableApplicationContext applicationContext,
+                                            AutoIntegrationConfiguration configuration){
         return new DefaultSpringPluginRegistryInfo(pluginWrapper, new PluginSpringApplication() {
             @Override
             public ConfigurableApplicationContext run() {
@@ -92,7 +116,7 @@ public class OneselfSpringApplication extends SpringApplication {
             public ConfigurableApplicationContext getApplicationContext() {
                 return applicationContext;
             }
-        }, applicationContext);
+        }, applicationContext, configuration);
     }
 
     /**

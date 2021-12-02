@@ -2,10 +2,10 @@ package com.gitee.starblues.spring;
 
 import com.gitee.starblues.core.loader.PluginWrapper;
 import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
-import com.gitee.starblues.spring.process.AfterRefreshProcessor;
-import com.gitee.starblues.spring.process.AfterRefreshProcessorFactory;
-import com.gitee.starblues.spring.process.BeforeRefreshProcessor;
-import com.gitee.starblues.spring.process.BeforeRefreshProcessorFactory;
+import com.gitee.starblues.integration.IntegrationConfiguration;
+import com.gitee.starblues.spring.processor.AbstractProcessorFactory;
+import com.gitee.starblues.spring.processor.DefaultProcessorFactory;
+import com.gitee.starblues.spring.processor.ProcessorRunMode;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.Map;
@@ -21,23 +21,24 @@ public class DefaultSpringPlugin implements SpringPlugin {
 
 
     private final GenericApplicationContext mainApplicationContext;
+    private final IntegrationConfiguration configuration;
 
-    private final BeforeRefreshProcessor beforeRefreshProcessor;
-    private final AfterRefreshProcessor afterRefreshProcessor;
+    private final AbstractProcessorFactory processorFactory;
 
 
     public DefaultSpringPlugin(GenericApplicationContext mainApplicationContext) {
         this.mainApplicationContext = mainApplicationContext;
-        this.beforeRefreshProcessor = new BeforeRefreshProcessorFactory(mainApplicationContext);
-        this.afterRefreshProcessor = new AfterRefreshProcessorFactory(mainApplicationContext);
+        this.configuration = mainApplicationContext.getBean(IntegrationConfiguration.class);
+        this.processorFactory = new DefaultProcessorFactory(mainApplicationContext, configuration,
+                ProcessorRunMode.PLUGIN);
     }
 
     @Override
     public synchronized void registry(PluginWrapper pluginWrapper) throws Exception {
         SpringPluginRegistryInfo registryInfo = createRegistryInfo(pluginWrapper);
-        beforeRefreshProcessor.registryOfBefore(registryInfo);
+        processorFactory.registryOfBefore(registryInfo);
         registryInfo.getPluginSpringApplication().run();
-        afterRefreshProcessor.registryOfAfter(registryInfo);
+        processorFactory.registryOfAfter(registryInfo);
         registryInfoMap.put(pluginWrapper.getPluginId(), registryInfo);
         PluginInfoContainers.addPluginApplicationContext(pluginWrapper.getPluginId(),
                 registryInfo.getPluginSpringApplication().getApplicationContext());
@@ -49,8 +50,8 @@ public class DefaultSpringPlugin implements SpringPlugin {
         if(springPluginRegistryInfo == null){
             return;
         }
-        afterRefreshProcessor.unRegistryOfAfter(springPluginRegistryInfo);
-        beforeRefreshProcessor.unRegistryOfBefore(springPluginRegistryInfo);
+        processorFactory.unRegistryOfAfter(springPluginRegistryInfo);
+        processorFactory.unRegistryOfBefore(springPluginRegistryInfo);
         springPluginRegistryInfo.getPluginSpringApplication().close();
         registryInfoMap.remove(pluginId);
         PluginInfoContainers.removePluginApplicationContext(pluginId);
@@ -59,7 +60,7 @@ public class DefaultSpringPlugin implements SpringPlugin {
     protected SpringPluginRegistryInfo createRegistryInfo(PluginWrapper pluginWrapper){
         PluginSpringApplication springApplication = createSpringApplication(pluginWrapper);
         return new DefaultSpringPluginRegistryInfo(
-                pluginWrapper, springApplication, mainApplicationContext
+                pluginWrapper, springApplication, mainApplicationContext, configuration
         );
     }
 

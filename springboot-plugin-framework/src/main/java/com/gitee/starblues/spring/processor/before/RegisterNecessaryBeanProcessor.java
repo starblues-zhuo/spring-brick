@@ -1,10 +1,9 @@
-package com.gitee.starblues.spring.process.before;
+package com.gitee.starblues.spring.processor.before;
 
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.realize.PluginUtils;
 import com.gitee.starblues.spring.SpringPluginRegistryInfo;
-import com.gitee.starblues.spring.process.BeforeRefreshProcessor;
-import com.gitee.starblues.utils.OrderPriority;
+import com.gitee.starblues.spring.processor.BeforeRefreshProcessor;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -25,13 +24,4 @@ public class RegisterNecessaryBeanProcessor implements BeforeRefreshProcessor {
         applicationContext.getBeanFactory().registerSingleton("pluginUtils", new PluginUtils(applicationContext));
     }
 
-    @Override
-    public void unRegistryOfBefore(SpringPluginRegistryInfo registryInfo) {
-
-    }
-
-    @Override
-    public OrderPriority orderOfBefore() {
-        return OrderPriority.getHighPriority();
-    }
 }

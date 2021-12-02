@@ -1,4 +1,4 @@
-package com.gitee.starblues.spring.process;
+package com.gitee.starblues.spring.processor;
 
 import com.gitee.starblues.factory.process.post.bean.model.ControllerWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
@@ -35,9 +35,8 @@ public class PluginControllerProcessor implements BeforeRefreshProcessor, AfterR
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
     private final Method getMappingForMethod;
 
-    private static PluginControllerProcessor instance;
 
-    private PluginControllerProcessor(ConfigurableApplicationContext mainApplicationContext){
+    public PluginControllerProcessor(ConfigurableApplicationContext mainApplicationContext){
         this.requestMappingHandlerMapping = mainApplicationContext.getBean(RequestMappingHandlerMapping.class);
         this.getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
                 "getMappingForMethod", Method.class, Class.class);
@@ -50,19 +49,12 @@ public class PluginControllerProcessor implements BeforeRefreshProcessor, AfterR
         }
     }
 
-    public static PluginControllerProcessor getInstance(ConfigurableApplicationContext mainApplicationContext){
-        if(instance == null){
-            synchronized (PluginControllerProcessor.class){
-                if(instance == null){
-                    instance = new PluginControllerProcessor(mainApplicationContext);
-                }
-            }
-        }
-        return instance;
-    }
 
     @Override
     public void registryOfBefore(SpringPluginRegistryInfo registryInfo) {
+        ConfigurableApplicationContext mainApplicationContext = registryInfo.getMainApplicationContext();
+
+
         if(getMappingForMethod == null){
             return;
         }
