@@ -1,5 +1,7 @@
 package com.gitee.starblues.spring;
 
+import java.util.function.Supplier;
+
 /**
  * 注册信息
  * @author starBlues
@@ -20,6 +22,16 @@ public interface RegistryInfo {
      * @return 注册信息的值
      */
     <T> T getRegistryInfo(String key);
+
+    /**
+     * 得到注册信息
+     * @param key 注册信息key
+     * @param notExistCreate 不存在的话, 进行创建操作
+     * @return 注册信息的值
+     */
+    <T> T getRegistryInfo(String key, Supplier<T> notExistCreate);
+
+
     /**
      * 移除注册信息
      * @param key 注册信息key

@@ -10,6 +10,19 @@ import com.gitee.starblues.realize.BasePlugin;
  */
 public interface PluginClassGroup {
 
+    String KEY = "PluginClassGroup_";
+
+    String OTHER_CLASS_GROUP_ID = KEY + "otherClass";
+
+    /**
+     * 得到全分组id
+     * @param groupId 分组id
+     * @return String
+     */
+    static String getFullId(String groupId){
+        return KEY + groupId;
+    }
+
     /**
      * 组id
      * @return 组id

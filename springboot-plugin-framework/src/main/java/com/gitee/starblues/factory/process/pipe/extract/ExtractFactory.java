@@ -164,6 +164,7 @@ public class ExtractFactory {
      * @param <T> 接口类型泛型
      * @return 扩展实现集合
      */
+    @SuppressWarnings("unchecked")
     public <T> List<T> getExtractByInterClass(String pluginId, Class<T> interfaceClass){
         if(interfaceClass == null){
             return Collections.emptyList();
@@ -173,10 +174,11 @@ public class ExtractFactory {
         if(extractCoordinateObjectMap == null || extractCoordinateObjectMap.isEmpty()){
             return Collections.emptyList();
         }
-        for (Object o : extractCoordinateObjectMap.values()) {
-            Set<Class<?>> allInterfacesForClassAsSet = ClassUtils.getAllInterfacesForClassAsSet(o.getClass());
+        for (ExtractWrapper wrapper : extractCoordinateObjectMap.values()) {
+            Object object = wrapper.getObject();
+            Set<Class<?>> allInterfacesForClassAsSet = ClassUtils.getAllInterfacesForClassAsSet(object.getClass());
             if(allInterfacesForClassAsSet.contains(interfaceClass)){
-                extracts.add((T)o);
+                extracts.add((T)object);
             }
         }
         return extracts;
@@ -213,17 +215,13 @@ public class ExtractFactory {
      * @return Extract 注解
      */
     private Extract getExtract(Object extractObject){
-        Extract annotation = extractObject.getClass().getAnnotation(Extract.class);
-        if(annotation == null){
-            return null;
-        }
-        return annotation;
+        return extractObject.getClass().getAnnotation(Extract.class);
     }
 
     /**
      * 扩展对象包装类型
      **/
-    private class ExtractWrapper{
+    private static class ExtractWrapper{
         private final Object object;
         private final int order;
 

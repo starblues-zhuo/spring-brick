@@ -1,7 +1,9 @@
 package com.gitee.starblues.spring;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 /**
  * @author starBlues
@@ -10,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultRegistryInfo implements RegistryInfo{
 
     private final Map<String, Object> registryInfo = new ConcurrentHashMap<>();
-
 
     @Override
     public void addRegistryInfo(String key, Object value) {
@@ -25,6 +26,17 @@ public class DefaultRegistryInfo implements RegistryInfo{
             return null;
         }
         return (T) o;
+    }
+
+    @Override
+    public <T> T getRegistryInfo(String key, Supplier<T> notExistCreate) {
+        T t = getRegistryInfo(key);
+        if(t != null){
+            return t;
+        }
+        t = notExistCreate.get();
+        registryInfo.put(key, t);
+        return t;
     }
 
     @Override

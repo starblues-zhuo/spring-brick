@@ -1,10 +1,13 @@
-package com.gitee.starblues.spring.processor;
+package com.gitee.starblues.spring.listener;
 
 import com.gitee.starblues.factory.process.post.bean.model.ControllerWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.PluginSpringApplication;
 import com.gitee.starblues.spring.SpringPluginRegistryInfo;
-import com.gitee.starblues.utils.*;
+import com.gitee.starblues.utils.ClassUtils;
+import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.ObjectUtils;
+import com.gitee.starblues.utils.ReflectionUtils;
 import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +15,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,44 +24,31 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * 插件 controller 处理者
  * @author starBlues
- * @version 3.0.0
+ * @version 1.0
  */
-public class PluginControllerProcessor implements BeforeRefreshProcessor, AfterRefreshProcessor {
+public class PluginControllerRegistryListener implements PluginSpringApplicationRunListener {
 
-    private final static Logger LOG = LoggerFactory.getLogger(PluginControllerProcessor.class);
-
+    private final static Logger LOG = LoggerFactory.getLogger(PluginControllerRegistryListener.class);
     private static final String PROCESS_CONTROLLERS = "PROCESS_SUCCESS";
 
-    private final RequestMappingHandlerMapping requestMappingHandlerMapping;
-    private final Method getMappingForMethod;
+    private final GenericApplicationContext mainApplicationContext;
 
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
+    private Method getMappingForMethod;
 
-    public PluginControllerProcessor(ConfigurableApplicationContext mainApplicationContext){
-        this.requestMappingHandlerMapping = mainApplicationContext.getBean(RequestMappingHandlerMapping.class);
-        this.getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
-                "getMappingForMethod", Method.class, Class.class);
-        if(this.getMappingForMethod != null){
-            this.getMappingForMethod.setAccessible(true);
-        }
-        if(getMappingForMethod == null){
-            LOG.warn("RequestMappingHandlerMapping 类中没有发现 <getMappingForMethod> 方法, 无法注册插件接口. " +
-                    "请检查当前环境是否为 web 环境");
-        }
+    private final AtomicBoolean canRegistered = new AtomicBoolean(false);
+
+    public PluginControllerRegistryListener(GenericApplicationContext mainApplicationContext) {
+        this.mainApplicationContext = mainApplicationContext;
     }
 
-
     @Override
-    public void registryOfBefore(SpringPluginRegistryInfo registryInfo) {
-        ConfigurableApplicationContext mainApplicationContext = registryInfo.getMainApplicationContext();
+    public void refreshPrepared(SpringPluginRegistryInfo registryInfo) throws Exception {
 
-
-        if(getMappingForMethod == null){
-            return;
-        }
         IntegrationConfiguration configuration = registryInfo.getConfiguration();
         if(ObjectUtils.isEmpty(configuration.pluginRestPathPrefix())
                 && !configuration.enablePluginIdRestPathPrefix()){
@@ -65,16 +56,27 @@ public class PluginControllerProcessor implements BeforeRefreshProcessor, AfterR
             return;
         }
 
+        this.requestMappingHandlerMapping = mainApplicationContext.getBean(RequestMappingHandlerMapping.class);
+        this.getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
+                "getMappingForMethod", Method.class, Class.class);
+        if(getMappingForMethod == null){
+            LOG.warn("RequestMappingHandlerMapping 类中没有发现 <getMappingForMethod> 方法, 无法注册插件接口. " +
+                    "请检查当前环境是否为 web 环境");
+        }
+        this.getMappingForMethod.setAccessible(true);
+
         PluginSpringApplication pluginSpringApplication = registryInfo.getPluginSpringApplication();
         AnnotationConfigApplicationContext applicationContext =
                 (AnnotationConfigApplicationContext)pluginSpringApplication.getApplicationContext();
         applicationContext.registerBean("changeRestPathPostProcessor",
                 ChangeRestPathPostProcessor.class, ()-> new ChangeRestPathPostProcessor(registryInfo));
+        canRegistered.set(true);
     }
 
+
     @Override
-    public void registryOfAfter(SpringPluginRegistryInfo registryInfo) throws Exception {
-        if(getMappingForMethod == null){
+    public void started(SpringPluginRegistryInfo registryInfo) throws Exception {
+        if(!canRegistered.get()){
             return;
         }
         String pluginId = registryInfo.getPluginWrapper().getPluginId();
@@ -104,29 +106,10 @@ public class PluginControllerProcessor implements BeforeRefreshProcessor, AfterR
     }
 
     @Override
-    public void unRegistryOfAfter(SpringPluginRegistryInfo registryInfo) throws Exception {
-        List<ControllerWrapper> controllerWrappers = registryInfo.getRegistryInfo(PROCESS_CONTROLLERS);
-        if(ObjectUtils.isEmpty(controllerWrappers)){
-            return;
-        }
-        for (ControllerWrapper controllerBeanWrapper : controllerWrappers) {
-            if(controllerBeanWrapper == null){
-                continue;
-            }
-            unregister(controllerBeanWrapper);
-        }
-        registryInfo.removeRegistryInfo(PROCESS_CONTROLLERS);
+    public ListenerRunMode runMode() {
+        return ListenerRunMode.PLUGIN;
     }
 
-    private void unregister(ControllerWrapper controllerBeanWrapper) {
-        Set<RequestMappingInfo> requestMappingInfos = controllerBeanWrapper.getRequestMappingInfos();
-        if(ObjectUtils.isEmpty(requestMappingInfos)){
-            return;
-        }
-        for (RequestMappingInfo requestMappingInfo : requestMappingInfos) {
-            requestMappingHandlerMapping.unregisterMapping(requestMappingInfo);
-        }
-    }
 
     private Set<RequestMappingInfo> registry(SpringPluginRegistryInfo pluginRegistryInfo, Class<?> aClass)
             throws Exception {
@@ -155,7 +138,6 @@ public class PluginControllerProcessor implements BeforeRefreshProcessor, AfterR
     private boolean isHaveRequestMapping(Method method){
         return AnnotationUtils.findAnnotation(method, RequestMapping.class) != null;
     }
-
 
     private static class ChangeRestPathPostProcessor implements BeanPostProcessor {
 
@@ -233,5 +215,6 @@ public class PluginControllerProcessor implements BeforeRefreshProcessor, AfterR
             }
         }
     }
+
 
 }

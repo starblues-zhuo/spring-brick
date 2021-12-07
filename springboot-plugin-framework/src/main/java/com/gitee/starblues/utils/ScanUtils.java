@@ -2,6 +2,7 @@ package com.gitee.starblues.utils;
 
 
 import org.pf4j.PluginWrapper;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.util.ClassUtils;
 
 import java.io.File;
@@ -43,6 +44,22 @@ public class ScanUtils {
             // unix or linux
             return scanClassPackageNameOfOther(basePackage, baseClass);
         }
+    }
+
+    /**
+     * 得到扫描的包
+     * @param pluginClass 插件入口class
+     * @return 包集合
+     */
+    public static String[] getScanBasePackages(Class<?> pluginClass){
+        SpringBootApplication springBootApplication = pluginClass.getAnnotation(SpringBootApplication.class);
+        if(springBootApplication != null){
+            String[] scanBasePackages = springBootApplication.scanBasePackages();
+            if(scanBasePackages.length > 0){
+                return scanBasePackages;
+            }
+        }
+        return new String[]{ pluginClass.getPackage().getName() };
     }
 
     /**

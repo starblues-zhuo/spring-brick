@@ -5,12 +5,10 @@ import com.gitee.starblues.core.descriptor.*;
 import com.gitee.starblues.core.loader.PluginWrapper;
 import com.gitee.starblues.integration.AutoIntegrationConfiguration;
 import com.gitee.starblues.integration.DefaultIntegrationConfiguration;
-import com.gitee.starblues.spring.DefaultSpringPluginRegistryInfo;
 import com.gitee.starblues.spring.PluginSpringApplication;
 import com.gitee.starblues.spring.SpringPluginRegistryInfo;
-import com.gitee.starblues.spring.processor.AbstractProcessorFactory;
-import com.gitee.starblues.spring.processor.DefaultProcessorFactory;
-import com.gitee.starblues.spring.processor.ProcessorRunMode;
+import com.gitee.starblues.spring.processor.SpringPluginProcessor;
+import com.gitee.starblues.spring.processor.SpringPluginProcessorFactory;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +16,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ResourceLoader;
@@ -33,23 +32,26 @@ import java.util.Map;
  * @version 3.0.0
  * @see SpringApplication
  */
-public class OneselfSpringApplication extends SpringApplication {
+public class OneselfSpringApplication extends SpringApplication implements PluginSpringApplication{
 
     private final static Logger LOG = LoggerFactory.getLogger(OneselfSpringApplication.class);
 
     private final Class<?> primarySource;
-    private final PluginSpringApplication springApplication;
 
     private final PluginWrapper pluginWrapper;
 
-    public OneselfSpringApplication(PluginSpringApplication springApplication, Class<?>... primarySources) {
-        this(springApplication, null, primarySources);
+    private final SpringPluginProcessor springPluginProcessor;
+
+    private SpringPluginRegistryInfo registryInfo;
+
+    private GenericApplicationContext applicationContext;
+
+    public OneselfSpringApplication(Class<?>... primarySources) {
+        this(null, primarySources);
     }
 
-    public OneselfSpringApplication(PluginSpringApplication springApplication,
-                                    ResourceLoader resourceLoader, Class<?>... primarySources) {
+    public OneselfSpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
         super(resourceLoader, primarySources);
-        this.springApplication = springApplication;
         if(primarySources.length > 0){
             primarySource = primarySources[0];
         } else {
@@ -57,12 +59,33 @@ public class OneselfSpringApplication extends SpringApplication {
         }
         // 运行之前, 从当前插件的 classpath 下获取插件引导信息
         pluginWrapper = tryGetPluginWrapper();
+        this.springPluginProcessor = new SpringPluginProcessorFactory(SpringPluginProcessor.RunMode.ONESELF);
+    }
+
+
+    @Override
+    public GenericApplicationContext run() throws Exception {
+        return (GenericApplicationContext) super.run();
     }
 
     @Override
-    protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
-        super.configureProfiles(environment, args);
+    public void close(){
+        if(applicationContext != null){
+            try {
+                springPluginProcessor.close(registryInfo);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                applicationContext.close();
+            }
+        }
     }
+
+    @Override
+    public GenericApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
 
     @Override
     protected void bindToSpringApplication(ConfigurableEnvironment environment) {
@@ -75,50 +98,57 @@ public class OneselfSpringApplication extends SpringApplication {
         env.put("server.servlet.context-path", contextPath);
         LOG.info("当前应用接口前缀为: {}", contextPath);
         environment.getPropertySources().addFirst(new MapPropertySource("springPluginRegistryInfo", env));
+    }
 
+    @Override
+    protected ConfigurableApplicationContext createApplicationContext() {
+        ConfigurableApplicationContext applicationContext = super.createApplicationContext();
+        try {
+            this.applicationContext = (GenericApplicationContext) applicationContext;
+            springPluginProcessor.init(this.applicationContext);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return applicationContext;
     }
 
     @Override
     protected void refresh(ConfigurableApplicationContext applicationContext) {
-        AutoIntegrationConfiguration configuration = getConfiguration(applicationContext);
-        // 刷新之前
-        AbstractProcessorFactory processorFactory =
-                new DefaultProcessorFactory(applicationContext, configuration, ProcessorRunMode.ONESELF);
-        SpringPluginRegistryInfo springPluginRegistryInfo = create(applicationContext, configuration);
-        processorFactory.registryOfBefore(springPluginRegistryInfo);
-        super.refresh(applicationContext);
+        try {
+            AutoIntegrationConfiguration configuration = bindIntegrationConfiguration(applicationContext);
+            registryInfo = new OneselfSpringPluginRegistryInfo(pluginWrapper, this,
+                    applicationContext, configuration);
+            springPluginProcessor.refreshBefore(registryInfo);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            super.refresh(applicationContext);
+            springPluginProcessor.refreshAfter(registryInfo);
+        } catch (Exception e){
+            try {
+                springPluginProcessor.failure(registryInfo);
+            } catch (Exception exception) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
-    private AutoIntegrationConfiguration getConfiguration(ConfigurableApplicationContext applicationContext){
+    private AutoIntegrationConfiguration bindIntegrationConfiguration(
+            ConfigurableApplicationContext applicationContext){
         Binder binder = Binder.get(applicationContext.getEnvironment());
-        AutoIntegrationConfiguration autoIntegrationConfiguration =
+        AutoIntegrationConfiguration configuration =
                 binder.bind("plugin", Bindable.of(AutoIntegrationConfiguration.class))
                 .orElseGet(() -> null);
-        if(autoIntegrationConfiguration != null){
-            return autoIntegrationConfiguration;
+        if(configuration == null){
+            configuration = new AutoIntegrationConfiguration();
         }
-        return new AutoIntegrationConfiguration();
+        applicationContext.getBeanFactory().registerSingleton("integrationConfiguration",
+                configuration);
+        return configuration;
     }
 
-    private SpringPluginRegistryInfo create(ConfigurableApplicationContext applicationContext,
-                                            AutoIntegrationConfiguration configuration){
-        return new DefaultSpringPluginRegistryInfo(pluginWrapper, new PluginSpringApplication() {
-            @Override
-            public ConfigurableApplicationContext run() {
-                return springApplication.run();
-            }
-
-            @Override
-            public void close() {
-                springApplication.close();
-            }
-
-            @Override
-            public ConfigurableApplicationContext getApplicationContext() {
-                return applicationContext;
-            }
-        }, applicationContext, configuration);
-    }
 
     /**
      * 尝试从 classpath 获取插件引导信息, 如果不存在, 则生成空的 PluginWrapper

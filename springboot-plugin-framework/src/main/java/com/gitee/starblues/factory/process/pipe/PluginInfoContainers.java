@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author starBlues
  * @version 2.4.0
  */
+@Deprecated
 public class PluginInfoContainers {
 
     private final static Map<String, ConfigurableApplicationContext> PLUGIN_APPLICATION_CONTEXTS =
