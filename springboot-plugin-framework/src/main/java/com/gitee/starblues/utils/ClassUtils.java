@@ -79,9 +79,7 @@ public class ClassUtils {
         if (field == null) {
             return null;
         }
-        if(!field.isAccessible()){
-            field.setAccessible(true);
-        }
+        field.setAccessible(true);
         Object fieldObject = field.get(o);
         return (T) fieldObject;
     }

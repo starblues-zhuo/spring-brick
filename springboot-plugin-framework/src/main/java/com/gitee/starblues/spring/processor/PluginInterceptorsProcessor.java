@@ -1,15 +1,14 @@
-package com.gitee.starblues.factory.process.pipe;
+package com.gitee.starblues.spring.processor;
 
-import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.spring.processor.interceptor.PluginInterceptorRegister;
 import com.gitee.starblues.spring.processor.interceptor.PluginInterceptorRegistry;
 import com.gitee.starblues.integration.IntegrationConfiguration;
+import com.gitee.starblues.spring.SpringPluginRegistryInfo;
 import com.gitee.starblues.utils.ClassUtils;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.web.context.request.WebRequestInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -20,27 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 插件 SpringMVC 拦截器的处理
  * @author starBlues
- * @version 2.4.1
+ * @version 1.0
  */
-public class PluginInterceptorsPipeProcessor implements PluginPipeProcessor{
+public class PluginInterceptorsProcessor implements SpringPluginProcessor{
 
-    private final ApplicationContext mainApplicationContext;
-    private final IntegrationConfiguration configuration;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final static String INTERCEPTORS = "interceptors";
+    private final static String INTERCEPTORS = "pluginHandlerInterceptors";
 
     private AbstractHandlerMapping handlerMapping;
 
 
-    public PluginInterceptorsPipeProcessor(ApplicationContext mainApplicationContext){
-        this.mainApplicationContext = mainApplicationContext;
-        this.configuration = mainApplicationContext.getBean(IntegrationConfiguration.class);
-    }
-
     @Override
-    public void initialize() throws Exception {
+    public void initialize(GenericApplicationContext mainApplicationContext) throws Exception {
         handlerMapping = SpringBeanUtils.getExistBean(mainApplicationContext,
                 AbstractHandlerMapping.class);
         if(handlerMapping == null){
@@ -49,11 +40,11 @@ public class PluginInterceptorsPipeProcessor implements PluginPipeProcessor{
     }
 
     @Override
-    public void registry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
+    public void refreshAfter(SpringPluginRegistryInfo registryInfo) throws Exception {
         if(handlerMapping == null){
             return;
         }
-        GenericApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginApplicationContext();
+        GenericApplicationContext pluginApplicationContext = registryInfo.getPluginSpringApplication().getApplicationContext();
         List<PluginInterceptorRegister> interceptorRegisters = SpringBeanUtils.getBeans(pluginApplicationContext,
                 PluginInterceptorRegister.class);
         List<HandlerInterceptor> interceptorsObjects = new ArrayList<>();
@@ -61,7 +52,9 @@ public class PluginInterceptorsPipeProcessor implements PluginPipeProcessor{
         if(adaptedInterceptors == null){
             return;
         }
-        String pluginRestPrefix = CommonUtils.getPluginRestPrefix(configuration, pluginRegistryInfo.getPluginWrapper().getPluginId());
+        IntegrationConfiguration configuration = registryInfo.getConfiguration();
+        String pluginId = registryInfo.getPluginWrapper().getPluginId();
+        String pluginRestPrefix = CommonUtils.getPluginRestPrefix(configuration, pluginId);
 
         for (PluginInterceptorRegister interceptorRegister : interceptorRegisters) {
             PluginInterceptorRegistry interceptorRegistry = new PluginInterceptorRegistry(pluginRestPrefix);
@@ -76,15 +69,15 @@ public class PluginInterceptorsPipeProcessor implements PluginPipeProcessor{
                 interceptorsObjects.add(handlerInterceptor);
             }
         }
-        pluginRegistryInfo.addExtension(INTERCEPTORS, interceptorsObjects);
+        registryInfo.addRegistryInfo(INTERCEPTORS, interceptorsObjects);
     }
 
     @Override
-    public void unRegistry(PluginRegistryInfo pluginRegistryInfo) throws Exception {
+    public void close(SpringPluginRegistryInfo registryInfo) throws Exception {
         if(handlerMapping == null){
             return;
         }
-        List<HandlerInterceptor> interceptorsObjects = pluginRegistryInfo.getExtension(INTERCEPTORS);
+        List<HandlerInterceptor> interceptorsObjects = registryInfo.getRegistryInfo(INTERCEPTORS);
         if(interceptorsObjects == null || interceptorsObjects.isEmpty()){
             return;
         }
@@ -95,6 +88,11 @@ public class PluginInterceptorsPipeProcessor implements PluginPipeProcessor{
         for (HandlerInterceptor interceptor : interceptorsObjects) {
             adaptedInterceptors.remove(interceptor);
         }
+    }
+
+    @Override
+    public RunMode runMode() {
+        return RunMode.PLUGIN;
     }
 
     /**
@@ -125,5 +123,4 @@ public class PluginInterceptorsPipeProcessor implements PluginPipeProcessor{
             throw new IllegalArgumentException("Interceptor type not supported: " + interceptor.getClass().getName());
         }
     }
-
 }

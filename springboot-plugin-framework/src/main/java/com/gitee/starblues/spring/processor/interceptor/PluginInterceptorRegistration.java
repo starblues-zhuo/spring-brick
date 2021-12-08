@@ -1,7 +1,7 @@
-package com.gitee.starblues.factory.process.pipe.interceptor;
+package com.gitee.starblues.spring.processor.interceptor;
 
 import com.gitee.starblues.utils.CommonUtils;
-import org.pf4j.util.StringUtils;
+import com.gitee.starblues.utils.ObjectUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -68,7 +68,7 @@ public class PluginInterceptorRegistration {
         }
         // 局部的
         for (String pattern : patterns) {
-            if(StringUtils.isNullOrEmpty(pattern)){
+            if(ObjectUtils.isEmpty(pattern)){
                 continue;
             }
             this.includePatterns.add(CommonUtils.joiningPath(pluginRestApiPrefix, pattern));
@@ -86,7 +86,7 @@ public class PluginInterceptorRegistration {
             this.excludePatterns.addAll(Arrays.asList(patterns));
         }
         for (String pattern : patterns) {
-            if(StringUtils.isNullOrEmpty(pattern)){
+            if(ObjectUtils.isEmpty(pattern)){
                 continue;
             }
             this.excludePatterns.add(CommonUtils.joiningPath(pluginRestApiPrefix, pattern));

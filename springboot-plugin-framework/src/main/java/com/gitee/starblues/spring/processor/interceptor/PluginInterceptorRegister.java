@@ -1,4 +1,4 @@
-package com.gitee.starblues.factory.process.pipe.interceptor;
+package com.gitee.starblues.spring.processor.interceptor;
 
 /**
  * 插件拦截器注册者

@@ -39,12 +39,20 @@ public abstract class ReflectionUtils {
         if(declaredFields.length == 0){
             return null;
         }
-        for (Field field : declaredFields) {
-            if ((fieldName == null || fieldName.equals(field.getName())) &&
-                    (fieldType == null || fieldType.equals(field.getType()))) {
-                return field;
+        while (true){
+            for (Field field : declaredFields) {
+                if ((fieldName == null || fieldName.equals(field.getName())) &&
+                        (fieldType == null || fieldType.equals(field.getType()))) {
+                    return field;
+                }
             }
+            clazz = clazz.getSuperclass();
+            if(clazz == null){
+                break;
+            }
+            declaredFields = clazz.getDeclaredFields();
         }
+
         return null;
     }
 

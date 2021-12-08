@@ -51,6 +51,7 @@ public class SpringPluginProcessorFactory implements SpringPluginProcessor{
         processors.add(new FrameDefineBeanRegistryProcessor());
         processors.add(new InvokeOtherPluginProcessor());
         processors.add(new ExtractBeanProcessor());
+        processors.add(new PluginInterceptorsProcessor());
         processors.add(new PluginControllerRegistryProcessor());
 
         processors.add(new OneselfBeanRegistryProcessor());

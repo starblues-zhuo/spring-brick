@@ -1,4 +1,4 @@
-package com.gitee.starblues.factory.process.pipe.interceptor;
+package com.gitee.starblues.spring.processor.interceptor;
 
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
@@ -68,6 +68,15 @@ public class PluginInterceptorRegistry {
                 .collect(Collectors.toList());
     }
 
+    private static final Comparator<Object> INTERCEPTOR_ORDER_COMPARATOR =
+            OrderComparator.INSTANCE.withSourceProvider(object -> {
+                if (object instanceof PluginInterceptorRegistration) {
+                    return (Ordered) ((PluginInterceptorRegistration) object)::getOrder;
+                }
+                return null;
+            });
+
+
 
     public enum Type{
         /**
@@ -81,14 +90,6 @@ public class PluginInterceptorRegistry {
         PLUGIN
     }
 
-
-    private static final Comparator<Object> INTERCEPTOR_ORDER_COMPARATOR =
-            OrderComparator.INSTANCE.withSourceProvider(object -> {
-                if (object instanceof PluginInterceptorRegistration) {
-                    return (Ordered) ((PluginInterceptorRegistration) object)::getOrder;
-                }
-                return null;
-            });
 
 
 
