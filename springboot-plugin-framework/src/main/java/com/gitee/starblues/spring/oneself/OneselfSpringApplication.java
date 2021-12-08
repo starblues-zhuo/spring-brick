@@ -105,7 +105,7 @@ public class OneselfSpringApplication extends SpringApplication implements Plugi
         ConfigurableApplicationContext applicationContext = super.createApplicationContext();
         try {
             this.applicationContext = (GenericApplicationContext) applicationContext;
-            springPluginProcessor.init(this.applicationContext);
+            springPluginProcessor.initialize(this.applicationContext);
         } catch (Exception e) {
             e.printStackTrace();
         }

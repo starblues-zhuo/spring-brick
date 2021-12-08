@@ -2,28 +2,22 @@ package com.gitee.starblues.spring.processor;
 
 import com.gitee.starblues.annotation.Caller;
 import com.gitee.starblues.annotation.Supplier;
-import com.gitee.starblues.factory.SpringBeanRegister;
 import com.gitee.starblues.spring.SpringPluginRegistryInfo;
-import com.gitee.starblues.spring.processor.classgroup.CallerClassGroup;
 import com.gitee.starblues.spring.processor.invoke.InvokeBeanFactory;
 import com.gitee.starblues.spring.processor.invoke.InvokeSupperCache;
 import com.gitee.starblues.spring.processor.scanner.PluginClassPathBeanDefinitionScanner;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.ScanUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -32,15 +26,27 @@ import java.util.Set;
  */
 public class InvokeOtherPluginProcessor implements SpringPluginProcessor{
 
-
     @Override
     public void refreshBefore(SpringPluginRegistryInfo registryInfo) throws Exception {
-        GenericApplicationContext applicationContext = registryInfo.getPluginSpringApplication()
-                .getApplicationContext();
         InvokeCallerBeanDefinitionScanner scanner = new InvokeCallerBeanDefinitionScanner(registryInfo);
         scanner.doScan(ScanUtils.getScanBasePackages(registryInfo.getPluginWrapper().getPluginClass()));
-        // 注册发现 supper bean 的后置处理器
-        applicationContext.registerBean(FindSupperBeanPostProcessor.class, registryInfo);
+    }
+
+    @Override
+    public void refreshAfter(SpringPluginRegistryInfo registryInfo) throws Exception {
+        GenericApplicationContext applicationContext = registryInfo.getPluginSpringApplication()
+                .getApplicationContext();
+        Map<String, Object> supplierBeans = applicationContext.getBeansWithAnnotation(Supplier.class);
+        String pluginId = registryInfo.getPluginWrapper().getPluginId();
+        supplierBeans.forEach((k,v)->{
+            Supplier supplier = AnnotationUtils.findAnnotation(v.getClass(), Supplier.class);
+            String supperKey = k;
+            if(supplier != null && !ObjectUtils.isEmpty(supplier.value())){
+                supperKey = supplier.value();
+            }
+            InvokeSupperCache.add(pluginId, new InvokeSupperCache.Cache(supperKey, k, applicationContext));
+        });
+
     }
 
     @Override
@@ -97,27 +103,5 @@ public class InvokeOtherPluginProcessor implements SpringPluginProcessor{
 
     }
 
-
-    private static class FindSupperBeanPostProcessor implements BeanPostProcessor {
-
-        private final SpringPluginRegistryInfo registryInfo;
-
-        private FindSupperBeanPostProcessor(SpringPluginRegistryInfo registryInfo) {
-            this.registryInfo = registryInfo;
-        }
-
-        @Override
-        public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-            Supplier supplier = AnnotationUtils.findAnnotation(bean.getClass(), Supplier.class);
-            if(supplier != null){
-                String pluginId = registryInfo.getPluginWrapper().getPluginId();
-                GenericApplicationContext applicationContext = registryInfo.getPluginSpringApplication()
-                        .getApplicationContext();
-                InvokeSupperCache.add(pluginId, new InvokeSupperCache.Cache(supplier.value(), beanName,
-                        applicationContext));
-            }
-            return bean;
-        }
-    }
 
 }

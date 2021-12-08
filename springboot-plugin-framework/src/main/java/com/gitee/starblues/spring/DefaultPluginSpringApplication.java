@@ -89,7 +89,7 @@ public class DefaultPluginSpringApplication implements PluginSpringApplication{
                 throw new RuntimeException("已经运行了PluginSpringApplication, 无法再运行");
             }
             try {
-                springPluginProcessor.init(mainApplicationContext);
+                springPluginProcessor.initialize(mainApplicationContext);
                 processEnvironment();
                 addPluginEnvironment();
                 addDefaultProcessor();

@@ -1,7 +1,7 @@
 package com.gitee.starblues.factory.process.pipe.bean.inset;
 
 import com.gitee.starblues.factory.PluginRegistryInfo;
-import com.gitee.starblues.factory.process.pipe.extract.ExtractFactory;
+import com.gitee.starblues.spring.processor.extract.ExtractFactory;
 
 /**
  * ExtractFactory 扩展工厂注册者

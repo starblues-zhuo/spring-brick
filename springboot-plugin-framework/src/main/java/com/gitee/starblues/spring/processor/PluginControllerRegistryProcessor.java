@@ -45,7 +45,7 @@ public class PluginControllerRegistryProcessor  implements SpringPluginProcessor
 
 
     @Override
-    public void init(GenericApplicationContext mainApplicationContext) throws Exception {
+    public void initialize(GenericApplicationContext mainApplicationContext) throws Exception {
         this.requestMappingHandlerMapping = mainApplicationContext.getBean(RequestMappingHandlerMapping.class);
         this.getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
                 "getMappingForMethod", Method.class, Class.class);

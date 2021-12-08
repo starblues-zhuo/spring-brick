@@ -3,7 +3,7 @@ package com.gitee.starblues.factory.process.pipe;
 import com.gitee.starblues.extension.ExtensionInitializer;
 import com.gitee.starblues.factory.PluginRegistryInfo;
 import com.gitee.starblues.factory.process.pipe.classs.PluginClassProcess;
-import com.gitee.starblues.factory.process.pipe.extract.PluginExtractPipeProcessor;
+import com.gitee.starblues.spring.processor.extract.PluginExtractPipeProcessor;
 import com.gitee.starblues.factory.process.pipe.loader.PluginResourceLoadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

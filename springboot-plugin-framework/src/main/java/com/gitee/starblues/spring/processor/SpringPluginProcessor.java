@@ -11,7 +11,7 @@ import org.springframework.context.support.GenericApplicationContext;
  */
 public interface SpringPluginProcessor extends Order {
 
-    default void init(GenericApplicationContext mainApplicationContext) throws Exception{};
+    default void initialize(GenericApplicationContext mainApplicationContext) throws Exception{};
 
     default void refreshBefore(SpringPluginRegistryInfo registryInfo) throws Exception{}
     default void refreshAfter(SpringPluginRegistryInfo registryInfo) throws Exception{}

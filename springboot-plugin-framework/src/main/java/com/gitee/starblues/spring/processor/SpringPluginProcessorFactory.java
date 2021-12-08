@@ -1,6 +1,7 @@
 package com.gitee.starblues.spring.processor;
 
 import com.gitee.starblues.spring.SpringPluginRegistryInfo;
+import com.gitee.starblues.spring.processor.extract.ExtractBeanProcessor;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.OrderPriority;
 import com.gitee.starblues.utils.SpringBeanUtils;
@@ -25,7 +26,7 @@ public class SpringPluginProcessorFactory implements SpringPluginProcessor{
     }
 
     @Override
-    public void init(GenericApplicationContext mainApplicationContext) throws Exception {
+    public void initialize(GenericApplicationContext mainApplicationContext) throws Exception {
         List<SpringPluginProcessor> processors = getDefaultProcessors();
         if(runMode == RunMode.PLUGIN){
             List<SpringPluginProcessor> extendProcessors = SpringBeanUtils.getBeans(mainApplicationContext,
@@ -40,17 +41,18 @@ public class SpringPluginProcessorFactory implements SpringPluginProcessor{
                 .sorted(CommonUtils.orderPriority(SpringPluginProcessor::order))
                 .collect(Collectors.toList());
         for (SpringPluginProcessor processor : this.processors) {
-            processor.init(mainApplicationContext);
+            processor.initialize(mainApplicationContext);
         }
     }
 
     private List<SpringPluginProcessor> getDefaultProcessors(){
         List<SpringPluginProcessor> processors = new ArrayList<>();
-        //processors.add(new ClassScannerProcessor());
         processors.add(new BeanRegistryProcessor());
         processors.add(new FrameDefineBeanRegistryProcessor());
         processors.add(new InvokeOtherPluginProcessor());
+        processors.add(new ExtractBeanProcessor());
         processors.add(new PluginControllerRegistryProcessor());
+
         processors.add(new OneselfBeanRegistryProcessor());
         return processors;
     }

@@ -1,10 +1,13 @@
-package com.gitee.starblues.factory.process.pipe.extract;
+package com.gitee.starblues.spring.processor.extract;
 
 import com.gitee.starblues.annotation.Extract;
+import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.ObjectUtils;
 import org.springframework.util.ClassUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * 扩展工厂
@@ -51,7 +54,8 @@ public class ExtractFactory {
         if(extract == null){
             return;
         }
-        Map<ExtractCoordinate, ExtractWrapper> extractObjects = extractMap.computeIfAbsent(pluginId, k -> new ConcurrentHashMap<>());
+        Map<ExtractCoordinate, ExtractWrapper> extractObjects = extractMap.computeIfAbsent(pluginId, k ->
+                new ConcurrentHashMap<>());
         ExtractWrapper extractWrapper = new ExtractWrapper(extractObject, extract.order());
         extractObjects.put(new ExtractCoordinate(extract, extractObject.getClass()), extractWrapper);
     }
@@ -70,6 +74,7 @@ public class ExtractFactory {
      * @param <T> 扩展的泛型
      * @return 扩展实例, 如果不存在则抛出 RuntimeException 异常
      */
+    @SuppressWarnings("unchecked")
     public <T> T getExtractByCoordinate(ExtractCoordinate coordinate){
         Objects.requireNonNull(coordinate, "ExtractCoordinate can't be null");
         int currentOrder = Integer.MIN_VALUE;
@@ -98,6 +103,7 @@ public class ExtractFactory {
      * @param <T> 扩展的泛型
      * @return 扩展实例, 如果不存在则抛出 RuntimeException 异常
      */
+    @SuppressWarnings("unchecked")
     public <T> T getExtractByCoordinate(String pluginId, ExtractCoordinate coordinate){
         Objects.requireNonNull(coordinate, "ExtractCoordinate can't be null");
         Map<ExtractCoordinate, ExtractWrapper> extractCoordinates = extractMap.get(pluginId);
@@ -144,17 +150,17 @@ public class ExtractFactory {
         if(interfaceClass == null){
             return Collections.emptyList();
         }
-        List<T> extracts = new ArrayList<>();
+        List<ExtractWrapper> extracts = new ArrayList<>();
         for (Map<ExtractCoordinate, ExtractWrapper> value : extractMap.values()) {
             for (ExtractWrapper extractWrapper : value.values()) {
                 Set<Class<?>> allInterfacesForClassAsSet = ClassUtils.getAllInterfacesForClassAsSet(
                         extractWrapper.getObject().getClass());
                 if(allInterfacesForClassAsSet.contains(interfaceClass)){
-                    extracts.add((T)extractWrapper.getObject());
+                    extracts.add(extractWrapper);
                 }
             }
         }
-        return extracts;
+        return sort(extracts);
     }
 
     /**
@@ -169,7 +175,7 @@ public class ExtractFactory {
         if(interfaceClass == null){
             return Collections.emptyList();
         }
-        List<T> extracts = new ArrayList<>();
+        List<ExtractWrapper> extracts = new ArrayList<>();
         Map<ExtractCoordinate, ExtractWrapper> extractCoordinateObjectMap = extractMap.get(pluginId);
         if(extractCoordinateObjectMap == null || extractCoordinateObjectMap.isEmpty()){
             return Collections.emptyList();
@@ -178,10 +184,10 @@ public class ExtractFactory {
             Object object = wrapper.getObject();
             Set<Class<?>> allInterfacesForClassAsSet = ClassUtils.getAllInterfacesForClassAsSet(object.getClass());
             if(allInterfacesForClassAsSet.contains(interfaceClass)){
-                extracts.add((T)object);
+                extracts.add(wrapper);
             }
         }
-        return extracts;
+        return sort(extracts);
     }
 
     /**
@@ -216,6 +222,18 @@ public class ExtractFactory {
      */
     private Extract getExtract(Object extractObject){
         return extractObject.getClass().getAnnotation(Extract.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> List<T> sort(List<ExtractWrapper> extractWrappers){
+        if(ObjectUtils.isEmpty(extractWrappers)){
+            return new ArrayList<>(0);
+        }
+        return extractWrappers.stream()
+                .sorted(Comparator.comparing(ExtractWrapper::getOrder,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .map(extractWrapper -> (T) extractWrapper.getObject())
+                .collect(Collectors.toList());
     }
 
     /**

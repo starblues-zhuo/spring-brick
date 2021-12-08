@@ -1,5 +1,8 @@
 package com.gitee.starblues.annotation;
 
+import org.springframework.core.annotation.AliasFor;
+import org.springframework.stereotype.Component;
+
 import java.lang.annotation.*;
 
 /**
@@ -11,12 +14,14 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Component
 public @interface Supplier {
 
     /**
      * 全局唯一key.全局不能重复
      * @return String
      */
+    @AliasFor(annotation = Component.class)
     String value();
 
     /**

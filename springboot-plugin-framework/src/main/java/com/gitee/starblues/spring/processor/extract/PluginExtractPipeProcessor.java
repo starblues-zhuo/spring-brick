@@ -1,4 +1,4 @@
-package com.gitee.starblues.factory.process.pipe.extract;
+package com.gitee.starblues.spring.processor.extract;
 
 import com.gitee.starblues.annotation.Extract;
 import com.gitee.starblues.factory.PluginRegistryInfo;

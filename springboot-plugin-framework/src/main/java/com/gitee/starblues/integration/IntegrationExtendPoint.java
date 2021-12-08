@@ -11,6 +11,7 @@ import com.gitee.starblues.integration.user.DefaultPluginUser;
 import com.gitee.starblues.integration.user.PluginUser;
 import com.gitee.starblues.spring.DefaultSpringPlugin;
 import com.gitee.starblues.spring.SpringPlugin;
+import com.gitee.starblues.spring.processor.extract.ExtractFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.GenericApplicationContext;
@@ -71,6 +72,11 @@ public class IntegrationExtendPoint {
     @ConditionalOnMissingBean
     public MainResourcePatternDefiner mainResourcePatternDefiner(){
         return new DefaultMainResourcePatternDefiner(configuration.mainPackage());
+    }
+
+    @Bean
+    public ExtractFactory extractFactory(){
+        return ExtractFactory.getInstant();
     }
 
 }
