@@ -65,7 +65,7 @@
         <springboot-plugin-framework.version>2.4.6-RELEASE</springboot-plugin-framework.version>
         <spring-version>5.0.7.RELEASE</spring-version>
         <logback.version>1.2.3</logback.version>
-        <log4j.version>2.14.1</log4j.version>
+        <log4j.version>2.16.0</log4j.version>
     </properties>
 
     <dependencies>
