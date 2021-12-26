@@ -13,6 +13,7 @@
 
     <modules>
         <module>springboot-plugin-framework</module>
+        <module>springboot-plugin-bootstrap</module>
         <module>springboot-plugin-framework-extension</module>
         <module>springboot-plugin-framework-example</module>
     </modules>

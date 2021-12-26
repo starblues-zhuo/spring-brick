@@ -25,9 +25,15 @@ public class DefaultMainResourcePatternDefiner implements MainResourcePatternDef
         initDefaultSpringFactories();
     }
 
+
     @Override
-    public Set<String> getResourcePatterns() {
+    public Set<String> getIncludeResourcePatterns() {
         return resourcePatterns;
+    }
+
+    @Override
+    public Set<String> getExcludeResourcePatterns() {
+        return null;
     }
 
     @Override
@@ -50,7 +56,6 @@ public class DefaultMainResourcePatternDefiner implements MainResourcePatternDef
 
         // aop
         resourcePatterns.add("org/aspectj/**");
-        resourcePatterns.add("org/aopalliance/**");
 
         // === spring-boot-starter ===
         // logback-classic
@@ -66,9 +71,6 @@ public class DefaultMainResourcePatternDefiner implements MainResourcePatternDef
         resourcePatterns.add("org/slf4j/**");
 
         resourcePatterns.add("META-INF/spring.factories");
-
-        // spring
-        resourcePatterns.add("org/springframework/**");
 
         // spring-boot
         resourcePatterns.add("org/springframework/boot/**");
@@ -86,8 +88,6 @@ public class DefaultMainResourcePatternDefiner implements MainResourcePatternDef
     }
 
     private void initDefaultSpringFactories() {
-        springFactoriesPatterns.add("**/spring-boot/**");
-        springFactoriesPatterns.add("**/spring-beans/**");
         // 当前框架名称
         springFactoriesPatterns.add("**/springboot-plugin-framework/**");
     }

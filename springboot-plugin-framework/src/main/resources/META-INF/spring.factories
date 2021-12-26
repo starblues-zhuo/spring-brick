@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  org.springframework.boot.autoconfigure.aop.AopAutoConfiguration,\
   com.gitee.starblues.integration.SpringBootPluginStarter

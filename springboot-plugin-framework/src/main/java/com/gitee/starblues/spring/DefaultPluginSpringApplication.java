@@ -15,6 +15,7 @@ import com.gitee.starblues.utils.PluginFileUtils;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
@@ -140,6 +141,7 @@ public class DefaultPluginSpringApplication implements PluginSpringApplication{
     private void addDefaultProcessor() {
         // 注册 ConfigurationPropertiesBindingPostProcessor, 用于将配置信息绑定到Bean上
         ConfigurationPropertiesBindingPostProcessor.register(applicationContext);
+        applicationContext.register(PropertySourcesPlaceholderConfigurer.class);
     }
 
 

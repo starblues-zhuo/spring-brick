@@ -38,7 +38,9 @@ public abstract class AbstractResourceLoader {
      * @throws Exception 初始异常
      */
     public void init() throws Exception{
-
+        // 添加root 路径
+        Resource rootResource = new Resource("root", baseUrl, baseUrl, null);
+        resourceCache.put("/", rootResource);
     }
 
     protected boolean existResource(String name){

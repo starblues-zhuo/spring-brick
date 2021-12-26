@@ -4,11 +4,12 @@ import com.gitee.starblues.core.DefaultPluginManager;
 import com.gitee.starblues.core.PluginManager;
 import com.gitee.starblues.core.RealizeProvider;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
+import com.gitee.starblues.core.launcher.plugin.*;
 import com.gitee.starblues.core.loader.PluginWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
-import com.gitee.starblues.spring.SpringPlugin;
+import com.gitee.starblues.spring.*;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.PluginFileUtils;
 import org.slf4j.Logger;
@@ -30,20 +31,17 @@ public class DefaultPluginOperator implements PluginOperator {
 
     private final AtomicBoolean isInit = new AtomicBoolean(false);
 
-    private final GenericApplicationContext applicationContext;
     private final IntegrationConfiguration configuration;
 
-    private final SpringPlugin springPlugin;
     private final PluginManager pluginManager;
+    private final PluginLauncherManager pluginLauncherManager;
 
     public DefaultPluginOperator(GenericApplicationContext applicationContext,
-                                 SpringPlugin springPlugin,
                                  RealizeProvider realizeProvider,
                                  IntegrationConfiguration configuration) {
-        this.applicationContext = applicationContext;
         this.configuration = configuration;
-        this.springPlugin = springPlugin;
         this.pluginManager = new DefaultPluginManager(realizeProvider, configuration.pluginPath());
+        this.pluginLauncherManager = new DefaultPluginLauncherManager(applicationContext, configuration);
     }
 
 
@@ -76,8 +74,9 @@ public class DefaultPluginOperator implements PluginOperator {
             boolean isFoundException = false;
             for (PluginDescriptor descriptor : pluginDescriptors) {
                 try {
-                    pluginManager.start(descriptor.getPluginId());
-                    springPlugin.registry(pluginManager.getPluginWrapper(descriptor.getPluginId()));
+                    //pluginManager.start(descriptor.getPluginId());
+                    pluginLauncherManager.start(descriptor);
+                    //springPlugin.registry(pluginManager.getPluginWrapper(descriptor.getPluginId()));
                     log.info("启动插件[{}@{}]成功", descriptor.getPluginId(), descriptor.getPluginVersion());
                 } catch (Exception e){
                     log.error("启动插件[{}]失败. {}", descriptor.getPluginId(), e.getMessage(), e);

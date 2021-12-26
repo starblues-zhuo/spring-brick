@@ -40,21 +40,13 @@ public class IntegrationExtendPoint {
 
     @Bean
     @ConditionalOnMissingBean
-    public PluginOperator createPluginOperator(RealizeProvider realizeProvider,
-                                               SpringPlugin springPlugin) {
+    public PluginOperator createPluginOperator(RealizeProvider realizeProvider) {
         PluginOperator pluginOperator = new DefaultPluginOperator(
                 applicationContext,
-                springPlugin,
                 realizeProvider,
                 configuration
         );
         return new PluginOperatorWrapper(pluginOperator, configuration);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public SpringPlugin createSpringPlugin(){
-        return new DefaultSpringPlugin(applicationContext);
     }
 
     @Bean

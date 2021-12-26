@@ -23,7 +23,7 @@ public class DefaultMainResourceMatcher implements MainResourceMatcher{
 
     @Override
     public boolean match(String resourceUrl) {
-        Set<String> resourcePatterns = mainResourcePatternDefiner.getResourcePatterns();
+        Set<String> resourcePatterns = mainResourcePatternDefiner.getIncludeResourcePatterns();
         return match(resourcePatterns, resourceUrl);
     }
 
@@ -41,11 +41,26 @@ public class DefaultMainResourceMatcher implements MainResourceMatcher{
         for (String pattern : patterns) {
             boolean match = pathMatcher.match(pattern, url);
             if(match){
+                return !excludeMatch(mainResourcePatternDefiner.getExcludeResourcePatterns(), url);
+            }
+        }
+        return false;
+    }
+
+    private boolean excludeMatch(Collection<String> patterns, String url){
+        if(ObjectUtils.isEmpty(patterns) || ObjectUtils.isEmpty(url)){
+            return false;
+        }
+        url = formatUrl(url);
+        for (String pattern : patterns) {
+            boolean match = pathMatcher.match(pattern, url);
+            if(match){
                 return true;
             }
         }
         return false;
     }
+
 
     private String formatUrl(String url){
         url = url.replace("\\", AntPathMatcher.DEFAULT_PATH_SEPARATOR);

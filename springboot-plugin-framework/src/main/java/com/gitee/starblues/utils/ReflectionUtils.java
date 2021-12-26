@@ -122,6 +122,16 @@ public abstract class ReflectionUtils {
         return null;
     }
 
+    public static void setAttribute(Object bean, String setMethodName, Object setObject) throws Exception {
+        Class<?> aClass = bean.getClass();
+        Method setMethod = ReflectionUtils.findMethod(aClass, setMethodName, setObject.getClass());
+
+        if(setMethod == null){
+            throw new Exception("Not found method[" + setMethodName + "] of :" + aClass.getName());
+        }
+        setMethod.invoke(bean, setObject);
+    }
+
     private static Method[] getDeclaredMethods(Class<?> clazz, boolean defensive) {
         Assert.isNotNull(clazz, "Class must not be null");
         Method[] result = new Method[]{};
@@ -163,8 +173,18 @@ public abstract class ReflectionUtils {
     }
 
     private static boolean hasSameParams(Method method, Class<?>[] paramTypes) {
-        return (paramTypes.length == method.getParameterCount() &&
-                Arrays.equals(paramTypes, method.getParameterTypes()));
+        if(paramTypes.length != method.getParameterCount()){
+            return false;
+        }
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        for (int i = 0; i < paramTypes.length; i++) {
+            Class<?> paramType = paramTypes[i];
+            Class<?> methodParamType = parameterTypes[i];
+            if(!methodParamType.isAssignableFrom(paramType)){
+                return false;
+            }
+        }
+        return true;
     }
 
 }

@@ -27,6 +27,7 @@ public class ClassPathLoader extends AbstractResourceLoader{
 
     @Override
     public void init() throws Exception {
+        super.init();
         File file = new File(url.toURI());
         load(file, null);
     }

@@ -15,8 +15,10 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.boot.env.RandomValuePropertySource;
+import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.boot.logging.DeferredLog;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
@@ -46,6 +48,8 @@ import java.util.stream.Stream;
  * @version 3.0.0
  */
 public class PluginLocalConfigFileProcessor implements PluginEnvironmentProcessor {
+
+    private static final String ENVIRONMENT_NAME = "defaultPluginProperties";
 
     private static final String DEFAULT_SEARCH_LOCATIONS =
             "classpath:/,classpath:/config/,file:./,file:./config/*/,file:./config/";
@@ -248,12 +252,17 @@ public class PluginLocalConfigFileProcessor implements PluginEnvironmentProcesso
             this.environment = environment;
             this.placeholdersResolver = new PropertySourcesPlaceholdersResolver(this.environment);
             this.resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader(null);
-            this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
-                    this.resourceLoader.getClassLoader());
+            this.propertySourceLoaders = new ArrayList<>();
+            initPropertySourceLoader();
+        }
+
+        private void initPropertySourceLoader(){
+            this.propertySourceLoaders.add(new YamlPropertySourceLoader());
+            this.propertySourceLoaders.add(new PropertiesPropertySourceLoader());
         }
 
         void load() {
-            FilteredPropertySource.apply(this.environment, DefaultPropertiesPropertySource.NAME, LOAD_FILTERED_PROPERTY,
+            FilteredPropertySource.apply(this.environment, ENVIRONMENT_NAME, LOAD_FILTERED_PROPERTY,
                     this::loadWithFilteredProperties);
         }
 
@@ -703,8 +712,8 @@ public class PluginLocalConfigFileProcessor implements PluginEnvironmentProcesso
         private void addLoadedPropertySource(MutablePropertySources destination, String lastAdded,
                                              PropertySource<?> source) {
             if (lastAdded == null) {
-                if (destination.contains(DefaultPropertiesPropertySource.NAME)) {
-                    destination.addBefore(DefaultPropertiesPropertySource.NAME, source);
+                if (destination.contains(ENVIRONMENT_NAME)) {
+                    destination.addBefore(ENVIRONMENT_NAME, source);
                 }
                 else {
                     destination.addLast(source);

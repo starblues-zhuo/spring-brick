@@ -43,7 +43,11 @@ public class DefaultPluginManager implements PluginManager{
     public DefaultPluginManager(RealizeProvider realizeProvider, List<String> pluginRootDirs) {
         this.provider = Assert.isNotNull(realizeProvider,
                 "参数 realizeProvider 不能为空");
-        this.pluginRootDirs = Assert.isNotEmpty(pluginRootDirs, "参数 pluginRootDirs 不能为空");
+        if(pluginRootDirs == null){
+            this.pluginRootDirs = Collections.emptyList();
+        } else {
+            this.pluginRootDirs = pluginRootDirs;
+        }
     }
 
     public void setConfiguration(PluginConfiguration configuration) {
@@ -64,6 +68,10 @@ public class DefaultPluginManager implements PluginManager{
             throw new RuntimeException("已经加载过了插件, 不能在重复调用: loadPlugins");
         }
         try {
+            if(ObjectUtils.isEmpty(pluginRootDirs)){
+                log.warn("插件根目录为空, 无法发现插件.");
+                return Collections.emptyList();
+            }
             List<Path> scanPluginPaths = provider.getPluginScanner().scan(pluginRootDirs);
             if(ObjectUtils.isEmpty(scanPluginPaths)){
                 StringBuilder warn = new StringBuilder("\n\n路径 {} 中未发现插件.\n");

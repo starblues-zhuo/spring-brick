@@ -5,6 +5,7 @@ import com.gitee.starblues.utils.ObjectUtils;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,6 +23,9 @@ public class BasePluginScanner implements PluginScanner{
 
     @Override
     public List<Path> scan(List<String> rootDir) {
+        if(ObjectUtils.isEmpty(rootDir)){
+            return Collections.emptyList();
+        }
         List<Path> pluginPaths = new ArrayList<>();
         if(pathResolve == null){
             return pluginPaths;

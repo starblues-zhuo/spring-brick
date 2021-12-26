@@ -19,14 +19,14 @@ public class ExtractBeanProcessor implements SpringPluginProcessor {
 
     @Override
     public void initialize(GenericApplicationContext mainApplicationContext) throws Exception {
-        // 获取主程序的扩展
-        Map<String, Object> extractMap = mainApplicationContext.getBeansWithAnnotation(Extract.class);
-        if(ObjectUtils.isEmpty(extractMap)){
-            return;
-        }
-        for (Object extract : extractMap.values()) {
-            extractFactory.addOfMain(extract);
-        }
+//        // 获取主程序的扩展
+//        Map<String, Object> extractMap = mainApplicationContext.getBeansWithAnnotation(Extract.class);
+//        if(ObjectUtils.isEmpty(extractMap)){
+//            return;
+//        }
+//        for (Object extract : extractMap.values()) {
+//            extractFactory.addOfMain(extract);
+//        }
     }
 
     @Override

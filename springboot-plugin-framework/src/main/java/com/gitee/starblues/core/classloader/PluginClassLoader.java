@@ -44,9 +44,10 @@ public class PluginClassLoader extends AbstractPluginClassLoader implements Reso
         MainResourcePatternDefiner patternDefiner = Assert.isNotNull(mainResourcePatternDefiner,
                 "参数 mainResourcePatternDefiner 不能为空");
         setMainResourceMatcher(new CacheMainResourceMatcher(patternDefiner));
+        System.out.println("PluginClassLoader=" + this);
     }
 
-    protected void setMainResourceMatcher(MainResourceMatcher mainResourceMatcher){
+    public void setMainResourceMatcher(MainResourceMatcher mainResourceMatcher){
         this.mainResourceMatcher = Assert.isNotNull(mainResourceMatcher, "参数 mainResourceMatcher 不能为空");
     }
 
@@ -54,6 +55,12 @@ public class PluginClassLoader extends AbstractPluginClassLoader implements Reso
     public void addResource(File file) {
         resourceLoaderFactory.addResource(file);
     }
+
+    public void addResource(Path path) {
+        resourceLoaderFactory.addResource(path);
+    }
+
+
 
     public String getPluginId() {
         return pluginId;
@@ -197,7 +204,7 @@ public class PluginClassLoader extends AbstractPluginClassLoader implements Reso
 
     private String formatResourceName(String resourceName){
         if(ObjectUtils.isEmpty(resourceName)) {
-            return resourceName;
+            return ResourceUtils.PACKAGE_SPLIT;
         }
         String[] split = resourceName.split("/");
         StringBuilder newPath = new StringBuilder();

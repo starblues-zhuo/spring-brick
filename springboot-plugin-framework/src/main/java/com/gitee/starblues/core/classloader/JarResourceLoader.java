@@ -25,6 +25,7 @@ public class JarResourceLoader extends AbstractResourceLoader{
 
     @Override
     public void init() throws Exception {
+        super.init();
         // 解析
         try (InputStream fileInputStream = sourceUrl.openStream();
              BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);

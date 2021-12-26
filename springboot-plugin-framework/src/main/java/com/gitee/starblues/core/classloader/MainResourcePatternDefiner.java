@@ -13,8 +13,10 @@ public interface MainResourcePatternDefiner {
      * 资源名称.
      * @return 资源名称集合
      */
-    Set<String> getResourcePatterns();
+    Set<String> getIncludeResourcePatterns();
 
+
+    Set<String> getExcludeResourcePatterns();
 
     /**
      * spring spi 定义

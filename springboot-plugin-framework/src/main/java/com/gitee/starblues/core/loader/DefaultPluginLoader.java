@@ -5,6 +5,7 @@ import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
 import com.gitee.starblues.core.classloader.PluginClassLoader;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.Assert;
+import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.PluginFileUtils;
 import org.springframework.util.ClassUtils;
@@ -37,7 +38,7 @@ public class DefaultPluginLoader implements PluginLoader{
     public PluginWrapperInside load(PluginDescriptor descriptor) throws Exception {
         Assert.isNotNull(descriptor, "参数 PluginDescriptor 不能为空");
         PluginClassLoader classLoader = getClassLoader(descriptor);
-        installLib(classLoader, descriptor.getPluginLibDir());
+        installLib(classLoader, descriptor);
         Class<?> bootstrapClass = classLoader.loadClass(descriptor.getPluginClass());
         PluginWrapperInside pluginWrapperInside = new PluginWrapperInside(
                 descriptor.getPluginId(),
@@ -75,11 +76,16 @@ public class DefaultPluginLoader implements PluginLoader{
         return pnClassLoader;
     }
 
-    protected void installLib(PluginClassLoader classLoader, String lib){
-        if(ObjectUtils.isEmpty(lib)){
+    protected void installLib(PluginClassLoader classLoader, PluginDescriptor descriptor){
+        String pluginLibDir = descriptor.getPluginLibDir();
+
+        if(ObjectUtils.isEmpty(pluginLibDir)){
             return;
         }
-        File file = new File(lib);
+        File file = getExistLibFile(descriptor);
+        if(file == null){
+            return;
+        }
         addJarFile(classLoader, file);
         if(file.isDirectory()){
             File[] files = file.listFiles();
@@ -90,6 +96,20 @@ public class DefaultPluginLoader implements PluginLoader{
                 addJarFile(classLoader, subFile);
             }
         }
+    }
+
+    private File getExistLibFile(PluginDescriptor descriptor){
+        String pluginLibDir = descriptor.getPluginLibDir();
+        File file = new File(pluginLibDir);
+        if(file.exists()){
+            return file;
+        }
+        String relativePath = CommonUtils.joiningFilePath(descriptor.getPluginPath().toString(), pluginLibDir);
+        file = new File(relativePath);
+        if(file.exists()){
+            return file;
+        }
+        return null;
     }
 
 
