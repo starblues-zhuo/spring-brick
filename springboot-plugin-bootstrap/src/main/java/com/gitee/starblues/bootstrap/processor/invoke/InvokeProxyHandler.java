@@ -1,10 +1,10 @@
-package com.gitee.starblues.spring.processor.invoke;
+package com.gitee.starblues.bootstrap.processor.invoke;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitee.starblues.annotation.Caller;
 import com.gitee.starblues.annotation.Supplier;
-import org.pf4j.util.StringUtils;
-import org.springframework.util.ClassUtils;
+import com.gitee.starblues.spring.processor.invoke.InvokeSupperCache;
+import com.gitee.starblues.utils.ObjectUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -19,17 +19,19 @@ public class InvokeProxyHandler implements InvocationHandler {
     private final Caller callerAnnotation;
 
     private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private final InvokeSupperCache invokeSupperCache;
 
-    public InvokeProxyHandler(Caller callerAnnotation) {
+    public InvokeProxyHandler(Caller callerAnnotation, InvokeSupperCache invokeSupperCache) {
         this.callerAnnotation = callerAnnotation;
+        this.invokeSupperCache = invokeSupperCache;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String pluginId = callerAnnotation.pluginId();
-        Object supplierObject = InvokeSupperCache.getSupperBean(pluginId, callerAnnotation.value());
+        Object supplierObject = invokeSupperCache.getSupperBean(pluginId, callerAnnotation.value());
         if (supplierObject == null) {
-            if (StringUtils.isNullOrEmpty(pluginId)) {
+            if (ObjectUtils.isEmpty(pluginId)) {
                 throw new Exception("Not found '" + callerAnnotation.value() + "' supplier object");
             } else {
                 throw new Exception("Not found '" + callerAnnotation.value() + "' supplier object in plugin '" +
@@ -134,7 +136,7 @@ public class InvokeProxyHandler implements InvocationHandler {
             return null;
         }
         Class<?> returnType = method.getReturnType();
-        if(ClassUtils.isAssignable(invokeReturn.getClass(),returnType)){
+        if(invokeReturn.getClass().isAssignableFrom(returnType)){
             return invokeReturn;
         } else {
             String json = OBJECT_MAPPER.writeValueAsString(invokeReturn);

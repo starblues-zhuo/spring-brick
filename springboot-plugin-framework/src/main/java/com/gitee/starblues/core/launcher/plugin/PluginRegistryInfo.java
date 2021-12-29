@@ -8,7 +8,7 @@ import com.gitee.starblues.spring.ApplicationContext;
  */
 public interface PluginRegistryInfo {
 
-    ApplicationContext getApplicationContext();
+    Object getApplicationContext();
 
     PluginLauncher getPluginLauncher();
 

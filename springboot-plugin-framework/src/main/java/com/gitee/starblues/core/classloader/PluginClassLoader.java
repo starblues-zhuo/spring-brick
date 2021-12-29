@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,7 +43,6 @@ public class PluginClassLoader extends AbstractPluginClassLoader implements Reso
         MainResourcePatternDefiner patternDefiner = Assert.isNotNull(mainResourcePatternDefiner,
                 "参数 mainResourcePatternDefiner 不能为空");
         setMainResourceMatcher(new CacheMainResourceMatcher(patternDefiner));
-        System.out.println("PluginClassLoader=" + this);
     }
 
     public void setMainResourceMatcher(MainResourceMatcher mainResourceMatcher){

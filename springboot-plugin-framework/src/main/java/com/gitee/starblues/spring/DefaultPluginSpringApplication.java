@@ -5,7 +5,6 @@ import com.gitee.starblues.integration.AutoIntegrationConfiguration;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.environment.PluginEnvironmentProcessor;
 import com.gitee.starblues.spring.environment.PluginLocalConfigFileProcessor;
-import com.gitee.starblues.spring.listener.*;
 import com.gitee.starblues.spring.processor.SpringPluginProcessor;
 import com.gitee.starblues.spring.processor.SpringPluginProcessorFactory;
 import com.gitee.starblues.utils.Assert;
@@ -105,21 +104,6 @@ public class DefaultPluginSpringApplication implements PluginSpringApplication{
             }
         }
     }
-
-    private PluginSpringApplicationRunListeners getRunListeners() {
-        PluginSpringApplicationRunListeners runListeners = new PluginSpringApplicationRunListeners(ListenerRunMode.PLUGIN);
-        addDefaultListeners(runListeners);
-        return runListeners;
-    }
-
-    protected void addDefaultListeners(PluginSpringApplicationRunListeners runListeners){
-        runListeners.addListener(new ClassScannerListener());
-        runListeners.addListener(new BeanRegistryListener());
-        runListeners.addListener(new NecessaryBeanRegistryListener());
-        runListeners.addListener(new InvokeOtherPluginRegistryListener());
-        runListeners.addListener(new PluginControllerRegistryListener(mainApplicationContext));
-    }
-
 
     protected void processEnvironment() {
         List<PluginEnvironmentProcessor> orderPluginEnvironmentProcessor =

@@ -1,18 +1,10 @@
 package com.gitee.starblues.integration.application;
 
-import com.gitee.starblues.core.DefaultRealizeProvider;
-import com.gitee.starblues.core.RealizeProvider;
-import com.gitee.starblues.core.classloader.DefaultMainResourcePatternDefiner;
-import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
-import com.gitee.starblues.integration.operator.PluginOperatorWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
-import com.gitee.starblues.integration.operator.DefaultPluginOperator;
 import com.gitee.starblues.integration.operator.PluginOperator;
-import com.gitee.starblues.integration.user.DefaultPluginUser;
+import com.gitee.starblues.integration.operator.PluginOperatorWrapper;
 import com.gitee.starblues.integration.user.PluginUser;
-import com.gitee.starblues.spring.DefaultSpringPlugin;
-import com.gitee.starblues.spring.SpringPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -49,8 +41,8 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
         }
         // 检查Configuration
         IntegrationConfiguration configuration = getConfiguration(applicationContext);
-        pluginUser = createPluginUser(applicationContext);
-        pluginOperator = createPluginOperator(applicationContext);
+        createPluginUser(applicationContext);
+        createPluginOperator(applicationContext);
         try {
             if(!(pluginOperator instanceof PluginOperatorWrapper)){
                 pluginOperator = new PluginOperatorWrapper(pluginOperator, configuration);
@@ -59,26 +51,30 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
             pluginOperator.initPlugins(listener);
             beInitialized.set(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("初始化插件异常." + e.getMessage());
         }
     }
 
     /**
      * 创建插件使用者。子类可扩展
      * @param applicationContext Spring ApplicationContext
-     * @return PluginUser
      */
-    protected PluginUser createPluginUser(ApplicationContext applicationContext){
-        return applicationContext.getBean(PluginUser.class);
+    protected synchronized PluginUser createPluginUser(ApplicationContext applicationContext){
+        if(pluginUser == null){
+            pluginUser = applicationContext.getBean(PluginUser.class);
+        }
+        return pluginUser;
     }
 
     /**
      * 创建插件操作者。子类可扩展
      * @param applicationContext Spring ApplicationContext
-     * @return PluginOperator
      */
-    protected PluginOperator createPluginOperator(ApplicationContext applicationContext){
-        return applicationContext.getBean(PluginOperator.class);
+    protected synchronized PluginOperator createPluginOperator(ApplicationContext applicationContext){
+        if(pluginOperator == null){
+            pluginOperator = applicationContext.getBean(PluginOperator.class);
+        }
+        return  pluginOperator;
     }
 
     @Override

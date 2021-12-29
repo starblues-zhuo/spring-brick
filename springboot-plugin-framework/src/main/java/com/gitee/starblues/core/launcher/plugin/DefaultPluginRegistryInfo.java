@@ -2,6 +2,7 @@ package com.gitee.starblues.core.launcher.plugin;
 
 import com.gitee.starblues.spring.ApplicationContext;
 import com.gitee.starblues.spring.GenericApplicationContextReflection;
+import org.springframework.context.support.GenericApplicationContext;
 
 /**
  * @author starBlues
@@ -12,7 +13,7 @@ public class DefaultPluginRegistryInfo extends CacheRegistryInfo implements Plug
     private final ApplicationContext applicationContext;
     private final PluginLauncher pluginLauncher;
 
-    public DefaultPluginRegistryInfo(Object pluginApplicationContext,
+    public DefaultPluginRegistryInfo(GenericApplicationContext pluginApplicationContext,
                                      PluginLauncher pluginLauncher) {
         this.applicationContext = new GenericApplicationContextReflection(pluginApplicationContext);
         this.pluginLauncher = pluginLauncher;

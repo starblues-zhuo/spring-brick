@@ -1,24 +1,21 @@
-package com.gitee.starblues.spring.listener;
+package com.gitee.starblues.bootstrap.processor;
 
+import com.gitee.starblues.bootstrap.utils.AnnotationUtils;
 import com.gitee.starblues.factory.process.post.bean.model.ControllerWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
-import com.gitee.starblues.spring.PluginSpringApplication;
-import com.gitee.starblues.spring.SpringPluginRegistryInfo;
+import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.utils.ClassUtils;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.ReflectionUtils;
-import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -28,34 +25,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
-public class PluginControllerRegistryListener implements PluginSpringApplicationRunListener {
+public class PluginControllerRegistryProcessor implements SpringPluginProcessor {
 
-    private final static Logger LOG = LoggerFactory.getLogger(PluginControllerRegistryListener.class);
+    private final static Logger LOG = LoggerFactory.getLogger(PluginControllerRegistryProcessor.class);
+
     private static final String PROCESS_CONTROLLERS = "PROCESS_SUCCESS";
 
-    private final GenericApplicationContext mainApplicationContext;
 
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
     private Method getMappingForMethod;
 
     private final AtomicBoolean canRegistered = new AtomicBoolean(false);
 
-    public PluginControllerRegistryListener(GenericApplicationContext mainApplicationContext) {
-        this.mainApplicationContext = mainApplicationContext;
-    }
 
     @Override
-    public void refreshPrepared(SpringPluginRegistryInfo registryInfo) throws Exception {
-
-        IntegrationConfiguration configuration = registryInfo.getConfiguration();
-        if(ObjectUtils.isEmpty(configuration.pluginRestPathPrefix())
-                && !configuration.enablePluginIdRestPathPrefix()){
-            // 如果 pluginRestPathPrefix 为空, 并且没有启用插件id作为插件前缀, 则不进行修改插件controller地址前缀
-            return;
-        }
-
+    public void initialize(ProcessorContext processorContext) throws ProcessorException {
+        MainApplicationContext mainApplicationContext = processorContext.getMainApplicationContext();
         this.requestMappingHandlerMapping = mainApplicationContext.getBean(RequestMappingHandlerMapping.class);
         this.getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
                 "getMappingForMethod", Method.class, Class.class);
@@ -64,28 +51,38 @@ public class PluginControllerRegistryListener implements PluginSpringApplication
                     "请检查当前环境是否为 web 环境");
         }
         this.getMappingForMethod.setAccessible(true);
-
-        PluginSpringApplication pluginSpringApplication = registryInfo.getPluginSpringApplication();
-        AnnotationConfigApplicationContext applicationContext =
-                (AnnotationConfigApplicationContext)pluginSpringApplication.getApplicationContext();
-        applicationContext.registerBean("changeRestPathPostProcessor",
-                ChangeRestPathPostProcessor.class, ()-> new ChangeRestPathPostProcessor(registryInfo));
         canRegistered.set(true);
     }
 
 
     @Override
-    public void started(SpringPluginRegistryInfo registryInfo) throws Exception {
+    public void refreshBefore(ProcessorContext processorContext) throws ProcessorException {
         if(!canRegistered.get()){
             return;
         }
-        String pluginId = registryInfo.getPluginWrapper().getPluginId();
-        List<ControllerWrapper> controllerWrappers = registryInfo.getRegistryInfo(PROCESS_CONTROLLERS);
+        GenericApplicationContext applicationContext = processorContext.getApplicationContext();
+        applicationContext.registerBean("changeRestPathPostProcessor",
+                ChangeRestPathPostProcessor.class, ()-> new ChangeRestPathPostProcessor(processorContext));
+    }
+
+    @Override
+    public void refreshAfter(ProcessorContext processorContext) throws ProcessorException {
+        if(!canRegistered.get()){
+            return;
+        }
+        IntegrationConfiguration configuration = processorContext.getConfiguration();
+        if(ObjectUtils.isEmpty(configuration.pluginRestPathPrefix())
+                && !configuration.enablePluginIdRestPathPrefix()){
+            // 如果 pluginRestPathPrefix 为空, 并且没有启用插件id作为插件前缀, 则不进行修改插件controller地址前缀
+            return;
+        }
+        String pluginId = processorContext.getPluginDescriptor().getPluginId();
+        List<ControllerWrapper> controllerWrappers = processorContext.getRegistryInfo(PROCESS_CONTROLLERS);
         if(ObjectUtils.isEmpty(controllerWrappers)){
             LOG.warn("插件 [{}] 没有发现可注册的 Controller", pluginId);
             return;
         }
-        ConfigurableApplicationContext applicationContext = registryInfo.getPluginSpringApplication().getApplicationContext();
+        GenericApplicationContext applicationContext = processorContext.getApplicationContext();
 
         Iterator<ControllerWrapper> iterator = controllerWrappers.iterator();
         while (iterator.hasNext()){
@@ -94,7 +91,7 @@ public class PluginControllerRegistryListener implements PluginSpringApplication
                 iterator.remove();
             }
             Object controllerBean = applicationContext.getBean(controllerWrapper.getBeanName());
-            Set<RequestMappingInfo> requestMappingInfos = registry(registryInfo, controllerBean.getClass());
+            Set<RequestMappingInfo> requestMappingInfos = registry(applicationContext, controllerBean.getClass());
             if(requestMappingInfos.isEmpty()){
                 iterator.remove();
             } else {
@@ -106,25 +103,27 @@ public class PluginControllerRegistryListener implements PluginSpringApplication
     }
 
     @Override
-    public ListenerRunMode runMode() {
-        return ListenerRunMode.PLUGIN;
+    public RunMode runMode() {
+        return RunMode.PLUGIN;
     }
 
 
-    private Set<RequestMappingInfo> registry(SpringPluginRegistryInfo pluginRegistryInfo, Class<?> aClass)
-            throws Exception {
-        ConfigurableApplicationContext pluginApplicationContext = pluginRegistryInfo.getPluginSpringApplication()
-                .getApplicationContext();
+    private Set<RequestMappingInfo> registry(GenericApplicationContext pluginApplicationContext, Class<?> aClass)
+            throws ProcessorException {
         Object object = pluginApplicationContext.getBean(aClass);
 
-        Method[] methods = aClass.getMethods();
+        Method[] methods = aClass.getDeclaredMethods();
         Set<RequestMappingInfo> requestMappingInfos = new HashSet<>();
         for (Method method : methods) {
             if (isHaveRequestMapping(method)) {
-                RequestMappingInfo requestMappingInfo = (RequestMappingInfo)
-                        getMappingForMethod.invoke(requestMappingHandlerMapping, method, aClass);
-                requestMappingHandlerMapping.registerMapping(requestMappingInfo, object, method);
-                requestMappingInfos.add(requestMappingInfo);
+                try {
+                    RequestMappingInfo requestMappingInfo = (RequestMappingInfo)
+                            getMappingForMethod.invoke(requestMappingHandlerMapping, method, aClass);
+                    requestMappingHandlerMapping.registerMapping(requestMappingInfo, object, method);
+                    requestMappingInfos.add(requestMappingInfo);
+                } catch (Exception e){
+                    throw new ProcessorException(e.getMessage());
+                }
             }
         }
         return requestMappingInfos;
@@ -144,33 +143,33 @@ public class PluginControllerRegistryListener implements PluginSpringApplication
         private final static Logger LOG = LoggerFactory.getLogger(ChangeRestPathPostProcessor.class);
         private final static String COMMON_ERROR = "无法统一处理该 Controller 统一请求路径前缀";
 
-        private final SpringPluginRegistryInfo registryInfo;
+        private final ProcessorContext processorContext;
 
 
 
-        private ChangeRestPathPostProcessor(SpringPluginRegistryInfo registryInfo) {
-            this.registryInfo = registryInfo;
+        private ChangeRestPathPostProcessor(ProcessorContext processorContext) {
+            this.processorContext = processorContext;
         }
 
         @Override
         public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
             Class<?> aClass = bean.getClass();
-            Controller controller = AnnotationUtils.findAnnotation(aClass, Controller.class);
-            if(controller == null){
-                return bean;
-            }
-            RequestMapping requestMapping = aClass.getAnnotation(RequestMapping.class);
-            if(requestMapping != null){
+            RequestMapping requestMapping = AnnotationUtils.findAnnotation(aClass, RequestMapping.class);
+            boolean isController = AnnotationUtils.existOr(aClass, new Class[]{
+                Controller.class, RestController.class
+            });
+            if(requestMapping != null && isController){
                 changePathForClass(beanName, aClass, requestMapping);
             }
             return bean;
         }
 
         private void changePathForClass(String beanName, Class<?> aClass, RequestMapping requestMapping){
-            String pluginId = registryInfo.getPluginWrapper().getPluginId();
-            String pathPrefix = CommonUtils.getPluginRestPrefix(registryInfo.getConfiguration(), pluginId);
+            String pluginId = processorContext.getPluginDescriptor().getPluginId();
+            IntegrationConfiguration configuration = processorContext.getConfiguration();
+            String pathPrefix = CommonUtils.getPluginRestPrefix(configuration, pluginId);
 
-            if(StringUtils.isNullOrEmpty(pathPrefix)){
+            if(ObjectUtils.isEmpty(pathPrefix)){
                 LOG.error("插件 [{}] Controller类 [{}] 未发现 path 配置, {}",
                         pluginId, aClass.getSimpleName(), COMMON_ERROR);
                 return;
@@ -201,10 +200,10 @@ public class PluginControllerRegistryListener implements PluginSpringApplication
                 memberValues.put("path", newPath);
                 memberValues.put("value", newPath);
 
-                List<ControllerWrapper> controllerWrappers = this.registryInfo.getRegistryInfo(PROCESS_CONTROLLERS);
+                List<ControllerWrapper> controllerWrappers = processorContext.getRegistryInfo(PROCESS_CONTROLLERS);
                 if(controllerWrappers == null){
                     controllerWrappers = new ArrayList<>();
-                    this.registryInfo.addRegistryInfo(PROCESS_CONTROLLERS, controllerWrappers);
+                    processorContext.addRegistryInfo(PROCESS_CONTROLLERS, controllerWrappers);
                 }
                 ControllerWrapper controllerWrapper = new ControllerWrapper();
                 controllerWrapper.setPathPrefix(newPath);
@@ -215,6 +214,5 @@ public class PluginControllerRegistryListener implements PluginSpringApplication
             }
         }
     }
-
 
 }

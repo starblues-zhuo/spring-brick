@@ -30,7 +30,13 @@ public class PluginMethodRunner extends MethodRunner {
         Object instance = getInstance(runClass);
         setPluginInteractive(instance);
         runMethod.setAccessible(true);
-        return runMethod.invoke(instance, runClass, this.args);
+        try {
+            return runMethod.invoke(instance, runClass, this.args);
+        } catch (Exception e){
+            String error = "Invoke failure: "
+                    + ReflectionUtils.methodToString(runClass, runMethodName, runMethod.getParameterTypes());
+            throw new Exception(error);
+        }
     }
 
     private void setPluginInteractive(Object launchObject) throws Exception {

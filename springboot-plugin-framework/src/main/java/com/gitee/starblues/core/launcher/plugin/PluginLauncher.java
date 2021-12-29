@@ -36,6 +36,7 @@ public class PluginLauncher extends AbstractLauncher<Object> implements Resource
                     public Set<String> getIncludeResourcePatterns() {
                         Set<String> includeResourcePatterns = super.getIncludeResourcePatterns();
                         includeResourcePatterns.add("com/gitee/starblues/**");
+                        includeResourcePatterns.add("org/springframework/web/**");
                         return includeResourcePatterns;
                     }
                 }

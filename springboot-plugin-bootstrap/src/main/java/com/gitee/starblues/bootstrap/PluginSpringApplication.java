@@ -1,21 +1,18 @@
 package com.gitee.starblues.bootstrap;
 
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
-import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
-import com.gitee.starblues.utils.ObjectUtils;
-import com.gitee.starblues.utils.PluginFileUtils;
+import com.gitee.starblues.bootstrap.processor.ProcessorContext;
+import com.gitee.starblues.bootstrap.processor.SpringPluginProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author starBlues
@@ -23,20 +20,26 @@ import java.util.Map;
  */
 public class PluginSpringApplication extends SpringApplication {
 
-    private final PluginDescriptor pluginDescriptor;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final ConfigurableApplicationContext applicationContext;
+    private final SpringPluginProcessor springPluginProcessor;
+    private final ProcessorContext processorContext;
+
+    private final GenericApplicationContext applicationContext;
     private final DefaultListableBeanFactory beanFactory;
     private final ResourceLoader resourceLoader;
     private final ConfigurePluginEnvironment configurePluginEnvironment;
 
-    public PluginSpringApplication(PluginInteractive pluginInteractive, Class<?>... primarySources) {
+    public PluginSpringApplication(SpringPluginProcessor springPluginProcessor,
+                                   ProcessorContext processorContext,
+                                   Class<?>... primarySources) {
         super(primarySources);
-        this.pluginDescriptor = pluginInteractive.getPluginDescriptor();
-        this.resourceLoader = new DefaultResourceLoader(getPluginClassLoader());
-        this.beanFactory = new PluginListableBeanFactory();
-        this.applicationContext = new PluginApplicationContext(beanFactory, resourceLoader);
-        this.configurePluginEnvironment = new ConfigurePluginEnvironment(pluginDescriptor);
+        this.springPluginProcessor = springPluginProcessor;
+        this.processorContext = processorContext;
+        this.resourceLoader = processorContext.getResourceLoader();
+        this.beanFactory = new PluginListableBeanFactory(processorContext.getMainApplicationContext());
+        this.applicationContext = new PluginApplicationContext(beanFactory, processorContext);
+        this.configurePluginEnvironment = new ConfigurePluginEnvironment(processorContext.getPluginDescriptor());
         setDefaultConfig();
     }
 
@@ -44,6 +47,7 @@ public class PluginSpringApplication extends SpringApplication {
         setResourceLoader(resourceLoader);
         setBannerMode(Banner.Mode.OFF);
         setEnvironment(new StandardEnvironment());
+        setWebApplicationType(WebApplicationType.NONE);
     }
 
     @Override
@@ -57,8 +61,26 @@ public class PluginSpringApplication extends SpringApplication {
         return applicationContext;
     }
 
-    private ClassLoader getPluginClassLoader(){
-        return PluginSpringApplication.class.getClassLoader();
+    @Override
+    public ConfigurableApplicationContext run(String... args) {
+        try {
+            processorContext.setApplicationContext(this.applicationContext);
+            springPluginProcessor.initialize(processorContext);
+            return super.run(args);
+        } catch (Exception e) {
+            springPluginProcessor.failure(processorContext);
+            logger.error("启动插件[{}]失败. {}",
+                    processorContext.getPluginDescriptor().getPluginId(),
+                    e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected void refresh(ConfigurableApplicationContext applicationContext) {
+        springPluginProcessor.refreshBefore(processorContext);
+        super.refresh(applicationContext);
+        springPluginProcessor.refreshAfter(processorContext);
     }
 
 }

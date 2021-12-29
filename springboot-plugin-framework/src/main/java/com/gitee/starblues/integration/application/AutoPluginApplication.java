@@ -2,9 +2,12 @@ package com.gitee.starblues.integration.application;
 
 import com.gitee.starblues.integration.IntegrationExtendPoint;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
-import org.springframework.beans.factory.InitializingBean;
+import com.gitee.starblues.integration.operator.PluginOperator;
+import com.gitee.starblues.integration.user.PluginUser;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -15,7 +18,7 @@ import org.springframework.context.annotation.Import;
  */
 @Import(IntegrationExtendPoint.class)
 public class AutoPluginApplication extends DefaultPluginApplication
-        implements PluginApplication, InitializingBean, ApplicationContextAware {
+        implements PluginApplication, ApplicationContextAware, ApplicationListener<ApplicationStartedEvent> {
 
     private ApplicationContext applicationContext;
     private PluginInitializerListener pluginInitializerListener;
@@ -45,13 +48,19 @@ public class AutoPluginApplication extends DefaultPluginApplication
 
     /**
      * Spring boot bean属性被Set完后调用。会自动初始化插件
-     * @throws Exception 初始化异常
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
-        if(applicationContext == null){
-            throw new Exception("Auto initialize failed. ApplicationContext Not injected.");
-        }
+    public void onApplicationEvent(ApplicationStartedEvent event) {
         super.initialize(applicationContext, pluginInitializerListener);
+    }
+
+    @Override
+    public PluginOperator getPluginOperator() {
+        return createPluginOperator(applicationContext);
+    }
+
+    @Override
+    public PluginUser getPluginUser() {
+        return createPluginUser(applicationContext);
     }
 }

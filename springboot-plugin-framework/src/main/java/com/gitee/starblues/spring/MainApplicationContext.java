@@ -1,6 +1,6 @@
 package com.gitee.starblues.spring;
 
-import com.gitee.starblues.integration.IntegrationConfiguration;
+import java.util.Set;
 
 /**
  * @author starBlues
@@ -8,6 +8,11 @@ import com.gitee.starblues.integration.IntegrationConfiguration;
  */
 public interface MainApplicationContext extends ApplicationContext {
 
-    IntegrationConfiguration getConfiguration();
+
+    Object resolveDependency(Object descriptor, String requestingBeanName);
+
+
+    Object resolveDependency(Object descriptor, String requestingBeanName,
+                             Set<String> autowiredBeanNames, Object typeConverter);
 
 }

@@ -5,10 +5,7 @@ package com.gitee.starblues.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 反射工具类
@@ -106,20 +103,53 @@ public abstract class ReflectionUtils {
     }
 
     public static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
+        List<Method> methods = findMethods(clazz, name, paramTypes);
+        if(ObjectUtils.isEmpty(methods)){
+            return null;
+        } else {
+            return methods.get(0);
+        }
+    }
+
+    public static List<Method> findMethods(Class<?> clazz, String name, Class<?>... paramTypes){
         Assert.isNotNull(clazz, "Class must not be null");
         Assert.isNotEmpty(name, "Method name must not be null");
         Class<?> searchType = clazz;
+        List<Method> methodList = new ArrayList<>();
         while (searchType != null) {
             Method[] methods = (searchType.isInterface() ? searchType.getMethods() :
                     getDeclaredMethods(searchType, false));
             for (Method method : methods) {
                 if (name.equals(method.getName()) && (paramTypes == null || hasSameParams(method, paramTypes))) {
-                    return method;
+                    methodList.add(method);
                 }
             }
             searchType = searchType.getSuperclass();
         }
-        return null;
+        return methodList;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T invoke(Object object, String methodName, Object... params) throws RuntimeException {
+        Class<?>[] paramTypes = new Class[params.length];
+        for (int i = 0; i < params.length; i++) {
+            paramTypes[i] = params[i].getClass();
+        }
+        Class<?> aClass = object.getClass();
+        Method method = ReflectionUtils.findMethod(aClass, methodName, paramTypes);
+        if(method == null){
+            throw new RuntimeException("Not found method : " + methodToString(aClass, methodName, paramTypes));
+        }
+        try {
+            Object invoke = method.invoke(object, params);
+            if(invoke != null){
+                return (T) invoke;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot call method : " + methodToString(aClass, methodName, paramTypes), e);
+        }
     }
 
     public static void setAttribute(Object bean, String setMethodName, Object setObject) throws Exception {
@@ -185,6 +215,20 @@ public abstract class ReflectionUtils {
             }
         }
         return true;
+    }
+
+    public static NoSuchMethodException getNoSuchMethodException(Class<?> aClass, String name, Class<?>[] argTypes) {
+        return new NoSuchMethodException("Not found method:" + methodToString(aClass, name, argTypes));
+    }
+
+    public static String methodToString(Class<?> aClass, String name, Class<?>[] argTypes) {
+        StringJoiner sj = new StringJoiner(", ", aClass.getName() + "." + name + "(", ")");
+        if (argTypes != null) {
+            for (Class<?> c : argTypes) {
+                sj.add((c == null) ? "null" : c.getName());
+            }
+        }
+        return sj.toString();
     }
 
 }
