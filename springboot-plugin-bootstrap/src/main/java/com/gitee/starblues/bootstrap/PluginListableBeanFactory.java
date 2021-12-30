@@ -2,6 +2,7 @@ package com.gitee.starblues.bootstrap;
 
 import com.gitee.starblues.integration.AutoIntegrationConfiguration;
 import com.gitee.starblues.spring.MainApplicationContext;
+import com.gitee.starblues.spring.SpringBeanFactory;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +22,6 @@ import java.util.Set;
 public class PluginListableBeanFactory extends DefaultListableBeanFactory {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private final static String NO_SUCH_BEAN_EXCEPTION_NAME = "NoSuchBeanDefinitionException";
 
     private final MainApplicationContext applicationContext;
 
@@ -45,11 +44,12 @@ public class PluginListableBeanFactory extends DefaultListableBeanFactory {
 
     private Object resolveDependencyFromMain(DependencyDescriptor descriptor){
         String dependencyName = descriptor.getDependencyName();
-        if(!ObjectUtils.isEmpty(dependencyName) && applicationContext.containsBean(dependencyName)){
-            return applicationContext.getBean(dependencyName);
+        SpringBeanFactory springBeanFactory = applicationContext.getSpringBeanFactory();
+        if(!ObjectUtils.isEmpty(dependencyName) && springBeanFactory.containsBean(dependencyName)){
+            return springBeanFactory.getBean(dependencyName);
         } else {
             try {
-                return applicationContext.getBean(descriptor.getDependencyType());
+                return springBeanFactory.getBean(descriptor.getDependencyType());
             } catch (Exception e){
                 throw new NoSuchBeanDefinitionException(descriptor.getDependencyType());
             }

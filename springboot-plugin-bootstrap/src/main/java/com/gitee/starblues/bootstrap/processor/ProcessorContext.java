@@ -7,6 +7,8 @@ import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
 import com.gitee.starblues.core.launcher.plugin.RegistryInfo;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.MainApplicationContext;
+import com.gitee.starblues.spring.SpringBeanFactory;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ResourceLoader;
 
@@ -39,6 +41,12 @@ public interface ProcessorContext extends RegistryInfo {
      * @return MainApplicationContext
      */
     MainApplicationContext getMainApplicationContext();
+
+    /**
+     * 得到主程序的 SpringBeanFactory
+     * @return SpringBeanFactory
+     */
+    SpringBeanFactory getMainBeanFactory();
 
     /**
      * 得到当前框架的集成配置

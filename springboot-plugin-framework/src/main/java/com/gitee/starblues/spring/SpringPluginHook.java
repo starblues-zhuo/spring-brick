@@ -6,6 +6,6 @@ package com.gitee.starblues.spring;
  */
 public interface SpringPluginHook extends AutoCloseable{
 
-    Object getGenericApplicationContext();
+    ApplicationContext getApplicationContext();
 
 }

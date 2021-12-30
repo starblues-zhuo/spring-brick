@@ -1,6 +1,5 @@
 package com.gitee.starblues.integration.application;
 
-import com.gitee.starblues.extension.AbstractExtension;
 import com.gitee.starblues.integration.PluginListenerContext;
 import com.gitee.starblues.integration.PluginStateListenerContext;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
@@ -34,12 +33,4 @@ public interface PluginApplication extends PluginListenerContext, PluginStateLis
      * @return 插件操作者
      */
     PluginUser getPluginUser();
-
-    /**
-     * 添加扩展
-     * @param extension 扩展类
-     * @return PluginApplication
-     */
-    PluginApplication addExtension(AbstractExtension extension);
-
 }

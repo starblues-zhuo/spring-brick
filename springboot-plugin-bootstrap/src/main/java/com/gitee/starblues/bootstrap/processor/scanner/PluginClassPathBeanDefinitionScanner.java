@@ -1,7 +1,6 @@
 package com.gitee.starblues.bootstrap.processor.scanner;
 
 import com.gitee.starblues.bootstrap.processor.ProcessorContext;
-import com.gitee.starblues.spring.SpringPluginRegistryInfo;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 
 

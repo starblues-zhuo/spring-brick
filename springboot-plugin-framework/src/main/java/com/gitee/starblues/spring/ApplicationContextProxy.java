@@ -1,22 +1,24 @@
 package com.gitee.starblues.spring;
 
-import org.springframework.context.support.GenericApplicationContext;
-
-
 /**
  * @author starBlues
  * @version 1.0
  */
-public class ApplicationContextProxy {
+public class ApplicationContextProxy extends GenericApplicationContext{
 
+    public ApplicationContextProxy(Object targetBeanFactory,
+                                   AutoCloseable autoCloseable) {
+        super(autoCloseable);
+        setSpringBeanFactory(createSpringBeanFactory(targetBeanFactory));
+    }
 
+    public ApplicationContextProxy(Object targetBeanFactory) {
+        super();
+        setSpringBeanFactory(createSpringBeanFactory(targetBeanFactory));
+    }
 
-
-//    public static MainApplicationContext getMainApplicationContext(GenericApplicationContext applicationContext){
-//        ProxyInvokeFactory proxyInvokeFactory = new DiffProxyInvokeFactory(applicationContext);
-//        return proxyInvokeFactory.getObject(MainApplicationContext.class);
-//    }
-
-
-
+    protected SpringBeanFactory createSpringBeanFactory(Object targetBeanFactory){
+        ProxyFactory proxyFactory = new CacheJdkSameTypeParamProxyFactory(targetBeanFactory);
+        return proxyFactory.getObject(SpringBeanFactory.class);
+    }
 }

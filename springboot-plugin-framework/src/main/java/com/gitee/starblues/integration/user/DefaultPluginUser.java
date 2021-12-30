@@ -1,7 +1,5 @@
 package com.gitee.starblues.integration.user;
 
-import com.gitee.starblues.core.PluginManager;
-import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
 import com.gitee.starblues.utils.SpringBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,92 +77,95 @@ public class DefaultPluginUser implements PluginUser{
 
     @Override
     public <T> List<T> getPluginBeans(String pluginId, Class<T> aClass) {
-        ConfigurableApplicationContext pluginApplicationContext =
-                PluginInfoContainers.getPluginApplicationContext(pluginId);
-        if(pluginApplicationContext == null){
-            return Collections.emptyList();
-        }
-        return SpringBeanUtils.getBeans(pluginApplicationContext, aClass);
+//        ConfigurableApplicationContext pluginApplicationContext =
+//                PluginInfoContainers.getPluginApplicationContext(pluginId);
+//        if(pluginApplicationContext == null){
+//            return Collections.emptyList();
+//        }
+//        return SpringBeanUtils.getBeans(pluginApplicationContext, aClass);
+        return null;
     }
 
     @Override
     public List<Object> getPluginBeansWithAnnotation(Class<? extends Annotation> annotationType) {
-        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
-        List<Object> beans = new ArrayList<>();
-        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
-            Map<String, Object> beanMap = pluginApplicationContext.getBeansWithAnnotation(annotationType);
-            if(!ObjectUtils.isEmpty(beanMap)){
-                beans.addAll(beanMap.values());
-            }
-        }
-        return beans;
+//        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+//        List<Object> beans = new ArrayList<>();
+//        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+//            Map<String, Object> beanMap = pluginApplicationContext.getBeansWithAnnotation(annotationType);
+//            if(!ObjectUtils.isEmpty(beanMap)){
+//                beans.addAll(beanMap.values());
+//            }
+//        }
+//        return beans;
+        return null;
     }
 
     @Override
     public List<Object> getPluginBeansWithAnnotation(String pluginId, Class<? extends Annotation> annotationType) {
-        ConfigurableApplicationContext genericApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
-        if(genericApplicationContext == null){
-            return Collections.emptyList();
-        }
-        Map<String, Object> beanMap = genericApplicationContext.getBeansWithAnnotation(annotationType);
-        if(!ObjectUtils.isEmpty(beanMap)){
-            return new ArrayList<>(beanMap.values());
-        } else {
-            return Collections.emptyList();
-        }
+//        ConfigurableApplicationContext genericApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
+//        if(genericApplicationContext == null){
+//            return Collections.emptyList();
+//        }
+//        Map<String, Object> beanMap = genericApplicationContext.getBeansWithAnnotation(annotationType);
+//        if(!ObjectUtils.isEmpty(beanMap)){
+//            return new ArrayList<>(beanMap.values());
+//        } else {
+//            return Collections.emptyList();
+//        }
+        return null;
     }
 
     @Override
     public <T> T generateNewInstance(T object) {
-        if(object == null){
-            return null;
-        }
-        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
-        pluginApplicationContexts.add(parentApplicationContext);
-        Class<?> aClass = object.getClass();
-        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
-            try {
-                // 判断是否存在
-                pluginApplicationContext.getBean(aClass);
-                Object newBean = pluginApplicationContext.getBeanFactory()
-                        .createBean(aClass);
-                return (T) newBean;
-            } catch (Exception e){
-                // 忽略
-            }
-        }
+//        if(object == null){
+//            return null;
+//        }
+//        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+//        pluginApplicationContexts.add(parentApplicationContext);
+//        Class<?> aClass = object.getClass();
+//        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+//            try {
+//                // 判断是否存在
+//                pluginApplicationContext.getBean(aClass);
+//                Object newBean = pluginApplicationContext.getBeanFactory()
+//                        .createBean(aClass);
+//                return (T) newBean;
+//            } catch (Exception e){
+//                // 忽略
+//            }
+//        }
         return null;
     }
 
 
     private <T> T getBean(String name, boolean haveParent){
-        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
-        if(haveParent){
-            pluginApplicationContexts.add(parentApplicationContext);
-        }
-        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
-            if(pluginApplicationContext.containsBean(name)){
-                return (T) pluginApplicationContext.getBean(name);
-            }
-        }
+//        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+//        if(haveParent){
+//            pluginApplicationContexts.add(parentApplicationContext);
+//        }
+//        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+//            if(pluginApplicationContext.containsBean(name)){
+//                return (T) pluginApplicationContext.getBean(name);
+//            }
+//        }
         return null;
     }
 
     private <T> T getBean(Class<T> aClass,  boolean haveParent) {
-        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
-        if(haveParent){
-            pluginApplicationContexts.add(parentApplicationContext);
-        }
-        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
-            try {
-                T bean = pluginApplicationContext.getBean(aClass);
-                if(bean != null){
-                    return bean;
-                }
-            } catch (Exception e){
-                // 忽略
-            }
-        }
+//        List<ConfigurableApplicationContext> pluginApplicationContexts = PluginInfoContainers.getPluginApplicationContexts();
+//        if(haveParent){
+//            pluginApplicationContexts.add(parentApplicationContext);
+//        }
+//        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+//            try {
+//                T bean = pluginApplicationContext.getBean(aClass);
+//                if(bean != null){
+//                    return bean;
+//                }
+//            } catch (Exception e){
+//                // 忽略
+//            }
+//        }
         return null;
     }
 
@@ -176,27 +177,28 @@ public class DefaultPluginUser implements PluginUser{
      * @return List
      */
     private <T> List<T> getBeans(Class<T> aClass, int type) {
-        List<ConfigurableApplicationContext> pluginApplicationContexts = new ArrayList<>(1);
-
-        if(type == 1){
-            pluginApplicationContexts.add(parentApplicationContext);
-        } else if(type == 2){
-            pluginApplicationContexts.addAll(PluginInfoContainers.getPluginApplicationContexts());
-        } else if(type == 3){
-            pluginApplicationContexts.add(parentApplicationContext);
-            pluginApplicationContexts.addAll(PluginInfoContainers.getPluginApplicationContexts());
-        } else {
-            return Collections.emptyList();
-        }
-
-        List<T> result = new ArrayList<>();
-        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
-            List<T> pluginBeans = SpringBeanUtils.getBeans(pluginApplicationContext, aClass);
-            if(!pluginBeans.isEmpty()){
-                result.addAll(pluginBeans);
-            }
-        }
-        return result;
+//        List<ConfigurableApplicationContext> pluginApplicationContexts = new ArrayList<>(1);
+//
+//        if(type == 1){
+//            pluginApplicationContexts.add(parentApplicationContext);
+//        } else if(type == 2){
+//            pluginApplicationContexts.addAll(PluginInfoContainers.getPluginApplicationContexts());
+//        } else if(type == 3){
+//            pluginApplicationContexts.add(parentApplicationContext);
+//            pluginApplicationContexts.addAll(PluginInfoContainers.getPluginApplicationContexts());
+//        } else {
+//            return Collections.emptyList();
+//        }
+//
+//        List<T> result = new ArrayList<>();
+//        for (ConfigurableApplicationContext pluginApplicationContext : pluginApplicationContexts) {
+//            List<T> pluginBeans = SpringBeanUtils.getBeans(pluginApplicationContext, aClass);
+//            if(!pluginBeans.isEmpty()){
+//                result.addAll(pluginBeans);
+//            }
+//        }
+//        return result;
+        return null;
     }
 
 }

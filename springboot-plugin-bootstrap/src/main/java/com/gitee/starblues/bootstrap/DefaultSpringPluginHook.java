@@ -2,6 +2,8 @@ package com.gitee.starblues.bootstrap;
 
 import com.gitee.starblues.bootstrap.processor.ProcessorContext;
 import com.gitee.starblues.bootstrap.processor.SpringPluginProcessor;
+import com.gitee.starblues.spring.ApplicationContext;
+import com.gitee.starblues.spring.ApplicationContextProxy;
 import com.gitee.starblues.spring.SpringPluginHook;
 
 /**
@@ -10,24 +12,24 @@ import com.gitee.starblues.spring.SpringPluginHook;
  */
 public class DefaultSpringPluginHook implements SpringPluginHook {
 
-    private final SpringPluginProcessor springPluginProcessor;
+    private final SpringPluginProcessor pluginProcessor;
     private final ProcessorContext processorContext;
 
-    public DefaultSpringPluginHook(SpringPluginProcessor springPluginProcessor,
+    public DefaultSpringPluginHook(SpringPluginProcessor pluginProcessor,
                                    ProcessorContext processorContext) {
-        this.springPluginProcessor = springPluginProcessor;
+        this.pluginProcessor = pluginProcessor;
         this.processorContext = processorContext;
     }
 
     @Override
-    public Object getGenericApplicationContext() {
-        return processorContext.getApplicationContext();
+    public void close() throws Exception{
+        pluginProcessor.close(processorContext);
+        processorContext.getApplicationContext().close();
+        processorContext.clearRegistryInfo();
     }
 
     @Override
-    public void close() throws Exception{
-        springPluginProcessor.close(processorContext);
-        processorContext.getApplicationContext().close();
-        processorContext.clearRegistryInfo();
+    public ApplicationContext getApplicationContext() {
+        return new ApplicationContextProxy(processorContext.getApplicationContext().getBeanFactory());
     }
 }

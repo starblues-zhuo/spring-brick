@@ -1,9 +1,7 @@
 package com.gitee.starblues.bootstrap.processor.invoke;
 
 import com.gitee.starblues.annotation.Caller;
-import com.gitee.starblues.bootstrap.processor.ProcessorContext;
-import com.gitee.starblues.spring.SpringPluginRegistryInfo;
-import com.gitee.starblues.spring.processor.invoke.InvokeSupperCache;
+import com.gitee.starblues.spring.invoke.InvokeSupperCache;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.lang.reflect.Proxy;

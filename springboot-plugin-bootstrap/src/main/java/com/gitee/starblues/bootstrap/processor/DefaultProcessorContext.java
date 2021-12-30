@@ -6,6 +6,7 @@ import com.gitee.starblues.core.launcher.plugin.CacheRegistryInfo;
 import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.MainApplicationContext;
+import com.gitee.starblues.spring.SpringBeanFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -55,6 +56,11 @@ public class DefaultProcessorContext extends CacheRegistryInfo implements Proces
     @Override
     public MainApplicationContext getMainApplicationContext() {
         return mainApplicationContext;
+    }
+
+    @Override
+    public SpringBeanFactory getMainBeanFactory() {
+        return mainApplicationContext.getSpringBeanFactory();
     }
 
     @Override

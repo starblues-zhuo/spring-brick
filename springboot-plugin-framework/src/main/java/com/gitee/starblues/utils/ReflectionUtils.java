@@ -210,12 +210,13 @@ public abstract class ReflectionUtils {
         for (int i = 0; i < paramTypes.length; i++) {
             Class<?> paramType = paramTypes[i];
             Class<?> methodParamType = parameterTypes[i];
-            if(!methodParamType.isAssignableFrom(paramType)){
+            if(!CompareClassTypeUtils.compare(methodParamType, paramType)){
                 return false;
             }
         }
         return true;
     }
+
 
     public static NoSuchMethodException getNoSuchMethodException(Class<?> aClass, String name, Class<?>[] argTypes) {
         return new NoSuchMethodException("Not found method:" + methodToString(aClass, name, argTypes));

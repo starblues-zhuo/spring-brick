@@ -1,6 +1,5 @@
 package com.gitee.starblues.integration.application;
 
-import com.gitee.starblues.extension.AbstractExtension;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.listener.PluginListener;
 import com.gitee.starblues.integration.operator.EmptyPluginOperator;
@@ -32,11 +31,6 @@ public class EmptyPluginApplication implements PluginApplication{
     @Override
     public PluginUser getPluginUser() {
         return new EmptyPluginUser();
-    }
-
-    @Override
-    public PluginApplication addExtension(AbstractExtension extension) {
-        return null;
     }
 
     @Override

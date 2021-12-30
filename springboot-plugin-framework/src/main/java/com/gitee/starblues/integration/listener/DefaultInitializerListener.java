@@ -1,6 +1,5 @@
 package com.gitee.starblues.integration.listener;
 
-import com.gitee.starblues.extension.ExtensionInitializer;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -20,8 +19,7 @@ public class DefaultInitializerListener implements PluginInitializerListener{
 
     @Override
     public void before() {
-        // 初始化扩展注册信息
-        ExtensionInitializer.initialize(applicationContext);
+
     }
 
     @Override

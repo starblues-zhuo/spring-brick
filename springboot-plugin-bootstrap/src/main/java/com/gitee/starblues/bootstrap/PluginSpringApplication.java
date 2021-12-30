@@ -22,7 +22,7 @@ public class PluginSpringApplication extends SpringApplication {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final SpringPluginProcessor springPluginProcessor;
+    private final SpringPluginProcessor pluginProcessor;
     private final ProcessorContext processorContext;
 
     private final GenericApplicationContext applicationContext;
@@ -30,11 +30,11 @@ public class PluginSpringApplication extends SpringApplication {
     private final ResourceLoader resourceLoader;
     private final ConfigurePluginEnvironment configurePluginEnvironment;
 
-    public PluginSpringApplication(SpringPluginProcessor springPluginProcessor,
+    public PluginSpringApplication(SpringPluginProcessor pluginProcessor,
                                    ProcessorContext processorContext,
                                    Class<?>... primarySources) {
         super(primarySources);
-        this.springPluginProcessor = springPluginProcessor;
+        this.pluginProcessor = pluginProcessor;
         this.processorContext = processorContext;
         this.resourceLoader = processorContext.getResourceLoader();
         this.beanFactory = new PluginListableBeanFactory(processorContext.getMainApplicationContext());
@@ -65,10 +65,10 @@ public class PluginSpringApplication extends SpringApplication {
     public ConfigurableApplicationContext run(String... args) {
         try {
             processorContext.setApplicationContext(this.applicationContext);
-            springPluginProcessor.initialize(processorContext);
+            pluginProcessor.initialize(processorContext);
             return super.run(args);
         } catch (Exception e) {
-            springPluginProcessor.failure(processorContext);
+            pluginProcessor.failure(processorContext);
             logger.error("启动插件[{}]失败. {}",
                     processorContext.getPluginDescriptor().getPluginId(),
                     e.getMessage(), e);
@@ -78,9 +78,9 @@ public class PluginSpringApplication extends SpringApplication {
 
     @Override
     protected void refresh(ConfigurableApplicationContext applicationContext) {
-        springPluginProcessor.refreshBefore(processorContext);
+        pluginProcessor.refreshBefore(processorContext);
         super.refresh(applicationContext);
-        springPluginProcessor.refreshAfter(processorContext);
+        pluginProcessor.refreshAfter(processorContext);
     }
 
 }

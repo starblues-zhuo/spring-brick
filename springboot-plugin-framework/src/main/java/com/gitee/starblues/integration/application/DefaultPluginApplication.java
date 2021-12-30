@@ -1,16 +1,25 @@
 package com.gitee.starblues.integration.application;
 
+import com.gitee.starblues.annotation.Extract;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.operator.PluginOperatorWrapper;
 import com.gitee.starblues.integration.user.PluginUser;
+import com.gitee.starblues.spring.extract.DefaultExtractFactory;
+import com.gitee.starblues.spring.extract.DefaultOpExtractFactory;
+import com.gitee.starblues.spring.extract.ExtractFactory;
+import com.gitee.starblues.spring.extract.OpExtractFactory;
+import com.gitee.starblues.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -47,7 +56,9 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
             if(!(pluginOperator instanceof PluginOperatorWrapper)){
                 pluginOperator = new PluginOperatorWrapper(pluginOperator, configuration);
             }
-            setBeanFactory(applicationContext);
+            GenericApplicationContext genericApplicationContext = (GenericApplicationContext) applicationContext;
+            setBeanFactory(genericApplicationContext);
+            initExtractFactory(genericApplicationContext);
             pluginOperator.initPlugins(listener);
             beInitialized.set(true);
         } catch (Exception e) {
@@ -89,30 +100,39 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
         return pluginUser;
     }
 
-//    /**
-//     * 将pf4j中的监听器加入
-//     * @param pluginManager pluginManager
-//     * @param applicationContext ApplicationContext
-//     */
-//    private void addPf4jStateListener(PluginManager pluginManager, ApplicationContext applicationContext){
-//        List<PluginStateListener> pluginStateListeners = pluginStateListenerFactory
-//                .buildListenerClass((GenericApplicationContext) applicationContext);
-//        if(ObjectUtils.isEmpty(pluginStateListeners)){
-//            return;
-//        }
-//        for (PluginStateListener pluginStateListener : pluginStateListeners) {
-//            pluginManager.addPluginStateListener(pluginStateListener);
-//        }
-//    }
+    /**
+     * 初始化扩展工厂
+     * @param applicationContext applicationContext
+     */
+    private void initExtractFactory(GenericApplicationContext applicationContext){
+        ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+        DefaultExtractFactory defaultExtractFactory = (DefaultExtractFactory)ExtractFactory.getInstant();
+        initMainExtract((OpExtractFactory)defaultExtractFactory.getTarget(), beanFactory);
+    }
 
+    /**
+     * 初始化主程序中的扩展
+     * @param opExtractFactory opExtractFactory
+     * @param beanFactory beanFactory
+     */
+    private void initMainExtract(OpExtractFactory opExtractFactory, ListableBeanFactory beanFactory){
+        // 获取主程序的扩展
+        Map<String, Object> extractMap = beanFactory.getBeansWithAnnotation(Extract.class);
+        if(ObjectUtils.isEmpty(extractMap)){
+            return;
+        }
+        for (Object extract : extractMap.values()) {
+            opExtractFactory.addOfMain(extract);
+        }
+    }
 
     /**
      * 直接将 PluginOperator 和 PluginUser 注入到ApplicationContext容器中
      * @param applicationContext ApplicationContext
      */
-    private void setBeanFactory(ApplicationContext applicationContext){
-        GenericApplicationContext genericApplicationContext = (GenericApplicationContext) applicationContext;
-        DefaultListableBeanFactory defaultListableBeanFactory = genericApplicationContext.getDefaultListableBeanFactory();
+    @Deprecated
+    private void setBeanFactory(GenericApplicationContext applicationContext){
+        DefaultListableBeanFactory defaultListableBeanFactory = applicationContext.getDefaultListableBeanFactory();
         defaultListableBeanFactory.registerSingleton(pluginOperator.getClass().getName(), pluginOperator);
         defaultListableBeanFactory.registerSingleton(pluginUser.getClass().getName(), pluginUser);
     }

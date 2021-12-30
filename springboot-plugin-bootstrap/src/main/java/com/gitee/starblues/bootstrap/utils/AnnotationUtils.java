@@ -1,14 +1,12 @@
 package com.gitee.starblues.bootstrap.utils;
 
 
-import org.springframework.core.annotation.*;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class AnnotationUtils {
 

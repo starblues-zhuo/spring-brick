@@ -1,7 +1,6 @@
 package com.gitee.starblues.integration.operator;
 
 import com.gitee.starblues.core.loader.PluginWrapper;
-import com.gitee.starblues.factory.process.pipe.PluginInfoContainers;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
@@ -11,7 +10,6 @@ import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -210,24 +208,24 @@ public class PluginOperatorWrapper implements PluginOperator{
      * @throws Exception 检查异常
      */
     private void checkIsUnRegistry(String pluginId) throws Exception{
-        ConfigurableApplicationContext pluginApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
-        if(pluginApplicationContext == null){
-            log.error("Plugin '{}' Not found ApplicationContext. So cannot found and execute unRegistryValidator",
-                    pluginId);
-            return;
-        }
-        List<UnRegistryValidator> unRegistryValidators = SpringBeanUtils.getBeans(pluginApplicationContext, UnRegistryValidator.class);
-        for (UnRegistryValidator unRegistryValidator : unRegistryValidators) {
-            UnRegistryValidator.Result result = unRegistryValidator.verify();
-            if(result.isVerify()){
-                return;
-            }
-            String message = result.getMessage();
-            if(StringUtils.isNullOrEmpty(message)){
-                message = "Plugin [" + pluginId + "] Stop or Uninstall be banned";
-            }
-            throw new Exception(message);
-        }
+//        ConfigurableApplicationContext pluginApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
+//        if(pluginApplicationContext == null){
+//            log.error("Plugin '{}' Not found ApplicationContext. So cannot found and execute unRegistryValidator",
+//                    pluginId);
+//            return;
+//        }
+//        List<UnRegistryValidator> unRegistryValidators = SpringBeanUtils.getBeans(pluginApplicationContext, UnRegistryValidator.class);
+//        for (UnRegistryValidator unRegistryValidator : unRegistryValidators) {
+//            UnRegistryValidator.Result result = unRegistryValidator.verify();
+//            if(result.isVerify()){
+//                return;
+//            }
+//            String message = result.getMessage();
+//            if(StringUtils.isNullOrEmpty(message)){
+//                message = "Plugin [" + pluginId + "] Stop or Uninstall be banned";
+//            }
+//            throw new Exception(message);
+//        }
     }
 
 

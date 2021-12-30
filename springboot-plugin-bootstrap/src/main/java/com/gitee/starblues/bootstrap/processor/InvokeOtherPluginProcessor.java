@@ -5,9 +5,9 @@ import com.gitee.starblues.annotation.Supplier;
 import com.gitee.starblues.bootstrap.processor.invoke.InvokeBeanFactory;
 import com.gitee.starblues.bootstrap.processor.scanner.PluginClassPathBeanDefinitionScanner;
 import com.gitee.starblues.spring.ApplicationContext;
-import com.gitee.starblues.spring.GenericApplicationContextReflection;
-import com.gitee.starblues.spring.processor.invoke.InvokeSupperCache;
-import com.gitee.starblues.spring.processor.invoke.SupperCache;
+import com.gitee.starblues.spring.ApplicationContextProxy;
+import com.gitee.starblues.spring.invoke.InvokeSupperCache;
+import com.gitee.starblues.spring.invoke.SupperCache;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.ScanUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -38,7 +38,7 @@ public class InvokeOtherPluginProcessor implements SpringPluginProcessor {
         GenericApplicationContext applicationContext = context.getApplicationContext();
         Map<String, Object> supplierBeans = applicationContext.getBeansWithAnnotation(Supplier.class);
         String pluginId = context.getPluginDescriptor().getPluginId();
-        ApplicationContext applicationContextReflection = new GenericApplicationContextReflection(applicationContext);
+        ApplicationContext applicationContextReflection = new ApplicationContextProxy(applicationContext);
         InvokeSupperCache invokeSupperCache = context.getPluginInteractive().getInvokeSupperCache();
         supplierBeans.forEach((k,v)->{
             Supplier supplier = AnnotationUtils.findAnnotation(v.getClass(), Supplier.class);

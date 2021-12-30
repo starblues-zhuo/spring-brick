@@ -1,7 +1,7 @@
 package com.gitee.starblues.core.launcher.plugin;
 
 import com.gitee.starblues.spring.ApplicationContext;
-import com.gitee.starblues.spring.GenericApplicationContextReflection;
+import com.gitee.starblues.spring.MainApplicationContextProxy;
 import org.springframework.context.support.GenericApplicationContext;
 
 /**
@@ -15,7 +15,7 @@ public class DefaultPluginRegistryInfo extends CacheRegistryInfo implements Plug
 
     public DefaultPluginRegistryInfo(GenericApplicationContext pluginApplicationContext,
                                      PluginLauncher pluginLauncher) {
-        this.applicationContext = new GenericApplicationContextReflection(pluginApplicationContext);
+        this.applicationContext = new MainApplicationContextProxy(pluginApplicationContext, null);
         this.pluginLauncher = pluginLauncher;
     }
 

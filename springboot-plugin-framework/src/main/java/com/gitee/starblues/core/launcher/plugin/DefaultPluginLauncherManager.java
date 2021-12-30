@@ -2,11 +2,10 @@ package com.gitee.starblues.core.launcher.plugin;
 
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.integration.IntegrationConfiguration;
-import com.gitee.starblues.spring.ApplicationContextProxy;
 import com.gitee.starblues.spring.MainApplicationContext;
-import com.gitee.starblues.spring.MainApplicationContextReflection;
-import com.gitee.starblues.spring.processor.invoke.DefaultInvokeSupperCache;
-import com.gitee.starblues.spring.processor.invoke.InvokeSupperCache;
+import com.gitee.starblues.spring.MainApplicationContextProxy;
+import com.gitee.starblues.spring.invoke.DefaultInvokeSupperCache;
+import com.gitee.starblues.spring.invoke.InvokeSupperCache;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.Map;
@@ -27,7 +26,9 @@ public class DefaultPluginLauncherManager implements PluginLauncherManager{
     public DefaultPluginLauncherManager(GenericApplicationContext mainGenericApplicationContext,
                                         IntegrationConfiguration configuration) {
         this.configuration = configuration;
-        this.mainApplicationContext = new MainApplicationContextReflection(mainGenericApplicationContext);
+        this.mainApplicationContext = new MainApplicationContextProxy(
+                mainGenericApplicationContext.getBeanFactory(),
+                mainGenericApplicationContext);
         this.invokeSupperCache = new DefaultInvokeSupperCache();
     }
 

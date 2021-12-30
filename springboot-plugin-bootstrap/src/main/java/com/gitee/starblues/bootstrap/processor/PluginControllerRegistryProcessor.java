@@ -1,9 +1,8 @@
 package com.gitee.starblues.bootstrap.processor;
 
 import com.gitee.starblues.bootstrap.utils.AnnotationUtils;
-import com.gitee.starblues.factory.process.post.bean.model.ControllerWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
-import com.gitee.starblues.spring.MainApplicationContext;
+import com.gitee.starblues.spring.SpringBeanFactory;
 import com.gitee.starblues.utils.ClassUtils;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
@@ -42,8 +41,8 @@ public class PluginControllerRegistryProcessor implements SpringPluginProcessor 
 
     @Override
     public void initialize(ProcessorContext processorContext) throws ProcessorException {
-        MainApplicationContext mainApplicationContext = processorContext.getMainApplicationContext();
-        this.requestMappingHandlerMapping = mainApplicationContext.getBean(RequestMappingHandlerMapping.class);
+        SpringBeanFactory mainBeanFactory = processorContext.getMainBeanFactory();
+        this.requestMappingHandlerMapping = mainBeanFactory.getBean(RequestMappingHandlerMapping.class);
         this.getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
                 "getMappingForMethod", Method.class, Class.class);
         if(getMappingForMethod == null){
@@ -212,6 +211,62 @@ public class PluginControllerRegistryProcessor implements SpringPluginProcessor 
             } catch (Exception e) {
                 LOG.error("插件 [{}] Controller 类[{}] 注册异常. {}", pluginId, aClass.getName(), e.getMessage(), e);
             }
+        }
+    }
+
+
+    private static class ControllerWrapper{
+
+        /**
+         * controller bean 名称
+         */
+        private String beanName;
+
+        /**
+         * controller 路径前缀
+         */
+        private String[] pathPrefix;
+
+        /**
+         * controller bean 类型
+         */
+        private Class<?> beanClass;
+
+        /**
+         * controller 的 RequestMappingInfo 集合
+         */
+        private Set<RequestMappingInfo> requestMappingInfos;
+
+        public Class<?> getBeanClass() {
+            return beanClass;
+        }
+
+        public void setBeanClass(Class<?> beanClass) {
+            this.beanClass = beanClass;
+        }
+
+        public String getBeanName() {
+            return beanName;
+        }
+
+        public void setBeanName(String beanName) {
+            this.beanName = beanName;
+        }
+
+        public String[] getPathPrefix() {
+            return pathPrefix;
+        }
+
+        public void setPathPrefix(String[] pathPrefix) {
+            this.pathPrefix = pathPrefix;
+        }
+
+        public Set<RequestMappingInfo> getRequestMappingInfos() {
+            return requestMappingInfos;
+        }
+
+        public void setRequestMappingInfos(Set<RequestMappingInfo> requestMappingInfos) {
+            this.requestMappingInfos = requestMappingInfos;
         }
     }
 

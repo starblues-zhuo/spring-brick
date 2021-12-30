@@ -1,7 +1,5 @@
 package com.gitee.starblues.integration.application;
 
-import com.gitee.starblues.extension.AbstractExtension;
-import com.gitee.starblues.extension.ExtensionFactory;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginListener;
 import com.gitee.starblues.integration.listener.PluginListenerFactory;
@@ -23,15 +21,6 @@ public abstract class AbstractPluginApplication implements PluginApplication {
     protected final PluginListenerFactory listenerFactory = new PluginListenerFactory();
     protected final PluginStateListenerFactory pluginStateListenerFactory = new PluginStateListenerFactory();
 
-    @Override
-    public PluginApplication addExtension(AbstractExtension extension) {
-        if(extension == null){
-            return this;
-        }
-        extension.setPluginApplication(this);
-        ExtensionFactory.addExtension(extension);
-        return this;
-    }
 
     @Override
     public void addListener(PluginListener pluginListener) {

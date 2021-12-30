@@ -3,7 +3,7 @@ package com.gitee.starblues.bootstrap.processor.invoke;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitee.starblues.annotation.Caller;
 import com.gitee.starblues.annotation.Supplier;
-import com.gitee.starblues.spring.processor.invoke.InvokeSupperCache;
+import com.gitee.starblues.spring.invoke.InvokeSupperCache;
 import com.gitee.starblues.utils.ObjectUtils;
 
 import java.lang.reflect.InvocationHandler;
