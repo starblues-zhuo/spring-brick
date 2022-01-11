@@ -1,10 +1,18 @@
 package com.gitee.starblues.core.descriptor;
 
+import com.gitee.starblues.common.PackageStructure;
+import com.gitee.starblues.common.PluginDescriptorKey;
+import com.gitee.starblues.common.utils.ManifestUtils;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 /**
  * 开发环境 PluginDescriptorLoader 加载者
@@ -13,16 +21,17 @@ import java.util.Properties;
  */
 public class DevPluginDescriptorLoader extends AbstractPluginDescriptorLoader{
 
+
     @Override
-    protected Properties getProperties(Path location) throws Exception {
-        String bootstrapFilePath = location.toString() + File.separator + BOOTSTRAP_FILE_NAME;
-        File file = new File(bootstrapFilePath);
+    protected Manifest getManifest(Path location) throws Exception {
+        String manifestPath = location.toString() + File.separator + PackageStructure.MANIFEST;
+        File file = new File(manifestPath);
         if(!file.exists()){
             return null;
         }
-        Path path = Paths.get(bootstrapFilePath);
+        Path path = Paths.get(manifestPath);
         try {
-            return super.getProperties(Files.newInputStream(path));
+            return super.getManifest(Files.newInputStream(path));
         } finally {
             try {
                 path.getFileSystem().close();
@@ -32,4 +41,10 @@ public class DevPluginDescriptorLoader extends AbstractPluginDescriptorLoader{
         }
     }
 
+    @Override
+    protected DefaultPluginDescriptor create(Manifest manifest, Path path) throws Exception {
+        final DefaultPluginDescriptor descriptor = super.create(manifest, path);
+        descriptor.setType(PluginDescriptor.Type.DIR_OF_DEV);
+        return descriptor;
+    }
 }

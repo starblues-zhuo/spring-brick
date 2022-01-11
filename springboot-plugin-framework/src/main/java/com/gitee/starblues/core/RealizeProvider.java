@@ -2,7 +2,6 @@ package com.gitee.starblues.core;
 
 import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
 import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
-import com.gitee.starblues.core.loader.PluginLoader;
 import com.gitee.starblues.core.scanner.PluginScanner;
 import com.gitee.starblues.core.version.VersionInspector;
 /**
@@ -33,19 +32,7 @@ public interface RealizeProvider {
      * 得到 PluginDescriptorLoader 实现
      * @return PluginDescriptorLoader
      */
-    PluginDescriptorLoader getPluginDescriptor();
-
-    /**
-     * 得到 MainResourcePatternDefiner 实现
-     * @return MainResourcePatternDefiner
-     */
-    MainResourcePatternDefiner getMainResourcePatternDefiner();
-
-    /**
-     * 得到 PluginLoader 实现
-     * @return PluginLoader
-     */
-    PluginLoader getPluginLoader();
+    PluginDescriptorLoader getPluginDescriptorLoader();
 
     /**
      * 得到 PluginChecker 实现

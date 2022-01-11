@@ -28,11 +28,15 @@ public class MethodRunner {
     }
 
     public Object run(ClassLoader classLoader) throws Exception {
+        Class<?> runClass = loadRunClass(classLoader);
+        return runMethod(runClass);
+    }
+
+    protected Class<?> loadRunClass(ClassLoader classLoader) throws Exception{
         if(classLoader == null){
             classLoader = Thread.currentThread().getContextClassLoader();
         }
-        Class<?> runClass = Class.forName(this.className, false, classLoader);
-        return runMethod(runClass);
+        return Class.forName(this.className, false, classLoader);
     }
 
     protected Object runMethod(Class<?> runClass) throws Exception {

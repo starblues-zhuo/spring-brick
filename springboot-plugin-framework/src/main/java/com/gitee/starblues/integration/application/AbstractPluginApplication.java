@@ -3,8 +3,6 @@ package com.gitee.starblues.integration.application;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginListener;
 import com.gitee.starblues.integration.listener.PluginListenerFactory;
-import com.gitee.starblues.integration.listener.PluginStateListenerFactory;
-import org.pf4j.PluginStateListener;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 
@@ -19,8 +17,6 @@ import java.util.List;
 public abstract class AbstractPluginApplication implements PluginApplication {
 
     protected final PluginListenerFactory listenerFactory = new PluginListenerFactory();
-    protected final PluginStateListenerFactory pluginStateListenerFactory = new PluginStateListenerFactory();
-
 
     @Override
     public void addListener(PluginListener pluginListener) {
@@ -39,26 +35,6 @@ public abstract class AbstractPluginApplication implements PluginApplication {
         }
         for (PluginListener pluginListener : pluginListeners) {
             this.listenerFactory.addPluginListener(pluginListener);
-        }
-    }
-
-    @Override
-    public void addPf4jStateListener(PluginStateListener pluginListener) {
-        pluginStateListenerFactory.addStateListener(pluginListener);
-    }
-
-    @Override
-    public <T extends PluginStateListener> void addPf4jStateListener(Class<T> pluginListenerClass) {
-        pluginStateListenerFactory.addStateListener(pluginListenerClass);
-    }
-
-    @Override
-    public void addPf4jStateListener(List<PluginStateListener> pluginListeners) {
-        if(pluginListeners == null || pluginListeners.isEmpty()){
-            return;
-        }
-        for (PluginStateListener pluginListener : pluginListeners) {
-            this.pluginStateListenerFactory.addStateListener(pluginListener);
         }
     }
 

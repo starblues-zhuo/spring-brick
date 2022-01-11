@@ -6,7 +6,6 @@ import com.gitee.starblues.integration.operator.EmptyPluginOperator;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.user.EmptyPluginUser;
 import com.gitee.starblues.integration.user.PluginUser;
-import org.pf4j.PluginStateListener;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
@@ -45,21 +44,6 @@ public class EmptyPluginApplication implements PluginApplication{
 
     @Override
     public void addListener(List<PluginListener> pluginListeners) {
-
-    }
-
-    @Override
-    public void addPf4jStateListener(PluginStateListener pluginListener) {
-
-    }
-
-    @Override
-    public <T extends PluginStateListener> void addPf4jStateListener(Class<T> pluginListenerClass) {
-
-    }
-
-    @Override
-    public void addPf4jStateListener(List<PluginStateListener> pluginListeners) {
 
     }
 }

@@ -27,10 +27,21 @@ public abstract class ReflectionUtils {
     }
 
     public static Field findField(Class<?> clazz, String fieldName,  Class<?> fieldType) {
-        Objects.requireNonNull(clazz, "clazz must not be null");
         if(fieldName == null && fieldType == null){
             throw new IllegalArgumentException("fieldName or fieldType of the field must be specified");
         }
+        return findField(clazz, (field)->{
+            if ((fieldName == null || fieldName.equals(field.getName())) &&
+                    (fieldType == null || fieldType.equals(field.getType()))) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    public static Field findField(Class<?> clazz, FieldFilter filter) {
+        Objects.requireNonNull(clazz, "clazz must not be null");
+
 
         Field[] declaredFields = clazz.getDeclaredFields();
         if(declaredFields.length == 0){
@@ -38,13 +49,12 @@ public abstract class ReflectionUtils {
         }
         while (true){
             for (Field field : declaredFields) {
-                if ((fieldName == null || fieldName.equals(field.getName())) &&
-                        (fieldType == null || fieldType.equals(field.getType()))) {
+                if(filter.filter(field)){
                     return field;
                 }
             }
             clazz = clazz.getSuperclass();
-            if(clazz == null){
+            if(clazz == null || clazz == Object.class){
                 break;
             }
             declaredFields = clazz.getDeclaredFields();
@@ -61,16 +71,6 @@ public abstract class ReflectionUtils {
     public static Object getField(Object o, String fieldName, Class<?> fieldType) {
         Class<?> currentClass = o.getClass();
         Field field = findField(currentClass, fieldName, fieldType);
-        while (true){
-            if(field != null) {
-                break;
-            }
-            currentClass = currentClass.getSuperclass();
-            if(currentClass == null){
-                break;
-            }
-            field = findField(currentClass, fieldName, fieldType);
-        }
         if(field == null){
             return null;
         }
@@ -81,6 +81,7 @@ public abstract class ReflectionUtils {
             throw new IllegalStateException(e);
         }
     }
+
 
     public static void setField(Object o, String fieldName, Object value) {
         setField(o, fieldName, null, value);

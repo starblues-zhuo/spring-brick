@@ -77,7 +77,6 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
      * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
      * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
      */
-    @Deprecated
     @Override
     default void forEach(Consumer<? super Entry> action) {
         Objects.requireNonNull(action);
@@ -93,7 +92,6 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
      * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
      * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
      */
-    @Deprecated
     @Override
     default Spliterator<Entry> spliterator() {
         return Spliterators.spliteratorUnknownSize(iterator(), 0);

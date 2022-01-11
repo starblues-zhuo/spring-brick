@@ -12,10 +12,12 @@
     <description>spring boot 插件开发集成包</description>
 
     <modules>
+        <module>spring-plugin-framework-common</module>
         <module>springboot-plugin-framework</module>
         <module>springboot-plugin-bootstrap</module>
 <!--        <module>springboot-plugin-framework-extension</module>-->
         <module>springboot-plugin-framework-example</module>
+        <module>springboot-plugin-maven-pack</module>
     </modules>
 	
 

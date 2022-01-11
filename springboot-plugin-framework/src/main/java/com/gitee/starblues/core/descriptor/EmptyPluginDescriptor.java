@@ -2,6 +2,8 @@ package com.gitee.starblues.core.descriptor;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
+import java.util.jar.Manifest;
 
 /**
  * @author starBlues
@@ -19,7 +21,7 @@ public class EmptyPluginDescriptor implements PluginDescriptor{
     }
 
     @Override
-    public String getPluginClass() {
+    public String getPluginBootstrapClass() {
         return null;
     }
 
@@ -29,7 +31,12 @@ public class EmptyPluginDescriptor implements PluginDescriptor{
     }
 
     @Override
-    public String getPluginLibDir() {
+    public String getPluginClassPath() {
+        return null;
+    }
+
+    @Override
+    public Set<String> getPluginLibPaths() {
         return null;
     }
 
@@ -60,6 +67,16 @@ public class EmptyPluginDescriptor implements PluginDescriptor{
 
     @Override
     public List<PluginDependency> getPluginDependency() {
+        return null;
+    }
+
+    @Override
+    public Manifest getManifest() {
+        return null;
+    }
+
+    @Override
+    public Type getType() {
         return null;
     }
 }

@@ -64,7 +64,6 @@
         <maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 
-        <pf4j-version>3.6.0</pf4j-version>
         <jackson.version>2.10.1</jackson.version>
         <slf4j.version>1.7.7</slf4j.version>
 
@@ -73,27 +72,27 @@
         <swagger-spring-web.version>2.10.5</swagger-spring-web.version>
         <springdoc.version>1.5.2</springdoc.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+        <java-semver.version>0.9.0</java-semver.version>
         <junit.version>4.11</junit.version>
     </properties>
 
     <dependencies>
-
         <dependency>
-            <groupId>org.pf4j</groupId>
-            <artifactId>pf4j</artifactId>
-            <version>${pf4j-version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.gitee.starblues</groupId>
+            <artifactId>spring-plugin-framework-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
         </dependency>
 
         <dependency>
@@ -125,11 +124,9 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet-api.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
+            <groupId>com.github.zafarkhaja</groupId>
+            <artifactId>java-semver</artifactId>
+            <version>${java-semver.version}</version>
         </dependency>
 
         <dependency>
@@ -137,13 +134,6 @@
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-            <version>${spring-boot-version}</version>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>

@@ -1,8 +1,7 @@
 package com.gitee.starblues.utils;
 
-import com.gitee.starblues.annotation.ConfigDefinition;
-import org.pf4j.RuntimeMode;
-import org.pf4j.util.StringUtils;
+
+import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,14 +12,17 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * 插件文件工具类
  *
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public final class PluginFileUtils {
 
@@ -101,22 +103,20 @@ public final class PluginFileUtils {
         return path;
     }
 
-    /**
-     * 是否为 zip 文件
-     * @param path 文件路径
-     * @return boolean
-     */
-    public static boolean isZipFile(Path path) {
-        return Files.isRegularFile(path) && path.toString().toLowerCase().endsWith(".zip");
+    public static File getExistFile(String pathStr){
+        File file = new File(pathStr);
+        if(file.exists()){
+            return file;
+        }
+        return null;
     }
 
-    /**
-     * 是否为 jar 文件
-     * @param path 文件路径
-     * @return boolean
-     */
-    public static boolean isJarFile(Path path) {
-        return Files.isRegularFile(path) && path.toString().toLowerCase().endsWith(".jar");
+    public static File getExistFile(String pathStr, Supplier<String> secondPathSupplier){
+        File existFile = getExistFile(pathStr);
+        if(existFile != null){
+            return existFile;
+        }
+        return getExistFile(secondPathSupplier.get());
     }
 
     /**

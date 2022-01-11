@@ -1,6 +1,7 @@
 package com.gitee.starblues.core.classloader;
 
-import com.gitee.starblues.utils.PluginFileUtils;
+import com.gitee.starblues.core.descriptor.PluginDescriptor;
+import com.gitee.starblues.utils.ResourceUtils;
 
 import java.io.File;
 import java.io.InputStream;
@@ -12,7 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 资源加载工厂
  * @author starBlues
+ * @version 3.0.0
  */
 public class ResourceLoaderFactory extends AbstractResourceLoader {
 
@@ -23,38 +26,43 @@ public class ResourceLoaderFactory extends AbstractResourceLoader {
     }
 
 
-    public void addResource(String path) {
+    void addResourceLoader(AbstractResourceLoader resourceLoader){
+        if(resourceLoader != null){
+            resourceLoaders.add(resourceLoader);
+        }
+    }
+
+    public void addResource(String path) throws Exception{
         if(path == null || "".equals(path)){
             return;
         }
         addResource(Paths.get(path));
     }
 
-    public void addResource(File file) {
+    public void addResource(File file) throws Exception{
         if(file == null){
             return;
         }
         addResource(file.toPath());
     }
 
-    public synchronized void addResource(Path path) {
+    public void addResource(Path path) throws Exception{
         if(path == null){
             return;
         }
-        try {
-            URL url = path.toUri().toURL();
-            AbstractResourceLoader resourceLoader = null;
-            if(PluginFileUtils.isJarFile(path)) {
-                resourceLoader = new JarResourceLoader(url);
-            } else if(Files.isDirectory(path)){
-                resourceLoader = new ClassPathLoader(url);
-            }
-            if(resourceLoader != null){
-                resourceLoader.init();
-                resourceLoaders.add(resourceLoader);
-            }
-        } catch (Exception e){
-            e.printStackTrace();
+        if(!Files.exists(path)){
+            return;
+        }
+        URL url = path.toUri().toURL();
+        AbstractResourceLoader resourceLoader = null;
+        if(ResourceUtils.isJarFile(path)) {
+            resourceLoader = new JarResourceLoader(url);
+        } else if(Files.isDirectory(path)){
+            resourceLoader = new ClassPathLoader(url);
+        }
+        if(resourceLoader != null){
+            resourceLoader.init();
+            resourceLoaders.add(resourceLoader);
         }
     }
 

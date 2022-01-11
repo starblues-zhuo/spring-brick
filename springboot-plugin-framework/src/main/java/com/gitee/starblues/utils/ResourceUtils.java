@@ -1,15 +1,14 @@
 package com.gitee.starblues.utils;
 
-import com.gitee.starblues.integration.IntegrationConfiguration;
-import org.pf4j.PluginWrapper;
-import org.pf4j.RuntimeMode;
-import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.Consumer;
 
 /**
  * 对资源解析的工具类
@@ -20,6 +19,8 @@ import java.nio.file.Paths;
 public class ResourceUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceUtils.class);
+
+    public static final String URL_PROTOCOL_FILE = "file";
 
     public final static String TYPE_FILE = "file";
     public final static String TYPE_CLASSPATH = "classpath";
@@ -40,7 +41,7 @@ public class ResourceUtils {
      * @return 整合出完整的匹配路绝
      */
     public static String getMatchLocation(String locationMatch){
-        if(StringUtils.isNullOrEmpty(locationMatch)){
+        if(ObjectUtils.isEmpty(locationMatch)){
             return null;
         }
         String classPathType = TYPE_CLASSPATH + TYPE_SPLIT;
@@ -70,6 +71,45 @@ public class ResourceUtils {
 
     public static boolean isPackage(String locationMatch){
         return locationMatch.startsWith(TYPE_PACKAGE + TYPE_SPLIT);
+    }
+
+    /**
+     * 是否为 zip 文件
+     * @param path 文件路径
+     * @return boolean
+     */
+    public static boolean isZipFile(Path path) {
+        return Files.isRegularFile(path) && path.toString().toLowerCase().endsWith(".zip");
+    }
+
+    /**
+     * 是否为 jar 文件
+     * @param path 文件路径
+     * @return boolean
+     */
+    public static boolean isJarFile(Path path) {
+        return Files.isRegularFile(path) && path.toString().toLowerCase().endsWith(".jar");
+    }
+
+    public static boolean isDirFile(Path path) {
+        return path.toFile().isDirectory();
+    }
+
+    public static void listFile(File rootFile, Consumer<File> consumerFile){
+        if(rootFile == null || !rootFile.exists()){
+            return;
+        }
+        final File[] listFiles = rootFile.listFiles();
+        if(listFiles == null || listFiles.length == 0){
+            return;
+        }
+        for (File listFile : listFiles) {
+            if(listFile.isDirectory()){
+                listFile(listFile, consumerFile);
+                continue;
+            }
+            consumerFile.accept(listFile);
+        }
     }
 
 //    /**

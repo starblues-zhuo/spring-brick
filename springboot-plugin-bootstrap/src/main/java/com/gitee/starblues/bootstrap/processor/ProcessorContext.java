@@ -19,6 +19,12 @@ import org.springframework.core.io.ResourceLoader;
 public interface ProcessorContext extends RegistryInfo {
 
     /**
+     * 得到入口类对象-SpringPluginBootstrap
+     * @return SpringPluginBootstrap
+     */
+    SpringPluginBootstrap getSpringPluginBootstrap();
+
+    /**
      * 得到插件信息 PluginDescriptor
      * @return PluginDescriptor
      */

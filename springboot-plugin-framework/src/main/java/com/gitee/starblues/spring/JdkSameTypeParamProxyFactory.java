@@ -7,8 +7,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
+ * jdk 同类型参数的代理工厂
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class JdkSameTypeParamProxyFactory implements ProxyFactory, InvocationHandler {
 

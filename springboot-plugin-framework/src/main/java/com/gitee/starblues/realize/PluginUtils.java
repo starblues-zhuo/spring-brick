@@ -4,7 +4,6 @@ import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.SpringBeanUtils;
 import org.springframework.context.ApplicationContext;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**

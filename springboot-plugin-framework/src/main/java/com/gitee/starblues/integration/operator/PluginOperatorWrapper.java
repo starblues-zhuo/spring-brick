@@ -1,15 +1,12 @@
 package com.gitee.starblues.integration.operator;
 
-import com.gitee.starblues.core.loader.PluginWrapper;
+import com.gitee.starblues.core.PluginException;
+import com.gitee.starblues.core.PluginWrapper;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.module.PluginInfo;
-import com.gitee.starblues.realize.UnRegistryValidator;
-import com.gitee.starblues.utils.SpringBeanUtils;
-import org.pf4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -36,7 +33,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws Exception {
+    public boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws PluginException {
         if(isDisable()){
             return false;
         }
@@ -44,7 +41,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean verify(Path jarPath) throws Exception {
+    public boolean verify(Path jarPath) throws PluginException {
         if(isDisable()){
             return false;
         }
@@ -52,7 +49,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public PluginInfo install(Path jarPath) throws Exception {
+    public PluginInfo install(Path jarPath) throws PluginException {
         if(isDisable()){
             return null;
         }
@@ -60,7 +57,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public PluginInfo load(Path jarPath) throws Exception {
+    public PluginInfo load(Path jarPath) throws PluginException {
         if(isDisable()){
             return null;
         }
@@ -68,7 +65,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public PluginInfo load(MultipartFile pluginFile) throws Exception {
+    public PluginInfo load(MultipartFile pluginFile) throws PluginException {
         if(isDisable()){
             return null;
         }
@@ -76,7 +73,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean unload(String pluginId, boolean isBackup) throws Exception {
+    public boolean unload(String pluginId, boolean isBackup) throws PluginException {
         if(isDisable()){
             return false;
         }
@@ -84,7 +81,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean uninstall(String pluginId, boolean isBackup) throws Exception {
+    public boolean uninstall(String pluginId, boolean isBackup) throws PluginException {
         if(isDisable()){
             return false;
         }
@@ -93,7 +90,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean start(String pluginId) throws Exception {
+    public boolean start(String pluginId) throws PluginException {
         if(isDisable()){
             return false;
         }
@@ -101,7 +98,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean stop(String pluginId) throws Exception {
+    public boolean stop(String pluginId) throws PluginException {
         if(isDisable()){
             return false;
         }
@@ -110,7 +107,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public PluginInfo uploadPluginAndStart(MultipartFile pluginFile) throws Exception {
+    public PluginInfo uploadPluginAndStart(MultipartFile pluginFile) throws PluginException {
         if(isDisable()){
             return null;
         }
@@ -118,7 +115,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean installConfigFile(Path configFilePath) throws Exception {
+    public boolean installConfigFile(Path configFilePath) throws PluginException {
         if(isDisable()){
             return false;
         }
@@ -126,7 +123,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean uploadConfigFile(MultipartFile configFile) throws Exception {
+    public boolean uploadConfigFile(MultipartFile configFile) throws PluginException {
         if(isDisable()){
             return false;
         }
@@ -134,7 +131,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean backupPlugin(Path backDirPath, String sign) throws Exception {
+    public boolean backupPlugin(Path backDirPath, String sign) throws PluginException {
         if(isDisable()){
             return false;
         }
@@ -142,7 +139,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean backupPlugin(String pluginId, String sign) throws Exception {
+    public boolean backupPlugin(String pluginId, String sign) throws PluginException {
         if(isDisable()){
             return false;
         }
@@ -166,7 +163,7 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public Set<String> getPluginFilePaths() throws Exception {
+    public Set<String> getPluginFilePaths() {
         if(isDisable()){
             return Collections.emptySet();
         }
@@ -207,7 +204,7 @@ public class PluginOperatorWrapper implements PluginOperator{
      * @param pluginId 插件id
      * @throws Exception 检查异常
      */
-    private void checkIsUnRegistry(String pluginId) throws Exception{
+    private void checkIsUnRegistry(String pluginId) throws PluginException{
 //        ConfigurableApplicationContext pluginApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
 //        if(pluginApplicationContext == null){
 //            log.error("Plugin '{}' Not found ApplicationContext. So cannot found and execute unRegistryValidator",

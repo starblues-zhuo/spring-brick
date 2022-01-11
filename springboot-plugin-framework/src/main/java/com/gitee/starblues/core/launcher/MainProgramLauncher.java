@@ -1,5 +1,6 @@
 package com.gitee.starblues.core.launcher;
 
+import com.gitee.starblues.core.classloader.GenericClassLoader;
 import com.gitee.starblues.core.classloader.PluginClassLoader;
 import com.gitee.starblues.core.launcher.archive.Archive;
 import com.gitee.starblues.core.launcher.archive.ExplodedArchive;
@@ -21,6 +22,7 @@ import java.util.List;
  */
 public class MainProgramLauncher extends AbstractLauncher<ClassLoader>{
 
+
     private final SpringBootstrap springBootstrap;
 
     public MainProgramLauncher(SpringBootstrap springBootstrap) {
@@ -28,35 +30,23 @@ public class MainProgramLauncher extends AbstractLauncher<ClassLoader>{
     }
 
     @Override
-    protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-        PluginClassLoader pluginClassLoader = new PluginClassLoader(
-                "main", null, MainProgramLauncher.class.getClassLoader(),
-                new JavaMainResourcePatternDefiner()
+    protected ClassLoader createClassLoader() throws Exception {
+        GenericClassLoader classLoader = new GenericClassLoader(
+                "MainProgramLauncherClassLoader", MainProgramLauncher.class.getClassLoader()
         );
-        for (URL url : urls) {
-            pluginClassLoader.addResource(Paths.get(url.toURI()));
-        }
-
-        return pluginClassLoader;
+        addResource(classLoader);
+        return classLoader;
     }
 
-    @Override
-    protected Iterator<Archive> getClassPathArchivesIterator() throws Exception {
-        // TODO 生产环境下待定
+    protected void addResource(GenericClassLoader classLoader) throws Exception{
         String classPath = ManagementFactory.getRuntimeMXBean().getClassPath();
         String[] split = classPath.split(";");
         List<Archive> archives = new ArrayList<>();
         for (String s : split) {
-            Path path = Paths.get(s);
-            File file = path.toFile();
-            if(PluginFileUtils.isJarFile(path)){
-                archives.add(new JarFileArchive(file));
-            } else {
-                archives.add(new ExplodedArchive(file));
-            }
+            classLoader.addResource(s);
         }
-        return archives.iterator();
     }
+
 
     @Override
     protected ClassLoader launch(ClassLoader classLoader, String... args) throws Exception {

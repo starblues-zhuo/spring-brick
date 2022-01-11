@@ -1,11 +1,11 @@
 package com.gitee.starblues.core.classloader;
 
-import com.gitee.starblues.utils.Assert;
-import com.gitee.starblues.utils.ResourceUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.net.MalformedURLException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public abstract class AbstractResourceLoader {
      */
     public void init() throws Exception{
         // 添加root 路径
-        Resource rootResource = new Resource("root", baseUrl, baseUrl, null);
+        Resource rootResource = new Resource("root", baseUrl, baseUrl);
         resourceCache.put("/", rootResource);
     }
 
@@ -54,7 +54,14 @@ public abstract class AbstractResourceLoader {
     public InputStream getInputStream(final String name) {
         Resource resourceInfo = resourceCache.get(name);
         if (resourceInfo != null) {
-            return new ByteArrayInputStream(resourceInfo.getBytes());
+            try (InputStream inputStream = resourceInfo.getUrl().openStream();
+                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()){
+                IOUtils.copy(inputStream, byteArrayOutputStream);
+                return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            } catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
         } else {
             return null;
         }
@@ -65,9 +72,6 @@ public abstract class AbstractResourceLoader {
     }
 
     public void clear() {
-        for (Resource resource : resourceCache.values()) {
-            resource.tryCloseUrlSystemFile();
-        }
         resourceCache.clear();
     }
 

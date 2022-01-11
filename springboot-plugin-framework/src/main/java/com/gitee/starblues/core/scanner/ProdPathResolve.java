@@ -1,7 +1,10 @@
 package com.gitee.starblues.core.scanner;
 
+import com.gitee.starblues.common.PackageStructure;
+import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,29 +16,41 @@ import java.util.List;
  */
 public class ProdPathResolve implements PathResolve{
 
-    private final List<String> extensionNames = new ArrayList<>();
+    private final List<String> packageSuffix = new ArrayList<>();
 
     public ProdPathResolve(){
-        addExtensionName(".jar");
+        // jar包
+        addPackageSuffix(".jar");
+        // zip包
+        addPackageSuffix(".zip");
     }
 
-    protected void addExtensionName(String extensionName){
-        if(ObjectUtils.isEmpty(extensionName)){
+    protected void addPackageSuffix(String name){
+        if(ObjectUtils.isEmpty(name)){
             return;
         }
-        // jar包
-        extensionNames.add(extensionName);
+        packageSuffix.add(name);
     }
 
     @Override
     public Path resolve(Path path) {
-        String fileName = path.getFileName().toString();
-        for (String extensionName : extensionNames) {
-            boolean exist = fileName.toLowerCase().endsWith(extensionName.toLowerCase());
+        if(isDirPlugin(path)){
+            return path;
+        }
+        String fileName = path.getFileName().toString().toLowerCase();
+        for (String suffixName : packageSuffix) {
+            boolean exist = fileName.endsWith(suffixName.toLowerCase());
             if(exist){
                 return path;
             }
         }
         return null;
+    }
+
+    protected boolean isDirPlugin(Path path){
+        File file = new File(CommonUtils.joiningFilePath(path.toString(), PackageStructure.resolvePath(
+                PackageStructure.PROD_MANIFEST_PATH
+        )));
+        return file.exists() && file.isFile();
     }
 }

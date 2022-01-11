@@ -9,21 +9,9 @@ import java.nio.file.Path;
  * @author starBlues
  * @version 3.0.0
  */
-public interface PluginDescriptorLoader {
+public interface PluginDescriptorLoader extends AutoCloseable{
 
-    String BOOTSTRAP_FILE_NAME = "plugin.properties";
 
-    String PLUGIN_ID = "plugin.id";
-    String PLUGIN_CLASS = "plugin.class";
-    String PLUGIN_VERSION = "plugin.version";
-    String PLUGIN_LIB_DIR = "plugin.libDir";
-    String PLUGIN_DESCRIPTION = "plugin.description";
-    String PLUGIN_PROVIDER = "plugin.provider";
-    String PLUGIN_DEPENDENCIES = "plugin.dependencies";
-
-    String PLUGIN_REQUIRES = "plugin.requires";
-    String PLUGIN_LICENSE = "plugin.license";
-    String PLUGIN_CONFIG_FILE_NAME = "plugin.configFileName";
 
     /**
      * 加载 PluginDescriptor

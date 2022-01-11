@@ -2,6 +2,8 @@ package com.gitee.starblues.core.descriptor;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
+import java.util.jar.Manifest;
 
 /**
  * 插件信息
@@ -26,7 +28,7 @@ public interface PluginDescriptor {
      * 获取插件引导类
      * @return String
      */
-    String getPluginClass();
+    String getPluginBootstrapClass();
 
     /**
      * 获取插件路径
@@ -35,10 +37,16 @@ public interface PluginDescriptor {
     Path getPluginPath();
 
     /**
-     * 获取插件依赖jar包目录
+     * 获取插件classes path路径
+     * @return Path
+     */
+    String getPluginClassPath();
+
+    /**
+     * 获取插件依赖的路径
      * @return String
      */
-    String getPluginLibDir();
+    Set<String> getPluginLibPaths();
 
     /**
      * 获取插件描述
@@ -75,5 +83,43 @@ public interface PluginDescriptor {
      * @return List
      */
     List<PluginDependency> getPluginDependency();
+
+    /**
+     * 得到插件的 Manifest 文件
+     * @return Manifest
+     */
+    Manifest getManifest();
+
+    /**
+     * 得到插件类型
+     * @return 插件类型
+     */
+    Type getType();
+
+    /**
+     * 插件类型
+     */
+    enum Type{
+        /**
+         * jar文件
+         */
+        JAR,
+
+        /**
+         * zip 文件
+         */
+        ZIP,
+
+        /**
+         * 生产模式目录
+         */
+        DIR_OF_PROD,
+
+        /**
+         * 开发模式目录
+         */
+        DIR_OF_DEV
+    }
+
 
 }

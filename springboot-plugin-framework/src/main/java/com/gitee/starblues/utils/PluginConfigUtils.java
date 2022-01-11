@@ -1,13 +1,11 @@
 package com.gitee.starblues.utils;
 
-import com.gitee.starblues.annotation.ConfigDefinition;
-import org.pf4j.RuntimeMode;
-import org.pf4j.util.StringUtils;
+import com.gitee.starblues.core.RuntimeMode;
 
 /**
  * 插件配置工具类
  * @author starBlues
- * @version 2.4.3
+ * @version 3.0.0
  */
 public class PluginConfigUtils {
 
@@ -27,14 +25,14 @@ public class PluginConfigUtils {
                                                  String prodSuffix,
                                                  String devSuffix,
                                                  RuntimeMode runtimeMode){
-        if(StringUtils.isNullOrEmpty(fileName)){
+        if(ObjectUtils.isEmpty(fileName)){
             return null;
         }
         String suffix = "";
-        if(runtimeMode == RuntimeMode.DEPLOYMENT){
+        if(runtimeMode == RuntimeMode.PROD){
             // 生产环境
             suffix = prodSuffix;
-        } else if(runtimeMode == RuntimeMode.DEVELOPMENT){
+        } else if(runtimeMode == RuntimeMode.DEV){
             // 开发环境
             suffix = devSuffix;
         }
@@ -50,7 +48,7 @@ public class PluginConfigUtils {
     }
 
     public static String joinConfigFileName(String fileName, String suffix){
-        if(StringUtils.isNullOrEmpty(fileName)){
+        if(ObjectUtils.isEmpty(fileName)){
             return null;
         }
         String fileNamePrefix;
@@ -67,7 +65,7 @@ public class PluginConfigUtils {
         if(suffix == null){
             suffix = "";
         }
-        if(StringUtils.isNotNullOrEmpty(suffix) && !suffix.startsWith(DO)){
+        if(ObjectUtils.isEmpty(suffix) && !suffix.startsWith(DO)){
             suffix = DO + suffix;
         }
         return fileNamePrefix + suffix + fileNamePrefixSuffix;

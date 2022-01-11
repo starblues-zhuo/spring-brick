@@ -5,8 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
+ * 可缓存的注册信息
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class CacheRegistryInfo implements RegistryInfo {
 

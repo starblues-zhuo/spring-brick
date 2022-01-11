@@ -2,7 +2,6 @@ package com.gitee.starblues.integration;
 
 
 import com.gitee.starblues.integration.listener.PluginListener;
-import org.pf4j.PluginStateListener;
 
 import java.util.List;
 

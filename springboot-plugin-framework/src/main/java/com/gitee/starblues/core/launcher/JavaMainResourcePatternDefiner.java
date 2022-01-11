@@ -14,6 +14,7 @@ public class JavaMainResourcePatternDefiner implements MainResourcePatternDefine
     private final Set<String> includes = new HashSet<>();
 
     public JavaMainResourcePatternDefiner(){
+        // TODO java 内部的包匹配, 未补充全
         // == java ==
         includes.add("java/**");
         includes.add("javax/**");
@@ -24,17 +25,12 @@ public class JavaMainResourcePatternDefiner implements MainResourcePatternDefine
     }
 
     @Override
-    public Set<String> getIncludeResourcePatterns() {
+    public Set<String> getIncludePatterns() {
         return includes;
     }
 
     @Override
-    public Set<String> getExcludeResourcePatterns() {
-        return null;
-    }
-
-    @Override
-    public Set<String> getSpringFactoriesPatterns() {
+    public Set<String> getExcludePatterns() {
         return null;
     }
 }

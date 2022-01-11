@@ -2,8 +2,9 @@ package com.gitee.starblues.core.launcher.plugin;
 import java.util.function.Supplier;
 
 /**
+ * 注册的信息接口
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public interface RegistryInfo {
 

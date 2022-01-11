@@ -1,5 +1,7 @@
 package com.gitee.starblues.core.scanner;
 
+import com.gitee.starblues.common.PackageStructure;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,8 +23,8 @@ public class DevPathResolve implements PathResolve{
     }
 
     protected void addCompilePackageName(){
-        // 添加maven编译目录
-        devCompilePackageNames.add("target".concat(File.separator).concat("classes"));
+        // 添加插件信息查询目录
+        devCompilePackageNames.add("target".concat(File.separator).concat(PackageStructure.META_INF_NAME));
     }
 
     @Override

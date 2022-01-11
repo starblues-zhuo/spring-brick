@@ -10,19 +10,17 @@ import java.util.Set;
 public interface MainResourcePatternDefiner {
 
     /**
-     * 资源名称.
+     * 包含资源名称.
      * @return 资源名称集合
      */
-    Set<String> getIncludeResourcePatterns();
-
-
-    Set<String> getExcludeResourcePatterns();
+    Set<String> getIncludePatterns();
 
     /**
-     * spring spi 定义
-     * @return spring spi 集合
+     * 排除资源
+     * @return String
      */
-    Set<String> getSpringFactoriesPatterns();
+    Set<String> getExcludePatterns();
+
 
 
 }

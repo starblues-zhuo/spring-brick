@@ -1,5 +1,8 @@
 package com.gitee.starblues.bootstrap.processor;
 
+import com.gitee.starblues.bootstrap.SpringPluginBootstrap;
+import com.gitee.starblues.bootstrap.annotation.DisablePluginWeb;
+import com.gitee.starblues.bootstrap.utils.AnnotationUtils;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.OrderPriority;
@@ -41,18 +44,11 @@ public class ComposeSpringPluginProcessor implements SpringPluginProcessor {
         }
     }
 
-    private List<SpringPluginProcessor> getDefaultProcessors(){
-        List<SpringPluginProcessor> processors = new ArrayList<>();
-        processors.add(new FrameDefineBeanProcessor());
-        processors.add(new PluginControllerRegistryProcessor());
-        processors.add(new InvokeOtherPluginProcessor());
-        processors.add(new PluginInterceptorsProcessor());
-        return processors;
-    }
-
     @Override
-    public void initialize(ProcessorContext processorContext) throws ProcessorException {
-        List<SpringPluginProcessor> processors = getDefaultProcessors();
+    public void initialize(ProcessorContext context) throws ProcessorException {
+        List<SpringPluginProcessor> processors = new ArrayList<>();
+        addDefaultProcessors(context, processors);
+        addDefaultWebEnvProcessors(context, processors);
         processors.addAll(this.processors);
         this.processors = processors.stream()
                 .filter(p->{
@@ -63,7 +59,7 @@ public class ComposeSpringPluginProcessor implements SpringPluginProcessor {
                 .collect(Collectors.toList());
         for (SpringPluginProcessor processor : this.processors) {
             try {
-                processor.initialize(processorContext);
+                processor.initialize(context);
             } catch (Throwable e){
                 processException(processor, "initialize", e, true);
             }
@@ -122,6 +118,33 @@ public class ComposeSpringPluginProcessor implements SpringPluginProcessor {
     @Override
     public RunMode runMode() {
         return RunMode.ALL;
+    }
+
+    /**
+     * 获取默认的处理者
+     * @param context ProcessorContext
+     * @param processors 处理者容器集合
+     */
+    protected void addDefaultProcessors(ProcessorContext context, List<SpringPluginProcessor> processors){
+        processors.add(new FrameDefineBeanProcessor());
+        processors.add(new ExtractBeanProcessor());
+        processors.add(new InvokeOtherPluginProcessor());
+    }
+
+    /**
+     * 添加默认web环境处理者
+     * @param context ProcessorContext
+     * @param processors 处理者容器集合
+     */
+    protected void addDefaultWebEnvProcessors(ProcessorContext context, List<SpringPluginProcessor> processors){
+        SpringPluginBootstrap springPluginBootstrap = context.getSpringPluginBootstrap();
+        DisablePluginWeb disablePluginWeb = AnnotationUtils.findAnnotation(springPluginBootstrap.getClass(),
+                DisablePluginWeb.class);
+        if(disablePluginWeb != null){
+            return;
+        }
+        processors.add(new PluginControllerRegistryProcessor());
+        processors.add(new PluginInterceptorsProcessor());
     }
 
     private void processException(SpringPluginProcessor processor, String executeType,

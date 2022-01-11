@@ -78,7 +78,6 @@ public class PluginControllerRegistryProcessor implements SpringPluginProcessor 
         String pluginId = processorContext.getPluginDescriptor().getPluginId();
         List<ControllerWrapper> controllerWrappers = processorContext.getRegistryInfo(PROCESS_CONTROLLERS);
         if(ObjectUtils.isEmpty(controllerWrappers)){
-            LOG.warn("插件 [{}] 没有发现可注册的 Controller", pluginId);
             return;
         }
         GenericApplicationContext applicationContext = processorContext.getApplicationContext();
@@ -97,7 +96,19 @@ public class PluginControllerRegistryProcessor implements SpringPluginProcessor 
                 for (RequestMappingInfo requestMappingInfo : requestMappingInfos) {
                     LOG.info("插件[{}]注册接口: {}", pluginId, requestMappingInfo.toString());
                 }
+                controllerWrapper.setRequestMappingInfos(requestMappingInfos);
             }
+        }
+    }
+
+    @Override
+    public void close(ProcessorContext context) throws ProcessorException {
+        List<ControllerWrapper> controllerWrappers = context.getRegistryInfo(PROCESS_CONTROLLERS);
+        if(ObjectUtils.isEmpty(controllerWrappers)){
+            return;
+        }
+        for (ControllerWrapper controllerWrapper : controllerWrappers) {
+            unregister(controllerWrapper);
         }
     }
 
@@ -129,6 +140,19 @@ public class PluginControllerRegistryProcessor implements SpringPluginProcessor 
     }
 
     /**
+     * 卸载具体的Controller操作
+     * @param controllerBeanWrapper controllerBean包装
+     */
+    private void unregister(ControllerWrapper controllerBeanWrapper) {
+        Set<RequestMappingInfo> requestMappingInfos = controllerBeanWrapper.getRequestMappingInfos();
+        if(requestMappingInfos != null && !requestMappingInfos.isEmpty()){
+            for (RequestMappingInfo requestMappingInfo : requestMappingInfos) {
+                requestMappingHandlerMapping.unregisterMapping(requestMappingInfo);
+            }
+        }
+    }
+
+    /**
      * 方法上是否存在 @RequestMapping 注解
      * @param method method
      * @return boolean
@@ -143,8 +167,6 @@ public class PluginControllerRegistryProcessor implements SpringPluginProcessor 
         private final static String COMMON_ERROR = "无法统一处理该 Controller 统一请求路径前缀";
 
         private final ProcessorContext processorContext;
-
-
 
         private ChangeRestPathPostProcessor(ProcessorContext processorContext) {
             this.processorContext = processorContext;

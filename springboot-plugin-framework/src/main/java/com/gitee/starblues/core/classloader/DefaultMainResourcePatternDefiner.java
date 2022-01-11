@@ -14,7 +14,6 @@ import java.util.*;
 public class DefaultMainResourcePatternDefiner implements MainResourcePatternDefiner {
 
     private final Set<String> resourcePatterns = new HashSet<>();
-    private final Set<String> springFactoriesPatterns = new HashSet<>();
 
     private final String mainPackageName;
 
@@ -22,23 +21,17 @@ public class DefaultMainResourcePatternDefiner implements MainResourcePatternDef
         this.mainPackageName = Assert.isNotEmpty(mainPackageName,
                 "参数 mainPackageName 不能为空");
         initDefaultResources();
-        initDefaultSpringFactories();
     }
 
 
     @Override
-    public Set<String> getIncludeResourcePatterns() {
+    public Set<String> getIncludePatterns() {
         return resourcePatterns;
     }
 
     @Override
-    public Set<String> getExcludeResourcePatterns() {
+    public Set<String> getExcludePatterns() {
         return null;
-    }
-
-    @Override
-    public Set<String> getSpringFactoriesPatterns() {
-        return springFactoriesPatterns;
     }
 
 
@@ -87,8 +80,5 @@ public class DefaultMainResourcePatternDefiner implements MainResourcePatternDef
         resourcePatterns.add("org/yaml/snakeyaml/**");
     }
 
-    private void initDefaultSpringFactories() {
-        // 当前框架名称
-        springFactoriesPatterns.add("**/springboot-plugin-framework/**");
-    }
+
 }

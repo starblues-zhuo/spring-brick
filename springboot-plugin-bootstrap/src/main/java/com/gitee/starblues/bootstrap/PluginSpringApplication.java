@@ -48,6 +48,8 @@ public class PluginSpringApplication extends SpringApplication {
         setBannerMode(Banner.Mode.OFF);
         setEnvironment(new StandardEnvironment());
         setWebApplicationType(WebApplicationType.NONE);
+        setRegisterShutdownHook(false);
+        setLogStartupInfo(false);
     }
 
     @Override

@@ -1,10 +1,8 @@
 package com.gitee.starblues.utils;
 
 import com.gitee.starblues.integration.IntegrationConfiguration;
-import org.pf4j.util.StringUtils;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
@@ -13,7 +11,7 @@ import java.util.function.Function;
  * 通用工具
  *
  * @author starBlues
- * @version 2.2.1
+ * @version 3.0.0
  */
 public class CommonUtils {
 
@@ -115,7 +113,7 @@ public class CommonUtils {
         int length = paths.length;
         for (int i = 0; i < length; i++) {
             String path = paths[i];
-            if(StringUtils.isNullOrEmpty(path)) {
+            if(ObjectUtils.isEmpty(path)) {
                 continue;
             }
             if((i < length - 1) && path.endsWith("/")){
@@ -144,7 +142,7 @@ public class CommonUtils {
         int length = paths.length;
         for (int i = 0; i < length; i++) {
             String path = paths[i];
-            if(StringUtils.isNullOrEmpty(path)) {
+            if(ObjectUtils.isEmpty(path)) {
                 continue;
             }
             if(i > 0){

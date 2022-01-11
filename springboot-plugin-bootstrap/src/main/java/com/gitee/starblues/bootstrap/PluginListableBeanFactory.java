@@ -1,9 +1,10 @@
 package com.gitee.starblues.bootstrap;
 
-import com.gitee.starblues.integration.AutoIntegrationConfiguration;
+import com.gitee.starblues.bootstrap.utils.DestroyUtils;
 import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.spring.SpringBeanFactory;
 import com.gitee.starblues.utils.ObjectUtils;
+import com.gitee.starblues.utils.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -54,6 +55,29 @@ public class PluginListableBeanFactory extends DefaultListableBeanFactory {
                 throw new NoSuchBeanDefinitionException(descriptor.getDependencyType());
             }
         }
+    }
+
+    @Override
+    public void destroySingletons() {
+        String[] beanDefinitionNames = getBeanDefinitionNames();
+        for (String beanDefinitionName : beanDefinitionNames) {
+            destroyBean(beanDefinitionName);
+        }
+        super.destroySingletons();
+        destroyAll();
+    }
+
+    private void destroyAll(){
+        ReflectionUtils.findField(this.getClass(), field -> {
+            field.setAccessible(true);
+            try {
+                Object o = field.get(this);
+                DestroyUtils.destroy(o);
+            } catch (IllegalAccessException e) {
+                // 忽略
+            }
+            return false;
+        });
     }
 
 }

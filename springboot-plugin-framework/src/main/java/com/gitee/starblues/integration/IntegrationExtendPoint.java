@@ -49,11 +49,8 @@ public class IntegrationExtendPoint {
 
     @Bean
     @ConditionalOnMissingBean
-    public RealizeProvider realizeProvider(MainResourcePatternDefiner mainResourcePatternDefiner) {
+    public RealizeProvider realizeProvider() {
         DefaultRealizeProvider defaultRealizeProvider = new DefaultRealizeProvider(configuration.environment());
-        if(mainResourcePatternDefiner != null){
-            defaultRealizeProvider.setMainResourcePatternDefiner(mainResourcePatternDefiner);
-        }
         defaultRealizeProvider.init();
         return defaultRealizeProvider;
     }

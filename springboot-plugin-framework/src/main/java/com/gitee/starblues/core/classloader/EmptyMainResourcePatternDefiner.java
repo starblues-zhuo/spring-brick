@@ -10,17 +10,12 @@ import java.util.Set;
 public class EmptyMainResourcePatternDefiner implements MainResourcePatternDefiner {
 
     @Override
-    public Set<String> getIncludeResourcePatterns() {
+    public Set<String> getIncludePatterns() {
         return null;
     }
 
     @Override
-    public Set<String> getExcludeResourcePatterns() {
-        return null;
-    }
-
-    @Override
-    public Set<String> getSpringFactoriesPatterns() {
+    public Set<String> getExcludePatterns() {
         return null;
     }
 }

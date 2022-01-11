@@ -71,7 +71,7 @@ public class ClassPathLoader extends AbstractResourceLoader{
 
     private void addResource(File file, String packageName, byte[] bytes) throws MalformedURLException {
         Resource resource = new Resource(
-                file.getName(), url, new URL(url.toString() + packageName), bytes
+                file.getName(), url, new URL(url.toString() + packageName)
         );
         addResource(packageName, resource);
     }

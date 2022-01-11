@@ -1,7 +1,7 @@
 package com.gitee.starblues.spring.extract;
 
 import com.gitee.starblues.annotation.Extract;
-import org.pf4j.util.StringUtils;
+import com.gitee.starblues.utils.ObjectUtils;
 
 import java.util.Objects;
 
@@ -69,20 +69,18 @@ public class ExtractCoordinate {
             return false;
         }
         ExtractCoordinate that = (ExtractCoordinate) o;
-        if(StringUtils.isNotNullOrEmpty(bus) &&
-                StringUtils.isNotNullOrEmpty(scene) &&
-                StringUtils.isNotNullOrEmpty(useCase)){
+        if(!ObjectUtils.isEmpty(bus) && !ObjectUtils.isEmpty(scene) && !ObjectUtils.isEmpty(useCase)){
             return Objects.equals(getBus(), that.getBus()) &&
                     Objects.equals(getScene(), that.getScene()) &&
                     Objects.equals(getUseCase(), that.getUseCase());
         }
 
-        if(StringUtils.isNotNullOrEmpty(bus) && StringUtils.isNotNullOrEmpty(scene)){
+        if(!ObjectUtils.isEmpty(bus) && !ObjectUtils.isEmpty(scene)){
             return Objects.equals(getBus(), that.getBus()) &&
                     Objects.equals(getScene(), that.getScene());
         }
 
-        if(StringUtils.isNotNullOrEmpty(bus)){
+        if(!ObjectUtils.isEmpty(bus)){
             return Objects.equals(getBus(), that.getBus());
         }
 

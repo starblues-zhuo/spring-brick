@@ -1,14 +1,6 @@
 package com.gitee.starblues.core.launcher;
 
-import com.gitee.starblues.core.launcher.archive.Archive;
 import com.gitee.starblues.core.launcher.jar.JarFile;
-
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 
 /**
@@ -17,10 +9,11 @@ import java.util.List;
  */
 public abstract class AbstractLauncher<R> implements Launcher<R> {
 
+
     @Override
     public R run(String... args) throws Exception {
         JarFile.registerUrlProtocolHandler();
-        ClassLoader classLoader = createClassLoader(getClassPathArchivesIterator());
+        ClassLoader classLoader = createClassLoader();
         Thread thread = Thread.currentThread();
         ClassLoader oldClassLoader = thread.getContextClassLoader();
         try {
@@ -31,21 +24,7 @@ public abstract class AbstractLauncher<R> implements Launcher<R> {
         }
     }
 
-    protected Iterator<Archive> getClassPathArchivesIterator() throws Exception {
-        return Collections.emptyListIterator();
-    }
-
-    protected ClassLoader createClassLoader(Iterator<Archive> archives) throws Exception {
-        List<URL> urls = new ArrayList<>(50);
-        while (archives.hasNext()) {
-            urls.add(archives.next().getUrl());
-        }
-        return createClassLoader(urls.toArray(new URL[0]));
-    }
-
-    protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-        return new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
-    }
+    protected abstract ClassLoader createClassLoader() throws Exception;
 
     /**
      * 子类实现具体的启动方法

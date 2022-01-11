@@ -31,7 +31,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 
     private static final String PROTOCOL_HANDLER = "java.protocol.handler.pkgs";
 
-    private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
+    private static final String HANDLERS_PACKAGE = "com.gitee.starblues.core.launcher";
 
     private static final AsciiBytes META_INF = new AsciiBytes("META-INF/");
 

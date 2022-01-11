@@ -2,8 +2,6 @@ package com.gitee.starblues.realize;
 
 import com.gitee.starblues.integration.operator.module.PluginInfo;
 import com.gitee.starblues.utils.SpringBeanUtils;
-import org.pf4j.PluginManager;
-import org.pf4j.PluginWrapper;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationContext;

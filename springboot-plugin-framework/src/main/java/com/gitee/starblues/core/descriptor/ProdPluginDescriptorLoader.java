@@ -1,31 +1,39 @@
 package com.gitee.starblues.core.descriptor;
 
-import java.io.InputStream;
+import com.gitee.starblues.core.PluginException;
+import com.gitee.starblues.utils.ResourceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.file.Path;
-import java.util.Properties;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
- * 生产环境 PluginDescriptorLoader 加载者
  * @author starBlues
- * @version 3.0.0
+ * @version 1.0
  */
-public class ProdPluginDescriptorLoader extends AbstractPluginDescriptorLoader{
+public class ProdPluginDescriptorLoader implements PluginDescriptorLoader{
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private PluginDescriptorLoader target;
 
     @Override
-    protected Properties getProperties(Path location) throws Exception {
-        JarFile jarFile = new JarFile(location.toFile());
-        JarEntry jarEntry = jarFile.getJarEntry(BOOTSTRAP_FILE_NAME);
-        if(jarEntry == null){
+    public PluginDescriptor load(Path location) throws PluginException {
+        if(ResourceUtils.isJarFile(location)){
+            target = new ProdPackagePluginDescriptorLoader(PluginDescriptor.Type.JAR);
+        } else if(ResourceUtils.isZipFile(location)){
+            target = new ProdPackagePluginDescriptorLoader(PluginDescriptor.Type.ZIP);
+        } else if(ResourceUtils.isDirFile(location)){
+            target = new ProdDirPluginDescriptorLoader();
+        } else {
+            logger.warn("不能解析文件: {}", location);
             return null;
         }
-        try {
-            InputStream inputStream = jarFile.getInputStream(jarEntry);
-            return getProperties(inputStream);
-        } finally {
-            jarFile.close();
-        }
+        return target.load(location);
     }
 
+    @Override
+    public void close() throws Exception {
+        target.close();
+    }
 }

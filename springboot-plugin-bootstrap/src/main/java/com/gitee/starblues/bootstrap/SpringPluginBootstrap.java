@@ -1,19 +1,12 @@
 package com.gitee.starblues.bootstrap;
 
-import com.gitee.starblues.bootstrap.processor.*;
-import com.gitee.starblues.core.descriptor.DevPluginDescriptorLoader;
-import com.gitee.starblues.core.descriptor.EmptyPluginDescriptor;
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
-import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
-import com.gitee.starblues.core.launcher.plugin.DefaultPluginInteractive;
+import com.gitee.starblues.bootstrap.processor.ComposeSpringPluginProcessor;
+import com.gitee.starblues.bootstrap.processor.DefaultProcessorContext;
+import com.gitee.starblues.bootstrap.processor.ProcessorContext;
+import com.gitee.starblues.bootstrap.processor.SpringPluginProcessor;
 import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
-import com.gitee.starblues.integration.AutoIntegrationConfiguration;
-import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.spring.SpringPluginHook;
-import com.gitee.starblues.spring.extract.DefaultOpExtractFactory;
-import com.gitee.starblues.spring.invoke.DefaultInvokeSupperCache;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,24 +23,24 @@ public abstract class SpringPluginBootstrap {
 
     private final List<SpringPluginProcessor> customPluginProcessors = new ArrayList<>();
 
-    public SpringPluginHook run(String[] args){
+    public final SpringPluginHook run(String[] args){
         return run(this.getClass(), args);
     }
 
-    public SpringPluginHook run(Class<?> primarySources, String[] args){
+    public final SpringPluginHook run(Class<?> primarySources, String[] args){
         return run(new Class[]{ primarySources }, args);
     }
 
-    public SpringPluginHook run(Class<?>[] primarySources, String[] args){
+    public final SpringPluginHook run(Class<?>[] primarySources, String[] args){
         return start(primarySources, args);
     }
 
     private SpringPluginHook start(Class<?>[] primarySources, String[] args){
+        addCustomSpringPluginProcessor();
         createPluginInteractive();
         SpringPluginProcessor pluginProcessor = new ComposeSpringPluginProcessor(runMode, customPluginProcessors);
         ProcessorContext processorContext = new DefaultProcessorContext(
-                pluginInteractive,
-                this.getClass()
+                this, pluginInteractive, this.getClass()
         );
         PluginSpringApplication springApplication = new PluginSpringApplication(
                 pluginProcessor,
@@ -57,26 +50,34 @@ public abstract class SpringPluginBootstrap {
         return new DefaultSpringPluginHook(pluginProcessor, processorContext);
     }
 
-    public final void setPluginInteractive(PluginInteractive pluginInteractive) {
+    public final SpringPluginBootstrap setPluginInteractive(PluginInteractive pluginInteractive) {
         this.pluginInteractive = pluginInteractive;
         this.runMode = SpringPluginProcessor.RunMode.PLUGIN;
+        return this;
     }
 
-    public final void addSpringPluginProcessor(SpringPluginProcessor springPluginProcessor){
+    public final SpringPluginBootstrap addSpringPluginProcessor(SpringPluginProcessor springPluginProcessor){
         if(springPluginProcessor != null){
             customPluginProcessors.add(springPluginProcessor);
         }
+        return this;
     }
 
-    protected void createPluginInteractive(){
+    protected final void createPluginInteractive(){
         if(pluginInteractive != null){
             return;
         }
         createPluginInteractiveOfOneself();
     }
 
-    protected void createPluginInteractiveOfOneself(){
+    protected final void createPluginInteractiveOfOneself(){
         this.pluginInteractive = new PluginOneselfInteractive();
     }
+
+
+    /**
+     * 子类自定义插件 SpringPluginProcessor
+     */
+    protected void addCustomSpringPluginProcessor(){}
 
 }

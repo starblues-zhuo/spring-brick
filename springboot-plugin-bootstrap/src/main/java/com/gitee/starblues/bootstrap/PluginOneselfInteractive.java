@@ -65,8 +65,7 @@ public class PluginOneselfInteractive implements PluginInteractive {
 
     private PluginDescriptor createPluginDescriptor(){
         PluginDescriptor pluginDescriptor;
-        try {
-            PluginDescriptorLoader pluginDescriptorLoader = new DevPluginDescriptorLoader();
+        try (PluginDescriptorLoader pluginDescriptorLoader = new DevPluginDescriptorLoader()){
             pluginDescriptor = pluginDescriptorLoader.load(
                     Paths.get(this.getClass().getResource("/").toURI()));
             if(pluginDescriptor == null){

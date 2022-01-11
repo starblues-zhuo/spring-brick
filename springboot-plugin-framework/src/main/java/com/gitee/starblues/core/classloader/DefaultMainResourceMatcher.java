@@ -8,8 +8,9 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
+ * 默认的主程序资源匹配者
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class DefaultMainResourceMatcher implements MainResourceMatcher{
 
@@ -23,14 +24,8 @@ public class DefaultMainResourceMatcher implements MainResourceMatcher{
 
     @Override
     public boolean match(String resourceUrl) {
-        Set<String> resourcePatterns = mainResourcePatternDefiner.getIncludeResourcePatterns();
+        Set<String> resourcePatterns = mainResourcePatternDefiner.getIncludePatterns();
         return match(resourcePatterns, resourceUrl);
-    }
-
-    @Override
-    public boolean matchSpringFactories(String springFactoriesUrl) {
-        Set<String> springFactoriesPatterns = mainResourcePatternDefiner.getSpringFactoriesPatterns();
-        return match(springFactoriesPatterns, springFactoriesUrl);
     }
 
     private boolean match(Collection<String> patterns, String url){
@@ -41,7 +36,7 @@ public class DefaultMainResourceMatcher implements MainResourceMatcher{
         for (String pattern : patterns) {
             boolean match = pathMatcher.match(pattern, url);
             if(match){
-                return !excludeMatch(mainResourcePatternDefiner.getExcludeResourcePatterns(), url);
+                return !excludeMatch(mainResourcePatternDefiner.getExcludePatterns(), url);
             }
         }
         return false;

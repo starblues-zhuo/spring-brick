@@ -19,8 +19,14 @@ class ConfigurePluginEnvironment {
     private final static String PLUGIN_PROPERTY_NAME = "pluginPropertySources";
 
     private final static String SPRING_CONFIG_NAME = "spring.config.name";
+
+    private final static String SPRING_JMX_UNIQUE_NAMES = "spring.jmx.unique-names";
     private final static String SPRING_ADMIN_JMX_NAME = "spring.application.admin.jmx-name";
     private final static String SPRING_ADMIN_JMX_VALUE = "org.springframework.boot:type=Admin,name=";
+
+    public static final String REGISTER_SHUTDOWN_HOOK_PROPERTY = "logging.register-shutdown-hook";
+    public static final String MBEAN_DOMAIN_PROPERTY_NAME = "spring.liveBeansView.mbeanDomain";
+
 
     private final PluginDescriptor pluginDescriptor;
 
@@ -35,7 +41,10 @@ class ConfigurePluginEnvironment {
         if(!ObjectUtils.isEmpty(configFileName)){
             env.put(SPRING_CONFIG_NAME, PluginFileUtils.getFileName(configFileName));
         }
+        env.put(SPRING_JMX_UNIQUE_NAMES, true);
         env.put(SPRING_ADMIN_JMX_NAME, SPRING_ADMIN_JMX_VALUE + pluginId);
+        env.put(REGISTER_SHUTDOWN_HOOK_PROPERTY, false);
+        env.put(MBEAN_DOMAIN_PROPERTY_NAME, null);
         environment.getPropertySources().addLast(new MapPropertySource(PLUGIN_PROPERTY_NAME, env));
     }
 

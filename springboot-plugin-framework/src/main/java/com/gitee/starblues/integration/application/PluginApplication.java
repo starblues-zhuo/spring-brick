@@ -1,7 +1,6 @@
 package com.gitee.starblues.integration.application;
 
 import com.gitee.starblues.integration.PluginListenerContext;
-import com.gitee.starblues.integration.PluginStateListenerContext;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.user.PluginUser;
@@ -12,7 +11,7 @@ import org.springframework.context.ApplicationContext;
  * @author starBlues
  * @version 2.4.3
  */
-public interface PluginApplication extends PluginListenerContext, PluginStateListenerContext {
+public interface PluginApplication extends PluginListenerContext {
 
     /**
      * 初始化

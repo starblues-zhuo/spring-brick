@@ -23,6 +23,11 @@ public class PluginApplicationContext extends AnnotationConfigApplicationContext
     }
 
     @Override
+    public void registerShutdownHook() {
+        // 忽略
+    }
+
+    @Override
     public String getApplicationName() {
         return pluginDescriptor.getPluginId();
     }

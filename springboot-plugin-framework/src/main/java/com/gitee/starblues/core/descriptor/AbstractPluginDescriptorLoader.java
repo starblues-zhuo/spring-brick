@@ -1,15 +1,27 @@
 package com.gitee.starblues.core.descriptor;
 
+
 import com.gitee.starblues.core.PluginException;
+import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Properties;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+
+import static com.gitee.starblues.common.PluginDescriptorKey.*;
+import static com.gitee.starblues.common.PackageStructure.*;
+import static com.gitee.starblues.common.utils.ManifestUtils.*;
 
 /**
  * 抽象的 PluginDescriptorLoader
@@ -23,17 +35,23 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
 
     @Override
     public PluginDescriptor load(Path location) throws PluginException {
-        Properties properties = null;
+        Manifest manifest = null;
         try {
-            properties = getProperties(location);
-            if(properties == null){
-                logger.warn("路径[{}]没有发现引导文件[{}]", location, BOOTSTRAP_FILE_NAME);
+            manifest = getManifest(location);
+            if(manifest == null){
+                logger.warn("路径[{}]没有发现[{}]", location, MANIFEST);
                 return null;
             }
-            return create(properties, location);
+            return create(manifest, location);
         } catch (Exception e) {
-            throw new PluginException("获取解析[" + location + "]插件引导文件失败." + e.getMessage(), e);
+            logger.warn("路径[{}]中存在非法[{}]: {}", location, MANIFEST, e.getMessage());
+            return null;
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 
     /**
@@ -42,32 +60,62 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
      * @return Properties
      * @throws Exception 异常
      */
-    protected abstract Properties getProperties(Path location) throws Exception;
+    protected abstract Manifest getManifest(Path location) throws Exception;
 
-    protected PluginDescriptor create(Properties properties, Path path){
+    protected DefaultPluginDescriptor create(Manifest manifest, Path path) throws Exception{
+        Attributes attributes = manifest.getMainAttributes();
         DefaultPluginDescriptor descriptor = new DefaultPluginDescriptor(
-                properties.getProperty(PLUGIN_ID),
-                properties.getProperty(PLUGIN_VERSION),
-                properties.getProperty(PLUGIN_CLASS),
+                getValue(attributes, PLUGIN_ID),
+                getValue(attributes, PLUGIN_VERSION),
+                getValue(attributes, PLUGIN_BOOTSTRAP_CLASS),
                 path
         );
-        descriptor.setPluginLibDir(properties.getProperty(PLUGIN_LIB_DIR));
-        descriptor.setDescription(properties.getProperty(PLUGIN_DESCRIPTION));
-        descriptor.setRequires(properties.getProperty(PLUGIN_REQUIRES));
-        descriptor.setProvider(properties.getProperty(PLUGIN_PROVIDER));
-        descriptor.setLicense(properties.getProperty(PLUGIN_LICENSE));
-        descriptor.setConfigFileName(properties.getProperty(PLUGIN_CONFIG_FILE_NAME));
+        descriptor.setManifest(manifest);
+        descriptor.setPluginClassPath(getValue(attributes, PLUGIN_PATH, false));
+        descriptor.setPluginLibPath(getPluginLibPaths(path, attributes));
+        descriptor.setDescription(getValue(attributes, PLUGIN_DESCRIPTION, false));
+        descriptor.setRequires(getValue(attributes, PLUGIN_REQUIRES, false));
+        descriptor.setProvider(getValue(attributes, PLUGIN_PROVIDER, false));
+        descriptor.setLicense(getValue(attributes, PLUGIN_LICENSE, false));
+        descriptor.setConfigFileName(getValue(attributes, PLUGIN_CONFIG_FILE_NAME, false));
         return descriptor;
     }
 
 
-    protected Properties getProperties(InputStream inputStream) throws Exception{
-        Properties properties = new Properties();
-        try (InputStreamReader input = new InputStreamReader(inputStream,
-                StandardCharsets.UTF_8)) {
-            properties.load(input);
+    protected Set<String> getPluginLibPaths(Path path, Attributes attributes) throws Exception{
+        String libIndex = getValue(attributes, PLUGIN_LIB_INDEX);
+        if(ObjectUtils.isEmpty(libIndex)){
+            return Collections.emptySet();
         }
-        return properties;
+        File file = new File(libIndex);
+        if(!file.exists()){
+            // 如果绝对路径不存在, 则判断相对路径
+            String pluginPath = getValue(attributes, PLUGIN_PATH);
+            file = new File(CommonUtils.joiningFilePath(pluginPath, libIndex));
+        }
+        if(!file.exists()){
+            // 都不存在, 则返回为空
+            return Collections.emptySet();
+        }
+        try {
+            List<String> paths = Files.readAllLines(file.toPath());
+            if(!ObjectUtils.isEmpty(paths)){
+                return new HashSet<>(paths);
+            }
+        } catch (IOException e) {
+            throw new Exception("Load plugin lib index path failure. " + libIndex, e);
+        }
+        return Collections.emptySet();
+    }
+
+    protected Manifest getManifest(InputStream inputStream) throws Exception{
+        Manifest manifest = new Manifest();
+        try {
+            manifest.read(inputStream);
+            return manifest;
+        } finally {
+            inputStream.close();
+        }
     }
 
 }

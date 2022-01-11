@@ -1,6 +1,5 @@
 package com.gitee.starblues.utils;
 
-import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Array;
@@ -55,7 +54,7 @@ public class ObjectUtils {
         return false;
     }
 
-    public static boolean hasText(@Nullable CharSequence str) {
+    public static boolean hasText(CharSequence str) {
         return (str != null && str.length() > 0 && containsText(str));
     }
 
@@ -73,16 +72,16 @@ public class ObjectUtils {
     }
 
 
-    public static String[] commaDelimitedListToStringArray(@Nullable String str) {
+    public static String[] commaDelimitedListToStringArray(String str) {
         return delimitedListToStringArray(str, ",");
     }
 
-    public static String[] delimitedListToStringArray(@Nullable String str, @Nullable String delimiter) {
+    public static String[] delimitedListToStringArray(String str, String delimiter) {
         return delimitedListToStringArray(str, delimiter, null);
     }
 
     public static String[] delimitedListToStringArray(
-            @Nullable String str, @Nullable String delimiter, @Nullable String charsToDelete) {
+            String str, String delimiter, String charsToDelete) {
 
         if (str == null) {
             return EMPTY_STRING_ARRAY;
@@ -112,12 +111,12 @@ public class ObjectUtils {
         return toStringArray(result);
     }
 
-    public static String[] toStringArray(@Nullable Collection<String> collection) {
+    public static String[] toStringArray(Collection<String> collection) {
         return (!CollectionUtils.isEmpty(collection) ? collection.toArray(EMPTY_STRING_ARRAY) : EMPTY_STRING_ARRAY);
     }
 
 
-    public static String deleteAny(String inString, @Nullable String charsToDelete) {
+    public static String deleteAny(String inString, String charsToDelete) {
         if (!hasLength(inString) || !hasLength(charsToDelete)) {
             return inString;
         }
@@ -140,16 +139,16 @@ public class ObjectUtils {
         return (str != null && !str.isEmpty());
     }
 
-    public static String collectionToCommaDelimitedString(@Nullable Collection<?> coll) {
+    public static String collectionToCommaDelimitedString(Collection<?> coll) {
         return collectionToDelimitedString(coll, ",");
     }
 
-    public static String collectionToDelimitedString(@Nullable Collection<?> coll, String delim) {
+    public static String collectionToDelimitedString(Collection<?> coll, String delim) {
         return collectionToDelimitedString(coll, delim, "", "");
     }
 
     public static String collectionToDelimitedString(
-            @Nullable Collection<?> coll, String delim, String prefix, String suffix) {
+            Collection<?> coll, String delim, String prefix, String suffix) {
 
         if (CollectionUtils.isEmpty(coll)) {
             return "";
@@ -167,7 +166,7 @@ public class ObjectUtils {
     }
 
 
-    public static boolean containsElement(@Nullable Object[] array, Object element) {
+    public static boolean containsElement(Object[] array, Object element) {
         if (array == null) {
             return false;
         }
@@ -179,7 +178,7 @@ public class ObjectUtils {
         return false;
     }
 
-    public static boolean nullSafeEquals(@Nullable Object o1, @Nullable Object o2) {
+    public static boolean nullSafeEquals(Object o1, Object o2) {
         if (o1 == o2) {
             return true;
         }
@@ -195,12 +194,12 @@ public class ObjectUtils {
         return false;
     }
 
-    public static boolean endsWithIgnoreCase(@Nullable String str, @Nullable String suffix) {
+    public static boolean endsWithIgnoreCase(String str, String suffix) {
         return (str != null && suffix != null && str.length() >= suffix.length() &&
                 str.regionMatches(true, str.length() - suffix.length(), suffix, 0, suffix.length()));
     }
 
-    public static String getFilenameExtension(@Nullable String path) {
+    public static String getFilenameExtension(String path) {
         if (path == null) {
             return null;
         }
@@ -287,7 +286,7 @@ public class ObjectUtils {
     }
 
 
-    public static String replace(String inString, String oldPattern, @Nullable String newPattern) {
+    public static String replace(String inString, String oldPattern, String newPattern) {
         if (!hasLength(inString) || !hasLength(oldPattern) || newPattern == null) {
             return inString;
         }

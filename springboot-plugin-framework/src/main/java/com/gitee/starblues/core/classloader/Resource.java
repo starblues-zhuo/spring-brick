@@ -13,13 +13,11 @@ public class Resource {
     private final String name;
     private final URL baseUrl;
     private final URL url;
-    private final byte[] bytes;
 
-    public Resource(String name, URL baseUrl, URL url, byte[] bytes) {
+    public Resource(String name, URL baseUrl, URL url) {
         this.name = name;
         this.baseUrl = baseUrl;
         this.url = url;
-        this.bytes = bytes;
     }
 
     public String getName() {
@@ -33,11 +31,6 @@ public class Resource {
     public URL getUrl() {
         return url;
     }
-
-    public byte[] getBytes() {
-        return bytes;
-    }
-
 
     void tryCloseUrlSystemFile(){
         try {

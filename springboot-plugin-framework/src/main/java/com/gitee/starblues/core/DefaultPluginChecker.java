@@ -33,8 +33,8 @@ public class DefaultPluginChecker implements PluginChecker{
         Assert.isNotNull(descriptor.getPluginId(),
                 "插件id[pluginDescriptor->getPluginId] 不能为空");
 
-        Assert.isNotNull(descriptor.getPluginClass(),
-                "插件id[pluginDescriptor->getPluginClass] 不能为空");
+        Assert.isNotNull(descriptor.getPluginBootstrapClass(),
+                "插件id[pluginDescriptor->getPluginBootstrapClass] 不能为空");
 
         Assert.isNotNull(descriptor.getPluginVersion(),
                 "插件id[pluginDescriptor->getPluginVersion] 不能为空");

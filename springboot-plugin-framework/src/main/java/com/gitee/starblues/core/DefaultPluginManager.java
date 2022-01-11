@@ -1,11 +1,10 @@
 package com.gitee.starblues.core;
 
+import com.gitee.starblues.common.PluginDescriptorKey;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
-import com.gitee.starblues.core.loader.PluginWrapper;
-import com.gitee.starblues.core.loader.PluginWrapperFace;
-import com.gitee.starblues.core.loader.PluginWrapperInside;
 import com.gitee.starblues.utils.Assert;
+import com.gitee.starblues.utils.MsgUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,12 +74,9 @@ public class DefaultPluginManager implements PluginManager{
             List<Path> scanPluginPaths = provider.getPluginScanner().scan(pluginRootDirs);
             if(ObjectUtils.isEmpty(scanPluginPaths)){
                 StringBuilder warn = new StringBuilder("\n\n路径 {} 中未发现插件.\n");
-                warn.append("1. 请检查路径是否合适.\n");
-                warn.append("2. 请检查插件包中是否存在[")
-                        .append(PluginDescriptorLoader.BOOTSTRAP_FILE_NAME)
-                        .append("]插件引导文件.\n");
+                warn.append("请检查路径是否合适.\n");
                 if(provider.getRuntimeMode() == RuntimeMode.DEV){
-                    warn.append("3. 请检查插件包是否手动编译.\n");
+                    warn.append("请检查插件包是否编译.\n");
                 }
                 log.warn(warn.toString(), pluginRootDirs);
                 return Collections.emptyList();
@@ -104,9 +100,9 @@ public class DefaultPluginManager implements PluginManager{
 
     @Override
     public boolean verify(Path jarPath) {
-        try {
+        try (PluginDescriptorLoader pluginDescriptorLoader = provider.getPluginDescriptorLoader()){
             provider.getPluginChecker().check(jarPath);
-            PluginDescriptor pluginDescriptor = provider.getPluginDescriptor().load(jarPath);
+            PluginDescriptor pluginDescriptor = pluginDescriptorLoader.load(jarPath);
             if(pluginDescriptor == null){
                 return false;
             }
@@ -119,37 +115,44 @@ public class DefaultPluginManager implements PluginManager{
     }
 
     @Override
-    public PluginDescriptor load(Path pluginPath) throws PluginException {
+    public synchronized PluginDescriptor load(Path pluginPath) throws PluginException {
         try {
             provider.getPluginChecker().check(pluginPath);
         } catch (Exception e) {
             throw new PluginException("非法插件: " + pluginPath, e);
         }
-        PluginDescriptor pluginDescriptor = provider.getPluginDescriptor().load(pluginPath);
-        if(pluginDescriptor == null){
-            return null;
+        try (PluginDescriptorLoader pluginDescriptorLoader = provider.getPluginDescriptorLoader()){
+            PluginDescriptor pluginDescriptor = pluginDescriptorLoader.load(pluginPath);
+            if(pluginDescriptor == null){
+                return null;
+            }
+            String pluginId = pluginDescriptor.getPluginId();
+            if(resolvedPlugins.containsKey(pluginId) || startedPlugins.containsKey(pluginId)){
+                log.error("已经存在插件: {}", pluginId);
+                return null;
+            }
+            resolvedPlugins.put(pluginDescriptor.getPluginId(), pluginDescriptor);
+            log.info("加载插件[{}]成功", MsgUtils.getPluginUnique(pluginDescriptor));
+            return pluginDescriptor;
+        } catch (Exception e){
+            throw new PluginException("加载插件失败");
         }
-        String pluginId = pluginDescriptor.getPluginId();
-        if(resolvedPlugins.containsKey(pluginId) || startedPlugins.containsKey(pluginId)){
-            log.error("已经存在插件: {}", pluginId);
-            return null;
-        }
-        resolvedPlugins.put(pluginDescriptor.getPluginId(), pluginDescriptor);
-        return pluginDescriptor;
+
     }
 
     @Override
-    public void unLoad(String pluginId) {
+    public synchronized void unLoad(String pluginId) {
         resolvedPlugins.remove(pluginId);
     }
 
     @Override
-    public PluginDescriptor install(Path pluginPath) throws PluginException {
+    public synchronized PluginDescriptor install(Path pluginPath) throws PluginException {
         PluginDescriptor pluginDescriptor = load(pluginPath);
         if(pluginDescriptor == null){
             throw new PluginException("安装[" + pluginPath + "]插件包失败.");
         }
         try {
+            log.info("安装插件[{}]成功", MsgUtils.getPluginUnique(pluginDescriptor));
             return start(pluginDescriptor);
         } catch (Exception e){
             unLoad(pluginDescriptor.getPluginId());
@@ -166,16 +169,22 @@ public class DefaultPluginManager implements PluginManager{
         }
         if(pluginWrapper != null){
             if(pluginWrapper.getPluginState() == PluginState.STARTED){
-                stop(pluginWrapper);
+                try {
+                    stop(pluginWrapper);
+                } catch (Exception e) {
+                    throw new PluginException("停止", pluginId, e);
+                }
             }
             startedPlugins.remove(pluginId);
-        } else {
-            resolvedPlugins.remove(pluginId);
+            pluginDescriptor = pluginWrapper.getPluginDescriptor();
         }
+        resolvedPlugins.remove(pluginId);
+        System.gc();
+        log.info("卸载插件[{}]成功", MsgUtils.getPluginUnique(pluginDescriptor));
     }
 
     @Override
-    public void upgrade(Path pluginPath) throws PluginException {
+    public synchronized void upgrade(Path pluginPath) throws PluginException {
         PluginDescriptor upgradePluginDescriptor = load(pluginPath);
         if(upgradePluginDescriptor == null){
             throw new PluginException("解析[" + pluginPath + "]插件更新包失败.");
@@ -204,26 +213,42 @@ public class DefaultPluginManager implements PluginManager{
         } else {
             uninstall(pluginId);
         }
-        start(upgradePluginDescriptor);
+        try {
+            start(upgradePluginDescriptor);
+            log.info("更新插件[{}]成功", MsgUtils.getPluginUnique(upgradePluginDescriptor));
+        } catch (Exception e){
+            throw new PluginException("更新启动", pluginId, e);
+        }
     }
 
     @Override
-    public PluginDescriptor start(String pluginId) throws PluginException {
+    public synchronized PluginDescriptor start(String pluginId) throws PluginException {
         PluginDescriptor pluginDescriptor = resolvedPlugins.get(pluginId);
         if(pluginDescriptor == null){
             throw new PluginException("没有发现插件: " + pluginId);
         }
-        return start(pluginDescriptor);
+        try {
+            start(pluginDescriptor);
+            log.info("启动插件[{}]成功", MsgUtils.getPluginUnique(pluginDescriptor));
+            return pluginDescriptor;
+        } catch (Exception e){
+            throw new PluginException("启动", pluginId, e);
+        }
     }
 
     @Override
-    public PluginDescriptor stop(String pluginId) throws PluginException {
+    public synchronized PluginDescriptor stop(String pluginId) throws PluginException {
         PluginWrapperInside pluginWrapper = startedPlugins.get(pluginId);
         if(pluginWrapper == null){
             throw new PluginException("没有发现插件: " + pluginId);
         }
-        stop(pluginWrapper);
-        return pluginWrapper.getPluginDescriptor();
+        try {
+            stop(pluginWrapper);
+            log.info("停止插件[{}]成功", MsgUtils.getPluginUnique(pluginWrapper.getPluginDescriptor()));
+            return pluginWrapper.getPluginDescriptor();
+        } catch (Exception e) {
+            throw new PluginException("停止插件 [" + pluginId + "] 失败. ", e);
+        }
     }
 
     @Override
@@ -258,34 +283,32 @@ public class DefaultPluginManager implements PluginManager{
         return startedPlugins.get(pluginId);
     }
 
-    private PluginDescriptor start(PluginDescriptor pluginDescriptor) throws PluginException {
+    protected PluginDescriptor start(PluginDescriptor pluginDescriptor) throws Exception {
         String pluginId = pluginDescriptor.getPluginId();
         if(startedPlugins.containsKey(pluginId)){
-            throw new PluginException("已经存在插件: " + pluginId);
+            throw new PluginException("已经存在插件: " + MsgUtils.getPluginUnique(pluginDescriptor));
         }
-        try {
-            provider.getPluginChecker().check(pluginDescriptor);
-            PluginWrapperInside pluginWrapper = provider.getPluginLoader().load(pluginDescriptor);
-            pluginWrapper.setPluginState(PluginState.RESOLVED);
-            start(pluginWrapper);
-            return pluginDescriptor;
-        } catch (Exception e) {
-            throw new PluginException("启动插件 [" + pluginId + "] 失败. ", e);
-        }
+        provider.getPluginChecker().check(pluginDescriptor);
+        PluginWrapperInside pluginWrapper = new PluginWrapperInside(pluginDescriptor);
+        pluginWrapper.setPluginState(PluginState.RESOLVED);
+        start(pluginWrapper);
+        return pluginDescriptor;
     }
 
-    private void start(PluginWrapperInside pluginWrapper){
+    protected void start(PluginWrapperInside pluginWrapper) throws Exception{
         String pluginId = pluginWrapper.getPluginId();
         pluginWrapper.setPluginState(PluginState.STARTED);
         startedPlugins.put(pluginId, pluginWrapper);
         resolvedPlugins.remove(pluginId);
     }
 
-    private void stop(PluginWrapperInside pluginWrapper){
+    protected void stop(PluginWrapperInside pluginWrapper) throws Exception{
         String pluginId = pluginWrapper.getPluginId();
         pluginWrapper.setPluginState(PluginState.STOPPED);
         resolvedPlugins.put(pluginId, pluginWrapper.getPluginDescriptor());
         startedPlugins.remove(pluginId);
     }
+
+
 
 }

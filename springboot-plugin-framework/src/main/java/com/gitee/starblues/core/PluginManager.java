@@ -1,8 +1,6 @@
 package com.gitee.starblues.core;
 
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
-import com.gitee.starblues.core.loader.PluginWrapper;
-import com.gitee.starblues.integration.operator.module.PluginInfo;
 
 import java.nio.file.Path;
 import java.util.List;

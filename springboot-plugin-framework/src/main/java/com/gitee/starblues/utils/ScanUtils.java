@@ -1,7 +1,6 @@
 package com.gitee.starblues.utils;
 
 
-import org.pf4j.PluginWrapper;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.util.ClassUtils;
 
@@ -130,32 +129,5 @@ public class ScanUtils {
                     return fileName.endsWith(".class");
                 });
     }
-
-
-    /**
-     * 扫描jar包中的类。
-     *
-     * @param basePackage 包名
-     * @param pluginWrapper jar的PluginWrapper
-     * @return 类全路径
-     * @throws IOException 扫描异常
-     */
-    public static Set<String> scanClassPackageName(String basePackage, PluginWrapper pluginWrapper) throws IOException {
-        String pluginPath = pluginWrapper.getPluginPath().toString();
-        Set<String> classPackageNames = new HashSet<>();
-        try (JarFile jarFile = new JarFile(pluginPath)) {
-            Enumeration<JarEntry> jarEntries = jarFile.entries();
-            while (jarEntries.hasMoreElements()) {
-                JarEntry entry = jarEntries.nextElement();
-                String jarEntryName = entry.getName();
-                if (jarEntryName.contains(".class") && jarEntryName.replaceAll("/", ".").startsWith(basePackage)) {
-                    String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replace("/", ".");
-                    classPackageNames.add(className);
-                }
-            }
-        }
-        return classPackageNames;
-    }
-
 
 }

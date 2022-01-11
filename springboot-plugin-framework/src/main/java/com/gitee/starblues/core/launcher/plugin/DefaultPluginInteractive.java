@@ -9,8 +9,9 @@ import com.gitee.starblues.spring.extract.OpExtractFactory;
 import com.gitee.starblues.spring.invoke.InvokeSupperCache;
 
 /**
+ * 默认的插件交互实现
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class DefaultPluginInteractive implements PluginInteractive{
 

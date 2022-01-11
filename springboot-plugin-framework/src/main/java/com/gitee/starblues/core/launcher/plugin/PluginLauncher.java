@@ -1,24 +1,27 @@
 package com.gitee.starblues.core.launcher.plugin;
 
-import com.gitee.starblues.core.ResourceClear;
+import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
 import com.gitee.starblues.core.classloader.PluginClassLoader;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
-import com.gitee.starblues.core.launcher.*;
+import com.gitee.starblues.core.launcher.AbstractLauncher;
+import com.gitee.starblues.core.launcher.JavaMainResourcePatternDefiner;
+import com.gitee.starblues.core.launcher.MainProgramLauncher;
+import com.gitee.starblues.spring.SpringPluginHook;
+import com.gitee.starblues.utils.ObjectUtils;
 
 import java.io.File;
-import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 
 /**
+ * 插件启动引导类
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
-public class PluginLauncher extends AbstractLauncher<Object> implements ResourceClear {
+public class PluginLauncher extends AbstractLauncher<SpringPluginHook> {
 
-    private final PluginInteractive pluginInteractive;
-    private final PluginDescriptor pluginDescriptor;
+    protected final PluginInteractive pluginInteractive;
+    protected final PluginDescriptor pluginDescriptor;
 
     public PluginLauncher(PluginInteractive pluginInteractive) {
         this.pluginInteractive = pluginInteractive;
@@ -26,44 +29,31 @@ public class PluginLauncher extends AbstractLauncher<Object> implements Resource
     }
 
     @Override
-    protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-        String pluginLibDir = pluginDescriptor.getPluginLibDir();
-        Path pluginPath = pluginDescriptor.getPluginPath();
-        PluginClassLoader pluginClassLoader = new PluginClassLoader(
-                "plugin", pluginPath, MainProgramLauncher.class.getClassLoader(),
-                new JavaMainResourcePatternDefiner(){
-                    @Override
-                    public Set<String> getIncludeResourcePatterns() {
-                        Set<String> includeResourcePatterns = super.getIncludeResourcePatterns();
-                        includeResourcePatterns.add("com/gitee/starblues/**");
-                        includeResourcePatterns.add("org/springframework/web/**");
-                        return includeResourcePatterns;
-                    }
-                }
-        );
-        File file = new File(pluginLibDir);
-        if(file.exists() && file.isDirectory()){
-            File[] listFiles = file.listFiles();
-            if(listFiles != null){
-                for (File listFile : listFiles) {
-                    pluginClassLoader.addResource(listFile);
-                }
+    protected ClassLoader createClassLoader() throws Exception {
+        String pluginId = pluginDescriptor.getPluginId();
+        MainResourcePatternDefiner mainResourceMatcher = new JavaMainResourcePatternDefiner() {
+            @Override
+            public Set<String> getIncludePatterns() {
+                Set<String> includeResourcePatterns = super.getIncludePatterns();
+                includeResourcePatterns.add("com/gitee/starblues/**");
+                includeResourcePatterns.add("org/springframework/web/**");
+                return includeResourcePatterns;
             }
-
-        }
+        };
+        PluginClassLoader pluginClassLoader = new PluginClassLoader(
+                pluginId, MainProgramLauncher.class.getClassLoader(), mainResourceMatcher
+        );
+        pluginClassLoader.addResource(pluginDescriptor);
+        //TODO 添加框架的引导
         pluginClassLoader.addResource(Paths.get("D:\\etc\\kitte\\ksm\\springboot-plugin-framework-parent\\springboot-plugin-bootstrap\\target\\classes"));
-
         return pluginClassLoader;
     }
 
-
     @Override
-    protected Object launch(ClassLoader classLoader, String... args) throws Exception {
-        return new PluginMethodRunner(pluginInteractive).run(classLoader);
+    protected SpringPluginHook launch(ClassLoader classLoader, String... args) throws Exception {
+        SpringPluginHook springPluginHook = (SpringPluginHook) new PluginMethodRunner(pluginInteractive).run(classLoader);
+        return new SpringPluginHookWrapper(springPluginHook, classLoader);
     }
 
-    @Override
-    public void clear() {
 
-    }
 }
