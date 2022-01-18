@@ -1,5 +1,8 @@
 package com.gitee.starblues.core.launcher.plugin;
 
+import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
+import com.gitee.starblues.core.launcher.PluginResourceStorage;
+import com.gitee.starblues.core.launcher.jar.Handler;
 import com.gitee.starblues.spring.ApplicationContext;
 import com.gitee.starblues.spring.SpringPluginHook;
 
@@ -10,11 +13,14 @@ import com.gitee.starblues.spring.SpringPluginHook;
 public class SpringPluginHookWrapper implements SpringPluginHook {
 
     private final SpringPluginHook target;
+    private final InsidePluginDescriptor descriptor;
     private final ClassLoader classLoader;
 
     public SpringPluginHookWrapper(SpringPluginHook target,
+                                   InsidePluginDescriptor descriptor,
                                    ClassLoader classLoader) {
         this.target = target;
+        this.descriptor = descriptor;
         this.classLoader = classLoader;
     }
 
@@ -26,9 +32,12 @@ public class SpringPluginHookWrapper implements SpringPluginHook {
 
     @Override
     public void close() throws Exception {
-        target.close();
+        if(target != null){
+            target.close();
+        }
         if(classLoader instanceof AutoCloseable){
             ((AutoCloseable)classLoader).close();
         }
+        PluginResourceStorage.removePlugin(descriptor.getPluginId());
     }
 }

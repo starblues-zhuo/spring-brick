@@ -48,7 +48,12 @@ public class ProdPathResolve implements PathResolve{
     }
 
     protected boolean isDirPlugin(Path path){
-        File file = new File(CommonUtils.joiningFilePath(path.toString(), PackageStructure.resolvePath(
+        File file = path.toFile();
+        if(file.isFile()){
+            return false;
+        }
+
+        file = new File(CommonUtils.joiningFilePath(path.toString(), PackageStructure.resolvePath(
                 PackageStructure.PROD_MANIFEST_PATH
         )));
         return file.exists() && file.isFile();

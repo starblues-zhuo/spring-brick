@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.regex.Matcher;
 
 import static com.gitee.starblues.common.PackageStructure.*;
 import static com.gitee.starblues.common.PluginDescriptorKey.*;

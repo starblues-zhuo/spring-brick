@@ -1,11 +1,9 @@
 package com.gitee.starblues.core.classloader;
 
+import com.gitee.starblues.utils.ResourceUtils;
 import org.apache.commons.io.IOUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +73,20 @@ public abstract class AbstractResourceLoader {
         resourceCache.clear();
     }
 
-
+    protected byte[] getClassBytes(String path, InputStream inputStream, boolean isClose) throws Exception{
+        if(!ResourceUtils.isClass(path)){
+            return null;
+        }
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            IOUtils.copy(inputStream, byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+        } finally {
+            if(isClose){
+                IOUtils.closeQuietly(inputStream);
+            }
+            IOUtils.closeQuietly(byteArrayOutputStream);
+        }
+    }
 
 }

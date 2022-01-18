@@ -255,8 +255,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
     public synchronized JarFile getNestedJarFile(JarEntry entry) throws IOException {
         try {
             return createJarFileFromEntry(entry);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new IOException("Unable to open nested jar file '" + entry.getName() + "'", ex);
         }
     }
@@ -313,6 +312,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
         if (this.type == JarFileType.DIRECT) {
             this.rootFile.close();
         }
+        entries.clearCache();
     }
 
     private void ensureOpen() {

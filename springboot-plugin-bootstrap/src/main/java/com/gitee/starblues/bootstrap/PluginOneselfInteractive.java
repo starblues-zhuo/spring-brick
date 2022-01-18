@@ -1,9 +1,6 @@
 package com.gitee.starblues.bootstrap;
 
-import com.gitee.starblues.core.descriptor.DevPluginDescriptorLoader;
-import com.gitee.starblues.core.descriptor.EmptyPluginDescriptor;
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
-import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
+import com.gitee.starblues.core.descriptor.*;
 import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
 import com.gitee.starblues.integration.AutoIntegrationConfiguration;
 import com.gitee.starblues.integration.IntegrationConfiguration;
@@ -21,7 +18,7 @@ import java.nio.file.Paths;
  */
 public class PluginOneselfInteractive implements PluginInteractive {
 
-    private final PluginDescriptor pluginDescriptor;
+    private final InsidePluginDescriptor pluginDescriptor;
     private final MainApplicationContext mainApplicationContext;
     private final IntegrationConfiguration configuration;
     private final InvokeSupperCache invokeSupperCache;
@@ -37,7 +34,7 @@ public class PluginOneselfInteractive implements PluginInteractive {
 
 
     @Override
-    public PluginDescriptor getPluginDescriptor() {
+    public InsidePluginDescriptor getPluginDescriptor() {
         return pluginDescriptor;
     }
 
@@ -63,8 +60,8 @@ public class PluginOneselfInteractive implements PluginInteractive {
 
 
 
-    private PluginDescriptor createPluginDescriptor(){
-        PluginDescriptor pluginDescriptor;
+    private InsidePluginDescriptor createPluginDescriptor(){
+        InsidePluginDescriptor pluginDescriptor;
         try (PluginDescriptorLoader pluginDescriptorLoader = new DevPluginDescriptorLoader()){
             pluginDescriptor = pluginDescriptorLoader.load(
                     Paths.get(this.getClass().getResource("/").toURI()));

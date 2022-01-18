@@ -42,9 +42,9 @@ public class DevPluginDescriptorLoader extends AbstractPluginDescriptorLoader{
     }
 
     @Override
-    protected DefaultPluginDescriptor create(Manifest manifest, Path path) throws Exception {
-        final DefaultPluginDescriptor descriptor = super.create(manifest, path);
-        descriptor.setType(PluginDescriptor.Type.DIR_OF_DEV);
+    protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception {
+        final DefaultInsidePluginDescriptor descriptor = super.create(manifest, path);
+        descriptor.setType(PluginDescriptor.Type.DEV);
         return descriptor;
     }
 }

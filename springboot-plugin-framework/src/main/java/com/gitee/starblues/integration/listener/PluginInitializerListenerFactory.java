@@ -60,7 +60,7 @@ public class PluginInitializerListenerFactory implements PluginInitializerListen
      * 添加监听者
      * @param pluginInitializerListener pluginInitializerListener
      */
-    public void addPluginInitializerListeners(PluginInitializerListener pluginInitializerListener){
+    public void addListener(PluginInitializerListener pluginInitializerListener){
         if(pluginInitializerListener != null){
             pluginInitializerListeners.add(pluginInitializerListener);
         }

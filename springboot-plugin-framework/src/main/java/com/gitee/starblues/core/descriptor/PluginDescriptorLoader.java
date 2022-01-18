@@ -19,7 +19,7 @@ public interface PluginDescriptorLoader extends AutoCloseable{
      * @return PluginDescriptor
      * @throws PluginException 加载异常
      */
-    PluginDescriptor load(Path location) throws PluginException;
+    InsidePluginDescriptor load(Path location) throws PluginException;
 
 
 }

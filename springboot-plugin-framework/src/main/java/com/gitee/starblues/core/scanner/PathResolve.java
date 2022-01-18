@@ -3,7 +3,7 @@ package com.gitee.starblues.core.scanner;
 import java.nio.file.Path;
 
 /**
- * 目录解决器
+ * 从路径中发现合适的插件
  * @author starBlues
  * @version 3.0.0
  */

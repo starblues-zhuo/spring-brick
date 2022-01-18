@@ -3,6 +3,8 @@ package com.gitee.starblues.core;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.MsgUtils;
 
+import java.util.function.Supplier;
+
 
 /**
  * 插件异常
@@ -19,25 +21,34 @@ public class PluginException extends RuntimeException{
         super(message);
     }
 
+    public PluginException(Throwable cause) {
+        super(cause);
+    }
+
     public PluginException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public PluginException(String opType, PluginDescriptor pluginDescriptor, Throwable cause) {
-        this(opType, MsgUtils.getPluginUnique(pluginDescriptor), cause);
+    public PluginException(PluginDescriptor pluginDescriptor, String opType, Throwable cause) {
+        this(MsgUtils.getPluginUnique(pluginDescriptor), opType,  cause);
     }
 
-    public PluginException(String opType, PluginDescriptor pluginDescriptor, String message) {
-        this(opType, MsgUtils.getPluginUnique(pluginDescriptor), message);
+    public PluginException(PluginDescriptor pluginDescriptor, String message) {
+        this(MsgUtils.getPluginUnique(pluginDescriptor), message);
     }
 
-    public PluginException(String opType, String pluginId, Throwable cause) {
-        super(opType + "插件[" + pluginId + "]失败. " + MsgUtils.getThrowableMsg(cause), cause);
+    public PluginException(String pluginId, String opType, Throwable cause) {
+        super("插件[" + pluginId + "]" + opType + "失败. " + MsgUtils.getThrowableMsg(cause), cause);
     }
 
-    public PluginException(String opType, String pluginId, String message) {
-        super(opType + "插件[" + pluginId + "]失败. " + MsgUtils.getThrowableMsg(message));
+    public PluginException(String pluginId, String message) {
+        super("插件[" + pluginId + "]" + MsgUtils.getThrowableMsg(message));
     }
 
-
+    public static PluginException getPluginException(Throwable throwable, Supplier<PluginException> getException){
+        if(throwable instanceof PluginException){
+            return (PluginException) throwable;
+        }
+        return getException.get();
+    }
 }

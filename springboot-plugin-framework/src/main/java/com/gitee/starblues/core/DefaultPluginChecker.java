@@ -3,6 +3,7 @@ package com.gitee.starblues.core;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.Assert;
 
+import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -16,10 +17,10 @@ public class DefaultPluginChecker implements PluginChecker{
     @Override
     public void check(Path path) throws Exception {
         if(path == null){
-            throw new Exception("path 文件路径不能为空");
+            throw new FileNotFoundException("path 文件路径不能为空");
         }
         if(Files.notExists(path)){
-            throw new Exception("不存在文件: " + path.toString());
+            throw new FileNotFoundException("不存在文件: " + path.toString());
         }
     }
 

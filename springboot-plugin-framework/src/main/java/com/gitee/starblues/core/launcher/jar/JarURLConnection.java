@@ -1,8 +1,15 @@
 package com.gitee.starblues.core.launcher.jar;
 
+import com.gitee.starblues.core.launcher.PluginResourceStorage;
+import org.apache.commons.io.IOUtils;
+
 import java.io.*;
 import java.net.*;
 import java.security.Permission;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author starBlues
@@ -125,7 +132,7 @@ public class JarURLConnection extends java.net.JarURLConnection {
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
+    public synchronized InputStream getInputStream() throws IOException {
         if (this.jarFile == null) {
             throw FILE_NOT_FOUND_EXCEPTION;
         }
@@ -137,6 +144,7 @@ public class JarURLConnection extends java.net.JarURLConnection {
                 : this.jarFile.getInputStream(this.jarEntry));
         if (inputStream == null) {
             throwFileNotFound(this.jarEntryName, this.jarFile);
+            return null;
         }
         return inputStream;
     }
@@ -168,8 +176,7 @@ public class JarURLConnection extends java.net.JarURLConnection {
             }
             java.util.jar.JarEntry entry = getJarEntry();
             return (entry != null) ? (int) entry.getSize() : -1;
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             return -1;
         }
     }
@@ -204,8 +211,7 @@ public class JarURLConnection extends java.net.JarURLConnection {
         try {
             java.util.jar.JarEntry entry = getJarEntry();
             return (entry != null) ? entry.getTime() : 0;
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             return 0;
         }
     }
@@ -236,7 +242,9 @@ public class JarURLConnection extends java.net.JarURLConnection {
                 && !jarFile.containsEntry(jarEntryName.toString())) {
             return NOT_FOUND_CONNECTION;
         }
-        return new JarURLConnection(url, new JarFileWrapper(jarFile), jarEntryName);
+        JarFileWrapper jarFileWrapper = new JarFileWrapper(jarFile);
+        PluginResourceStorage.addJarFile(jarFileWrapper);
+        return new JarURLConnection(url, jarFileWrapper, jarEntryName);
     }
 
     private static int indexOfRootSpec(StringSequence file, String pathFromRoot) {
@@ -280,10 +288,17 @@ public class JarURLConnection extends java.net.JarURLConnection {
             if (source.isEmpty() || (source.indexOf('%') < 0)) {
                 return source;
             }
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(source.length());
-            write(source.toString(), bos);
-            // AsciiBytes is what is used to store the JarEntries so make it symmetric
-            return new StringSequence(AsciiBytes.toString(bos.toByteArray()));
+            ByteArrayOutputStream bos = null;
+            try {
+                bos = new ByteArrayOutputStream(source.length());
+                write(source.toString(), bos);
+                // AsciiBytes is what is used to store the JarEntries so make it symmetric
+                return new StringSequence(AsciiBytes.toString(bos.toByteArray()));
+            } finally {
+                if(bos != null){
+                    IOUtils.closeQuietly(bos);
+                }
+            }
         }
 
         private void write(String source, ByteArrayOutputStream outputStream) {

@@ -34,7 +34,7 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
 
 
     @Override
-    public PluginDescriptor load(Path location) throws PluginException {
+    public InsidePluginDescriptor load(Path location) throws PluginException {
         Manifest manifest = null;
         try {
             manifest = getManifest(location);
@@ -62,9 +62,9 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
      */
     protected abstract Manifest getManifest(Path location) throws Exception;
 
-    protected DefaultPluginDescriptor create(Manifest manifest, Path path) throws Exception{
+    protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception{
         Attributes attributes = manifest.getMainAttributes();
-        DefaultPluginDescriptor descriptor = new DefaultPluginDescriptor(
+        DefaultInsidePluginDescriptor descriptor = new DefaultInsidePluginDescriptor(
                 getValue(attributes, PLUGIN_ID),
                 getValue(attributes, PLUGIN_VERSION),
                 getValue(attributes, PLUGIN_BOOTSTRAP_CLASS),

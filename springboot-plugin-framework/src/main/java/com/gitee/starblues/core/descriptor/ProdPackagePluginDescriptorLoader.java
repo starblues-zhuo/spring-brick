@@ -4,6 +4,7 @@ package com.gitee.starblues.core.descriptor;
 import com.gitee.starblues.common.PackageStructure;
 import com.gitee.starblues.common.utils.ManifestUtils;
 import com.gitee.starblues.utils.ObjectUtils;
+import com.gitee.starblues.utils.PluginFileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
@@ -37,7 +38,11 @@ public class ProdPackagePluginDescriptorLoader extends AbstractPluginDescriptorL
     @Override
     protected Manifest getManifest(Path location) throws Exception {
         try (JarFile jarFile = new JarFile(location.toFile())){
-            Manifest manifest = jarFile.getManifest();
+            JarEntry jarEntry = jarFile.getJarEntry(PackageStructure.PROD_MANIFEST_PATH);
+            // TODO
+            InputStream jarFileInputStream = jarFile.getInputStream(jarEntry);
+            Manifest manifest = PluginFileUtils.getManifest(jarFileInputStream);
+            jarFileInputStream.close();
             pluginLibPaths = getPluginLibPaths(jarFile, manifest);
             return manifest;
         }
@@ -49,8 +54,8 @@ public class ProdPackagePluginDescriptorLoader extends AbstractPluginDescriptorL
     }
 
     @Override
-    protected DefaultPluginDescriptor create(Manifest manifest, Path path) throws Exception {
-        final DefaultPluginDescriptor descriptor = super.create(manifest, path);
+    protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception {
+        DefaultInsidePluginDescriptor descriptor = super.create(manifest, path);
         descriptor.setType(type);
         return descriptor;
     }

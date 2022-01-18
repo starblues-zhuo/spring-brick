@@ -1,7 +1,5 @@
 package com.gitee.starblues.core;
 
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
-
 import java.nio.file.Path;
 import java.util.List;
 
@@ -15,28 +13,43 @@ public interface PluginManager {
      * 得到插件root目录
      * @return List
      */
-    List<Path> getPluginsRoots();
+    List<String> getPluginsRoots();
+
+    /**
+     * 得到插件默认的根路径
+     * @return String
+     */
+    String getDefaultPluginRoot();
 
     /**
      * 加载配置目录中全部插件
      * @return 加载的插件信息
      */
-    List<PluginDescriptor> loadPlugins();
+    List<PluginInfo> loadPlugins();
 
     /**
-     * 校验插件jar包
-     * @param jarPath 插件jar包
+     * 校验插件包
+     * @param pluginPath 插件包路径
      * @return 校验结果. true 成功, false 失败
      */
-    boolean verify(Path jarPath);
+    boolean verify(Path pluginPath);
 
     /**
-     * 安装具体插件路径来加载插件
+     * 解析插件包
+     * @param pluginPath 插件包路基
+     * @return 解析的插件信息
+     * @throws PluginException 插件异常
+     */
+    PluginInfo parse(Path pluginPath) throws PluginException;
+
+    /**
+     * 根据具体插件路径来加载插件.
      * @param pluginPath 插件路径
+     * @param unpackPlugin 是否解压插件文件
      * @return 加载的插件信息
      * @throws PluginException 插件异常
      */
-    PluginDescriptor load(Path pluginPath) throws PluginException;
+    PluginInfo load(Path pluginPath, boolean unpackPlugin) throws PluginException;
 
     /**
      * 卸载加载插件
@@ -47,10 +60,11 @@ public interface PluginManager {
     /**
      * 安装路径直接安装插件, 并启动
      * @param pluginPath 插件路径
+     * @param unpackPlugin 是否解压插件文件
      * @return 安装的插件信息
      * @throws PluginException 插件异常
      */
-    PluginDescriptor install(Path pluginPath) throws PluginException;
+    PluginInfo install(Path pluginPath, boolean unpackPlugin) throws PluginException;
 
     /**
      * 卸载插件
@@ -62,9 +76,11 @@ public interface PluginManager {
     /**
      * 更新已经安装的插件
      * @param pluginPath 新版本插件路径
+     * @param unpackPlugin 是否解压要更新的插件文件
      * @throws PluginException 插件异常
+     * @return PluginInfo 更新的插件信息
      */
-    void upgrade(Path pluginPath) throws PluginException;
+    PluginInfo upgrade(Path pluginPath, boolean unpackPlugin) throws PluginException;
 
     /**
      * 启动处于 RESOLVED 状态的插件
@@ -72,7 +88,7 @@ public interface PluginManager {
      * @return PluginDescriptor
      * @throws PluginException 插件异常
      */
-    PluginDescriptor start(String pluginId) throws PluginException;
+    PluginInfo start(String pluginId) throws PluginException;
 
     /**
      * 停止启动的插件
@@ -80,32 +96,19 @@ public interface PluginManager {
      * @return PluginDescriptor
      * @throws PluginException 插件异常
      */
-    PluginDescriptor stop(String pluginId) throws PluginException;
-
-    /**
-     * 得到全部的插件信息
-     * @return List PluginDescriptor
-     */
-    List<PluginDescriptor> getPluginDescriptors();
+    PluginInfo stop(String pluginId) throws PluginException;
 
     /**
      * 根据插件id获取插件描述信息
      * @param pluginId 插件id
      * @return PluginDescriptor
      */
-    PluginDescriptor getPluginDescriptor(String pluginId);
+    PluginInfo getPluginInfo(String pluginId);
 
     /**
      * 得到全部的插件信息
      * @return List PluginWrapper
      */
-    List<PluginWrapper> getPluginWrappers();
-
-    /**
-     * 根据插件id获取插件 PluginWrapper
-     * @param pluginId 插件id
-     * @return PluginWrapper
-     */
-    PluginWrapper getPluginWrapper(String pluginId);
+    List<PluginInfo> getPluginInfos();
 
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * 插件信息A
+ * 插件信息
  * @author starBlues
  * @version 3.0.0
  */

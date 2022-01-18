@@ -1,12 +1,10 @@
 package com.gitee.starblues.bootstrap.processor;
 
 import com.gitee.starblues.bootstrap.utils.AnnotationUtils;
+import com.gitee.starblues.bootstrap.utils.DestroyUtils;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.SpringBeanFactory;
-import com.gitee.starblues.utils.ClassUtils;
-import com.gitee.starblues.utils.CommonUtils;
-import com.gitee.starblues.utils.ObjectUtils;
-import com.gitee.starblues.utils.ReflectionUtils;
+import com.gitee.starblues.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.reflect.Method;
@@ -35,6 +34,7 @@ public class PluginControllerRegistryProcessor implements SpringPluginProcessor 
 
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
     private Method getMappingForMethod;
+    private RequestMappingHandlerAdapter handlerAdapter;
 
     private final AtomicBoolean canRegistered = new AtomicBoolean(false);
 
@@ -43,6 +43,8 @@ public class PluginControllerRegistryProcessor implements SpringPluginProcessor 
     public void initialize(ProcessorContext processorContext) throws ProcessorException {
         SpringBeanFactory mainBeanFactory = processorContext.getMainBeanFactory();
         this.requestMappingHandlerMapping = mainBeanFactory.getBean(RequestMappingHandlerMapping.class);
+        this.handlerAdapter = SpringBeanUtilsV3.getExistBean(processorContext.getMainApplicationContext(),
+                RequestMappingHandlerAdapter.class);
         this.getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
                 "getMappingForMethod", Method.class, Class.class);
         if(getMappingForMethod == null){
@@ -150,6 +152,12 @@ public class PluginControllerRegistryProcessor implements SpringPluginProcessor 
                 requestMappingHandlerMapping.unregisterMapping(requestMappingInfo);
             }
         }
+        if(handlerAdapter != null){
+            Class<?> beanClass = controllerBeanWrapper.getBeanClass();
+            DestroyUtils.destroyValue(handlerAdapter, "sessionAttributesHandlerCache", beanClass);
+            DestroyUtils.destroyValue(handlerAdapter, "initBinderCache", beanClass);
+            DestroyUtils.destroyValue(handlerAdapter, "modelAttributeCache", beanClass);
+        }
     }
 
     /**
@@ -229,6 +237,7 @@ public class PluginControllerRegistryProcessor implements SpringPluginProcessor 
                 ControllerWrapper controllerWrapper = new ControllerWrapper();
                 controllerWrapper.setPathPrefix(newPath);
                 controllerWrapper.setBeanName(beanName);
+                controllerWrapper.setBeanClass(aClass);
                 controllerWrappers.add(controllerWrapper);
             } catch (Exception e) {
                 LOG.error("插件 [{}] Controller 类[{}] 注册异常. {}", pluginId, aClass.getName(), e.getMessage(), e);

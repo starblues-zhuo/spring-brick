@@ -1,7 +1,7 @@
 package com.gitee.starblues.core.launcher;
 
-import com.gitee.starblues.core.launcher.jar.JarFile;
 
+import com.gitee.starblues.core.launcher.jar.JarFile;
 
 /**
  * @author starBlues

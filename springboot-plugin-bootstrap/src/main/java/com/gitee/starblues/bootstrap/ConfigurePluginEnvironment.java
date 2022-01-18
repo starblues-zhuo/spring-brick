@@ -1,5 +1,6 @@
 package com.gitee.starblues.bootstrap;
 
+import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.ObjectUtils;
@@ -28,9 +29,9 @@ class ConfigurePluginEnvironment {
     public static final String MBEAN_DOMAIN_PROPERTY_NAME = "spring.liveBeansView.mbeanDomain";
 
 
-    private final PluginDescriptor pluginDescriptor;
+    private final InsidePluginDescriptor pluginDescriptor;
 
-    ConfigurePluginEnvironment(PluginDescriptor pluginDescriptor) {
+    ConfigurePluginEnvironment(InsidePluginDescriptor pluginDescriptor) {
         this.pluginDescriptor = Assert.isNotNull(pluginDescriptor, "pluginDescriptor 不能为空");
     }
 

@@ -1,5 +1,6 @@
 package com.gitee.starblues.core.classloader;
 
+import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.Assert;
 
@@ -34,7 +35,7 @@ public class PluginClassLoader extends GenericClassLoader {
         }
     }
 
-    public void addResource(PluginDescriptor pluginDescriptor) throws Exception {
+    public void addResource(InsidePluginDescriptor pluginDescriptor) throws Exception {
         ((PluginResourceLoaderFactory) resourceLoaderFactory).addResource(pluginDescriptor);
     }
 

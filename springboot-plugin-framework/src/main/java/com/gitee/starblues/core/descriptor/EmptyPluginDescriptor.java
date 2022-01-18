@@ -9,7 +9,7 @@ import java.util.jar.Manifest;
  * @author starBlues
  * @version 3.0.0
  */
-public class EmptyPluginDescriptor implements PluginDescriptor{
+public class EmptyPluginDescriptor implements InsidePluginDescriptor{
     @Override
     public String getPluginId() {
         return null;
@@ -26,17 +26,7 @@ public class EmptyPluginDescriptor implements PluginDescriptor{
     }
 
     @Override
-    public Path getPluginPath() {
-        return null;
-    }
-
-    @Override
-    public String getPluginClassPath() {
-        return null;
-    }
-
-    @Override
-    public Set<String> getPluginLibPaths() {
+    public String getPluginPath() {
         return null;
     }
 
@@ -61,12 +51,12 @@ public class EmptyPluginDescriptor implements PluginDescriptor{
     }
 
     @Override
-    public String getConfigFileName() {
+    public List<PluginDependency> getPluginDependency() {
         return null;
     }
 
     @Override
-    public List<PluginDependency> getPluginDependency() {
+    public Type getType() {
         return null;
     }
 
@@ -76,7 +66,32 @@ public class EmptyPluginDescriptor implements PluginDescriptor{
     }
 
     @Override
-    public Type getType() {
+    public String getConfigFileName() {
+        return null;
+    }
+
+    @Override
+    public Path getInsidePluginPath() {
+        return null;
+    }
+
+    @Override
+    public String getPluginFileName() {
+        return null;
+    }
+
+    @Override
+    public String getPluginClassPath() {
+        return null;
+    }
+
+    @Override
+    public Set<String> getPluginLibPaths() {
+        return null;
+    }
+
+    @Override
+    public PluginDescriptor toPluginDescriptor() {
         return null;
     }
 }

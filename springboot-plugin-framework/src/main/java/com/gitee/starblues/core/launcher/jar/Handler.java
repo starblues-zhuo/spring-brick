@@ -1,9 +1,13 @@
 package com.gitee.starblues.core.launcher.jar;
 
+import com.gitee.starblues.core.launcher.PluginResourceStorage;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -61,15 +65,17 @@ public class Handler extends URLStreamHandler {
 
     @Override
     protected URLConnection openConnection(URL url) throws IOException {
+        URLConnection jarURLConnection = null;
         if (this.jarFile != null && isUrlInJarFile(url, this.jarFile)) {
-            return JarURLConnection.get(url, this.jarFile);
+            jarURLConnection = JarURLConnection.get(url, this.jarFile);
+        } else {
+            try {
+                jarURLConnection = JarURLConnection.get(url, getRootJarFileFromUrl(url));
+            } catch (Exception ex) {
+                jarURLConnection = openFallbackConnection(url, ex);
+            }
         }
-        try {
-            return JarURLConnection.get(url, getRootJarFileFromUrl(url));
-        }
-        catch (Exception ex) {
-            return openFallbackConnection(url, ex);
-        }
+        return jarURLConnection;
     }
 
     private boolean isUrlInJarFile(URL url, JarFile jarFile) throws MalformedURLException {
@@ -83,8 +89,7 @@ public class Handler extends URLStreamHandler {
             URLConnection connection = openFallbackTomcatConnection(url);
             connection = (connection != null) ? connection : openFallbackContextConnection(url);
             return (connection != null) ? connection : openFallbackHandlerConnection(url);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             if (reason instanceof IOException) {
                 log(false, "Unable to open fallback handler", ex);
                 throw (IOException) reason;
@@ -148,8 +153,7 @@ public class Handler extends URLStreamHandler {
             if (jarContextUrl != null) {
                 return new URL(jarContextUrl, url.toExternalForm()).openConnection();
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
         }
         return null;
     }
@@ -307,7 +311,7 @@ public class Handler extends URLStreamHandler {
 
     @Override
     protected boolean sameFile(URL u1, URL u2) {
-        if (!u1.getProtocol().equals("jar") || !u2.getProtocol().equals("jar")) {
+        if (!"jar".equals(u1.getProtocol()) || !"jar".equals(u2.getProtocol())) {
             return false;
         }
         int separator1 = u1.getFile().indexOf(SEPARATOR);
@@ -355,15 +359,13 @@ public class Handler extends URLStreamHandler {
                 throw new IllegalStateException("Not a file URL");
             }
             File file = new File(URI.create(name));
-            Map<File, JarFile> cache = rootFileCache.get();
-            JarFile result = (cache != null) ? cache.get(file) : null;
-            if (result == null) {
-                result = new JarFile(file);
-                addToRootFileCache(file, result);
+            JarFile jarFile = PluginResourceStorage.getRootJarFile(file);
+            if (jarFile == null) {
+                jarFile = new JarFile(file);
+                PluginResourceStorage.addRootJarFile(file, jarFile);
             }
-            return result;
-        }
-        catch (Exception ex) {
+            return jarFile;
+        } catch (Exception ex) {
             throw new IOException("Unable to open root Jar file '" + name + "'", ex);
         }
     }

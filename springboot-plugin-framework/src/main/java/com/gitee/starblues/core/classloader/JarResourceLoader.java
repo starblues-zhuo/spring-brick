@@ -1,7 +1,11 @@
 package com.gitee.starblues.core.classloader;
 
+import com.gitee.starblues.utils.ResourceUtils;
 import org.apache.commons.io.IOUtils;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.net.URL;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -35,7 +39,9 @@ public class JarResourceLoader extends AbstractResourceLoader{
                 String name = jarEntry.getName();
                 URL url = new URL(baseUrl.toString() + name);
                 Resource resource = new Resource(name, baseUrl, url);
+                resource.setBytes(getClassBytes(name, jarInputStream, false));
                 addResource(name, resource);
+                jarInputStream.closeEntry();
             }
         } finally {
             IOUtils.closeQuietly(jarInputStream);

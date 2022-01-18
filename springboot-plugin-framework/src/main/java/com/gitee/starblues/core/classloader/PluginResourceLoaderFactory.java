@@ -1,6 +1,7 @@
 package com.gitee.starblues.core.classloader;
 
 import com.gitee.starblues.common.PackageStructure;
+import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
@@ -16,19 +17,19 @@ import java.util.Set;
 public class PluginResourceLoaderFactory extends ResourceLoaderFactory{
 
 
-    public synchronized void addResource(PluginDescriptor pluginDescriptor) throws Exception{
+    public synchronized void addResource(InsidePluginDescriptor pluginDescriptor) throws Exception{
         PluginDescriptor.Type type = pluginDescriptor.getType();
         if(type == PluginDescriptor.Type.JAR || type == PluginDescriptor.Type.ZIP){
             NestedJarResourceLoader resourceLoader = new NestedJarResourceLoader(pluginDescriptor, this);
             resourceLoader.init();
             addResourceLoader(resourceLoader);
-        } else if(type == PluginDescriptor.Type.DIR_OF_DEV || type == PluginDescriptor.Type.DIR_OF_PROD){
+        } else if(type == PluginDescriptor.Type.DIR || type == PluginDescriptor.Type.DEV){
             addClasspath(pluginDescriptor);
             addLibFile(pluginDescriptor);
         }
     }
 
-    private void addClasspath(PluginDescriptor pluginDescriptor) throws Exception {
+    private void addClasspath(InsidePluginDescriptor pluginDescriptor) throws Exception {
         String pluginClassPath = pluginDescriptor.getPluginClassPath();
         File existFile = PluginFileUtils.getExistFile(pluginClassPath);
         if(existFile != null){
@@ -36,7 +37,7 @@ public class PluginResourceLoaderFactory extends ResourceLoaderFactory{
         }
     }
 
-    private void addLibFile(PluginDescriptor pluginDescriptor) throws Exception {
+    private void addLibFile(InsidePluginDescriptor pluginDescriptor) throws Exception {
         Set<String> pluginLibPaths = pluginDescriptor.getPluginLibPaths();
         if(ObjectUtils.isEmpty(pluginLibPaths)){
             return;

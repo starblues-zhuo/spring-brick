@@ -2,14 +2,12 @@ package com.gitee.starblues.core;
 
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 
-import java.nio.file.Path;
-
 /**
  * 插件包装
  * @author starBlues
  * @version 3.0.0
  */
-public interface PluginWrapper {
+public interface PluginInfo {
 
     /**
      * 得到插件id
@@ -27,7 +25,7 @@ public interface PluginWrapper {
      * 得到插件路径
      * @return Path
      */
-    Path getPluginPath();
+    String getPluginPath();
 
     /**
      * 得到插件状态

@@ -1,26 +1,24 @@
 package com.gitee.starblues.core;
 
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
-
-import java.nio.file.Path;
+import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 
 /**
- * 内部的
+ * 默认的内部PluginWrapperInside实现
  * @author starBlues
+ * @version 3.0.0
  */
-public class PluginWrapperInside implements PluginWrapper {
+public class DefaultPluginInsideInfo implements PluginInsideInfo {
 
     private final String pluginId;
-    private final PluginDescriptor pluginDescriptor;
-    private final Path pluginPath;
+    private final InsidePluginDescriptor pluginDescriptor;
     private PluginState pluginState;
 
-    public PluginWrapperInside(PluginDescriptor pluginDescriptor) {
+    public DefaultPluginInsideInfo(InsidePluginDescriptor pluginDescriptor) {
         this.pluginId = pluginDescriptor.getPluginId();
         this.pluginDescriptor = pluginDescriptor;
-        this.pluginPath = pluginDescriptor.getPluginPath();
     }
 
+    @Override
     public void setPluginState(PluginState pluginState) {
         this.pluginState = pluginState;
     }
@@ -31,13 +29,18 @@ public class PluginWrapperInside implements PluginWrapper {
     }
 
     @Override
-    public PluginDescriptor getPluginDescriptor() {
+    public InsidePluginDescriptor getPluginDescriptor() {
         return pluginDescriptor;
     }
 
     @Override
-    public Path getPluginPath() {
-        return pluginPath;
+    public PluginInfo toPluginInfo() {
+        return new PluginInfoFace(this);
+    }
+
+    @Override
+    public String getPluginPath() {
+        return pluginDescriptor.getPluginPath();
     }
 
     @Override

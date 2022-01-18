@@ -8,20 +8,14 @@ package com.gitee.starblues.core;
 public enum PluginState {
 
     /**
-     * 创建状态
-     */
-    CREATED("CREATED"),
-
-
-    /**
-     * 禁用状态
+     * 被禁用状态
      */
     DISABLED("DISABLED"),
 
     /**
      * 被加载了
      */
-    RESOLVED("LOADED"),
+    LOADED("LOADED"),
 
     /**
      * 启动状态

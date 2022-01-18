@@ -1,6 +1,7 @@
 package com.gitee.starblues.bootstrap.processor;
 
 import com.gitee.starblues.bootstrap.SpringPluginBootstrap;
+import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.core.launcher.plugin.CacheRegistryInfo;
 import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
@@ -47,7 +48,7 @@ public class DefaultProcessorContext extends CacheRegistryInfo implements Proces
     }
 
     @Override
-    public PluginDescriptor getPluginDescriptor() {
+    public InsidePluginDescriptor getPluginDescriptor() {
         return pluginInteractive.getPluginDescriptor();
     }
 
@@ -79,7 +80,7 @@ public class DefaultProcessorContext extends CacheRegistryInfo implements Proces
     @Override
     public GenericApplicationContext getApplicationContext() {
         if(applicationContext == null){
-            throw new IllegalStateException("GenericApplicationContext 未初始化!");
+            return null;
         }
         return applicationContext;
     }

@@ -72,7 +72,7 @@ public class PluginListableBeanFactory extends DefaultListableBeanFactory {
             field.setAccessible(true);
             try {
                 Object o = field.get(this);
-                DestroyUtils.destroy(o);
+                DestroyUtils.destroyAll(o);
             } catch (IllegalAccessException e) {
                 // 忽略
             }

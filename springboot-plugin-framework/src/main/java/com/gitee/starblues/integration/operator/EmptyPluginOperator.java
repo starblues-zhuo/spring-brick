@@ -1,9 +1,9 @@
 package com.gitee.starblues.integration.operator;
 
 import com.gitee.starblues.core.PluginException;
-import com.gitee.starblues.core.PluginWrapper;
+import com.gitee.starblues.core.PluginInfo;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
-import com.gitee.starblues.integration.operator.module.PluginInfo;
+import com.gitee.starblues.integration.operator.upload.UploadParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -16,6 +16,7 @@ import java.util.Set;
  */
 public class EmptyPluginOperator implements PluginOperator{
 
+
     @Override
     public boolean initPlugins(PluginInitializerListener pluginInitializerListener) throws PluginException {
         return false;
@@ -27,22 +28,21 @@ public class EmptyPluginOperator implements PluginOperator{
     }
 
     @Override
-    public PluginInfo install(Path jarPath) throws PluginException {
+    public PluginInfo parse(Path pluginPath) throws PluginException {
         return null;
     }
 
     @Override
-    public boolean uninstall(String pluginId, boolean isBackup) throws PluginException {
-        return false;
-    }
-
-    @Override
-    public PluginInfo load(Path jarPath) throws PluginException {
+    public PluginInfo install(Path jarPath, boolean unpackPlugin) throws PluginException {
         return null;
     }
 
     @Override
-    public PluginInfo load(MultipartFile pluginFile) throws PluginException {
+    public void uninstall(String pluginId, boolean isDelete, boolean isBackup) throws PluginException {
+    }
+
+    @Override
+    public PluginInfo load(Path jarPath, boolean unpackPlugin) throws PluginException {
         return null;
     }
 
@@ -62,28 +62,18 @@ public class EmptyPluginOperator implements PluginOperator{
     }
 
     @Override
-    public PluginInfo uploadPluginAndStart(MultipartFile pluginFile) throws PluginException {
+    public PluginInfo uploadPlugin(UploadParam uploadParam) throws PluginException {
         return null;
     }
 
     @Override
-    public boolean installConfigFile(Path configFilePath) throws PluginException {
-        return false;
+    public Path backupPlugin(Path backDirPath, String sign) throws PluginException {
+        return null;
     }
 
     @Override
-    public boolean uploadConfigFile(MultipartFile configFile) throws PluginException {
-        return false;
-    }
-
-    @Override
-    public boolean backupPlugin(Path backDirPath, String sign) throws PluginException {
-        return false;
-    }
-
-    @Override
-    public boolean backupPlugin(String pluginId, String sign) throws PluginException {
-        return false;
+    public Path backupPlugin(String pluginId, String sign) throws PluginException {
+        return null;
     }
 
     @Override
@@ -93,21 +83,6 @@ public class EmptyPluginOperator implements PluginOperator{
 
     @Override
     public PluginInfo getPluginInfo(String pluginId) {
-        return null;
-    }
-
-    @Override
-    public Set<String> getPluginFilePaths() {
-        return null;
-    }
-
-    @Override
-    public List<PluginWrapper> getPluginWrapper() {
-        return null;
-    }
-
-    @Override
-    public PluginWrapper getPluginWrapper(String pluginId) {
         return null;
     }
 }

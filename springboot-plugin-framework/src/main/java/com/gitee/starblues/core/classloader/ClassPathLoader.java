@@ -3,7 +3,9 @@ package com.gitee.starblues.core.classloader;
 import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.ResourceUtils;
+import org.apache.commons.io.IOUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.MalformedURLException;
@@ -57,23 +59,23 @@ public class ClassPathLoader extends AbstractResourceLoader{
 
     private void loadResource(File file, String packageName) throws Exception{
         if(file.isDirectory()){
-            addResource(file, packageName + ResourceUtils.PACKAGE_SPLIT, null);
-            return;
-        }
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            byte[] bytes = new byte[(int) file.length()];
-
-            if (fileInputStream.read(bytes) != -1) {
-                addResource(file, packageName, bytes);
-            }
+            addResource(file, packageName + ResourceUtils.PACKAGE_SPLIT);
+        } else {
+            addResource(file, packageName);
         }
     }
 
-    private void addResource(File file, String packageName, byte[] bytes) throws MalformedURLException {
+    private void addResource(File file, String packageName) throws Exception {
         Resource resource = new Resource(
                 file.getName(), url, new URL(url.toString() + packageName)
         );
+        if(file.exists() && file.isFile()){
+            resource.setBytes(getClassBytes(file.getPath(), new FileInputStream(file), true));
+        }
         addResource(packageName, resource);
     }
+
+
+
 
 }

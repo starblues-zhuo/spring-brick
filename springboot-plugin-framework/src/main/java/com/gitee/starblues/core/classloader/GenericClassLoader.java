@@ -1,6 +1,5 @@
 package com.gitee.starblues.core.classloader;
 
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.ResourceUtils;
@@ -65,6 +64,10 @@ public class GenericClassLoader extends URLClassLoader {
         resourceLoaderFactory.addResource(path);
     }
 
+    public void addResource(URL url) throws Exception {
+        resourceLoaderFactory.addResource(url);
+    }
+
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(className)) {
@@ -104,30 +107,16 @@ public class GenericClassLoader extends URLClassLoader {
             if (aClass != null) {
                 return aClass;
             }
-
-            InputStream inputStream = resourceLoaderFactory.getInputStream(formatClassName);
-            if(inputStream == null){
-                return null;
+            Resource resource = resourceLoaderFactory.findResource(formatClassName);
+            byte[] bytes = null;
+            if(resource != null){
+                bytes = resource.getBytes();
             }
-            ByteArrayOutputStream byteArrayOutputStream = null;
-            byte[] bytes;
-            try {
-                if(inputStream instanceof ByteArrayInputStream){
-                    ByteArrayInputStream arrayInputStream = (ByteArrayInputStream) inputStream;
-                    bytes = IOUtils.readFully(inputStream, arrayInputStream.available());
-                } else {
-                    byteArrayOutputStream = new ByteArrayOutputStream();
-                    IOUtils.copy(inputStream, byteArrayOutputStream);
-                    bytes = byteArrayOutputStream.toByteArray();
-                }
-            } catch (Exception e){
-                e.printStackTrace();
+            if(bytes == null || bytes.length == 0){
+                bytes = getClassByte(formatClassName);
+            }
+            if(bytes == null || bytes.length == 0){
                 return null;
-            } finally {
-                IOUtils.closeQuietly(inputStream);
-                if(byteArrayOutputStream != null){
-                    IOUtils.closeQuietly(byteArrayOutputStream);
-                }
             }
             aClass = defineClass(name, bytes, 0, bytes.length );
             if(aClass == null) {
@@ -141,6 +130,34 @@ public class GenericClassLoader extends URLClassLoader {
             }
             pluginClassCache.put(name, aClass);
             return aClass;
+        }
+    }
+
+    private byte[] getClassByte(String formatClassName){
+        InputStream inputStream = resourceLoaderFactory.getInputStream(formatClassName);
+        if(inputStream == null){
+            return null;
+        }
+        ByteArrayOutputStream byteArrayOutputStream = null;
+        byte[] bytes = null;
+        try {
+            if(inputStream instanceof ByteArrayInputStream){
+                ByteArrayInputStream arrayInputStream = (ByteArrayInputStream) inputStream;
+                bytes = IOUtils.readFully(inputStream, arrayInputStream.available());
+            } else {
+                byteArrayOutputStream = new ByteArrayOutputStream();
+                IOUtils.copy(inputStream, byteArrayOutputStream);
+                bytes = byteArrayOutputStream.toByteArray();
+            }
+            return bytes;
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+            if(byteArrayOutputStream != null){
+                IOUtils.closeQuietly(byteArrayOutputStream);
+            }
         }
     }
 

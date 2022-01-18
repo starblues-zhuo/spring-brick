@@ -2,10 +2,12 @@ package com.gitee.starblues.core.launcher.plugin;
 
 import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
 import com.gitee.starblues.core.classloader.PluginClassLoader;
+import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.core.launcher.AbstractLauncher;
 import com.gitee.starblues.core.launcher.JavaMainResourcePatternDefiner;
 import com.gitee.starblues.core.launcher.MainProgramLauncher;
+import com.gitee.starblues.core.launcher.PluginResourceStorage;
 import com.gitee.starblues.spring.SpringPluginHook;
 import com.gitee.starblues.utils.ObjectUtils;
 
@@ -21,7 +23,7 @@ import java.util.Set;
 public class PluginLauncher extends AbstractLauncher<SpringPluginHook> {
 
     protected final PluginInteractive pluginInteractive;
-    protected final PluginDescriptor pluginDescriptor;
+    protected final InsidePluginDescriptor pluginDescriptor;
 
     public PluginLauncher(PluginInteractive pluginInteractive) {
         this.pluginInteractive = pluginInteractive;
@@ -51,8 +53,9 @@ public class PluginLauncher extends AbstractLauncher<SpringPluginHook> {
 
     @Override
     protected SpringPluginHook launch(ClassLoader classLoader, String... args) throws Exception {
+        PluginResourceStorage.addPlugin(pluginDescriptor);
         SpringPluginHook springPluginHook = (SpringPluginHook) new PluginMethodRunner(pluginInteractive).run(classLoader);
-        return new SpringPluginHookWrapper(springPluginHook, classLoader);
+        return new SpringPluginHookWrapper(springPluginHook, pluginDescriptor, classLoader);
     }
 
 

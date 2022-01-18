@@ -1,10 +1,10 @@
 package com.gitee.starblues.integration.operator;
 
 import com.gitee.starblues.core.PluginException;
-import com.gitee.starblues.core.PluginWrapper;
+import com.gitee.starblues.core.PluginInfo;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
-import com.gitee.starblues.integration.operator.module.PluginInfo;
+import com.gitee.starblues.integration.operator.upload.UploadParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,27 +49,19 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public PluginInfo install(Path jarPath) throws PluginException {
+    public PluginInfo parse(Path pluginPath) throws PluginException {
         if(isDisable()){
             return null;
         }
-        return pluginOperator.install(jarPath);
+        return pluginOperator.parse(pluginPath);
     }
 
     @Override
-    public PluginInfo load(Path jarPath) throws PluginException {
+    public PluginInfo install(Path jarPath, boolean unpackPlugin) throws PluginException {
         if(isDisable()){
             return null;
         }
-        return pluginOperator.install(jarPath);
-    }
-
-    @Override
-    public PluginInfo load(MultipartFile pluginFile) throws PluginException {
-        if(isDisable()){
-            return null;
-        }
-        return pluginOperator.load(pluginFile);
+        return pluginOperator.install(jarPath, unpackPlugin);
     }
 
     @Override
@@ -81,12 +73,20 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean uninstall(String pluginId, boolean isBackup) throws PluginException {
+    public void uninstall(String pluginId, boolean isDelete, boolean isBackup) throws PluginException {
         if(isDisable()){
-            return false;
+            return;
         }
         checkIsUnRegistry(pluginId);
-        return pluginOperator.uninstall(pluginId, isBackup);
+        pluginOperator.uninstall(pluginId, isDelete, isBackup);
+    }
+
+    @Override
+    public PluginInfo load(Path jarPath, boolean unpackPlugin) throws PluginException {
+        if(isDisable()){
+            return null;
+        }
+        return pluginOperator.install(jarPath, unpackPlugin);
     }
 
     @Override
@@ -107,41 +107,25 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public PluginInfo uploadPluginAndStart(MultipartFile pluginFile) throws PluginException {
+    public PluginInfo uploadPlugin(UploadParam uploadParam) throws PluginException {
         if(isDisable()){
             return null;
         }
-        return pluginOperator.uploadPluginAndStart(pluginFile);
+        return pluginOperator.uploadPlugin(uploadParam);
     }
 
     @Override
-    public boolean installConfigFile(Path configFilePath) throws PluginException {
+    public Path backupPlugin(Path backDirPath, String sign) throws PluginException {
         if(isDisable()){
-            return false;
-        }
-        return pluginOperator.installConfigFile(configFilePath);
-    }
-
-    @Override
-    public boolean uploadConfigFile(MultipartFile configFile) throws PluginException {
-        if(isDisable()){
-            return false;
-        }
-        return pluginOperator.uploadConfigFile(configFile);
-    }
-
-    @Override
-    public boolean backupPlugin(Path backDirPath, String sign) throws PluginException {
-        if(isDisable()){
-            return false;
+            return null;
         }
         return pluginOperator.backupPlugin(backDirPath, sign);
     }
 
     @Override
-    public boolean backupPlugin(String pluginId, String sign) throws PluginException {
+    public Path backupPlugin(String pluginId, String sign) throws PluginException {
         if(isDisable()){
-            return false;
+            return null;
         }
         return pluginOperator.backupPlugin(pluginId, sign);
     }
@@ -160,30 +144,6 @@ public class PluginOperatorWrapper implements PluginOperator{
             return null;
         }
         return pluginOperator.getPluginInfo(pluginId);
-    }
-
-    @Override
-    public Set<String> getPluginFilePaths() {
-        if(isDisable()){
-            return Collections.emptySet();
-        }
-        return pluginOperator.getPluginFilePaths();
-    }
-
-    @Override
-    public List<PluginWrapper> getPluginWrapper() {
-        if(isDisable()){
-            return Collections.emptyList();
-        }
-        return pluginOperator.getPluginWrapper();
-    }
-
-    @Override
-    public PluginWrapper getPluginWrapper(String pluginId) {
-        if(isDisable()){
-            return null;
-        }
-        return pluginOperator.getPluginWrapper(pluginId);
     }
 
     /**

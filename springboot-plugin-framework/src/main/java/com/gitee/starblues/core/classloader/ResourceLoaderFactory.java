@@ -1,6 +1,5 @@
 package com.gitee.starblues.core.classloader;
 
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.ResourceUtils;
 
 import java.io.File;
@@ -24,7 +23,6 @@ public class ResourceLoaderFactory extends AbstractResourceLoader {
     public ResourceLoaderFactory() {
         super(null);
     }
-
 
     void addResourceLoader(AbstractResourceLoader resourceLoader){
         if(resourceLoader != null){
@@ -54,10 +52,14 @@ public class ResourceLoaderFactory extends AbstractResourceLoader {
             return;
         }
         URL url = path.toUri().toURL();
+        addResource(url);
+    }
+
+    public void addResource(URL url) throws Exception{
         AbstractResourceLoader resourceLoader = null;
-        if(ResourceUtils.isJarFile(path)) {
+        if(ResourceUtils.isJarFileURL(url)) {
             resourceLoader = new JarResourceLoader(url);
-        } else if(Files.isDirectory(path)){
+        } else if(ResourceUtils.isFileURL(url)){
             resourceLoader = new ClassPathLoader(url);
         }
         if(resourceLoader != null){

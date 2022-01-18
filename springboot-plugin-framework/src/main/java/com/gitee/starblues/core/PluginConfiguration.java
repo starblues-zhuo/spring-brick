@@ -10,31 +10,37 @@ import java.util.Set;
  */
 public class PluginConfiguration {
 
-    private Set<String> disabledPluginId;
-    private List<String> sortedPluginId;
+    private Set<String> disabledPluginIds;
+    private List<String> sortedPluginIds;
 
-    public void setDisabledPluginIds(Set<String> disabledPluginId) {
-        this.disabledPluginId = disabledPluginId;
+    public void setDisabledPluginIds(Set<String> disabledPluginIds) {
+        this.disabledPluginIds = disabledPluginIds;
     }
 
     public void setSortedPluginId(List<String> sortedPluginId) {
-        this.sortedPluginId = sortedPluginId;
+        this.sortedPluginIds = sortedPluginIds;
     }
+
+
+    public boolean isDisabled(String pluginId){
+        return disabledPluginIds != null && disabledPluginIds.contains(pluginId);
+    }
+
 
     /**
      * 得到禁用的插件id
      * @return Set<String>
      */
-    public Set<String> getDisabledPluginId(){
-        return disabledPluginId;
+    public Set<String> getDisabledPluginIds(){
+        return disabledPluginIds;
     }
 
     /**
      * 得到按照循序启动的插件id
      * @return Set<String>
      */
-    public List<String> getSortedPluginId(){
-        return sortedPluginId;
+    public List<String> getSortedPluginIds(){
+        return sortedPluginIds;
     }
 
 }

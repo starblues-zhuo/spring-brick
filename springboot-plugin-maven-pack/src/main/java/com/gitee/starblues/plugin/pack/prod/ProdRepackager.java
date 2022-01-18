@@ -1,5 +1,6 @@
 package com.gitee.starblues.plugin.pack.prod;
 
+import com.gitee.starblues.common.PackageStructure;
 import com.gitee.starblues.plugin.pack.Constant;
 import com.gitee.starblues.plugin.pack.PluginInfo;
 import com.gitee.starblues.plugin.pack.RepackageMojo;
@@ -71,7 +72,7 @@ public class ProdRepackager implements Repackager {
         }
         String libPath = prodConfig.getLibPath();
         if(CommonUtils.isEmpty(libPath)){
-            prodConfig.setLibPath(Constant.LIB_FILE_NAME);
+            prodConfig.setLibPath(PackageStructure.LIB_NAME);
         }
         return prodConfig;
     }

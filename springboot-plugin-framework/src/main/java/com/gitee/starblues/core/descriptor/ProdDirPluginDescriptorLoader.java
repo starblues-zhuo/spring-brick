@@ -44,16 +44,14 @@ public class ProdDirPluginDescriptorLoader extends AbstractPluginDescriptorLoade
     }
 
     @Override
-    protected DefaultPluginDescriptor create(Manifest manifest, Path path) throws Exception {
-        DefaultPluginDescriptor descriptor = super.create(manifest, path);
-        descriptor.setType(PluginDescriptor.Type.DIR_OF_PROD);
-        String pluginClassPath = descriptor.getPluginClassPath();
+    protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception {
+        DefaultInsidePluginDescriptor descriptor = super.create(manifest, path);
+        descriptor.setType(PluginDescriptor.Type.DIR);
         String pathStr = path.toFile().getPath();
-        if(ObjectUtils.isEmpty(pluginClassPath) || Files.notExists(Paths.get(pluginClassPath))){
-            descriptor.setPluginClassPath(CommonUtils.joiningPath(
-                    pathStr, CLASSES_NAME
-            ));
-        }
+        descriptor.setPluginClassPath(CommonUtils.joiningPath(
+                pathStr, CLASSES_NAME
+        ));
+        System.out.println(descriptor.getPluginClassPath());
         return descriptor;
     }
 

@@ -1,5 +1,6 @@
 package com.gitee.starblues.core.launcher.plugin;
 
+import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.MainApplicationContext;
@@ -17,7 +18,7 @@ public interface PluginInteractive {
      * 获取插件信息
      * @return PluginDescriptor
      */
-    PluginDescriptor getPluginDescriptor();
+    InsidePluginDescriptor getPluginDescriptor();
 
     /**
      * 获取主程序的 MainApplicationContext

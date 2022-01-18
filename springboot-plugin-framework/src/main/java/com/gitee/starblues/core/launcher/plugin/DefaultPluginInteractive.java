@@ -1,5 +1,6 @@
 package com.gitee.starblues.core.launcher.plugin;
 
+import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.MainApplicationContext;
@@ -15,13 +16,13 @@ import com.gitee.starblues.spring.invoke.InvokeSupperCache;
  */
 public class DefaultPluginInteractive implements PluginInteractive{
 
-    private final PluginDescriptor pluginDescriptor;
+    private final InsidePluginDescriptor pluginDescriptor;
     private final MainApplicationContext mainApplicationContext;
     private final IntegrationConfiguration configuration;
     private final InvokeSupperCache invokeSupperCache;
     private final OpExtractFactory opExtractFactory;
 
-    public DefaultPluginInteractive(PluginDescriptor pluginDescriptor,
+    public DefaultPluginInteractive(InsidePluginDescriptor pluginDescriptor,
                                     MainApplicationContext mainApplicationContext,
                                     IntegrationConfiguration configuration,
                                     InvokeSupperCache invokeSupperCache) {
@@ -39,7 +40,7 @@ public class DefaultPluginInteractive implements PluginInteractive{
 
 
     @Override
-    public PluginDescriptor getPluginDescriptor() {
+    public InsidePluginDescriptor getPluginDescriptor() {
         return pluginDescriptor;
     }
 

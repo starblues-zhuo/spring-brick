@@ -1,11 +1,16 @@
 package com.gitee.starblues.core.launcher.jar;
 
+import com.gitee.starblues.utils.ObjectUtils;
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Permission;
-import java.util.Enumeration;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
@@ -17,12 +22,19 @@ import java.util.zip.ZipEntry;
  */
 public class JarFileWrapper extends AbstractJarFile {
 
+    private final String parentName;
+
     private final JarFile parent;
+
+    private final Map<String, List<InputStream>> inputStreamCache;
+
+    private final AtomicBoolean canClosed = new AtomicBoolean(false);
 
     JarFileWrapper(JarFile parent) throws IOException {
         super(parent.getRootJarFile().getFile());
         this.parent = parent;
-        super.close();
+        this.parentName = UUID.randomUUID().toString() + parent.getName();
+        this.inputStreamCache = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -67,12 +79,16 @@ public class JarFileWrapper extends AbstractJarFile {
 
     @Override
     InputStream getInputStream() throws IOException {
-        return this.parent.getInputStream();
+        InputStream inputStream = this.parent.getInputStream();
+        addInputStream(parentName, inputStream);
+        return inputStream;
     }
 
     @Override
     public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
-        return this.parent.getInputStream(ze);
+        InputStream inputStream = this.parent.getInputStream(ze);
+        addInputStream(ze.getName(), inputStream);
+        return inputStream;
     }
 
     @Override
@@ -93,6 +109,36 @@ public class JarFileWrapper extends AbstractJarFile {
     @Override
     public String getName() {
         return this.parent.getName();
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        if(canClosed.get()){
+            for (List<InputStream> inputStreams : inputStreamCache.values()) {
+                if(ObjectUtils.isEmpty(inputStreams)){
+                    continue;
+                }
+                for (InputStream inputStream : inputStreams) {
+                    if(inputStream == null){
+                        continue;
+                    }
+                    IOUtils.closeQuietly(inputStream);
+                }
+            }
+            parent.close();
+        }
+    }
+
+    public void canClosed(){
+        canClosed.set(true);
+    }
+
+    private void addInputStream(String name, InputStream inputStream){
+        if(inputStream != null){
+            List<InputStream> inputStreams = inputStreamCache.computeIfAbsent(name, k -> new ArrayList<>());
+            inputStreams.add(inputStream);
+        }
     }
 
     static JarFile unwrap(java.util.jar.JarFile jarFile) {

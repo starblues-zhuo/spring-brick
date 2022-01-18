@@ -1,5 +1,6 @@
 package com.gitee.starblues.core;
 
+import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.core.launcher.plugin.DefaultPluginInteractive;
 import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
@@ -37,25 +38,33 @@ public class PluginLauncherManager extends DefaultPluginManager{
                 applicationContext);
         this.configuration = configuration;
         this.invokeSupperCache = new DefaultInvokeSupperCache();
+        setDisabledPluginIds(configuration.disablePluginIds());
+        setSortedPluginIds(configuration.sortInitPluginIds());
     }
 
 
     @Override
-    protected void start(PluginWrapperInside pluginWrapper) throws Exception {
-        super.start(pluginWrapper);
-        PluginDescriptor pluginDescriptor = pluginWrapper.getPluginDescriptor();
-        PluginInteractive pluginInteractive = new DefaultPluginInteractive(pluginDescriptor,
-                mainApplicationContext, configuration, invokeSupperCache);
-        PluginLauncher pluginLauncher = new PluginLauncher(pluginInteractive);
-        SpringPluginHook springPluginHook = pluginLauncher.run();
-        RegistryPluginInfo registryPluginInfo = new RegistryPluginInfo(pluginDescriptor, springPluginHook);
-        pluginRegistryInfoMap.put(pluginDescriptor.getPluginId(), registryPluginInfo);
+    protected void start(PluginInsideInfo pluginInsideInfo) throws Exception {
+        super.start(pluginInsideInfo);
+        try {
+            InsidePluginDescriptor pluginDescriptor = pluginInsideInfo.getPluginDescriptor();
+            PluginInteractive pluginInteractive = new DefaultPluginInteractive(pluginDescriptor,
+                    mainApplicationContext, configuration, invokeSupperCache);
+            PluginLauncher pluginLauncher = new PluginLauncher(pluginInteractive);
+            SpringPluginHook springPluginHook = pluginLauncher.run();
+            RegistryPluginInfo registryPluginInfo = new RegistryPluginInfo(pluginDescriptor, springPluginHook);
+            pluginRegistryInfoMap.put(pluginDescriptor.getPluginId(), registryPluginInfo);
+        } catch (Exception e){
+            // 启动失败, 进行停止
+            super.stop(pluginInsideInfo);
+            throw e;
+        }
     }
 
 
     @Override
-    protected void stop(PluginWrapperInside pluginWrapper) throws Exception {
-        String pluginId = pluginWrapper.getPluginId();
+    protected void stop(PluginInsideInfo pluginInsideInfo) throws Exception {
+        String pluginId = pluginInsideInfo.getPluginId();
         RegistryPluginInfo registryPluginInfo = pluginRegistryInfoMap.get(pluginId);
         if(registryPluginInfo == null){
             throw new PluginException("没有发现插件 '" + pluginId +  "' 信息");
@@ -63,7 +72,7 @@ public class PluginLauncherManager extends DefaultPluginManager{
         registryPluginInfo.getSpringPluginHook().close();
         invokeSupperCache.remove(pluginId);
         pluginRegistryInfoMap.remove(pluginId);
-        super.stop(pluginWrapper);
+        super.stop(pluginInsideInfo);
     }
 
     private static class RegistryPluginInfo{

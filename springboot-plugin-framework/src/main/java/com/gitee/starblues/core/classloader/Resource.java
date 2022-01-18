@@ -14,6 +14,8 @@ public class Resource {
     private final URL baseUrl;
     private final URL url;
 
+    private byte[] bytes;
+
     public Resource(String name, URL baseUrl, URL url) {
         this.name = name;
         this.baseUrl = baseUrl;
@@ -30,6 +32,14 @@ public class Resource {
 
     public URL getUrl() {
         return url;
+    }
+
+    public byte[] getBytes() {
+        return bytes;
+    }
+
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
     }
 
     void tryCloseUrlSystemFile(){

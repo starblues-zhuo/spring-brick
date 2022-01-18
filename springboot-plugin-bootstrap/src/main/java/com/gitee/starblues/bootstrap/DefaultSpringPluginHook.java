@@ -2,9 +2,14 @@ package com.gitee.starblues.bootstrap;
 
 import com.gitee.starblues.bootstrap.processor.ProcessorContext;
 import com.gitee.starblues.bootstrap.processor.SpringPluginProcessor;
+import com.gitee.starblues.bootstrap.utils.DestroyUtils;
 import com.gitee.starblues.spring.ApplicationContext;
 import com.gitee.starblues.spring.ApplicationContextProxy;
 import com.gitee.starblues.spring.SpringPluginHook;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.support.SpringFactoriesLoader;
+
+import java.util.Map;
 
 /**
  * @author starBlues
@@ -23,9 +28,17 @@ public class DefaultSpringPluginHook implements SpringPluginHook {
 
     @Override
     public void close() throws Exception{
-        pluginProcessor.close(processorContext);
-        processorContext.getApplicationContext().close();
-        processorContext.clearRegistryInfo();
+        try {
+            pluginProcessor.close(processorContext);
+            GenericApplicationContext applicationContext = processorContext.getApplicationContext();
+            if(applicationContext != null){
+                applicationContext.close();
+            }
+            processorContext.clearRegistryInfo();
+            DestroyUtils.destroyAll(null, SpringFactoriesLoader.class, "cache", Map.class);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

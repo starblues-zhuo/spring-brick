@@ -64,19 +64,18 @@ public abstract class ReflectionUtils {
     }
 
 
-    public static Object getField(Object o, String fieldName) {
-        return getField(o, fieldName, null);
+    public static Object getField(Object object, Class<?> objectClass, String fieldName) {
+        return getField(object, objectClass, fieldName, null);
     }
 
-    public static Object getField(Object o, String fieldName, Class<?> fieldType) {
-        Class<?> currentClass = o.getClass();
-        Field field = findField(currentClass, fieldName, fieldType);
+    public static Object getField(Object object, Class<?> objectClass, String fieldName, Class<?> fieldType) {
+        Field field = findField(objectClass, fieldName, fieldType);
         if(field == null){
             return null;
         }
         field.setAccessible(true);
         try {
-            return field.get(o);
+            return field.get(object);
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
         }

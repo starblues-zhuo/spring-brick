@@ -166,7 +166,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     @Override
     public String uploadTempPath() {
-        if(!ObjectUtils.isEmpty(uploadTempPath)){
+        if(ObjectUtils.isEmpty(uploadTempPath)){
             return super.uploadTempPath();
         }
         return uploadTempPath;
@@ -174,7 +174,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     @Override
     public String backupPath() {
-        if(!ObjectUtils.isEmpty(backupPath)){
+        if(ObjectUtils.isEmpty(backupPath)){
             return super.backupPath();
         }
         return backupPath;
@@ -190,7 +190,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     @Override
     public String pluginRestPathPrefix() {
-        if(!ObjectUtils.isEmpty(pluginRestPathPrefix)){
+        if(ObjectUtils.isEmpty(pluginRestPathPrefix)){
             return super.pluginRestPathPrefix();
         } else {
             return pluginRestPathPrefix;
@@ -280,9 +280,6 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     }
 
     public List<String> getPluginPath() {
-        if(ObjectUtils.isEmpty(pluginPath)){
-            return super.pluginPath();
-        }
         return pluginPath;
     }
 
@@ -298,20 +295,20 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         this.pluginConfigFilePath = pluginConfigFilePath;
     }
 
-    public Boolean getEnablePluginRestController() {
-        return enablePluginRestController;
-    }
-
-    public void setEnablePluginRestController(Boolean enablePluginRestController) {
-        this.enablePluginRestController = enablePluginRestController;
-    }
-
     public String getPluginRestPathPrefix() {
         return pluginRestPathPrefix;
     }
 
     public void setPluginRestPathPrefix(String pluginRestPathPrefix) {
         this.pluginRestPathPrefix = pluginRestPathPrefix;
+    }
+
+    public Boolean getEnablePluginRestController() {
+        return enablePluginRestController;
+    }
+
+    public void setEnablePluginRestController(Boolean enablePluginRestController) {
+        this.enablePluginRestController = enablePluginRestController;
     }
 
     public Boolean getEnablePluginIdRestPathPrefix() {
@@ -362,6 +359,14 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         this.exactVersionAllowed = exactVersionAllowed;
     }
 
+    public Boolean getStopDependents() {
+        return stopDependents;
+    }
+
+    public void setStopDependents(Boolean stopDependents) {
+        this.stopDependents = stopDependents;
+    }
+
     public Set<String> getEnablePluginIds() {
         return enablePluginIds;
     }
@@ -392,13 +397,5 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     public void setEnableWebSocket(Boolean enableWebSocket) {
         this.enableWebSocket = enableWebSocket;
-    }
-
-    public Boolean getStopDependents() {
-        return stopDependents;
-    }
-
-    public void setStopDependents(Boolean stopDependents) {
-        this.stopDependents = stopDependents;
     }
 }

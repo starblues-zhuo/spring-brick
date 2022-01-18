@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -34,6 +35,12 @@ public class ResourceUtils {
     public static final String FILE_URL_PREFIX = "file:";
 
     public static final String PACKAGE_SPLIT = "/";
+
+    public static final String JAR_FILE_EXTENSION = ".jar";
+    public static final String ZIP_FILE_EXTENSION = ".zip";
+    public static final String CLASS_FILE_EXTENSION = ".class";
+    public static final String URL_PROTOCOL_VFSFILE = "vfsfile";
+    public static final String URL_PROTOCOL_VFS = "vfs";
 
     /**
      * 获取匹配路绝
@@ -62,15 +69,31 @@ public class ResourceUtils {
     }
 
     public static boolean isClasspath(String locationMatch){
+        if(ObjectUtils.isEmpty(locationMatch)){
+            return false;
+        }
         return locationMatch.startsWith(TYPE_CLASSPATH + TYPE_SPLIT);
     }
 
     public static boolean isFile(String locationMatch){
+        if(ObjectUtils.isEmpty(locationMatch)){
+            return false;
+        }
         return locationMatch.startsWith(TYPE_FILE + TYPE_SPLIT);
     }
 
     public static boolean isPackage(String locationMatch){
+        if(ObjectUtils.isEmpty(locationMatch)){
+            return false;
+        }
         return locationMatch.startsWith(TYPE_PACKAGE + TYPE_SPLIT);
+    }
+
+    public static boolean isClass(String path){
+        if(ObjectUtils.isEmpty(path)){
+            return false;
+        }
+        return path.toLowerCase().endsWith(CLASS_FILE_EXTENSION);
     }
 
     /**
@@ -79,7 +102,7 @@ public class ResourceUtils {
      * @return boolean
      */
     public static boolean isZipFile(Path path) {
-        return Files.isRegularFile(path) && path.toString().toLowerCase().endsWith(".zip");
+        return Files.isRegularFile(path) && isZip(path.toString());
     }
 
     /**
@@ -88,11 +111,60 @@ public class ResourceUtils {
      * @return boolean
      */
     public static boolean isJarFile(Path path) {
-        return Files.isRegularFile(path) && path.toString().toLowerCase().endsWith(".jar");
+        return Files.isRegularFile(path) && isJar(path.toString());
+    }
+
+    /**
+     * 是否为 zip 文件
+     * @param name 文件名称
+     * @return boolean
+     */
+    public static boolean isZip(String name) {
+        return name != null && name.toLowerCase().endsWith(ZIP_FILE_EXTENSION);
+    }
+
+    /**
+     * 是否为 jar 文件
+     * @param name 文件名称
+     * @return boolean
+     */
+    public static boolean isJar(String name) {
+        return name != null && name.toLowerCase().endsWith(JAR_FILE_EXTENSION);
     }
 
     public static boolean isDirFile(Path path) {
         return path.toFile().isDirectory();
+    }
+
+    public static boolean isJarFileURL(URL url) {
+        return (URL_PROTOCOL_FILE.equals(url.getProtocol()) &&
+                url.getPath().toLowerCase().endsWith(JAR_FILE_EXTENSION));
+    }
+
+    public static boolean isFileURL(URL url) {
+        String protocol = url.getProtocol();
+        return (URL_PROTOCOL_FILE.equals(protocol) || URL_PROTOCOL_VFSFILE.equals(protocol) ||
+                URL_PROTOCOL_VFS.equals(protocol));
+    }
+
+
+    public static boolean existFile(File rootFile, String checkFileName){
+        if(rootFile == null || !rootFile.exists()){
+            return false;
+        }
+        final File[] listFiles = rootFile.listFiles();
+        if(listFiles == null || listFiles.length == 0){
+            return false;
+        }
+        for (File listFile : listFiles) {
+            if(Objects.equals(listFile.getName(), checkFileName)){
+                return true;
+            }
+            if(listFile.isDirectory()){
+                return existFile(listFile, checkFileName);
+            }
+        }
+        return false;
     }
 
     public static void listFile(File rootFile, Consumer<File> consumerFile){
@@ -111,6 +183,7 @@ public class ResourceUtils {
             consumerFile.accept(listFile);
         }
     }
+
 
 //    /**
 //     * 根据 ~ 标记获取, 得到绝对路径

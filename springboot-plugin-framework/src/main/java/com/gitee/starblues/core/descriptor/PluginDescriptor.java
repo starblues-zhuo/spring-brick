@@ -1,9 +1,6 @@
 package com.gitee.starblues.core.descriptor;
 
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Set;
-import java.util.jar.Manifest;
 
 /**
  * 插件信息
@@ -34,19 +31,7 @@ public interface PluginDescriptor {
      * 获取插件路径
      * @return Path
      */
-    Path getPluginPath();
-
-    /**
-     * 获取插件classes path路径
-     * @return Path
-     */
-    String getPluginClassPath();
-
-    /**
-     * 获取插件依赖的路径
-     * @return String
-     */
-    Set<String> getPluginLibPaths();
+    String getPluginPath();
 
     /**
      * 获取插件描述
@@ -73,28 +58,17 @@ public interface PluginDescriptor {
     String getLicense();
 
     /**
-     * 获取插件配置文件名称
-     * @return String
-     */
-    String getConfigFileName();
-
-    /**
      * 获取当前插件依赖
      * @return List
      */
     List<PluginDependency> getPluginDependency();
 
     /**
-     * 得到插件的 Manifest 文件
-     * @return Manifest
-     */
-    Manifest getManifest();
-
-    /**
      * 得到插件类型
      * @return 插件类型
      */
     Type getType();
+
 
     /**
      * 插件类型
@@ -113,12 +87,12 @@ public interface PluginDescriptor {
         /**
          * 生产模式目录
          */
-        DIR_OF_PROD,
+        DIR,
 
         /**
          * 开发模式目录
          */
-        DIR_OF_DEV
+        DEV;
     }
 
 
