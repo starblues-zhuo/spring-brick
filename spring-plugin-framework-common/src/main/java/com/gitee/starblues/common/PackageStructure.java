@@ -25,11 +25,15 @@ public abstract class PackageStructure {
 
     public static final String MANIFEST = "MANIFEST.MF";
 
-    public static final String LIB_INDEX_NAME = "lib.index";
+    public static final String RESOURCES_DEFINE_NAME = "RESOURCES.CONF";
+
+    public static final String RESOURCES_DEFINE_DEPENDENCIES = "dependencies.index";
+    public static final String RESOURCES_DEFINE_LOAD_MAIN_INCLUDES = "load.main.resources.includes";
+    public static final String RESOURCES_DEFINE_LOAD_MAIN_EXCLUDES = "load.main.resources.excludes";
 
     public static final String PROD_MANIFEST_PATH = META_INF_NAME + SEPARATOR + MANIFEST;
 
-    public static final String PROD_LIB_INDEX_PATH = META_INF_NAME + SEPARATOR + LIB_INDEX_NAME;
+    public static final String PROD_RESOURCES_DEFINE_PATH = META_INF_NAME + SEPARATOR + RESOURCES_DEFINE_NAME;
 
     public static final String PROD_CLASSES_PATH = CLASSES_NAME + SEPARATOR;
 

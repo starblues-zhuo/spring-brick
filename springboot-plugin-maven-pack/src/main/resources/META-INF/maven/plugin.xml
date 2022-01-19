@@ -94,6 +94,14 @@
                     <description>插件信息</description>
                 </parameter>
                 <parameter>
+                    <name>loadMainResourcePattern</name>
+                    <type>com.gitee.starblues.plugin.pack.LoadMainResourcePattern</type>
+                    <since>3.0.0</since>
+                    <required>false</required>
+                    <editable>true</editable>
+                    <description>从主程序加载资源的定义</description>
+                </parameter>
+                <parameter>
                     <name>devConfig</name>
                     <type>com.gitee.starblues.plugin.pack.dev.DevConfig</type>
                     <since>3.0.0</since>
@@ -116,6 +124,7 @@
                 <skip implementation="boolean" default-value="false"/>
                 <mode implementation="string" default-value="dev"/>
                 <pluginInfo implementation="com.gitee.starblues.plugin.pack.PluginInfo" />
+                <loadMainResourcePattern implementation="com.gitee.starblues.plugin.pack.LoadMainResourcePattern" />
                 <includes implementation="java.util.List">${springboot-plugin.includes}</includes>
                 <excludes implementation="java.util.List">${springboot-plugin.excludes}</excludes>
                 <devConfig implementation="com.gitee.starblues.plugin.pack.dev.DevConfig" />

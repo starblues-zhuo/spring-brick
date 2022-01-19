@@ -23,13 +23,13 @@ public class DevRepackager extends BasicRepackager {
     }
 
     @Override
-    protected Set<String> getLibIndexSet() throws Exception {
+    protected Set<String> getDependenciesIndexSet() throws Exception {
         moduleDependencies = getModuleDependencies(repackageMojo.getDevConfig());
-        Set<String> libPaths = super.getLibIndexSet();
+        Set<String> dependenciesIndexSet = super.getDependenciesIndexSet();
         for (Dependency dependency : moduleDependencies.values()) {
-            libPaths.add(dependency.getClassesPath());
+            dependenciesIndexSet.add(dependency.getClassesPath());
         }
-        return libPaths;
+        return dependenciesIndexSet;
     }
 
     @Override

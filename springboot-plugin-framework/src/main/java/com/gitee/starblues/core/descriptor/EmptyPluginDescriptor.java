@@ -91,6 +91,16 @@ public class EmptyPluginDescriptor implements InsidePluginDescriptor{
     }
 
     @Override
+    public Set<String> getIncludeMainResourcePatterns() {
+        return null;
+    }
+
+    @Override
+    public Set<String> getExcludeMainResourcePatterns() {
+        return null;
+    }
+
+    @Override
     public PluginDescriptor toPluginDescriptor() {
         return null;
     }

@@ -24,31 +24,28 @@ public class PluginLauncher extends AbstractLauncher<SpringPluginHook> {
 
     protected final PluginInteractive pluginInteractive;
     protected final InsidePluginDescriptor pluginDescriptor;
+    protected final PluginMainResourcePatternDefiner mainResourcePatternDefiner;
 
     public PluginLauncher(PluginInteractive pluginInteractive) {
         this.pluginInteractive = pluginInteractive;
         this.pluginDescriptor = pluginInteractive.getPluginDescriptor();
+        this.mainResourcePatternDefiner = new PluginMainResourcePatternDefiner(pluginDescriptor);
     }
 
     @Override
     protected ClassLoader createClassLoader() throws Exception {
         String pluginId = pluginDescriptor.getPluginId();
-        MainResourcePatternDefiner mainResourceMatcher = new JavaMainResourcePatternDefiner() {
-            @Override
-            public Set<String> getIncludePatterns() {
-                Set<String> includeResourcePatterns = super.getIncludePatterns();
-                includeResourcePatterns.add("com/gitee/starblues/**");
-                includeResourcePatterns.add("org/springframework/web/**");
-                return includeResourcePatterns;
-            }
-        };
         PluginClassLoader pluginClassLoader = new PluginClassLoader(
-                pluginId, MainProgramLauncher.class.getClassLoader(), mainResourceMatcher
+                pluginId, getParentClassLoader(), mainResourcePatternDefiner
         );
-        pluginClassLoader.addResource(pluginDescriptor);
         //TODO 添加框架的引导
         pluginClassLoader.addResource(Paths.get("D:\\etc\\kitte\\ksm\\springboot-plugin-framework-parent\\springboot-plugin-bootstrap\\target\\classes"));
+        pluginClassLoader.addResource(pluginDescriptor);
         return pluginClassLoader;
+    }
+
+    protected ClassLoader getParentClassLoader(){
+        return PluginLauncher.class.getClassLoader();
     }
 
     @Override

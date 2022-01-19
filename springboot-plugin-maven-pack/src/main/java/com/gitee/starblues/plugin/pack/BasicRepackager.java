@@ -12,6 +12,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -33,7 +34,9 @@ public class BasicRepackager implements Repackager{
     @Getter
     private String rootDir;
     private String relativeManifestPath;
-    private String relativeLibIndexPath;
+    private String relativeResourcesDefinePath;
+
+    private File resourcesDefineFile;
 
     protected final RepackageMojo repackageMojo;
 
@@ -45,7 +48,7 @@ public class BasicRepackager implements Repackager{
     public void repackage() throws MojoExecutionException, MojoFailureException {
         rootDir = createRootDir();
         relativeManifestPath = getRelativeManifestPath();
-        relativeLibIndexPath = getRelativeLibIndexPath();
+        relativeResourcesDefinePath = getRelativeResourcesDefinePath();
         try {
             Manifest manifest = getManifest();
             writeManifest(manifest);
@@ -59,8 +62,8 @@ public class BasicRepackager implements Repackager{
         return MANIFEST;
     }
 
-    protected String getRelativeLibIndexPath(){
-        return LIB_INDEX_NAME;
+    protected String getRelativeResourcesDefinePath(){
+        return RESOURCES_DEFINE_NAME;
     }
 
     protected String createRootDir() throws MojoFailureException {
@@ -109,9 +112,9 @@ public class BasicRepackager implements Repackager{
         attributes.putValue(PLUGIN_VERSION, pluginInfo.getVersion());
         attributes.putValue(PLUGIN_PATH, getPluginPath());
 
-        String libFilePath = writeLibFile();
-        if(!CommonUtils.isEmpty(libFilePath)){
-            attributes.putValue(PLUGIN_LIB_INDEX, libFilePath);
+        String resourcesDefineFilePath = writeResourcesDefineFile();
+        if(!CommonUtils.isEmpty(resourcesDefineFilePath)){
+            attributes.putValue(PLUGIN_RESOURCES_CONFIG, resourcesDefineFilePath);
         }
         String configFileName = pluginInfo.getConfigFileName();
         if(!isEmpty(configFileName)){
@@ -149,28 +152,39 @@ public class BasicRepackager implements Repackager{
         return repackageMojo.getProject().getBuild().getOutputDirectory();
     }
 
-    protected String writeLibFile() throws Exception{
-        StringBuilder stringBuilder = new StringBuilder();
-        Set<String> libIndex = getLibIndexSet();
-        for (String index : libIndex) {
-            stringBuilder.append(index).append("\n");
-        }
-        String content = stringBuilder.toString();
-        String path = joinPath(rootDir, resolvePath(relativeLibIndexPath));
+    protected String writeResourcesDefineFile() throws Exception{
+        resourcesDefineFile = createResourcesDefineFile();
+        writeDependenciesIndex();
+        writeLoadMainResources();
+        return resourcesDefineFile.getPath();
+    }
+
+    protected File createResourcesDefineFile() throws IOException {
+        String path = joinPath(rootDir, resolvePath(relativeResourcesDefinePath));
         try {
             File file = new File(path);
             FileUtils.forceMkdirParent(file);
             if(file.createNewFile()){
-                FileUtils.write(file, content, "utf-8");
-                return path;
+                return file;
             }
-            throw new Exception();
+            throw new IOException("Create " + path + " file error");
         } catch (Exception e){
             throw new IOException("Create " + path + " file error");
         }
     }
 
-    protected Set<String> getLibIndexSet() throws Exception {
+    protected void writeDependenciesIndex() throws Exception {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(RESOURCES_DEFINE_DEPENDENCIES).append("\n");
+        Set<String> libIndex = getDependenciesIndexSet();
+        for (String index : libIndex) {
+            stringBuilder.append(index).append("\n");
+        }
+        String content = stringBuilder.toString();
+        FileUtils.write(resourcesDefineFile, content, CHARSET_NAME, true);
+    }
+
+    protected Set<String> getDependenciesIndexSet() throws Exception {
         Set<Artifact> dependencies = repackageMojo.getDependencies();
         Set<String> libPaths = new HashSet<>(dependencies.size());
         for (Artifact artifact : dependencies) {
@@ -184,6 +198,45 @@ public class BasicRepackager implements Repackager{
 
     protected String getLibIndex(Artifact artifact){
         return artifact.getFile().getPath();
+    }
+
+    protected void writeLoadMainResources() throws Exception {
+        String loadMainResources = getLoadMainResources();
+        if(CommonUtils.isEmpty(loadMainResources)){
+            return;
+        }
+        FileUtils.write(resourcesDefineFile, loadMainResources, CHARSET_NAME, true);
+    }
+
+    protected String getLoadMainResources(){
+        LoadMainResourcePattern loadMainResourcePattern = repackageMojo.getLoadMainResourcePattern();
+        if(loadMainResourcePattern == null){
+            return null;
+        }
+        String[] includes = loadMainResourcePattern.getIncludes();
+        String[] excludes = loadMainResourcePattern.getExcludes();
+        StringBuilder stringBuilder = new StringBuilder();
+        addLoadMainResources(stringBuilder, RESOURCES_DEFINE_LOAD_MAIN_INCLUDES, includes);
+        addLoadMainResources(stringBuilder, RESOURCES_DEFINE_LOAD_MAIN_EXCLUDES, excludes);
+        return stringBuilder.toString();
+    }
+
+    private void addLoadMainResources(StringBuilder stringBuilder, String header, String[] patterns){
+        if(CommonUtils.isEmpty(patterns)){
+           return;
+        }
+        Set<String> patternSet = new HashSet<>(Arrays.asList(patterns));
+        stringBuilder.append(header).append("\n");
+        for (String patternStr : patternSet) {
+            if(CommonUtils.isEmpty(patternStr)){
+                continue;
+            }
+            stringBuilder.append(resolvePattern(patternStr)).append("\n");
+        }
+    }
+
+    protected String resolvePattern(String patternStr){
+        return patternStr.replace(".", "/");
     }
 
     /**

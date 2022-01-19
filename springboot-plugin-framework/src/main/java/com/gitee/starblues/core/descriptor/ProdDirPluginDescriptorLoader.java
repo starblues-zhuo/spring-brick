@@ -56,21 +56,22 @@ public class ProdDirPluginDescriptorLoader extends AbstractPluginDescriptorLoade
     }
 
     @Override
-    protected Set<String> getPluginLibPaths(Path path, Attributes attributes) throws Exception {
+    protected PluginResourcesConfig getPluginResourcesConfig(Path path, Attributes attributes) throws Exception {
         String pathStr = path.toFile().getPath();
-        String libIndexFile = getExistLibIndexFile(
-                pathStr, ManifestUtils.getValue(attributes, PluginDescriptorKey.PLUGIN_LIB_INDEX)
+        String libIndexFile = getExistResourcesConfFile(
+                pathStr, ManifestUtils.getValue(attributes, PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG)
         );
-        Set<String> pluginLibPaths = new HashSet<>();
+
         if(libIndexFile == null){
-            return Collections.emptySet();
+            return new PluginResourcesConfig();
         }
         File libFile = new File(libIndexFile);
-        List<String> libIndex = FileUtils.readLines(libFile, CHARSET_NAME);
-        if(ObjectUtils.isEmpty(libIndex)){
-            return Collections.emptySet();
-        }
-        for (String index : libIndex) {
+        List<String> lines = FileUtils.readLines(libFile, CHARSET_NAME);
+        PluginResourcesConfig pluginResourcesConfig = PluginResourcesConfig.parse(lines);
+
+        Set<String> dependenciesIndex = pluginResourcesConfig.getDependenciesIndex();
+        Set<String> pluginLibPaths = new HashSet<>();
+        for (String index : dependenciesIndex) {
             index = resolvePath(index);
             File file = new File(index);
             if(!file.exists()){
@@ -83,14 +84,15 @@ public class ProdDirPluginDescriptorLoader extends AbstractPluginDescriptorLoade
                 pluginLibPaths.add(file.getPath());
             }
         }
-        return pluginLibPaths;
+        pluginResourcesConfig.setDependenciesIndex(pluginLibPaths);
+        return pluginResourcesConfig;
     }
 
-    protected String getExistLibIndexFile(String rootPath, String libIndexPath){
+    protected String getExistResourcesConfFile(String rootPath, String libIndexPath){
         libIndexPath = resolvePath(libIndexPath);
         if(ObjectUtils.isEmpty(libIndexPath)){
             // 如果配置为空, 直接从默认路径读取
-            libIndexPath = CommonUtils.joiningFilePath(rootPath, resolvePath(PROD_LIB_INDEX_PATH));
+            libIndexPath = CommonUtils.joiningFilePath(rootPath, resolvePath(PROD_RESOURCES_DEFINE_PATH));
         } else {
             if(Files.exists(Paths.get(libIndexPath))){
                 return libIndexPath;

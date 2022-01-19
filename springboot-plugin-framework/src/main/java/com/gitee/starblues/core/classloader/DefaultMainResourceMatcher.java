@@ -14,18 +14,20 @@ import java.util.Set;
  */
 public class DefaultMainResourceMatcher implements MainResourceMatcher{
 
-    private final MainResourcePatternDefiner mainResourcePatternDefiner;
+    private final Set<String> includePatterns;
+    private final Set<String> excludePatterns;
+
     private final PathMatcher pathMatcher;
 
     public DefaultMainResourceMatcher(MainResourcePatternDefiner mainResourcePatternDefiner) {
-        this.mainResourcePatternDefiner = mainResourcePatternDefiner;
+        this.includePatterns = mainResourcePatternDefiner.getIncludePatterns();
+        this.excludePatterns = mainResourcePatternDefiner.getExcludePatterns();
         this.pathMatcher = new AntPathMatcher();
     }
 
     @Override
     public boolean match(String resourceUrl) {
-        Set<String> resourcePatterns = mainResourcePatternDefiner.getIncludePatterns();
-        return match(resourcePatterns, resourceUrl);
+        return match(includePatterns, resourceUrl);
     }
 
     private boolean match(Collection<String> patterns, String url){
@@ -36,7 +38,7 @@ public class DefaultMainResourceMatcher implements MainResourceMatcher{
         for (String pattern : patterns) {
             boolean match = pathMatcher.match(pattern, url);
             if(match){
-                return !excludeMatch(mainResourcePatternDefiner.getExcludePatterns(), url);
+                return !excludeMatch(excludePatterns, url);
             }
         }
         return false;

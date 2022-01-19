@@ -6,22 +6,53 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * java 内部包匹配定义
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class JavaMainResourcePatternDefiner implements MainResourcePatternDefiner {
 
-    private final Set<String> includes = new HashSet<>();
+    protected final Set<String> includes = new HashSet<>();
 
     public JavaMainResourcePatternDefiner(){
-        // TODO java 内部的包匹配, 未补充全
-        // == java ==
+        // java 内部的包匹配定义
+        addJava();
+        addJavax();
+        addSun();
+        addJdk();
+        addJavaXml();
+    }
+
+    protected void addJava(){
         includes.add("java/**");
+    }
+
+    protected void addJavax(){
         includes.add("javax/**");
-        includes.add("sun/**");
-        includes.add("org/xml/**");
+        includes.add("org/ietf/jgss/**");
+    }
+
+    protected void addJdk(){
         includes.add("jdk/**");
-        includes.add("org/w3c/**");
+        // jdk.internal.vm.compiler
+        includes.add("org/graalvm/**");
+        // jdk.internal.vm.compiler.management
+        includes.add("org/graalvm/compiler/hotspot/management/**");
+        // jdk.hotspot.agent
+        includes.add("images/toolbarButtonGraphics/general/**");
+        includes.add("toolbarButtonGraphics/**");
+    }
+
+    protected void addJavaXml(){
+        // jdk.xml.dom
+        includes.add("org/w3c/dom/**");
+        includes.add("org/xml/sax/**");
+        includes.add("org/jcp/xml/dsig/internal**");
+    }
+
+    protected void addSun(){
+        includes.add("com/sun/**");
+        includes.add("sun/**");
     }
 
     @Override

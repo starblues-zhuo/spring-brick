@@ -18,6 +18,8 @@ public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor imple
     private Manifest manifest;
     private String configFileName;
     private Set<String> pluginLibPaths;
+    private Set<String> includeMainResourcePatterns;
+    private Set<String> excludeMainResourcePatterns;
 
     public DefaultInsidePluginDescriptor(String pluginId, String pluginVersion, String pluginClass, Path pluginPath) {
         super(pluginId, pluginVersion, pluginClass, pluginPath.toAbsolutePath().toString());
@@ -33,14 +35,21 @@ public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor imple
         this.manifest = manifest;
     }
 
-    public void setPluginLibPath(Set<String> pluginLibPaths) {
-        this.pluginLibPaths = pluginLibPaths;
-    }
-
     public void setConfigFileName(String configFileName) {
         this.configFileName = configFileName;
     }
 
+    public void setPluginLibPath(Set<String> pluginLibPaths) {
+        this.pluginLibPaths = pluginLibPaths;
+    }
+
+    public void setIncludeMainResourcePatterns(Set<String> includeMainResourcePatterns) {
+        this.includeMainResourcePatterns = includeMainResourcePatterns;
+    }
+
+    public void setExcludeMainResourcePatterns(Set<String> excludeMainResourcePatterns) {
+        this.excludeMainResourcePatterns = excludeMainResourcePatterns;
+    }
 
     @Override
     public String getPluginClassPath() {
@@ -50,6 +59,16 @@ public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor imple
     @Override
     public Set<String> getPluginLibPaths() {
         return pluginLibPaths;
+    }
+
+    @Override
+    public Set<String> getIncludeMainResourcePatterns() {
+        return includeMainResourcePatterns;
+    }
+
+    @Override
+    public Set<String> getExcludeMainResourcePatterns() {
+        return excludeMainResourcePatterns;
     }
 
     @Override

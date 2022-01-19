@@ -49,6 +49,18 @@ public interface InsidePluginDescriptor extends PluginDescriptor{
     Set<String> getPluginLibPaths();
 
     /**
+     * 设置当前插件包含主程序加载资源的匹配
+     * @return Set
+     */
+    Set<String> getIncludeMainResourcePatterns();
+
+    /**
+     * 设置当前插件排除从主程序加载资源的匹配
+     * @return Set
+     */
+    Set<String> getExcludeMainResourcePatterns();
+
+    /**
      * 转换为 PluginDescriptor
      * @return PluginDescriptor
      */

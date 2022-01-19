@@ -26,14 +26,17 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo{
     @Parameter(defaultValue = "${project.build.directory}", required = true)
     private File outputDirectory;
 
-    @Parameter(property = "springboot-plugin.pluginInfo", required = true)
-    private PluginInfo pluginInfo;
-
     @Parameter(property = "springboot-plugin.mode", defaultValue = "dev", required = true)
     private String mode;
 
     @Parameter(property = "springboot-plugin.skip", defaultValue = "false")
     private boolean skip;
+
+    @Parameter(property = "springboot-plugin.pluginInfo", required = true)
+    private PluginInfo pluginInfo;
+
+    @Parameter(property = "springboot-plugin.loadMainResourcePattern", required = false)
+    private LoadMainResourcePattern loadMainResourcePattern;
 
     @Override
     public final void execute() throws MojoExecutionException, MojoFailureException {

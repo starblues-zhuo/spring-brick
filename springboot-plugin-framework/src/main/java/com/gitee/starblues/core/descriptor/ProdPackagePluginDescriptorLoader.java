@@ -9,16 +9,13 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import static com.gitee.starblues.common.PluginDescriptorKey.PLUGIN_LIB_INDEX;
+import static com.gitee.starblues.common.PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG;
 
 
 /**
@@ -29,7 +26,7 @@ import static com.gitee.starblues.common.PluginDescriptorKey.PLUGIN_LIB_INDEX;
 public class ProdPackagePluginDescriptorLoader extends AbstractPluginDescriptorLoader{
 
     private final PluginDescriptor.Type type;
-    private Set<String> pluginLibPaths;
+    private PluginResourcesConfig pluginResourcesConfig;
 
     public ProdPackagePluginDescriptorLoader(PluginDescriptor.Type type) {
         this.type = type;
@@ -43,14 +40,14 @@ public class ProdPackagePluginDescriptorLoader extends AbstractPluginDescriptorL
             InputStream jarFileInputStream = jarFile.getInputStream(jarEntry);
             Manifest manifest = PluginFileUtils.getManifest(jarFileInputStream);
             jarFileInputStream.close();
-            pluginLibPaths = getPluginLibPaths(jarFile, manifest);
+            pluginResourcesConfig = getPluginResourcesConfig(jarFile, manifest);
             return manifest;
         }
     }
 
     @Override
-    protected Set<String> getPluginLibPaths(Path path, Attributes attributes) throws Exception {
-        return pluginLibPaths;
+    protected PluginResourcesConfig getPluginResourcesConfig(Path path, Attributes attributes) throws Exception {
+        return pluginResourcesConfig;
     }
 
     @Override
@@ -60,22 +57,19 @@ public class ProdPackagePluginDescriptorLoader extends AbstractPluginDescriptorL
         return descriptor;
     }
 
-    protected Set<String> getPluginLibPaths(JarFile jarFile, Manifest manifest) throws Exception {
+    protected PluginResourcesConfig getPluginResourcesConfig(JarFile jarFile, Manifest manifest) throws Exception {
         Attributes attributes = manifest.getMainAttributes();
-        String pluginLibIndex = ManifestUtils.getValue(attributes, PLUGIN_LIB_INDEX);
-        if(ObjectUtils.isEmpty(pluginLibIndex)){
-            return Collections.emptySet();
+        String pluginResourcesConf = ManifestUtils.getValue(attributes, PLUGIN_RESOURCES_CONFIG);
+        if(ObjectUtils.isEmpty(pluginResourcesConf)){
+            return new PluginResourcesConfig();
         }
-        JarEntry jarEntry = jarFile.getJarEntry(pluginLibIndex);
+        JarEntry jarEntry = jarFile.getJarEntry(pluginResourcesConf);
         if(jarEntry == null){
-            return Collections.emptySet();
+            return new PluginResourcesConfig();
         }
         InputStream jarFileInputStream = jarFile.getInputStream(jarEntry);
-        List<String> libPaths = IOUtils.readLines(jarFileInputStream, PackageStructure.CHARSET_NAME);
-        if(ObjectUtils.isEmpty(libPaths)){
-            return Collections.emptySet();
-        }
-        return new HashSet<>(libPaths);
+        List<String> lines = IOUtils.readLines(jarFileInputStream, PackageStructure.CHARSET_NAME);
+        return PluginResourcesConfig.parse(lines);
     }
 
 }

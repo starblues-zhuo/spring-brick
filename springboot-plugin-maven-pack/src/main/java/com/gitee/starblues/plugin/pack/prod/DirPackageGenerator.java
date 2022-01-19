@@ -73,8 +73,8 @@ public class DirPackageGenerator extends DevRepackager {
     }
 
     @Override
-    protected String getRelativeLibIndexPath() {
-        return CommonUtils.joinPath(META_INF_NAME, LIB_INDEX_NAME);
+    protected String getRelativeResourcesDefinePath() {
+        return CommonUtils.joinPath(META_INF_NAME, RESOURCES_DEFINE_NAME);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class DirPackageGenerator extends DevRepackager {
         Manifest manifest = super.getManifest();
         Attributes attributes = manifest.getMainAttributes();
         attributes.putValue(PluginDescriptorKey.PLUGIN_PATH, CLASSES_NAME);
-        attributes.putValue(PluginDescriptorKey.PLUGIN_LIB_INDEX, PROD_LIB_INDEX_PATH);
+        attributes.putValue(PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG, PROD_RESOURCES_DEFINE_PATH);
         return manifest;
     }
 
@@ -95,7 +95,7 @@ public class DirPackageGenerator extends DevRepackager {
     }
 
     @Override
-    protected Set<String> getLibIndexSet() throws Exception {
+    protected Set<String> getDependenciesIndexSet() throws Exception {
         Set<Artifact> dependencies = repackageMojo.getDependencies();
         String libDir = createLibDir();
         Set<String> dependencyIndexNames = new HashSet<>(dependencies.size());

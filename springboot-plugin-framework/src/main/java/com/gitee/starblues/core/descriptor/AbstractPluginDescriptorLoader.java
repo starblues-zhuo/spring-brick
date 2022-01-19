@@ -10,11 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -70,9 +67,14 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
                 getValue(attributes, PLUGIN_BOOTSTRAP_CLASS),
                 path
         );
+        PluginResourcesConfig pluginResourcesConfig = getPluginResourcesConfig(path, attributes);
+
+        descriptor.setPluginLibPath(pluginResourcesConfig.getDependenciesIndex());
+        descriptor.setIncludeMainResourcePatterns(pluginResourcesConfig.getLoadMainResourceIncludes());
+        descriptor.setExcludeMainResourcePatterns(pluginResourcesConfig.getLoadMainResourceExcludes());
+
         descriptor.setManifest(manifest);
         descriptor.setPluginClassPath(getValue(attributes, PLUGIN_PATH, false));
-        descriptor.setPluginLibPath(getPluginLibPaths(path, attributes));
         descriptor.setDescription(getValue(attributes, PLUGIN_DESCRIPTION, false));
         descriptor.setRequires(getValue(attributes, PLUGIN_REQUIRES, false));
         descriptor.setProvider(getValue(attributes, PLUGIN_PROVIDER, false));
@@ -82,10 +84,10 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
     }
 
 
-    protected Set<String> getPluginLibPaths(Path path, Attributes attributes) throws Exception{
-        String libIndex = getValue(attributes, PLUGIN_LIB_INDEX);
+    protected PluginResourcesConfig getPluginResourcesConfig(Path path, Attributes attributes) throws Exception{
+        String libIndex = getValue(attributes, PLUGIN_RESOURCES_CONFIG);
         if(ObjectUtils.isEmpty(libIndex)){
-            return Collections.emptySet();
+            return new PluginResourcesConfig();
         }
         File file = new File(libIndex);
         if(!file.exists()){
@@ -95,17 +97,14 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
         }
         if(!file.exists()){
             // 都不存在, 则返回为空
-            return Collections.emptySet();
+            return new PluginResourcesConfig();
         }
         try {
-            List<String> paths = Files.readAllLines(file.toPath());
-            if(!ObjectUtils.isEmpty(paths)){
-                return new HashSet<>(paths);
-            }
+            List<String> lines = Files.readAllLines(file.toPath());
+            return PluginResourcesConfig.parse(lines);
         } catch (IOException e) {
             throw new Exception("Load plugin lib index path failure. " + libIndex, e);
         }
-        return Collections.emptySet();
     }
 
     protected Manifest getManifest(InputStream inputStream) throws Exception{

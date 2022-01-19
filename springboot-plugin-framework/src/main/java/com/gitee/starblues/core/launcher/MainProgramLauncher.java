@@ -9,8 +9,9 @@ import java.net.URLClassLoader;
 import java.util.Objects;
 
 /**
+ * 主程序启动者
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class MainProgramLauncher extends AbstractLauncher<ClassLoader>{
 
@@ -24,11 +25,20 @@ public class MainProgramLauncher extends AbstractLauncher<ClassLoader>{
 
     @Override
     protected ClassLoader createClassLoader() throws Exception {
-        GenericClassLoader classLoader = new GenericClassLoader(
-                MAIN_CLASS_LOADER_NAME, MainProgramLauncher.class.getClassLoader()
-        );
+        GenericClassLoader classLoader = new GenericClassLoader(MAIN_CLASS_LOADER_NAME, getParentClassLoader());
         addResource(classLoader);
         return classLoader;
+    }
+
+    @Override
+    protected ClassLoader launch(ClassLoader classLoader, String... args) throws Exception {
+        MethodRunner run = new MethodRunner(springBootstrap.getClass().getName(), "run", args);
+        run.run(classLoader);
+        return classLoader;
+    }
+
+    protected ClassLoader getParentClassLoader(){
+        return MainProgramLauncher.class.getClassLoader();
     }
 
     protected void addResource(GenericClassLoader classLoader) throws Exception{
@@ -50,15 +60,4 @@ public class MainProgramLauncher extends AbstractLauncher<ClassLoader>{
     }
 
 
-    @Override
-    protected ClassLoader launch(ClassLoader classLoader, String... args) throws Exception {
-        MethodRunner run = new MethodRunner(springBootstrap.getClass().getName(), "run", args);
-        run.run(classLoader);
-        return classLoader;
-    }
-
-    private static <T> boolean isStartupOfJar() {
-        String protocol = MainProgramLauncher.class.getResource("").getProtocol();
-        return Objects.equals(protocol, "jar");
-    }
 }

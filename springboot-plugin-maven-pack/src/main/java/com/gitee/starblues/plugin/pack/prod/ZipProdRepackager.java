@@ -56,7 +56,7 @@ public class ZipProdRepackager extends DevRepackager {
             outputStream = getOutputStream(packageFile);
             super.repackage();
             resolveClasses();
-            resolveDependencies();
+            resolveResourcesDefine();
             outputStream.finish();
             String rootDir = getRootDir();
             try {
@@ -151,7 +151,7 @@ public class ZipProdRepackager extends DevRepackager {
         Manifest manifest = super.getManifest();
         Attributes attributes = manifest.getMainAttributes();
         attributes.putValue(PluginDescriptorKey.PLUGIN_PATH, PROD_CLASSES_PATH);
-        attributes.putValue(PluginDescriptorKey.PLUGIN_LIB_INDEX, PROD_LIB_INDEX_PATH);
+        attributes.putValue(PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG, PROD_RESOURCES_DEFINE_PATH);
         return manifest;
     }
 
@@ -163,7 +163,24 @@ public class ZipProdRepackager extends DevRepackager {
         outputStream.closeArchiveEntry();
     }
 
-    protected void resolveDependencies() throws Exception {
+    protected void resolveResourcesDefine() throws Exception{
+        Set<String> dependencyIndexNames = resolveDependencies();
+        StringBuilder content = new StringBuilder();
+        content.append(RESOURCES_DEFINE_DEPENDENCIES).append("\n");
+        for (String dependencyIndexName : dependencyIndexNames) {
+            content.append(dependencyIndexName).append("\n");
+        }
+        String loadMainResources = super.getLoadMainResources();
+        if(!CommonUtils.isEmpty(loadMainResources)){
+            content.append(loadMainResources).append("\n");
+        }
+        final byte[] bytes = content.toString().getBytes(StandardCharsets.UTF_8);
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)){
+            putInputStreamEntry(byteArrayInputStream, PROD_RESOURCES_DEFINE_PATH);
+        }
+    }
+
+    protected Set<String> resolveDependencies() throws Exception {
         Set<Artifact> dependencies = repackageMojo.getDependencies();
         String libDirEntryName = createLibEntry();
         Set<String> dependencyIndexNames = new HashSet<>(dependencies.size());
@@ -174,7 +191,7 @@ public class ZipProdRepackager extends DevRepackager {
             String dependencyIndexName = writeDependency(artifact.getFile(), libDirEntryName, outputStream);
             dependencyIndexNames.add(dependencyIndexName);
         }
-        writeLibIndexFile(dependencyIndexNames);
+        return dependencyIndexNames;
     }
 
     protected String createLibEntry() throws Exception {
@@ -199,17 +216,6 @@ public class ZipProdRepackager extends DevRepackager {
             outputStream.closeArchiveEntry();
         }
         return indexName;
-    }
-
-    protected void writeLibIndexFile(Set<String> dependencyIndexNames) throws Exception {
-        StringBuilder content = new StringBuilder();
-        for (String dependencyIndexName : dependencyIndexNames) {
-            content.append(dependencyIndexName).append("\n");
-        }
-        final byte[] bytes = content.toString().getBytes(StandardCharsets.UTF_8);
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)){
-            putInputStreamEntry(byteArrayInputStream, PROD_LIB_INDEX_PATH);
-        }
     }
 
     protected void copyFileToPackage(File file, String rootDir) throws Exception {

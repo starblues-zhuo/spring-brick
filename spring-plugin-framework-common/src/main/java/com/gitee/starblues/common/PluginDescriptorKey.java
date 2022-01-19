@@ -24,7 +24,7 @@ public class PluginDescriptorKey {
 
     /** System create prop **/
     public static final String PLUGIN_PATH = "Plugin-Path";
-    public static final String PLUGIN_LIB_INDEX = "Plugin-Lib-Index";
+    public static final String PLUGIN_RESOURCES_CONFIG = "Plugin-Resources-Config";
 
 
 }
