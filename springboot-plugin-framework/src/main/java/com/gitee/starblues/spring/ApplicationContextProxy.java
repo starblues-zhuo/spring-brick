@@ -1,8 +1,9 @@
 package com.gitee.starblues.spring;
 
 /**
+ *
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class ApplicationContextProxy extends GenericApplicationContext{
 

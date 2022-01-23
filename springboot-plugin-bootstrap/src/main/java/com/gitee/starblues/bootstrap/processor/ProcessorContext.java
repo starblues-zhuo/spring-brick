@@ -9,13 +9,15 @@ import com.gitee.starblues.core.launcher.plugin.RegistryInfo;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.spring.SpringBeanFactory;
+import com.gitee.starblues.spring.WebConfig;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ResourceLoader;
 
 /**
+ * 处理者上下文
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public interface ProcessorContext extends RegistryInfo {
 
@@ -79,6 +81,12 @@ public interface ProcessorContext extends RegistryInfo {
      * @return ResourceLoader
      */
     ResourceLoader getResourceLoader();
+
+    /**
+     * 获取 WebConfig
+     * @return WebConfig
+     */
+    WebConfig getWebConfig();
 
     /**
      * set 当前插件的 ApplicationContext

@@ -3,8 +3,9 @@ package com.gitee.starblues.spring;
 import com.gitee.starblues.utils.Assert;
 
 /**
+ * 基本的ApplicationContext
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class GenericApplicationContext implements ApplicationContext{
 

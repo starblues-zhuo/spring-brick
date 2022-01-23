@@ -16,8 +16,9 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 基本的 ClassLoader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class GenericClassLoader extends URLClassLoader {
 

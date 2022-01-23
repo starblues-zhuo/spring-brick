@@ -10,9 +10,19 @@ import com.gitee.starblues.integration.operator.PluginOperatorWrapper;
 import com.gitee.starblues.integration.user.DefaultPluginUser;
 import com.gitee.starblues.integration.user.PluginUser;
 import com.gitee.starblues.spring.extract.ExtractFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import com.gitee.starblues.spring.web.PluginStaticResourceConfig;
+import com.gitee.starblues.spring.web.PluginStaticResourceResolver;
+import com.gitee.starblues.spring.web.PluginStaticResourceWebMvcConfigurer;
+import com.gitee.starblues.spring.web.thymeleaf.PluginThymeleafInvolved;
+import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.web.servlet.resource.ResourceResolver;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
 
 /**
  * 集成扩展点
@@ -59,6 +69,31 @@ public class IntegrationExtendPoint {
     @ConditionalOnMissingBean
     public MainResourcePatternDefiner mainResourcePatternDefiner(){
         return new DefaultMainResourcePatternDefiner(configuration.mainPackage());
+    }
+
+    @Bean
+    @ConditionalOnClass(ResourceResolver.class)
+    @ConditionalOnWebApplication
+    @ConditionalOnMissingBean
+    public PluginStaticResourceWebMvcConfigurer pluginWebResourceResolver(PluginStaticResourceConfig resourceConfig){
+        return new PluginStaticResourceWebMvcConfigurer(resourceConfig);
+    }
+
+    @Bean
+    @ConditionalOnClass(ResourceResolver.class)
+    @ConditionalOnWebApplication
+    @ConditionalOnMissingBean
+    public PluginStaticResourceConfig pluginStaticResourceConfig(){
+        return new PluginStaticResourceConfig();
+    }
+
+    @Bean
+    @ConditionalOnClass({ TemplateMode.class, SpringTemplateEngine.class })
+    @ConditionalOnWebApplication
+    @ConditionalOnProperty(name = "spring.thymeleaf.enabled", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnMissingBean
+    public PluginThymeleafInvolved pluginThymeleafInvolved(){
+        return new PluginThymeleafInvolved();
     }
 
     @Bean

@@ -13,8 +13,9 @@ import com.gitee.starblues.spring.invoke.InvokeSupperCache;
 import java.nio.file.Paths;
 
 /**
+ * 插件自己的Interactive
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class PluginOneselfInteractive implements PluginInteractive {
 

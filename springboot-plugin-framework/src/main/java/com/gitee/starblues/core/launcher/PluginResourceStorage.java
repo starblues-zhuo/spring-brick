@@ -15,45 +15,46 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 插件资源存储者
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class PluginResourceStorage {
 
-    public static Map<String, Storage> pluginResourceStorage = new ConcurrentHashMap<>();
+    public final static Map<String, Storage> STORAGES = new ConcurrentHashMap<>();
 
 
     public static void addPlugin(InsidePluginDescriptor descriptor){
-        if(pluginResourceStorage.containsKey(descriptor.getPluginId())){
+        if(STORAGES.containsKey(descriptor.getPluginId())){
             return;
         }
-        pluginResourceStorage.put(descriptor.getPluginId(), new Storage(descriptor));
+        STORAGES.put(descriptor.getPluginId(), new Storage(descriptor));
     }
 
 
     public static void removePlugin(String pluginId){
-        Storage storage = pluginResourceStorage.get(pluginId);
+        Storage storage = STORAGES.get(pluginId);
         if(storage == null){
             return;
         }
         IOUtils.closeQuietly(storage);
-        pluginResourceStorage.remove(pluginId);
+        STORAGES.remove(pluginId);
     }
 
     public static void addJarFile(AbstractJarFile jarFile){
-        pluginResourceStorage.forEach((k,v)->{
+        STORAGES.forEach((k,v)->{
             v.addJarFile(jarFile.getName(), jarFile);
         });
     }
 
     public static void addRootJarFile(File file, JarFile jarFile){
-        pluginResourceStorage.forEach((k,v)->{
+        STORAGES.forEach((k,v)->{
             v.addRootJarFile(file, jarFile);
         });
     }
 
     public static JarFile getRootJarFile(File file){
-        for (Storage value : pluginResourceStorage.values()) {
+        for (Storage value : STORAGES.values()) {
             JarFile jarFile = value.getRootJarFile(file);
             if(jarFile != null){
                 return jarFile;

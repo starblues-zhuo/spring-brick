@@ -5,8 +5,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 可缓存的 ResourceMatcher
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class CacheMainResourceMatcher extends DefaultMainResourceMatcher implements AutoCloseable {
 

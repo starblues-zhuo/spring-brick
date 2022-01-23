@@ -17,23 +17,22 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 
+        <springboot-plugin-framework>3.0.0-RELEASE</springboot-plugin-framework>
+
         <slf4j.version>1.7.7</slf4j.version>
         <spring-boot.version>2.5.0</spring-boot.version>
         <spring.version>5.3.2</spring.version>
+        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <jackson.version>2.11.3</jackson.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>com.gitee.starblues</groupId>
-            <artifactId>spring-plugin-framework-common</artifactId>
-            <version>${project.version}</version>
+            <artifactId>springboot-plugin-framework</artifactId>
+            <version>3.0.0-RELEASE</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -51,16 +50,23 @@
         </dependency>
 
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
-            <groupId>com.gitee.starblues</groupId>
-            <artifactId>springboot-plugin-framework</artifactId>
-            <version>3.0.0-RELEASE</version>
-            <scope>provided</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 

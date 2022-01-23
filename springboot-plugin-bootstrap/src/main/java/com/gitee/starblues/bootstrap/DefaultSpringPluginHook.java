@@ -2,10 +2,13 @@ package com.gitee.starblues.bootstrap;
 
 import com.gitee.starblues.bootstrap.processor.ProcessorContext;
 import com.gitee.starblues.bootstrap.processor.SpringPluginProcessor;
+import com.gitee.starblues.bootstrap.processor.web.thymeleaf.PluginThymeleafProcessor;
 import com.gitee.starblues.bootstrap.utils.DestroyUtils;
 import com.gitee.starblues.spring.ApplicationContext;
 import com.gitee.starblues.spring.ApplicationContextProxy;
 import com.gitee.starblues.spring.SpringPluginHook;
+import com.gitee.starblues.spring.WebConfig;
+import com.gitee.starblues.spring.web.thymeleaf.ThymeleafConfig;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
@@ -44,5 +47,15 @@ public class DefaultSpringPluginHook implements SpringPluginHook {
     @Override
     public ApplicationContext getApplicationContext() {
         return new ApplicationContextProxy(processorContext.getApplicationContext().getBeanFactory());
+    }
+
+    @Override
+    public WebConfig getWebConfig() {
+        return processorContext.getWebConfig();
+    }
+
+    @Override
+    public ThymeleafConfig getThymeleafConfig() {
+        return processorContext.getRegistryInfo(PluginThymeleafProcessor.CONFIG_KEY);
     }
 }

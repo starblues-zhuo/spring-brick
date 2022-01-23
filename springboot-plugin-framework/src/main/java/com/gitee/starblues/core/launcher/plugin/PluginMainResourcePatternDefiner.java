@@ -4,6 +4,7 @@ import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.launcher.JavaMainResourcePatternDefiner;
 import com.gitee.starblues.utils.ObjectUtils;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -16,6 +17,8 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
     private static final String FRAMEWORK = "com/gitee/starblues/**";
     private static final String SPRING_WEB = "org/springframework/web/**";
 
+    public static final String FACTORIES_RESOURCE_LOCATION = "META-INF/spring.factories";
+
     private final InsidePluginDescriptor descriptor;
 
     public PluginMainResourcePatternDefiner(InsidePluginDescriptor descriptor) {
@@ -27,6 +30,7 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
         Set<String> includeResourcePatterns = super.getIncludePatterns();
         includeResourcePatterns.add(FRAMEWORK);
         includeResourcePatterns.add(SPRING_WEB);
+        includeResourcePatterns.add("org/springframework/ui/**");
 
         // 配置插件自定义从主程序加载的资源匹配
         Set<String> includeMainResourcePatterns = descriptor.getIncludeMainResourcePatterns();
@@ -45,6 +49,12 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
 
     @Override
     public Set<String> getExcludePatterns() {
-        return descriptor.getExcludeMainResourcePatterns();
+        Set<String> excludeResourcePatterns = new HashSet<>();
+        Set<String> excludeMainResourcePatterns = descriptor.getExcludeMainResourcePatterns();
+        if(!ObjectUtils.isEmpty(excludeMainResourcePatterns)){
+            excludeResourcePatterns.addAll(excludeMainResourcePatterns);
+        }
+        excludeResourcePatterns.add(FACTORIES_RESOURCE_LOCATION);
+        return excludeResourcePatterns;
     }
 }

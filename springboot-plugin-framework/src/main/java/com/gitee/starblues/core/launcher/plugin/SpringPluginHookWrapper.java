@@ -1,29 +1,33 @@
 package com.gitee.starblues.core.launcher.plugin;
 
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
-import com.gitee.starblues.core.launcher.PluginResourceStorage;
-import com.gitee.starblues.core.launcher.jar.Handler;
+import com.gitee.starblues.core.launcher.plugin.involved.PluginLaunchInvolved;
 import com.gitee.starblues.spring.ApplicationContext;
 import com.gitee.starblues.spring.SpringPluginHook;
+import com.gitee.starblues.spring.WebConfig;
+import com.gitee.starblues.spring.web.thymeleaf.ThymeleafConfig;
+import com.gitee.starblues.utils.ResourceUtils;
 
 /**
+ * SpringPluginHook-Wrapper
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class SpringPluginHookWrapper implements SpringPluginHook {
 
     private final SpringPluginHook target;
     private final InsidePluginDescriptor descriptor;
+    private final PluginLaunchInvolved pluginLaunchInvolved;
     private final ClassLoader classLoader;
 
-    public SpringPluginHookWrapper(SpringPluginHook target,
-                                   InsidePluginDescriptor descriptor,
+    public SpringPluginHookWrapper(SpringPluginHook target, InsidePluginDescriptor descriptor,
+                                   PluginLaunchInvolved pluginLaunchInvolved,
                                    ClassLoader classLoader) {
         this.target = target;
         this.descriptor = descriptor;
+        this.pluginLaunchInvolved = pluginLaunchInvolved;
         this.classLoader = classLoader;
     }
-
 
     @Override
     public ApplicationContext getApplicationContext() {
@@ -31,13 +35,19 @@ public class SpringPluginHookWrapper implements SpringPluginHook {
     }
 
     @Override
+    public WebConfig getWebConfig() {
+        return target.getWebConfig();
+    }
+
+    @Override
+    public ThymeleafConfig getThymeleafConfig() {
+        return null;
+    }
+
+    @Override
     public void close() throws Exception {
-        if(target != null){
-            target.close();
-        }
-        if(classLoader instanceof AutoCloseable){
-            ((AutoCloseable)classLoader).close();
-        }
-        PluginResourceStorage.removePlugin(descriptor.getPluginId());
+        pluginLaunchInvolved.close(descriptor, classLoader);
+        ResourceUtils.closeQuietly(target);
+        ResourceUtils.closeQuietly(classLoader);
     }
 }

@@ -15,6 +15,7 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterExceptio
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,10 +56,20 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
         if (!CommonUtils.isEmpty(includes)) {
             filters.addFilter(new IncludeFilter(this.includes));
         }
-        if (!CommonUtils.isEmpty(excludes)) {
-            filters.addFilter(new ExcludeFilter(this.excludes));
+        if(CommonUtils.isEmpty(excludes)){
+            excludes = new ArrayList<>();
         }
+        // 添加主框架排除
+        addPluginFrameworkExclude();
+        filters.addFilter(new ExcludeFilter(this.excludes));
         return filters;
+    }
+
+    private void addPluginFrameworkExclude(){
+        final Exclude pluginFrameworkExclude = new Exclude();
+        pluginFrameworkExclude.setGroupId("com.gitee.starblues");
+        pluginFrameworkExclude.setArtifactId("springboot-plugin-framework");
+        excludes.add(pluginFrameworkExclude);
     }
 
 }

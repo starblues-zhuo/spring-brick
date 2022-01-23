@@ -1,9 +1,7 @@
 package com.gitee.starblues.core.classloader;
 
-import com.gitee.starblues.common.PackageStructure;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
-import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.PluginFileUtils;
 
@@ -11,8 +9,9 @@ import java.io.File;
 import java.util.Set;
 
 /**
+ * 插件资源加载者工厂
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class PluginResourceLoaderFactory extends ResourceLoaderFactory{
 

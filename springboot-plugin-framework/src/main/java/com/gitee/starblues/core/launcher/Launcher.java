@@ -1,8 +1,9 @@
 package com.gitee.starblues.core.launcher;
 
 /**
+ * 启动引导器
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public interface Launcher<R> {
 

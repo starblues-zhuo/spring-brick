@@ -7,8 +7,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 可缓存的代理工厂
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class CacheJdkSameTypeParamProxyFactory extends JdkSameTypeParamProxyFactory{
 
@@ -35,10 +36,5 @@ public class CacheJdkSameTypeParamProxyFactory extends JdkSameTypeParamProxyFact
         }
         return targetMethod.invoke(target, args);
     }
-
-
-
-
-
 
 }

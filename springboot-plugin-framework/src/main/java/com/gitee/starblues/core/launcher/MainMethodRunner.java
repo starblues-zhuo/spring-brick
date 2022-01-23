@@ -1,8 +1,9 @@
 package com.gitee.starblues.core.launcher;
 
 /**
+ * 主程序方法启动者
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class MainMethodRunner extends MethodRunner{
 

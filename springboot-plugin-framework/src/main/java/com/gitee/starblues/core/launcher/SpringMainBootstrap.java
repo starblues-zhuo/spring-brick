@@ -5,8 +5,9 @@ import com.gitee.starblues.utils.Assert;
 import java.util.concurrent.CountDownLatch;
 
 /**
+ * 主程序引导器
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class SpringMainBootstrap {
 

@@ -2,6 +2,10 @@ package com.gitee.starblues.bootstrap.processor;
 
 import com.gitee.starblues.bootstrap.SpringPluginBootstrap;
 import com.gitee.starblues.bootstrap.annotation.DisablePluginWeb;
+import com.gitee.starblues.bootstrap.processor.web.PluginControllerRegistryProcessor;
+import com.gitee.starblues.bootstrap.processor.web.PluginInterceptorsProcessor;
+import com.gitee.starblues.bootstrap.processor.web.PluginStaticResourceProcessor;
+import com.gitee.starblues.bootstrap.processor.web.thymeleaf.PluginThymeleafProcessor;
 import com.gitee.starblues.bootstrap.utils.AnnotationUtils;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
@@ -14,8 +18,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 组合的处理器
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class ComposeSpringPluginProcessor implements SpringPluginProcessor {
 
@@ -143,8 +148,11 @@ public class ComposeSpringPluginProcessor implements SpringPluginProcessor {
         if(disablePluginWeb != null){
             return;
         }
+        context.getWebConfig().setEnable(true);
         processors.add(new PluginControllerRegistryProcessor());
         processors.add(new PluginInterceptorsProcessor());
+        processors.add(new PluginStaticResourceProcessor());
+        processors.add(new PluginThymeleafProcessor());
     }
 
     private void processException(SpringPluginProcessor processor, String executeType,

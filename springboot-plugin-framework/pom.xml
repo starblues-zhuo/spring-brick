@@ -66,9 +66,10 @@
 
         <jackson.version>2.10.1</jackson.version>
         <slf4j.version>1.7.7</slf4j.version>
+        <commons-io.version>2.11.0</commons-io.version>
 
-        <spring-version>5.0.7.RELEASE</spring-version>
-        <spring-boot-version>2.4.1</spring-boot-version>
+        <spring.version>5.0.7.RELEASE</spring.version>
+        <spring-boot.version>2.4.1</spring-boot.version>
         <swagger-spring-web.version>2.10.5</swagger-spring-web.version>
         <springdoc.version>1.5.2</springdoc.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
@@ -92,21 +93,36 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
+            <version>${commons-io.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
-            <version>${spring-boot-version}</version>
+            <version>${spring-boot.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.thymeleaf</groupId>
+            <artifactId>thymeleaf-spring5</artifactId>
+            <version>3.0.12.RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

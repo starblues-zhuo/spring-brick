@@ -3,7 +3,9 @@ package com.gitee.starblues.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -228,6 +230,24 @@ public class ResourceUtils {
         }
         catch (MalformedURLException ex) {
             return false;
+        }
+    }
+
+    public static void closeQuietly(Object closeable){
+        closeQuietly(closeable, null);
+    }
+
+    public static void closeQuietly(Object closeable, Consumer<Exception> consumer){
+        if (closeable != null) {
+            try {
+                if(closeable instanceof AutoCloseable){
+                    ((AutoCloseable) closeable).close();
+                }
+            } catch (final Exception e) {
+                if (consumer != null) {
+                    consumer.accept(e);
+                }
+            }
         }
     }
 

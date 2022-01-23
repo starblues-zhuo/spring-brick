@@ -5,6 +5,8 @@ import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.core.launcher.plugin.DefaultPluginInteractive;
 import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
 import com.gitee.starblues.core.launcher.plugin.PluginLauncher;
+import com.gitee.starblues.core.launcher.plugin.involved.PluginLaunchInvolved;
+import com.gitee.starblues.core.launcher.plugin.involved.PluginLaunchInvolvedFactory;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.spring.MainApplicationContextProxy;
@@ -13,6 +15,7 @@ import com.gitee.starblues.spring.invoke.DefaultInvokeSupperCache;
 import com.gitee.starblues.spring.invoke.InvokeSupperCache;
 import org.springframework.context.support.GenericApplicationContext;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,9 +28,10 @@ public class PluginLauncherManager extends DefaultPluginManager{
     private final Map<String, RegistryPluginInfo> pluginRegistryInfoMap = new ConcurrentHashMap<>();
 
     private final MainApplicationContext mainApplicationContext;
+    private final GenericApplicationContext mainGenericApplicationContext;
     private final IntegrationConfiguration configuration;
     private final InvokeSupperCache invokeSupperCache;
-
+    private final PluginLaunchInvolved pluginLaunchInvolved;
 
     public PluginLauncherManager(RealizeProvider realizeProvider,
                                  GenericApplicationContext applicationContext,
@@ -36,12 +40,20 @@ public class PluginLauncherManager extends DefaultPluginManager{
         this.mainApplicationContext = new MainApplicationContextProxy(
                 applicationContext.getBeanFactory(),
                 applicationContext);
+        this.mainGenericApplicationContext = applicationContext;
         this.configuration = configuration;
         this.invokeSupperCache = new DefaultInvokeSupperCache();
+        this.pluginLaunchInvolved = new PluginLaunchInvolvedFactory();
+
         setDisabledPluginIds(configuration.disablePluginIds());
         setSortedPluginIds(configuration.sortInitPluginIds());
     }
 
+    @Override
+    public synchronized List<PluginInfo> loadPlugins() {
+        this.pluginLaunchInvolved.initialize(mainGenericApplicationContext, configuration);
+        return super.loadPlugins();
+    }
 
     @Override
     protected void start(PluginInsideInfo pluginInsideInfo) throws Exception {
@@ -50,7 +62,7 @@ public class PluginLauncherManager extends DefaultPluginManager{
             InsidePluginDescriptor pluginDescriptor = pluginInsideInfo.getPluginDescriptor();
             PluginInteractive pluginInteractive = new DefaultPluginInteractive(pluginDescriptor,
                     mainApplicationContext, configuration, invokeSupperCache);
-            PluginLauncher pluginLauncher = new PluginLauncher(pluginInteractive);
+            PluginLauncher pluginLauncher = new PluginLauncher(pluginInteractive, pluginLaunchInvolved);
             SpringPluginHook springPluginHook = pluginLauncher.run();
             RegistryPluginInfo registryPluginInfo = new RegistryPluginInfo(pluginDescriptor, springPluginHook);
             pluginRegistryInfoMap.put(pluginDescriptor.getPluginId(), registryPluginInfo);

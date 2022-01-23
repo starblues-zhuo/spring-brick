@@ -8,6 +8,7 @@ import com.gitee.starblues.integration.listener.PluginInitializerListenerFactory
 import com.gitee.starblues.integration.operator.upload.UploadByInputStreamParam;
 import com.gitee.starblues.integration.operator.upload.UploadByMultipartFileParam;
 import com.gitee.starblues.integration.operator.upload.UploadParam;
+import com.gitee.starblues.spring.web.PluginStaticResourceConfig;
 import com.gitee.starblues.utils.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -40,6 +41,7 @@ public class DefaultPluginOperator implements PluginOperator {
 
     private final AtomicBoolean isInit = new AtomicBoolean(false);
 
+    private final GenericApplicationContext applicationContext;
     private final IntegrationConfiguration configuration;
 
     private final PluginManager pluginManager;
@@ -48,6 +50,7 @@ public class DefaultPluginOperator implements PluginOperator {
     public DefaultPluginOperator(GenericApplicationContext applicationContext,
                                  RealizeProvider realizeProvider,
                                  IntegrationConfiguration configuration) {
+        this.applicationContext = applicationContext;
         this.configuration = configuration;
         this.pluginManager = new PluginLauncherManager(realizeProvider, applicationContext, configuration);
         this.pluginInitializerListenerFactory = new PluginInitializerListenerFactory(applicationContext);
@@ -65,7 +68,7 @@ public class DefaultPluginOperator implements PluginOperator {
             if(pluginsRoots.isEmpty()){
                return true;
             }
-            log.info("开始加载插件, 插件根路径为: \n{}", String.join("\n", pluginsRoots));
+            initBeforeLogPrint();
             // 触发插件初始化监听器
             pluginInitializerListenerFactory.before();
             if(!configuration.enable()){
@@ -105,6 +108,19 @@ public class DefaultPluginOperator implements PluginOperator {
         }  catch (Exception e){
             pluginInitializerListenerFactory.failure(e);
             throw e;
+        }
+    }
+
+    /**
+     * 初始化之前日志打印
+     */
+    private void initBeforeLogPrint() {
+        List<String> pluginsRoots = pluginManager.getPluginsRoots();
+        log.info("开始加载插件, 插件根路径为: \n{}", String.join("\n", pluginsRoots));
+        PluginStaticResourceConfig resourceConfig = SpringBeanUtils.getExistBean(applicationContext,
+                PluginStaticResourceConfig.class);
+        if(resourceConfig != null){
+            resourceConfig.logPathPrefix();
         }
     }
 

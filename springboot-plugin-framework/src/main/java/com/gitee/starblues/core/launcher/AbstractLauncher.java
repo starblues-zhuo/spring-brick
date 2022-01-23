@@ -4,8 +4,9 @@ package com.gitee.starblues.core.launcher;
 import com.gitee.starblues.core.launcher.jar.JarFile;
 
 /**
+ * 抽象的启动引导者
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public abstract class AbstractLauncher<R> implements Launcher<R> {
 
@@ -24,6 +25,11 @@ public abstract class AbstractLauncher<R> implements Launcher<R> {
         }
     }
 
+    /**
+     * 创建classloader
+     * @return ClassLoader
+     * @throws Exception 创建异常
+     */
     protected abstract ClassLoader createClassLoader() throws Exception;
 
     /**

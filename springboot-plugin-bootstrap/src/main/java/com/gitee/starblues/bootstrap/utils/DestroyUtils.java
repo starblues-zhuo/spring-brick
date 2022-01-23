@@ -8,8 +8,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * 销毁工具类
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class DestroyUtils {
 

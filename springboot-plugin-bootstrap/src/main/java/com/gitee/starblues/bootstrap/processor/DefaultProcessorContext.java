@@ -8,6 +8,7 @@ import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.spring.SpringBeanFactory;
+import com.gitee.starblues.spring.WebConfig;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -27,6 +28,7 @@ public class DefaultProcessorContext extends CacheRegistryInfo implements Proces
     private final ResourceLoader resourceLoader;
 
     private final IntegrationConfiguration configuration;
+    private final WebConfig webConfig;
 
     private GenericApplicationContext applicationContext;
 
@@ -40,6 +42,7 @@ public class DefaultProcessorContext extends CacheRegistryInfo implements Proces
         this.resourceLoader = new DefaultResourceLoader(this.classLoader);
         this.mainApplicationContext = pluginInteractive.getMainApplicationContext();
         this.configuration = pluginInteractive.getConfiguration();
+        this.webConfig = new WebConfig();
     }
 
     @Override
@@ -93,6 +96,11 @@ public class DefaultProcessorContext extends CacheRegistryInfo implements Proces
     @Override
     public ResourceLoader getResourceLoader() {
         return resourceLoader;
+    }
+
+    @Override
+    public WebConfig getWebConfig() {
+        return webConfig;
     }
 
     @Override
