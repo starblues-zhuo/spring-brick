@@ -19,8 +19,9 @@
 
         <springboot-plugin-framework>3.0.0-RELEASE</springboot-plugin-framework>
 
+        <aspectj.version>1.9.6</aspectj.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <spring-boot.version>2.5.0</spring-boot.version>
+        <spring-boot.version>2.5.6</spring-boot.version>
         <spring.version>5.3.2</spring.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <jackson.version>2.11.3</jackson.version>
@@ -29,32 +30,9 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.gitee.starblues</groupId>
-            <artifactId>springboot-plugin-framework</artifactId>
-            <version>3.0.0-RELEASE</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-            <version>${spring-boot.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet-api.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
         </dependency>
 
         <dependency>
@@ -68,6 +46,39 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.gitee.starblues</groupId>
+            <artifactId>springboot-plugin-framework</artifactId>
+            <version>${springboot-plugin-framework}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>${spring-boot.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -2,6 +2,8 @@ package com.gitee.starblues.common;
 
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 /**
@@ -12,6 +14,11 @@ import java.util.regex.Matcher;
 public abstract class PackageStructure {
 
     private PackageStructure(){}
+
+    public static final String[] ILLEGAL_FORMAT = new String[]{
+            AbstractDependencyPlugin.SPLIT_ALL, AbstractDependencyPlugin.SPLIT_ONE
+    };
+
 
     public static final String CHARSET_NAME = "utf-8";
 
@@ -49,20 +56,13 @@ public abstract class PackageStructure {
         return path;
     }
 
-
-//    public final static String PROD_LIB_DIR = LIB_NAME + SEPARATOR;
-//
-//    public final static String PROD_CLASSES_DIR = CLASSES_NAME + SEPARATOR;
-
-
-//    public static final String PROD_META_INF_PATH = META_INF_NAME + SEPARATOR;
-//
-//    public static final String DEV_MANIFEST_PATH = META_INF_NAME + SEPARATOR + MANIFEST;
-//
-//    public static final String PROD_MANIFEST_PATH = PROD_META_INF_PATH + MANIFEST;
-
-
-
-//    public static final String PROD_LIB_INDEX_PATH = PROD_META_INF_PATH + LIB_INDEX_NAME;
+    public static String getIllegal(String str){
+        for (String s : ILLEGAL_FORMAT) {
+            if(str.contains(s)){
+                return s;
+            }
+        }
+        return null;
+    }
 
 }

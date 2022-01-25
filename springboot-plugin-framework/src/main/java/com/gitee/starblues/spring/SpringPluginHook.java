@@ -1,6 +1,7 @@
 package com.gitee.starblues.spring;
 
 
+import com.gitee.starblues.core.exception.PluginProhibitStopException;
 import com.gitee.starblues.spring.web.thymeleaf.ThymeleafConfig;
 
 /**
@@ -9,6 +10,12 @@ import com.gitee.starblues.spring.web.thymeleaf.ThymeleafConfig;
  * @version 3.0.0
  */
 public interface SpringPluginHook extends AutoCloseable{
+
+    /**
+     * 停止前校验. 如果抛出 PluginProhibitStopException 异常, 表示当前插件不可停止
+     * @throws PluginProhibitStopException 插件禁止停止
+     */
+    void stopVerify() throws PluginProhibitStopException;
 
     /**
      * 返回插件 ApplicationContext

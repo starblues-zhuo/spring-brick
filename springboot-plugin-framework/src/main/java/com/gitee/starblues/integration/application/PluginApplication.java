@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContext;
  * @author starBlues
  * @version 2.4.3
  */
-public interface PluginApplication extends PluginListenerContext {
+public interface PluginApplication{
 
     /**
      * 初始化

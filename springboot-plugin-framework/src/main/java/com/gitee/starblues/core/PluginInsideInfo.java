@@ -16,6 +16,11 @@ public interface PluginInsideInfo extends PluginInfo {
     void setPluginState(PluginState pluginState);
 
     /**
+     * 设置是跟随系统启动而启动的插件
+     */
+    void setFollowSystem();
+
+    /**
      * 得到插件描述
      * @return PluginDescriptor
      */
@@ -23,7 +28,7 @@ public interface PluginInsideInfo extends PluginInfo {
     InsidePluginDescriptor getPluginDescriptor();
 
     /**
-     * 转换为插件信息
+     * 转换为外部插件信息
      * @return PluginInfo
      */
     PluginInfo toPluginInfo();

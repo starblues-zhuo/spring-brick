@@ -1,7 +1,9 @@
 package com.gitee.starblues.core.descriptor;
 
 
-import com.gitee.starblues.core.PluginException;
+import com.gitee.starblues.common.AbstractDependencyPlugin;
+import com.gitee.starblues.common.DependencyPlugin;
+import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.slf4j.Logger;
@@ -80,7 +82,13 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
         descriptor.setProvider(getValue(attributes, PLUGIN_PROVIDER, false));
         descriptor.setLicense(getValue(attributes, PLUGIN_LICENSE, false));
         descriptor.setConfigFileName(getValue(attributes, PLUGIN_CONFIG_FILE_NAME, false));
+
+        descriptor.setDependencyPlugins(getPluginDependency(attributes));
         return descriptor;
+    }
+
+    protected List<DependencyPlugin> getPluginDependency(Attributes attributes){
+        return AbstractDependencyPlugin.toList(getValue(attributes, PLUGIN_DEPENDENCIES), DefaultDependencyPlugin::new);
     }
 
 

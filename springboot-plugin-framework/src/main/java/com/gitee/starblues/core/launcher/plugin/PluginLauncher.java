@@ -32,7 +32,7 @@ public class PluginLauncher extends AbstractLauncher<SpringPluginHook> {
                           PluginLaunchInvolved pluginLaunchInvolved) {
         this.pluginInteractive = pluginInteractive;
         this.pluginDescriptor = pluginInteractive.getPluginDescriptor();
-        this.mainResourcePatternDefiner = new PluginMainResourcePatternDefiner(pluginDescriptor);
+        this.mainResourcePatternDefiner = new PluginMainResourcePatternDefiner(pluginInteractive);
         this.pluginLaunchInvolved = pluginLaunchInvolved;
     }
 

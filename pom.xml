@@ -17,7 +17,7 @@
         <module>springboot-plugin-bootstrap</module>
 <!--        <module>springboot-plugin-framework-extension</module>-->
         <module>springboot-plugin-framework-example</module>
-        <module>springboot-plugin-maven-pack</module>
+        <module>springboot-plugin-maven-packager</module>
     </modules>
 	
 

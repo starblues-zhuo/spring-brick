@@ -1,6 +1,7 @@
 package com.gitee.starblues.core.launcher.plugin;
 
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
+import com.gitee.starblues.core.exception.PluginProhibitStopException;
 import com.gitee.starblues.core.launcher.plugin.involved.PluginLaunchInvolved;
 import com.gitee.starblues.spring.ApplicationContext;
 import com.gitee.starblues.spring.SpringPluginHook;
@@ -27,6 +28,11 @@ public class SpringPluginHookWrapper implements SpringPluginHook {
         this.descriptor = descriptor;
         this.pluginLaunchInvolved = pluginLaunchInvolved;
         this.classLoader = classLoader;
+    }
+
+    @Override
+    public void stopVerify() throws PluginProhibitStopException {
+        target.stopVerify();
     }
 
     @Override

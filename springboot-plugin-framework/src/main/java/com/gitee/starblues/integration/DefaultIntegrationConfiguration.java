@@ -1,6 +1,7 @@
 package com.gitee.starblues.integration;
 
 import com.gitee.starblues.core.RuntimeMode;
+import com.gitee.starblues.utils.Assert;
 import org.springframework.http.CacheControl;
 
 import java.util.ArrayList;
@@ -45,11 +46,6 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     }
 
     @Override
-    public boolean enablePluginRestController() {
-        return true;
-    }
-
-    @Override
     public String pluginRestPathPrefix(){
         return DEFAULT_PLUGIN_REST_PATH_PREFIX;
     }
@@ -70,11 +66,6 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     }
 
     @Override
-    public boolean enableSwaggerRefresh() {
-        return true;
-    }
-
-    @Override
     public List<String> sortInitPluginIds() {
         return null;
     }
@@ -85,17 +76,16 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     }
 
     @Override
-    public boolean exactVersionAllowed() {
+    public boolean exactVersion() {
         return false;
     }
 
+    /**
+     * 检查配置
+     */
     @Override
-    public boolean enableWebSocket() {
-        return false;
+    public void checkConfig(){
+        Assert.isNotEmpty(mainPackage(), "插件配置: mainPackage 不能为空");
     }
 
-    @Override
-    public boolean stopDependents() {
-        return false;
-    }
 }

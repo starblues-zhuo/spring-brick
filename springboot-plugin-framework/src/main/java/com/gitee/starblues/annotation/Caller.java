@@ -1,14 +1,14 @@
 package com.gitee.starblues.annotation;
 
+
+import java.lang.annotation.*;
+
 /**
  * 调用者的注解。配合 @Supplier 注解使用, 两者结合实现插件中的方法调用。
  *
  * @author starBlues
  * @version 2.4.0
  */
-
-import java.lang.annotation.*;
-
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

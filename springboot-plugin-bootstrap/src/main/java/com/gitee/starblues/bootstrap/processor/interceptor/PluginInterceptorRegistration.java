@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * 插件拦截器注册的信息
  * @author starBlues
- * @version 2.4.1
+ * @version 3.0.0
  */
 public class PluginInterceptorRegistration {
 

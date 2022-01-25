@@ -1,8 +1,9 @@
 package com.gitee.starblues.bootstrap.processor;
 
 /**
+ * 处理者异常
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class ProcessorException extends RuntimeException{
 

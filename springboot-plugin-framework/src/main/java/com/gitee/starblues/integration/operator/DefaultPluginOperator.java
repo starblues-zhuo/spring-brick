@@ -2,6 +2,7 @@ package com.gitee.starblues.integration.operator;
 
 import com.gitee.starblues.core.*;
 import com.gitee.starblues.core.exception.PluginDisabledException;
+import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.listener.PluginInitializerListenerFactory;
@@ -162,6 +163,10 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public boolean stop(String pluginId) throws PluginException {
+        PluginInfo pluginInfo = pluginManager.getPluginInfo(pluginId);
+        if(pluginInfo == null){
+            throw new PluginException("没有发现插件: " + pluginId);
+        }
         return pluginManager.stop(pluginId) != null;
     }
 

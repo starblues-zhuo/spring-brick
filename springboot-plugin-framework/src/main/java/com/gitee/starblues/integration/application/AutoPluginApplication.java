@@ -1,6 +1,7 @@
 package com.gitee.starblues.integration.application;
 
-import com.gitee.starblues.integration.IntegrationExtendPoint;
+import com.gitee.starblues.integration.ExtendPointConfiguration;
+import com.gitee.starblues.integration.ExtendPointWebConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.PluginOperator;
 import com.gitee.starblues.integration.user.PluginUser;
@@ -16,7 +17,7 @@ import org.springframework.context.annotation.Import;
  * @author starBlues
  * @version 2.2.0
  */
-@Import(IntegrationExtendPoint.class)
+@Import({ExtendPointConfiguration.class, ExtendPointWebConfiguration.class})
 public class AutoPluginApplication extends DefaultPluginApplication
         implements PluginApplication, ApplicationContextAware, ApplicationListener<ApplicationStartedEvent> {
 

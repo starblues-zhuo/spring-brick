@@ -7,8 +7,9 @@ import org.springframework.beans.factory.FactoryBean;
 import java.lang.reflect.Proxy;
 
 /**
+ * 反射调用其他插件定义的接口bean工厂
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class InvokeBeanFactory<T> implements FactoryBean<T> {
 

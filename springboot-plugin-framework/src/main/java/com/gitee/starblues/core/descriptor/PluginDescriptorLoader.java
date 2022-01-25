@@ -1,6 +1,6 @@
 package com.gitee.starblues.core.descriptor;
 
-import com.gitee.starblues.core.PluginException;
+import com.gitee.starblues.core.exception.PluginException;
 
 import java.nio.file.Path;
 

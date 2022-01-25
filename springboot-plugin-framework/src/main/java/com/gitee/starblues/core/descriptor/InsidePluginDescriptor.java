@@ -5,8 +5,9 @@ import java.util.Set;
 import java.util.jar.Manifest;
 
 /**
+ * 内部的PluginDescriptor
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public interface InsidePluginDescriptor extends PluginDescriptor{
 

@@ -1,11 +1,11 @@
 package com.gitee.starblues.core.descriptor;
 
+import com.gitee.starblues.common.DependencyPlugin;
+import com.gitee.starblues.common.PackageStructure;
+import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.utils.Assert;
 
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Set;
-import java.util.jar.Manifest;
 
 import static com.gitee.starblues.common.PluginDescriptorKey.*;
 
@@ -29,6 +29,7 @@ public class DefaultPluginDescriptor implements PluginDescriptor{
     private String provider;
     private String license;
 
+    private List<DependencyPlugin> dependencyPlugins;
 
     public DefaultPluginDescriptor(String pluginId, String pluginVersion,
                                    String pluginClass, String pluginPath) {
@@ -36,6 +37,7 @@ public class DefaultPluginDescriptor implements PluginDescriptor{
         this.pluginVersion = Assert.isNotEmpty(pluginVersion, PLUGIN_VERSION + "不能为空");
         this.pluginBootstrapClass = Assert.isNotEmpty(pluginClass, PLUGIN_BOOTSTRAP_CLASS + "不能为空");
         this.pluginPath = Assert.isNotNull(pluginPath, "插件路径[pluginPath]不能为空");
+        check();
     }
 
     void setDescription(String description) {
@@ -56,6 +58,10 @@ public class DefaultPluginDescriptor implements PluginDescriptor{
 
     void setType(Type type) {
         this.type = type;
+    }
+
+    void setDependencyPlugins(List<DependencyPlugin> dependencyPlugins) {
+        this.dependencyPlugins = dependencyPlugins;
     }
 
     @Override
@@ -99,13 +105,25 @@ public class DefaultPluginDescriptor implements PluginDescriptor{
     }
 
     @Override
-    public List<PluginDependency> getPluginDependency() {
-        return null;
+    public List<DependencyPlugin> getDependencyPlugin() {
+        return dependencyPlugins;
     }
+
 
     @Override
     public Type getType() {
         return type;
+    }
+
+    private void check(){
+        String illegal = PackageStructure.getIllegal(pluginId);
+        if(illegal != null){
+            throw new PluginException(this, "插件id不能包含:" + illegal);
+        }
+        illegal = PackageStructure.getIllegal(pluginVersion);
+        if(illegal != null){
+            throw new PluginException(this, "插件版本号不能包含:" + illegal);
+        }
     }
 
 }

@@ -2,7 +2,7 @@ package com.gitee.starblues.bootstrap.processor;
 
 import com.gitee.starblues.bootstrap.SpringPluginBootstrap;
 import com.gitee.starblues.bootstrap.annotation.DisablePluginWeb;
-import com.gitee.starblues.bootstrap.processor.web.PluginControllerRegistryProcessor;
+import com.gitee.starblues.bootstrap.processor.web.PluginControllerProcessor;
 import com.gitee.starblues.bootstrap.processor.web.PluginInterceptorsProcessor;
 import com.gitee.starblues.bootstrap.processor.web.PluginStaticResourceProcessor;
 import com.gitee.starblues.bootstrap.processor.web.thymeleaf.PluginThymeleafProcessor;
@@ -149,7 +149,7 @@ public class ComposeSpringPluginProcessor implements SpringPluginProcessor {
             return;
         }
         context.getWebConfig().setEnable(true);
-        processors.add(new PluginControllerRegistryProcessor());
+        processors.add(new PluginControllerProcessor());
         processors.add(new PluginInterceptorsProcessor());
         processors.add(new PluginStaticResourceProcessor());
         processors.add(new PluginThymeleafProcessor());

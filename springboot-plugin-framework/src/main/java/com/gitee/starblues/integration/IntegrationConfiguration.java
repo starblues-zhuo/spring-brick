@@ -1,7 +1,9 @@
 package com.gitee.starblues.integration;
 
 
+import com.gitee.starblues.common.Constants;
 import com.gitee.starblues.core.RuntimeMode;
+import com.gitee.starblues.utils.ObjectUtils;
 import org.springframework.http.CacheControl;
 
 import java.util.List;
@@ -41,14 +43,6 @@ public interface IntegrationConfiguration {
     List<String> pluginPath();
 
     /**
-     * 插件文件的配置路径。在生产环境下, 插件的配置文件路径。
-     *  在生产环境下， 请将所有插件使用到的配置文件统一放到该路径下管理。
-     *  在开发环境下，配置为空串。程序会自动从 resources 获取配置文件， 所以请确保编译后的target 下存在该配置文件
-     * @return 插件文件的配置路径
-     */
-    String pluginConfigFilePath();
-
-    /**
      * 上传插件包存储的临时路径。默认 temp(相对于主程序jar路径)。
      * @return 上传插件的临时保存路径。
      */
@@ -59,12 +53,6 @@ public interface IntegrationConfiguration {
      * @return 插件备份路径。
      */
     String backupPath();
-
-    /**
-     * 是否启用插件的 rest controller 接口注册. 默认启用
-     * @return true 启用, false 禁用
-     */
-    boolean enablePluginRestController();
 
     /**
      * 插件 RestController 统一请求的路径前缀
@@ -94,12 +82,6 @@ public interface IntegrationConfiguration {
     Set<String> disablePluginIds();
 
     /**
-     * 是否启用Swagger刷新机制
-     * @return 启用返回true, 不启用返回 false
-     */
-    boolean enableSwaggerRefresh();
-
-    /**
      * 设置初始化时插件启动的顺序.
      * @return 有顺序的插件id
      */
@@ -108,7 +90,7 @@ public interface IntegrationConfiguration {
     /**
      * 当前主程序的版本号, 用于校验插件是否可安装.
      * 插件中可通过插件配置信息 requires 来指定可安装的主程序版本
-     * @return 系统版本号, 如果为: 0.0.0 的话, 表示不校验
+     * @return 系统版本号, 如果为为空或者 0.0.0 表示不校验
      */
     String version();
 
@@ -118,19 +100,43 @@ public interface IntegrationConfiguration {
      * 默认为false
      * @return true or false
      */
-    boolean exactVersionAllowed();
-
-    /**
-     * 是否启用webSocket功能. 如需启用, 则需要引入springboot支持的WebSocket依赖
-     * @return 启用返回true,不启用返回false
-     */
-    boolean enableWebSocket();
+    boolean exactVersion();
 
 
     /**
-     * 停止插件时, 是否停止依赖的插件
-     * @return 停止返回true,不停止返回false
+     * 检查配置
      */
-    boolean stopDependents();
+    default void checkConfig(){};
+
+    /**
+     * 是否被启动
+     * @param pluginId 插件id
+     * @return true: 启用, false: 未启用
+     */
+    default boolean isEnable(String pluginId){
+        if(ObjectUtils.isEmpty(enablePluginIds())){
+            return true;
+        }
+        if(isDisabled(pluginId)){
+            return false;
+        }
+        return enablePluginIds().contains(pluginId);
+    }
+
+
+    /**
+     * 是否被禁用
+     * @param pluginId 插件id
+     * @return true: 禁用, false: 未禁用
+     */
+    default boolean isDisabled(String pluginId){
+        if(ObjectUtils.isEmpty(disablePluginIds())){
+            return false;
+        }
+        if(disablePluginIds().contains(Constants.DISABLED_ALL_PLUGIN)){
+            return true;
+        }
+        return disablePluginIds().contains(pluginId);
+    }
 
 }

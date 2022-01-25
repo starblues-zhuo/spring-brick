@@ -1,5 +1,7 @@
 package com.gitee.starblues.core;
 
+import com.gitee.starblues.core.exception.PluginException;
+
 import java.nio.file.Path;
 import java.util.List;
 
@@ -28,9 +30,10 @@ public interface PluginManager {
     List<PluginInfo> loadPlugins();
 
     /**
-     * 校验插件包
-     * @param pluginPath 插件包路径
-     * @return 校验结果. true 成功, false 失败
+     * 校验插件jar包
+     * @param pluginPath 插件包的路径
+     * @return  成功: 返回true; 失败: 抛出异常或者返回false
+     * @throws PluginException 校验异常
      */
     boolean verify(Path pluginPath);
 
@@ -58,11 +61,12 @@ public interface PluginManager {
     void unLoad(String pluginId);
 
     /**
-     * 安装路径直接安装插件, 并启动
+     * 通过路径安装插件(会启用), 该插件文件必须存在于服务器 [适用于生产环境]
+     * 如果在插件目录存在同名的插件包, 系统会自动备份该插件包。备份文件命名规则为；[install-backup][时间]_原jar名.jar
      * @param pluginPath 插件路径
-     * @param unpackPlugin 是否解压插件文件
-     * @return 安装的插件信息
-     * @throws PluginException 插件异常
+     * @param unpackPlugin 是否解压插件包. (如果插件包为压缩包时生效)
+     * @return 成功: 返回插件信息PluginInfo; 失败: 抛出异常或者返回null
+     * @throws PluginException 异常信息
      */
     PluginInfo install(Path pluginPath, boolean unpackPlugin) throws PluginException;
 

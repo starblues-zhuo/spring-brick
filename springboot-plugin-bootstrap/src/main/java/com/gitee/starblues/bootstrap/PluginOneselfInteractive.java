@@ -59,8 +59,6 @@ public class PluginOneselfInteractive implements PluginInteractive {
         return opExtractFactory;
     }
 
-
-
     private InsidePluginDescriptor createPluginDescriptor(){
         InsidePluginDescriptor pluginDescriptor;
         try (PluginDescriptorLoader pluginDescriptorLoader = new DevPluginDescriptorLoader()){

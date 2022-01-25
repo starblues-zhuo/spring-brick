@@ -2,17 +2,22 @@ package com.gitee.starblues.core;
 
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
+import com.gitee.starblues.core.exception.PluginException;
+import com.gitee.starblues.core.exception.PluginProhibitStopException;
 import com.gitee.starblues.core.launcher.plugin.DefaultPluginInteractive;
 import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
 import com.gitee.starblues.core.launcher.plugin.PluginLauncher;
 import com.gitee.starblues.core.launcher.plugin.involved.PluginLaunchInvolved;
 import com.gitee.starblues.core.launcher.plugin.involved.PluginLaunchInvolvedFactory;
 import com.gitee.starblues.integration.IntegrationConfiguration;
+import com.gitee.starblues.integration.listener.DefaultPluginListenerFactory;
+import com.gitee.starblues.integration.listener.PluginListenerFactory;
 import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.spring.MainApplicationContextProxy;
 import com.gitee.starblues.spring.SpringPluginHook;
 import com.gitee.starblues.spring.invoke.DefaultInvokeSupperCache;
 import com.gitee.starblues.spring.invoke.InvokeSupperCache;
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.List;
@@ -20,12 +25,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 可引导启动的插件管理者
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class PluginLauncherManager extends DefaultPluginManager{
 
     private final Map<String, RegistryPluginInfo> pluginRegistryInfoMap = new ConcurrentHashMap<>();
+
 
     private final MainApplicationContext mainApplicationContext;
     private final GenericApplicationContext mainGenericApplicationContext;
@@ -36,7 +43,7 @@ public class PluginLauncherManager extends DefaultPluginManager{
     public PluginLauncherManager(RealizeProvider realizeProvider,
                                  GenericApplicationContext applicationContext,
                                  IntegrationConfiguration configuration) {
-        super(realizeProvider, configuration.pluginPath());
+        super(realizeProvider, configuration);
         this.mainApplicationContext = new MainApplicationContextProxy(
                 applicationContext.getBeanFactory(),
                 applicationContext);
@@ -44,9 +51,20 @@ public class PluginLauncherManager extends DefaultPluginManager{
         this.configuration = configuration;
         this.invokeSupperCache = new DefaultInvokeSupperCache();
         this.pluginLaunchInvolved = new PluginLaunchInvolvedFactory();
+        addCustomPluginChecker();
+    }
 
-        setDisabledPluginIds(configuration.disablePluginIds());
-        setSortedPluginIds(configuration.sortInitPluginIds());
+    private void addCustomPluginChecker(){
+        List<PluginChecker> pluginCheckers = SpringBeanUtils.getBeans(mainGenericApplicationContext,
+                PluginChecker.class);
+        for (PluginChecker pluginChecker : pluginCheckers) {
+            super.pluginChecker.add(pluginChecker);
+        }
+    }
+
+    @Override
+    protected PluginListenerFactory createPluginListenerFactory() {
+        return new DefaultPluginListenerFactory(mainGenericApplicationContext);
     }
 
     @Override
@@ -81,7 +99,9 @@ public class PluginLauncherManager extends DefaultPluginManager{
         if(registryPluginInfo == null){
             throw new PluginException("没有发现插件 '" + pluginId +  "' 信息");
         }
-        registryPluginInfo.getSpringPluginHook().close();
+        SpringPluginHook springPluginHook = registryPluginInfo.getSpringPluginHook();
+        springPluginHook.stopVerify();
+        springPluginHook.close();
         invokeSupperCache.remove(pluginId);
         pluginRegistryInfoMap.remove(pluginId);
         super.stop(pluginInsideInfo);

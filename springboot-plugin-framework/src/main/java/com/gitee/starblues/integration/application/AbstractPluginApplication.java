@@ -16,28 +16,6 @@ import java.util.List;
  */
 public abstract class AbstractPluginApplication implements PluginApplication {
 
-    protected final PluginListenerFactory listenerFactory = new PluginListenerFactory();
-
-    @Override
-    public void addListener(PluginListener pluginListener) {
-        this.listenerFactory.addPluginListener(pluginListener);
-    }
-
-    @Override
-    public <T extends PluginListener> void addListener(Class<T> pluginListenerClass) {
-        listenerFactory.addPluginListener(pluginListenerClass);
-    }
-
-    @Override
-    public void addListener(List<PluginListener> pluginListeners) {
-        if(pluginListeners == null || pluginListeners.isEmpty()){
-            return;
-        }
-        for (PluginListener pluginListener : pluginListeners) {
-            this.listenerFactory.addPluginListener(pluginListener);
-        }
-    }
-
     /**
      * 子类可通过Application 获取插件定义的配置
      * @param applicationContext applicationContext

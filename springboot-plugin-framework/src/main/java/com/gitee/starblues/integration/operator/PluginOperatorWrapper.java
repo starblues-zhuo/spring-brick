@@ -1,18 +1,16 @@
 package com.gitee.starblues.integration.operator;
 
-import com.gitee.starblues.core.PluginException;
+import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.core.PluginInfo;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.upload.UploadParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 插件操作包装者
@@ -24,12 +22,12 @@ public class PluginOperatorWrapper implements PluginOperator{
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final PluginOperator pluginOperator;
-    private final IntegrationConfiguration integrationConfiguration;
+    private final IntegrationConfiguration configuration;
 
     public PluginOperatorWrapper(PluginOperator pluginOperator,
-                                 IntegrationConfiguration integrationConfiguration) {
+                                 IntegrationConfiguration configuration) {
         this.pluginOperator = pluginOperator;
-        this.integrationConfiguration = integrationConfiguration;
+        this.configuration = configuration;
     }
 
     @Override
@@ -77,7 +75,6 @@ public class PluginOperatorWrapper implements PluginOperator{
         if(isDisable()){
             return;
         }
-        checkIsUnRegistry(pluginId);
         pluginOperator.uninstall(pluginId, isDelete, isBackup);
     }
 
@@ -102,7 +99,6 @@ public class PluginOperatorWrapper implements PluginOperator{
         if(isDisable()){
             return false;
         }
-        checkIsUnRegistry(pluginId);
         return pluginOperator.stop(pluginId);
     }
 
@@ -151,39 +147,12 @@ public class PluginOperatorWrapper implements PluginOperator{
      * @return true 禁用
      */
     private boolean isDisable(){
-        if(integrationConfiguration.enable()){
+        if(configuration.enable()){
             return false;
         }
         // 如果禁用的话, 直接返回
         log.info("插件功能已被禁用!");
         return true;
     }
-
-    /**
-     * 检查是否可卸载
-     * @param pluginId 插件id
-     * @throws Exception 检查异常
-     */
-    private void checkIsUnRegistry(String pluginId) throws PluginException{
-//        ConfigurableApplicationContext pluginApplicationContext = PluginInfoContainers.getPluginApplicationContext(pluginId);
-//        if(pluginApplicationContext == null){
-//            log.error("Plugin '{}' Not found ApplicationContext. So cannot found and execute unRegistryValidator",
-//                    pluginId);
-//            return;
-//        }
-//        List<UnRegistryValidator> unRegistryValidators = SpringBeanUtils.getBeans(pluginApplicationContext, UnRegistryValidator.class);
-//        for (UnRegistryValidator unRegistryValidator : unRegistryValidators) {
-//            UnRegistryValidator.Result result = unRegistryValidator.verify();
-//            if(result.isVerify()){
-//                return;
-//            }
-//            String message = result.getMessage();
-//            if(StringUtils.isNullOrEmpty(message)){
-//                message = "Plugin [" + pluginId + "] Stop or Uninstall be banned";
-//            }
-//            throw new Exception(message);
-//        }
-    }
-
 
 }

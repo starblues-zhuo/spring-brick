@@ -13,22 +13,13 @@ public class PluginInfoFace implements PluginInfo {
 
     private final PluginDescriptor pluginDescriptor;
     private final PluginState pluginState;
+    private final boolean followSystem;
 
     public PluginInfoFace(PluginInsideInfo pluginInsideInfo) {
         Assert.isNotNull(pluginInsideInfo, "参数 pluginWrapperInside 不能为空");
         this.pluginDescriptor = pluginInsideInfo.getPluginDescriptor().toPluginDescriptor();
         this.pluginState = pluginInsideInfo.getPluginState();
-    }
-
-    public PluginInfoFace(PluginDescriptor pluginDescriptor, PluginState pluginState) {
-        Assert.isNotNull(pluginDescriptor, "参数 pluginDescriptor 不能为空");
-        Assert.isNotNull(pluginState, "参数 pluginState 不能为空");
-        if(pluginDescriptor instanceof  InsidePluginDescriptor){
-            this.pluginDescriptor = ((InsidePluginDescriptor)pluginDescriptor).toPluginDescriptor();
-        } else {
-            this.pluginDescriptor = pluginDescriptor;
-        }
-        this.pluginState = pluginState;
+        this.followSystem = pluginInsideInfo.isFollowSystem();
     }
 
     @Override
@@ -49,5 +40,10 @@ public class PluginInfoFace implements PluginInfo {
     @Override
     public PluginState getPluginState() {
         return pluginState;
+    }
+
+    @Override
+    public boolean isFollowSystem() {
+        return followSystem;
     }
 }

@@ -17,8 +17,9 @@ import org.springframework.lang.Nullable;
 import java.util.Set;
 
 /**
+ * 插件BeanFactory实现
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class PluginListableBeanFactory extends DefaultListableBeanFactory {
 

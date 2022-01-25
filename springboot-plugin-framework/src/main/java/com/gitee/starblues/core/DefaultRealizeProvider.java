@@ -2,7 +2,6 @@ package com.gitee.starblues.core;
 
 import com.gitee.starblues.core.descriptor.DevPluginDescriptorLoader;
 import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
-import com.gitee.starblues.core.descriptor.ProdPackagePluginDescriptorLoader;
 import com.gitee.starblues.core.descriptor.ProdPluginDescriptorLoader;
 import com.gitee.starblues.core.scanner.BasePluginScanner;
 import com.gitee.starblues.core.scanner.DevPathResolve;
@@ -10,7 +9,9 @@ import com.gitee.starblues.core.scanner.PluginScanner;
 import com.gitee.starblues.core.scanner.ProdPathResolve;
 import com.gitee.starblues.core.version.SemverVersionInspector;
 import com.gitee.starblues.core.version.VersionInspector;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.utils.Assert;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author starBlues
@@ -20,20 +21,22 @@ public class DefaultRealizeProvider implements RealizeProvider {
 
     private PluginScanner pluginScanner;
     private PluginDescriptorLoader pluginDescriptorLoader;
-    private PluginChecker pluginChecker;
     private VersionInspector versionInspector;
 
-    protected final RuntimeMode runtimeMode;
+    protected final IntegrationConfiguration configuration;
+    protected final ApplicationContext applicationContext;
 
-    public DefaultRealizeProvider(RuntimeMode runtimeMode){
-        this.runtimeMode = Assert.isNotNull(runtimeMode, "参数 runtimeMode 不能为空");
+    public DefaultRealizeProvider(IntegrationConfiguration configuration,
+                                  ApplicationContext applicationContext){
+        this.configuration = Assert.isNotNull(configuration, "参数 configuration 不能为空");
+        this.applicationContext = Assert.isNotNull(applicationContext, "参数 configuration 不能为空");
     }
 
     @Override
     public void init() {
         BasePluginScanner basePluginScanner = new BasePluginScanner();
         PluginDescriptorLoader pluginDescriptorLoader = null;
-        if(runtimeMode == RuntimeMode.DEV){
+        if(configuration.environment() == RuntimeMode.DEV){
             basePluginScanner.setPathResolve(new DevPathResolve());
             pluginDescriptorLoader = new DevPluginDescriptorLoader();
         } else {
@@ -43,7 +46,6 @@ public class DefaultRealizeProvider implements RealizeProvider {
 
         setPluginScanner(basePluginScanner);
         setPluginDescriptorLoader(pluginDescriptorLoader);
-        setPluginChecker(new DefaultPluginChecker());
         setVersionInspector(new SemverVersionInspector());
     }
 
@@ -56,17 +58,13 @@ public class DefaultRealizeProvider implements RealizeProvider {
                 "pluginDescriptorLoader 不能为空");
     }
 
-    public void setPluginChecker(PluginChecker pluginChecker) {
-        this.pluginChecker = Assert.isNotNull(pluginChecker, "pluginChecker 不能为空");
-    }
-
     public void setVersionInspector(VersionInspector versionInspector) {
         this.versionInspector = Assert.isNotNull(versionInspector, "versionInspector 不能为空");
     }
 
     @Override
     public RuntimeMode getRuntimeMode() {
-        return runtimeMode;
+        return configuration.environment();
     }
 
     @Override
@@ -77,11 +75,6 @@ public class DefaultRealizeProvider implements RealizeProvider {
     @Override
     public PluginDescriptorLoader getPluginDescriptorLoader() {
         return Assert.isNotNull(pluginDescriptorLoader, "PluginDescriptorLoader 实现不能为空");
-    }
-
-    @Override
-    public PluginChecker getPluginChecker() {
-        return Assert.isNotNull(pluginChecker, "PluginChecker 实现不能为空");
     }
 
     @Override

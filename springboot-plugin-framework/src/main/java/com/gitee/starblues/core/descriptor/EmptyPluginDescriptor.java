@@ -1,5 +1,7 @@
 package com.gitee.starblues.core.descriptor;
 
+import com.gitee.starblues.common.DependencyPlugin;
+
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
@@ -51,7 +53,7 @@ public class EmptyPluginDescriptor implements InsidePluginDescriptor{
     }
 
     @Override
-    public List<PluginDependency> getPluginDependency() {
+    public List<DependencyPlugin> getDependencyPlugin() {
         return null;
     }
 

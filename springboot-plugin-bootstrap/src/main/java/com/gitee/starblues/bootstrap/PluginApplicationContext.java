@@ -8,8 +8,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.io.ResourceLoader;
 
 /**
+ * 插件ApplicationContext实现
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class PluginApplicationContext extends AnnotationConfigApplicationContext {
 

@@ -48,8 +48,10 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
         if(beInitialized.get()){
             throw new RuntimeException("Plugin has been initialized");
         }
-        // 检查Configuration
+        // 获取Configuration
         IntegrationConfiguration configuration = getConfiguration(applicationContext);
+        // 检查配置
+        configuration.checkConfig();
         createPluginUser(applicationContext);
         createPluginOperator(applicationContext);
         try {

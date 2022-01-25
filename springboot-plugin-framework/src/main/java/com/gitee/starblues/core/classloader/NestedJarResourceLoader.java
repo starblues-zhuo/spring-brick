@@ -1,6 +1,6 @@
 package com.gitee.starblues.core.classloader;
 
-import com.gitee.starblues.core.PluginException;
+import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 
 import java.io.InputStream;
@@ -13,8 +13,9 @@ import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 
 /**
+ * 嵌套jar加载者
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class NestedJarResourceLoader extends AbstractResourceLoader{
 

@@ -1,14 +1,12 @@
 package com.gitee.starblues.integration.operator;
 
-import com.gitee.starblues.core.PluginException;
+import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.core.PluginInfo;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.upload.UploadParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author starBlues

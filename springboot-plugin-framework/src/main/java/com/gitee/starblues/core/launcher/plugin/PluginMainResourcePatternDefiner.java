@@ -1,8 +1,11 @@
 package com.gitee.starblues.core.launcher.plugin;
 
+import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.launcher.JavaMainResourcePatternDefiner;
+import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.utils.ObjectUtils;
+import com.gitee.starblues.utils.SpringBeanUtilsV3;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,22 +18,31 @@ import java.util.Set;
 public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDefiner {
 
     private static final String FRAMEWORK = "com/gitee/starblues/**";
-    private static final String SPRING_WEB = "org/springframework/web/**";
 
     public static final String FACTORIES_RESOURCE_LOCATION = "META-INF/spring.factories";
 
+    private final String mainPackage;
     private final InsidePluginDescriptor descriptor;
+    private final BasicMainResourcePatternDefiner basicPatternDefiner;
 
-    public PluginMainResourcePatternDefiner(InsidePluginDescriptor descriptor) {
-        this.descriptor = descriptor;
+    public PluginMainResourcePatternDefiner(PluginInteractive pluginInteractive) {
+        mainPackage = pluginInteractive.getConfiguration().mainPackage();
+        this.descriptor = pluginInteractive.getPluginDescriptor();
+        basicPatternDefiner = getPatternDefiner(pluginInteractive);
     }
 
     @Override
     public Set<String> getIncludePatterns() {
         Set<String> includeResourcePatterns = super.getIncludePatterns();
+        Set<String> includePatterns = basicPatternDefiner.getIncludePatterns();
+        if(!ObjectUtils.isEmpty(includePatterns)){
+            includeResourcePatterns.addAll(includePatterns);
+        } else {
+            includeResourcePatterns.add(mainPackage);
+        }
         includeResourcePatterns.add(FRAMEWORK);
-        includeResourcePatterns.add(SPRING_WEB);
-        includeResourcePatterns.add("org/springframework/ui/**");
+        addWebIncludeResourcePatterns(includeResourcePatterns);
+        addSwagger(includeResourcePatterns);
 
         // 配置插件自定义从主程序加载的资源匹配
         Set<String> includeMainResourcePatterns = descriptor.getIncludeMainResourcePatterns();
@@ -47,9 +59,15 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
         return includeResourcePatterns;
     }
 
+
+
     @Override
     public Set<String> getExcludePatterns() {
         Set<String> excludeResourcePatterns = new HashSet<>();
+        Set<String> excludePatterns = basicPatternDefiner.getExcludePatterns();
+        if(!ObjectUtils.isEmpty(excludePatterns)){
+            excludeResourcePatterns.addAll(excludePatterns);
+        }
         Set<String> excludeMainResourcePatterns = descriptor.getExcludeMainResourcePatterns();
         if(!ObjectUtils.isEmpty(excludeMainResourcePatterns)){
             excludeResourcePatterns.addAll(excludeMainResourcePatterns);
@@ -57,4 +75,37 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
         excludeResourcePatterns.add(FACTORIES_RESOURCE_LOCATION);
         return excludeResourcePatterns;
     }
+
+
+
+    protected void addWebIncludeResourcePatterns(Set<String> patterns){
+        patterns.add("org/springframework/web/**");
+        patterns.add("org/springframework/http/**");
+        patterns.add("org/springframework/remoting/**");
+        patterns.add("org/springframework/ui/**");
+
+        patterns.add("com/fasterxml/jackson/**");
+    }
+
+    protected void addSwagger(Set<String> patterns){
+        patterns.add("springfox/documentation/**");
+        patterns.add("io/swagger/**");
+    }
+
+    /**
+     * 获取基本的 MainResourcePatternDefiner
+     * @param pluginInteractive PluginInteractive
+     * @return BasicMainResourcePatternDefiner
+     */
+    private BasicMainResourcePatternDefiner getPatternDefiner(PluginInteractive pluginInteractive){
+        final MainApplicationContext mainApplicationContext = pluginInteractive.getMainApplicationContext();
+        BasicMainResourcePatternDefiner definer = SpringBeanUtilsV3.getExistBean(
+                mainApplicationContext, BasicMainResourcePatternDefiner.class);
+        if(definer == null){
+            return new BasicMainResourcePatternDefiner(mainPackage);
+        } else {
+            return definer;
+        }
+    }
+
 }

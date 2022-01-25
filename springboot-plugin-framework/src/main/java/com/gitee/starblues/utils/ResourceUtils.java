@@ -37,6 +37,7 @@ public class ResourceUtils {
     public static final String FILE_URL_PREFIX = "file:";
 
     public static final String PACKAGE_SPLIT = "/";
+    public static final String PACKAGE_SPLIT_DOT = ".";
 
     public static final String JAR_FILE_EXTENSION = ".jar";
     public static final String ZIP_FILE_EXTENSION = ".zip";
@@ -64,7 +65,7 @@ public class ResourceUtils {
         String packageType = TYPE_PACKAGE + TYPE_SPLIT;
         if(isPackage(locationMatch)){
             String location = locationMatch.replaceFirst(packageType, "");
-            return location.replace(".", "/");
+            return replacePackage(location);
         }
         LOGGER.error("locationMatch {} illegal", locationMatch);
         return null;
@@ -184,6 +185,13 @@ public class ResourceUtils {
             }
             consumerFile.accept(listFile);
         }
+    }
+
+    public static String replacePackage(String packageName){
+        if(packageName == null){
+            return null;
+        }
+        return packageName.replace(PACKAGE_SPLIT_DOT, PACKAGE_SPLIT);
     }
 
 

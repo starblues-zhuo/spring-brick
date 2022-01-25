@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * 插件拦截器添加者
  * @author starBlues
- * @version 2.4.1
+ * @version 3.0.0
  */
 public class PluginInterceptorRegistry {
 

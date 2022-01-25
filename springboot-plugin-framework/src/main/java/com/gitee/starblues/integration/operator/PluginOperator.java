@@ -1,22 +1,19 @@
 package com.gitee.starblues.integration.operator;
 
-import com.gitee.starblues.core.PluginException;
+import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.core.PluginInfo;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
 import com.gitee.starblues.integration.operator.upload.UploadByInputStreamParam;
 import com.gitee.starblues.integration.operator.upload.UploadByMultipartFileParam;
 import com.gitee.starblues.integration.operator.upload.UploadParam;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 操作插件的接口
  * @author starBlues
- * @version 2.4.4
+ * @version 3.0.0
  * @see DefaultPluginOperator
  */
 public interface PluginOperator {
@@ -31,11 +28,11 @@ public interface PluginOperator {
 
     /**
      * 校验插件jar包
-     * @param jarPath 插件包的路径
+     * @param pluginPath 插件包的路径
      * @return  成功: 返回true; 失败: 抛出异常或者返回false
      * @throws PluginException 校验异常
      */
-    boolean verify(Path jarPath) throws PluginException;
+    boolean verify(Path pluginPath) throws PluginException;
 
     /**
      * 解析插件包
@@ -48,12 +45,12 @@ public interface PluginOperator {
     /**
      * 通过路径安装插件(会启用), 该插件文件必须存在于服务器 [适用于生产环境]
      * 如果在插件目录存在同名的插件包, 系统会自动备份该插件包。备份文件命名规则为；[install-backup][时间]_原jar名.jar
-     * @param jarPath 插件路径
+     * @param pluginPath 插件路径
      * @param unpackPlugin 是否解压插件包. (如果插件包为压缩包时生效)
      * @return 成功: 返回插件信息PluginInfo; 失败: 抛出异常或者返回null
      * @throws PluginException 异常信息
      */
-    PluginInfo install(Path jarPath, boolean unpackPlugin) throws PluginException;
+    PluginInfo install(Path pluginPath, boolean unpackPlugin) throws PluginException;
 
     /**
      * 卸载插件 [适用于生产环境]

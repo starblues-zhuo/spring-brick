@@ -33,4 +33,10 @@ public interface PluginInfo {
      */
     PluginState getPluginState();
 
+    /**
+     * 是否跟随系统启动而加载的插件
+     * @return true: 是, false: 否
+     */
+    boolean isFollowSystem();
+
 }

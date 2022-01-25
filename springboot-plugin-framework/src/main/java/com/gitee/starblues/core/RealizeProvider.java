@@ -1,6 +1,5 @@
 package com.gitee.starblues.core;
 
-import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
 import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
 import com.gitee.starblues.core.scanner.PluginScanner;
 import com.gitee.starblues.core.version.VersionInspector;
@@ -33,12 +32,6 @@ public interface RealizeProvider {
      * @return PluginDescriptorLoader
      */
     PluginDescriptorLoader getPluginDescriptorLoader();
-
-    /**
-     * 得到 PluginChecker 实现
-     * @return PluginChecker
-     */
-    PluginChecker getPluginChecker();
 
     /**
      * 得到 VersionInspector 实现

@@ -12,6 +12,7 @@ public class DefaultPluginInsideInfo implements PluginInsideInfo {
     private final String pluginId;
     private final InsidePluginDescriptor pluginDescriptor;
     private PluginState pluginState;
+    private boolean isFollowInitial = false;
 
     public DefaultPluginInsideInfo(InsidePluginDescriptor pluginDescriptor) {
         this.pluginId = pluginDescriptor.getPluginId();
@@ -21,6 +22,11 @@ public class DefaultPluginInsideInfo implements PluginInsideInfo {
     @Override
     public void setPluginState(PluginState pluginState) {
         this.pluginState = pluginState;
+    }
+
+    @Override
+    public void setFollowSystem() {
+        isFollowInitial = true;
     }
 
     @Override
@@ -46,6 +52,11 @@ public class DefaultPluginInsideInfo implements PluginInsideInfo {
     @Override
     public PluginState getPluginState() {
         return pluginState;
+    }
+
+    @Override
+    public boolean isFollowSystem() {
+        return isFollowInitial;
     }
 
 

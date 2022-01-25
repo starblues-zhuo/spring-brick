@@ -3,14 +3,12 @@ package com.gitee.starblues.bootstrap.processor;
 
 import com.gitee.starblues.bootstrap.SpringPluginBootstrap;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
 import com.gitee.starblues.core.launcher.plugin.RegistryInfo;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.spring.SpringBeanFactory;
 import com.gitee.starblues.spring.WebConfig;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ResourceLoader;
 

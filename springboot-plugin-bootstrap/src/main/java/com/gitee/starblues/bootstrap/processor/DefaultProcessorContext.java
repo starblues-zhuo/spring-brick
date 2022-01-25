@@ -15,8 +15,9 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
 /**
+ * 默认的处理者上下文
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class DefaultProcessorContext extends CacheRegistryInfo implements ProcessorContext{
 

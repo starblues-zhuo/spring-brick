@@ -15,8 +15,9 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ResourceLoader;
 
 /**
+ * 插件SpringApplication实现
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class PluginSpringApplication extends SpringApplication {
 

@@ -12,8 +12,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * 空的MainApplicationContext实现
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class EmptyMainApplicationContext implements MainApplicationContext {
 

@@ -15,6 +15,13 @@ public abstract class MsgUtils {
         return pluginDescriptor.getPluginId() + "@" + pluginDescriptor.getPluginVersion();
     }
 
+    public static String getPluginUnique(String pluginId, String version){
+        if(ObjectUtils.isEmpty(version)){
+            return pluginId;
+        }
+        return pluginId + "@" + version;
+    }
+
     public static String getThrowableMsg(Throwable throwable){
         return ObjectUtils.isEmpty(throwable.getMessage()) ? "" : throwable.getMessage();
     }

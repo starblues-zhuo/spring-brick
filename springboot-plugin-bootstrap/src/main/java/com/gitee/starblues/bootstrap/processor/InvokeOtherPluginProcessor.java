@@ -22,8 +22,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * 反射调用其他插件的处理者
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class InvokeOtherPluginProcessor implements SpringPluginProcessor {
 

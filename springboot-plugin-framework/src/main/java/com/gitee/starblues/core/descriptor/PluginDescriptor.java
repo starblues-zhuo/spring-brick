@@ -1,5 +1,7 @@
 package com.gitee.starblues.core.descriptor;
 
+import com.gitee.starblues.common.DependencyPlugin;
+
 import java.util.List;
 
 /**
@@ -40,7 +42,7 @@ public interface PluginDescriptor {
     String getDescription();
 
     /**
-     * 获取插件所需主程序版本
+     * 获取插件所能安装到主程序的版本
      * @return String
      */
     String getRequires();
@@ -61,7 +63,7 @@ public interface PluginDescriptor {
      * 获取当前插件依赖
      * @return List
      */
-    List<PluginDependency> getPluginDependency();
+    List<DependencyPlugin> getDependencyPlugin();
 
     /**
      * 得到插件类型

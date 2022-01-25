@@ -22,8 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 插件拦截器处理者
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class PluginInterceptorsProcessor implements SpringPluginProcessor {
 
