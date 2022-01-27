@@ -47,7 +47,7 @@ public class PluginControllerProcessor implements SpringPluginProcessor {
     public void initialize(ProcessorContext processorContext) throws ProcessorException {
         SpringBeanFactory mainBeanFactory = processorContext.getMainBeanFactory();
         this.requestMappingHandlerMapping = mainBeanFactory.getBean(RequestMappingHandlerMapping.class);
-        this.handlerAdapter = SpringBeanUtilsV3.getExistBean(processorContext.getMainApplicationContext(),
+        this.handlerAdapter = SpringBeanCustomUtils.getExistBean(processorContext.getMainApplicationContext(),
                 RequestMappingHandlerAdapter.class);
         this.getMappingForMethod = ReflectionUtils.findMethod(RequestMappingHandlerMapping.class,
                 "getMappingForMethod", Method.class, Class.class);

@@ -18,12 +18,19 @@ public class DefaultPluginListenerFactory implements PluginListenerFactory{
     private final List<PluginListener> listeners;
 
     public DefaultPluginListenerFactory(ApplicationContext applicationContext){
-        listeners = SpringBeanUtils.getBeans(applicationContext, PluginListener.class);
+        listeners = new ArrayList<>();
         addPluginListener(new SwaggerListener(applicationContext));
+        addExtendPluginListener(applicationContext);
     }
 
     public DefaultPluginListenerFactory(){
         listeners = new ArrayList<>();
+    }
+
+
+    private void addExtendPluginListener(ApplicationContext applicationContext){
+        List<PluginListener> pluginListeners = SpringBeanUtils.getBeans(applicationContext, PluginListener.class);
+        listeners.addAll(pluginListeners);
     }
 
     @Override

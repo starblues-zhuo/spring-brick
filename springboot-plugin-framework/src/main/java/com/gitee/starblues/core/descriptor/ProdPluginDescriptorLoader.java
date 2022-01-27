@@ -8,8 +8,9 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Path;
 
 /**
+ * 生产环境插件描述加载者
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class ProdPluginDescriptorLoader implements PluginDescriptorLoader{
 

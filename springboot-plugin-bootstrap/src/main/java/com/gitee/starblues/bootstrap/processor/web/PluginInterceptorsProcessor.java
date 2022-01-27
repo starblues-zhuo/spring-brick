@@ -10,7 +10,7 @@ import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.utils.ClassUtils;
 import com.gitee.starblues.utils.CommonUtils;
-import com.gitee.starblues.utils.SpringBeanUtilsV3;
+import com.gitee.starblues.utils.SpringBeanCustomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.WebRequestInterceptor;
@@ -37,7 +37,7 @@ public class PluginInterceptorsProcessor implements SpringPluginProcessor {
     @Override
     public void initialize(ProcessorContext context) throws ProcessorException {
         MainApplicationContext applicationContext = context.getMainApplicationContext();
-        handlerMapping = SpringBeanUtilsV3.getExistBean(applicationContext,
+        handlerMapping = SpringBeanCustomUtils.getExistBean(applicationContext,
                 AbstractHandlerMapping.class);
         if(handlerMapping == null){
             logger.warn("Not found AbstractHandlerMapping, Plugin interceptor can't use");

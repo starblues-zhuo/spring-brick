@@ -23,9 +23,12 @@ public class CacheJdkSameTypeParamProxyFactory extends JdkSameTypeParamProxyFact
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Method targetMethod = methodCache.get(method);
         if(targetMethod == null){
-            Class<?>[] paramTypes = new Class[args.length];
-            for (int i = 0; i < args.length; i++) {
-                paramTypes[i] = args[i].getClass();
+            Class<?>[] paramTypes = null;
+            if(args != null){
+                paramTypes = new Class[args.length];
+                for (int i = 0; i < args.length; i++) {
+                    paramTypes[i] = args[i].getClass();
+                }
             }
             targetMethod = ReflectionUtils.findMethod(target.getClass(), method.getName(), paramTypes);
             if(targetMethod != null){

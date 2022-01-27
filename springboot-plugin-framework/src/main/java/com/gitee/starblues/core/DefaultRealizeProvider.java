@@ -1,5 +1,9 @@
 package com.gitee.starblues.core;
 
+import com.gitee.starblues.core.checker.ComposePluginBasicChecker;
+import com.gitee.starblues.core.checker.DefaultPluginBasicChecker;
+import com.gitee.starblues.core.checker.PluginBasicChecker;
+import com.gitee.starblues.core.descriptor.ComposeDescriptorLoader;
 import com.gitee.starblues.core.descriptor.DevPluginDescriptorLoader;
 import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
 import com.gitee.starblues.core.descriptor.ProdPluginDescriptorLoader;
@@ -20,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 public class DefaultRealizeProvider implements RealizeProvider {
 
     private PluginScanner pluginScanner;
+    private PluginBasicChecker pluginBasicChecker;
     private PluginDescriptorLoader pluginDescriptorLoader;
     private VersionInspector versionInspector;
 
@@ -35,22 +40,24 @@ public class DefaultRealizeProvider implements RealizeProvider {
     @Override
     public void init() {
         BasePluginScanner basePluginScanner = new BasePluginScanner();
-        PluginDescriptorLoader pluginDescriptorLoader = null;
         if(configuration.environment() == RuntimeMode.DEV){
             basePluginScanner.setPathResolve(new DevPathResolve());
-            pluginDescriptorLoader = new DevPluginDescriptorLoader();
         } else {
             basePluginScanner.setPathResolve(new ProdPathResolve());
-            pluginDescriptorLoader = new ProdPluginDescriptorLoader();
         }
-
         setPluginScanner(basePluginScanner);
-        setPluginDescriptorLoader(pluginDescriptorLoader);
+        setPluginBasicChecker(new ComposePluginBasicChecker(applicationContext));
+        setPluginDescriptorLoader(new ComposeDescriptorLoader(pluginBasicChecker));
         setVersionInspector(new SemverVersionInspector());
     }
 
     public void setPluginScanner(PluginScanner pluginScanner) {
         this.pluginScanner = Assert.isNotNull(pluginScanner, "pluginScanner 不能为空");
+    }
+
+    public void setPluginBasicChecker(PluginBasicChecker pluginBasicChecker) {
+        this.pluginBasicChecker =  Assert.isNotNull(pluginBasicChecker,
+                "pluginBasicChecker 不能为空");
     }
 
     public void setPluginDescriptorLoader(PluginDescriptorLoader pluginDescriptorLoader) {
@@ -70,6 +77,11 @@ public class DefaultRealizeProvider implements RealizeProvider {
     @Override
     public PluginScanner getPluginScanner() {
         return Assert.isNotNull(pluginScanner, "PluginScanner 实现不能为空");
+    }
+
+    @Override
+    public PluginBasicChecker getPluginBasicChecker() {
+        return Assert.isNotNull(pluginBasicChecker, "pluginBasicChecker 实现不能为空");
     }
 
     @Override

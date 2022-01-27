@@ -40,14 +40,15 @@ public class EmptyPluginOperator implements PluginOperator{
     }
 
     @Override
-    public PluginInfo load(Path jarPath, boolean unpackPlugin) throws PluginException {
+    public PluginInfo load(Path pluginPath, boolean unpackPlugin) throws PluginException {
         return null;
     }
 
     @Override
-    public boolean unload(String pluginId, boolean isBackup) throws PluginException {
+    public boolean unload(String pluginId) throws PluginException {
         return false;
     }
+
 
     @Override
     public boolean start(String pluginId) throws PluginException {

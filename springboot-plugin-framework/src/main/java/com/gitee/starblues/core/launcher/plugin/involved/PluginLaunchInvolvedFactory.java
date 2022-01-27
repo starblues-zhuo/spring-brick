@@ -56,6 +56,7 @@ public class PluginLaunchInvolvedFactory implements PluginLaunchInvolved{
     protected List<PluginLaunchInvolved> getDefaultPluginLaunchInvolved(){
         List<PluginLaunchInvolved> defaultPluginLaunchInvolved = new ArrayList<>();
         defaultPluginLaunchInvolved.add(new DefaultPluginLaunchInvolved());
+        defaultPluginLaunchInvolved.add(new PluginApplicationContextGetter());
         return defaultPluginLaunchInvolved;
     }
 

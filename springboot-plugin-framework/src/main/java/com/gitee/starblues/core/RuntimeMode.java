@@ -23,6 +23,10 @@ public enum RuntimeMode {
         this.mode = mode;
     }
 
+    public String getMode() {
+        return mode;
+    }
+
     public static RuntimeMode byName(String model){
         if(DEV.name().equalsIgnoreCase(model)){
             return RuntimeMode.DEV;

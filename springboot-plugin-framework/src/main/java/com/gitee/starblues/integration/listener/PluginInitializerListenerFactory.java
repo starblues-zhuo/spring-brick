@@ -1,5 +1,6 @@
 package com.gitee.starblues.integration.listener;
 
+import com.gitee.starblues.utils.SpringBeanUtils;
 import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
@@ -21,6 +22,13 @@ public class PluginInitializerListenerFactory implements PluginInitializerListen
         this.applicationContext = applicationContext;
         // 添加默认的初始化监听者
         pluginInitializerListeners.add(new DefaultInitializerListener(applicationContext));
+        addExtendPluginListener(applicationContext);
+    }
+
+    private void addExtendPluginListener(ApplicationContext applicationContext){
+        List<PluginInitializerListener> initializerListeners = SpringBeanUtils.getBeans(applicationContext,
+                PluginInitializerListener.class);
+        pluginInitializerListeners.addAll(initializerListeners);
     }
 
     @Override

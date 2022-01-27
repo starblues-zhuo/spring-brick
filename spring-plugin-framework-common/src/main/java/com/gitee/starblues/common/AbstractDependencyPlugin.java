@@ -59,6 +59,9 @@ public abstract class AbstractDependencyPlugin implements DependencyPlugin{
 
 
     public static List<DependencyPlugin> toList(String str, Supplier<? extends AbstractDependencyPlugin> supplier){
+        if(str == null || "".equals(str)){
+            return Collections.emptyList();
+        }
         String[] all = str.split(SPLIT_ALL);
         if(all.length == 0){
             return Collections.emptyList();

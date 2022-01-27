@@ -1,8 +1,9 @@
 package com.gitee.starblues.core;
 
-import com.gitee.starblues.core.checker.ComposePluginChecker;
-import com.gitee.starblues.core.checker.DefaultPluginChecker;
-import com.gitee.starblues.core.checker.DependencyPluginChecker;
+import com.gitee.starblues.core.checker.ComposePluginLauncherChecker;
+import com.gitee.starblues.core.checker.DefaultPluginLauncherChecker;
+import com.gitee.starblues.core.checker.DependencyPluginLauncherChecker;
+import com.gitee.starblues.core.checker.PluginBasicChecker;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
@@ -42,7 +43,9 @@ public class DefaultPluginManager implements PluginManager{
     private final List<String> pluginRootDirs;
 
     private final PathResolve pathResolve;
-    protected final ComposePluginChecker pluginChecker;
+    private final PluginBasicChecker basicChecker;
+
+    protected final ComposePluginLauncherChecker launcherChecker;
 
     private final AtomicBoolean loaded = new AtomicBoolean(false);
 
@@ -58,16 +61,21 @@ public class DefaultPluginManager implements PluginManager{
         this.provider = Assert.isNotNull(realizeProvider, "参数 realizeProvider 不能为空");
         this.configuration = Assert.isNotNull(configuration, "参数 configuration 不能为空");
         this.pluginRootDirs = configuration.pluginPath();
-        this.pathResolve = new ComposePathResolve(new DevPathResolve(), new ProdPathResolve());
-        this.pluginChecker = getComposePluginChecker(realizeProvider);
+        this.pathResolve = getComposePathResolve();
+        this.basicChecker = realizeProvider.getPluginBasicChecker();
+        this.launcherChecker = getComposeLauncherChecker(realizeProvider);
         setSortedPluginIds(configuration.sortInitPluginIds());
     }
 
-    protected ComposePluginChecker getComposePluginChecker(RealizeProvider realizeProvider){
-        ComposePluginChecker checker = new ComposePluginChecker();
-        checker.add(new DefaultPluginChecker(realizeProvider, configuration));
-        checker.add(new DependencyPluginChecker(this));
+    protected ComposePluginLauncherChecker getComposeLauncherChecker(RealizeProvider realizeProvider){
+        ComposePluginLauncherChecker checker = new ComposePluginLauncherChecker();
+        checker.add(new DefaultPluginLauncherChecker(realizeProvider, configuration));
+        checker.add(new DependencyPluginLauncherChecker(this));
         return checker;
+    }
+
+    protected ComposePathResolve getComposePathResolve(){
+        return new ComposePathResolve(new DevPathResolve(), new ProdPathResolve());
     }
 
     public void setSortedPluginIds(List<String> sortedPluginIds) {
@@ -136,13 +144,9 @@ public class DefaultPluginManager implements PluginManager{
     public boolean verify(Path pluginPath) {
         Assert.isNotNull(pluginPath, "参数pluginPath不能为空");
         try (PluginDescriptorLoader pluginDescriptorLoader = provider.getPluginDescriptorLoader()){
-            pluginChecker.check(pluginPath);
+            basicChecker.checkPath(pluginPath);
             PluginDescriptor pluginDescriptor = pluginDescriptorLoader.load(pluginPath);
-            if(pluginDescriptor == null){
-                return false;
-            }
-            pluginChecker.checkDescriptor(pluginDescriptor);
-            return true;
+            return pluginDescriptor != null;
         } catch (Exception e) {
             log.error("插件jar包校验失败: {}" , pluginPath, e);
             return false;
@@ -172,8 +176,10 @@ public class DefaultPluginManager implements PluginManager{
                 throw new PluginException("加载插件包[" + pluginPath + "]失败. 已经存在该插件: " +
                         MsgUtils.getPluginUnique(plugin.getPluginDescriptor()));
             }
-            // 拷贝插件
-            pluginPath = copyPlugin(pluginPath, unpackPlugin);
+            if(configuration.isProd()){
+                // 如果为生产环境, 则拷贝插件
+                pluginPath = copyPlugin(pluginPath, unpackPlugin);
+            }
             // 加载插件
             PluginInsideInfo pluginInsideInfo = loadPlugin(pluginPath, true);
             if(pluginInsideInfo != null){
@@ -386,7 +392,7 @@ public class DefaultPluginManager implements PluginManager{
 
     protected PluginInsideInfo loadFromPath(Path pluginPath) {
         try {
-            pluginChecker.check(pluginPath);
+            basicChecker.checkPath(pluginPath);
         } catch (Exception e) {
             throw PluginException.getPluginException(e, ()-> {
                 return new PluginException("非法插件包. " + e.getMessage(), e);
@@ -419,7 +425,7 @@ public class DefaultPluginManager implements PluginManager{
      * @throws IOException IO 异常
      */
     protected Path copyPlugin(Path pluginPath, boolean unpackPlugin) throws IOException {
-        if(isDev()){
+        if(configuration.isDev()){
             return pluginPath;
         }
         File targetFile = pluginPath.toFile();
@@ -484,7 +490,7 @@ public class DefaultPluginManager implements PluginManager{
     protected void start(PluginInsideInfo pluginInsideInfo) throws Exception{
         Assert.isNotNull(pluginInsideInfo, "pluginInsideInfo 参数不能为空");
         String pluginId = pluginInsideInfo.getPluginId();
-        pluginChecker.checkCanStart(pluginInsideInfo);
+        launcherChecker.checkCanStart(pluginInsideInfo);
         pluginInsideInfo.setPluginState(PluginState.STARTED);
         startedPlugins.put(pluginId, pluginInsideInfo);
         resolvedPlugins.remove(pluginId);
@@ -496,7 +502,7 @@ public class DefaultPluginManager implements PluginManager{
      * @throws Exception 启动异常
      */
     protected void stop(PluginInsideInfo pluginInsideInfo) throws Exception{
-        pluginChecker.checkCanStop(pluginInsideInfo);
+        launcherChecker.checkCanStop(pluginInsideInfo);
         String pluginId = pluginInsideInfo.getPluginId();
         pluginInsideInfo.setPluginState(PluginState.STOPPED);
         resolvedPlugins.put(pluginId, pluginInsideInfo);
@@ -531,14 +537,6 @@ public class DefaultPluginManager implements PluginManager{
             wrapperInside = resolvedPlugins.get(pluginId);
         }
         return wrapperInside;
-    }
-
-    /**
-     * 是否是开发环境
-     * @return boolean
-     */
-    private boolean isDev(){
-        return provider.getRuntimeMode() == RuntimeMode.DEV;
     }
 
     /**

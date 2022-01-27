@@ -2,7 +2,6 @@ package com.gitee.starblues.core.checker;
 
 import com.gitee.starblues.common.Constants;
 import com.gitee.starblues.common.DependencyPlugin;
-import com.gitee.starblues.core.PluginChecker;
 import com.gitee.starblues.core.PluginInfo;
 import com.gitee.starblues.core.PluginManager;
 import com.gitee.starblues.core.PluginState;
@@ -20,11 +19,11 @@ import java.util.Objects;
  * @author starBlues
  * @version 3.0.0
  */
-public class DependencyPluginChecker implements PluginChecker {
+public class DependencyPluginLauncherChecker implements PluginLauncherChecker {
 
     private final PluginManager pluginManager;
 
-    public DependencyPluginChecker(PluginManager pluginManager) {
+    public DependencyPluginLauncherChecker(PluginManager pluginManager) {
         this.pluginManager = pluginManager;
     }
 
@@ -56,7 +55,7 @@ public class DependencyPluginChecker implements PluginChecker {
             }
             String dependencyPluginUnique = MsgUtils.getPluginUnique(id, allowAllVersion ? null : version);
             if(!findDependency){
-                throw new PluginException(descriptor, "需要依赖插件[" + dependencyPluginUnique  + "]启动");
+                throw new PluginException(descriptor, "需要依赖插件[" + dependencyPluginUnique  + "]才能启动");
             }
             if(dependencyPluginInfo.getPluginState() != PluginState.STARTED){
                 // 没有启动的话, 手动启动
@@ -66,13 +65,18 @@ public class DependencyPluginChecker implements PluginChecker {
                     if(e instanceof PluginDisabledException){
                         // 依赖被禁用, 不能启动
                         throw new PluginDisabledException(descriptor,
-                                "依赖插件[" + dependencyPluginUnique  + "]被禁用, 无法启动当前插件");
+                                "依赖的插件[" + dependencyPluginUnique  + "]被禁用, 无法启动当前插件");
                     }
                     throw new PluginException(descriptor,
-                            "依赖插件[" + dependencyPluginUnique  + "]启动失败. 无法启动当前插件", e);
+                            "依赖的插件[" + dependencyPluginUnique  + "]启动失败. 无法启动当前插件", e);
                 }
             }
         });
+    }
+
+    @Override
+    public void checkCanStop(PluginInfo pluginInfo) throws PluginException {
+        // 忽略
     }
 
     private void resolveDependencyPlugin(PluginInfo pluginInfo, ResolveDependencyPlugin resolveDependencyPlugin)

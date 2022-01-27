@@ -65,9 +65,14 @@ public class PluginLauncher extends AbstractLauncher<SpringPluginHook> {
     @Override
     protected SpringPluginHook launch(ClassLoader classLoader, String... args) throws Exception {
         pluginLaunchInvolved.before(pluginDescriptor, classLoader);
-        SpringPluginHook springPluginHook = (SpringPluginHook) new PluginMethodRunner(pluginInteractive).run(classLoader);
-        pluginLaunchInvolved.after(pluginDescriptor, classLoader, springPluginHook);
-        return new SpringPluginHookWrapper(springPluginHook, pluginDescriptor, pluginLaunchInvolved, classLoader);
+        try {
+            SpringPluginHook springPluginHook = (SpringPluginHook) new PluginMethodRunner(pluginInteractive).run(classLoader);
+            pluginLaunchInvolved.after(pluginDescriptor, classLoader, springPluginHook);
+            return new SpringPluginHookWrapper(springPluginHook, pluginDescriptor, pluginLaunchInvolved, classLoader);
+        } catch (Throwable throwable){
+            pluginLaunchInvolved.failure(pluginDescriptor,classLoader, throwable);
+            throw throwable;
+        }
     }
 
 

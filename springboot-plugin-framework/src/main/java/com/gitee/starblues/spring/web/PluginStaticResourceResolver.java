@@ -266,8 +266,6 @@ public class PluginStaticResourceResolver extends AbstractResourceResolver {
         PLUGIN_RESOURCE_MAP.remove(pluginId);
     }
 
-
-
     /**
      * 插件资源解析后的信息
      */

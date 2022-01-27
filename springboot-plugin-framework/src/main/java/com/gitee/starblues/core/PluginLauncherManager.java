@@ -1,9 +1,9 @@
 package com.gitee.starblues.core;
 
+import com.gitee.starblues.core.checker.PluginLauncherChecker;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.core.exception.PluginException;
-import com.gitee.starblues.core.exception.PluginProhibitStopException;
 import com.gitee.starblues.core.launcher.plugin.DefaultPluginInteractive;
 import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
 import com.gitee.starblues.core.launcher.plugin.PluginLauncher;
@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PluginLauncherManager extends DefaultPluginManager{
 
-    private final Map<String, RegistryPluginInfo> pluginRegistryInfoMap = new ConcurrentHashMap<>();
+    private final Map<String, RegistryPluginInfo> registryInfo = new ConcurrentHashMap<>();
 
 
     private final MainApplicationContext mainApplicationContext;
@@ -55,10 +55,10 @@ public class PluginLauncherManager extends DefaultPluginManager{
     }
 
     private void addCustomPluginChecker(){
-        List<PluginChecker> pluginCheckers = SpringBeanUtils.getBeans(mainGenericApplicationContext,
-                PluginChecker.class);
-        for (PluginChecker pluginChecker : pluginCheckers) {
-            super.pluginChecker.add(pluginChecker);
+        List<PluginLauncherChecker> pluginCheckers = SpringBeanUtils.getBeans(mainGenericApplicationContext,
+                PluginLauncherChecker.class);
+        for (PluginLauncherChecker pluginChecker : pluginCheckers) {
+            super.launcherChecker.add(pluginChecker);
         }
     }
 
@@ -83,7 +83,7 @@ public class PluginLauncherManager extends DefaultPluginManager{
             PluginLauncher pluginLauncher = new PluginLauncher(pluginInteractive, pluginLaunchInvolved);
             SpringPluginHook springPluginHook = pluginLauncher.run();
             RegistryPluginInfo registryPluginInfo = new RegistryPluginInfo(pluginDescriptor, springPluginHook);
-            pluginRegistryInfoMap.put(pluginDescriptor.getPluginId(), registryPluginInfo);
+            registryInfo.put(pluginDescriptor.getPluginId(), registryPluginInfo);
         } catch (Exception e){
             // 启动失败, 进行停止
             super.stop(pluginInsideInfo);
@@ -95,7 +95,7 @@ public class PluginLauncherManager extends DefaultPluginManager{
     @Override
     protected void stop(PluginInsideInfo pluginInsideInfo) throws Exception {
         String pluginId = pluginInsideInfo.getPluginId();
-        RegistryPluginInfo registryPluginInfo = pluginRegistryInfoMap.get(pluginId);
+        RegistryPluginInfo registryPluginInfo = registryInfo.get(pluginId);
         if(registryPluginInfo == null){
             throw new PluginException("没有发现插件 '" + pluginId +  "' 信息");
         }
@@ -103,11 +103,11 @@ public class PluginLauncherManager extends DefaultPluginManager{
         springPluginHook.stopVerify();
         springPluginHook.close();
         invokeSupperCache.remove(pluginId);
-        pluginRegistryInfoMap.remove(pluginId);
+        registryInfo.remove(pluginId);
         super.stop(pluginInsideInfo);
     }
 
-    private static class RegistryPluginInfo{
+    static class RegistryPluginInfo{
         private final PluginDescriptor descriptor;
         private final SpringPluginHook springPluginHook;
 

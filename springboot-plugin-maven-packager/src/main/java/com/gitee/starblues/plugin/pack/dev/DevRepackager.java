@@ -43,11 +43,14 @@ public class DevRepackager extends BasicRepackager {
     }
 
     protected Map<String, Dependency> getModuleDependencies(DevConfig devConfig) {
-        Map<String, Dependency> moduleDependenciesMap = new HashMap<>();
+        if(devConfig == null){
+            return Collections.emptyMap();
+        }
         List<Dependency> moduleDependencies = devConfig.getModuleDependencies();
         if(CommonUtils.isEmpty(moduleDependencies)){
-            return moduleDependenciesMap;
+            return Collections.emptyMap();
         }
+        Map<String, Dependency> moduleDependenciesMap = new HashMap<>();
         for (Dependency dependency : moduleDependencies) {
             String moduleDependencyKey = getModuleDependencyKey(dependency.getGroupId(),
                     dependency.getArtifactId());

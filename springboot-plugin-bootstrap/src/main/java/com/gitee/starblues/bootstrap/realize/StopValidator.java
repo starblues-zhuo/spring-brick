@@ -9,7 +9,7 @@ public interface StopValidator {
 
 
     /**
-     * 校验是否可卸载。如果校验器抛出异常. 默认插件不可停止
+     * 校验是否可停止/卸载。如果校验器抛出异常. 默认插件不可停止/卸载
      * @return 校验结果
      */
     Result verify();

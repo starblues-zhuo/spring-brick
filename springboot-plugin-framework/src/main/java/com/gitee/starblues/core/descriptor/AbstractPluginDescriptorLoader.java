@@ -38,12 +38,12 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
         try {
             manifest = getManifest(location);
             if(manifest == null){
-                logger.warn("路径[{}]没有发现[{}]", location, MANIFEST);
+                logger.debug("路径[{}]没有发现[{}]", location, MANIFEST);
                 return null;
             }
             return create(manifest, location);
         } catch (Exception e) {
-            logger.warn("路径[{}]中存在非法[{}]: {}", location, MANIFEST, e.getMessage());
+            logger.error("路径[{}]中存在非法[{}]: {}", location, MANIFEST, e.getMessage());
             return null;
         }
     }
@@ -88,7 +88,8 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
     }
 
     protected List<DependencyPlugin> getPluginDependency(Attributes attributes){
-        return AbstractDependencyPlugin.toList(getValue(attributes, PLUGIN_DEPENDENCIES), DefaultDependencyPlugin::new);
+        return AbstractDependencyPlugin.toList(getValue(attributes, PLUGIN_DEPENDENCIES, false),
+                DefaultDependencyPlugin::new);
     }
 
 

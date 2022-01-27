@@ -146,12 +146,12 @@ public class DefaultPluginOperator implements PluginOperator {
     }
 
     @Override
-    public PluginInfo load(Path jarPath, boolean unpackPlugin) throws PluginException {
-        return pluginManager.load(jarPath, unpackPlugin);
+    public PluginInfo load(Path pluginPath, boolean unpackPlugin) throws PluginException {
+        return pluginManager.load(pluginPath, unpackPlugin);
     }
 
     @Override
-    public boolean unload(String pluginId, boolean isBackup) throws PluginException {
+    public boolean unload(String pluginId) throws PluginException {
         pluginManager.unLoad(pluginId);
         return true;
     }
@@ -172,9 +172,6 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public PluginInfo uploadPlugin(UploadParam uploadParam) throws PluginException {
-        if(isDev()){
-            throw new RuntimeException("开发环境下不能上传插件");
-        }
         Assert.isNotNull(uploadParam, "参数 uploadParam 不能为空");
         try {
             if(uploadParam instanceof UploadByInputStreamParam){
@@ -196,8 +193,9 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public Path backupPlugin(Path backDirPath, String sign) throws PluginException {
-        if(isDev()){
-            throw new RuntimeException("Plugin cannot backup in the 'dev' environment");
+        if(configuration.isDev()){
+            // 开发环境下不备份
+            return backDirPath;
         }
         Objects.requireNonNull(backDirPath);
         return backup(backDirPath, sign, false);
@@ -205,8 +203,9 @@ public class DefaultPluginOperator implements PluginOperator {
 
     @Override
     public Path backupPlugin(String pluginId, String sign) throws PluginException {
-        if(isDev()){
-            throw new RuntimeException("Plugin cannot backup in the 'dev' environment");
+        if(configuration.isDev()){
+            // 开发环境下不备份
+            return null;
         }
         PluginInfo pluginInfo = getPluginInfo(pluginId);
         return backupPlugin(Paths.get(pluginInfo.getPluginPath()), sign);
@@ -235,7 +234,7 @@ public class DefaultPluginOperator implements PluginOperator {
             throw new PluginException(pluginId, "没有发现");
         }
         pluginManager.uninstall(pluginId);
-        if(!isDelete || isDev()){
+        if(!isDelete || configuration.isDev()){
             return null;
         }
         // 删除插件
@@ -310,7 +309,7 @@ public class DefaultPluginOperator implements PluginOperator {
      */
     protected Path backup(Path sourcePath, String sign, boolean deletedSourceFile) {
         try {
-            if(isDev()){
+            if(configuration.isDev()){
                 // 如果是开发环境, 则不进行备份
                 return null;
             }
@@ -378,13 +377,6 @@ public class DefaultPluginOperator implements PluginOperator {
         return FORMAT.format(localDateTime);
     }
 
-    /**
-     * 是否是开发环境
-     * @return bolean
-     */
-    protected boolean isDev(){
-        return configuration.environment() == RuntimeMode.DEV;
-    }
 
     protected void touchBackupPath() throws IOException {
         String backupPath = configuration.backupPath();

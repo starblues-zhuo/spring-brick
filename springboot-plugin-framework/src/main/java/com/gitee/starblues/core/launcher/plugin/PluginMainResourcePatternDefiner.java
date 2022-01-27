@@ -1,11 +1,10 @@
 package com.gitee.starblues.core.launcher.plugin;
 
-import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.launcher.JavaMainResourcePatternDefiner;
 import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.utils.ObjectUtils;
-import com.gitee.starblues.utils.SpringBeanUtilsV3;
+import com.gitee.starblues.utils.SpringBeanCustomUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -99,7 +98,7 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
      */
     private BasicMainResourcePatternDefiner getPatternDefiner(PluginInteractive pluginInteractive){
         final MainApplicationContext mainApplicationContext = pluginInteractive.getMainApplicationContext();
-        BasicMainResourcePatternDefiner definer = SpringBeanUtilsV3.getExistBean(
+        BasicMainResourcePatternDefiner definer = SpringBeanCustomUtils.getExistBean(
                 mainApplicationContext, BasicMainResourcePatternDefiner.class);
         if(definer == null){
             return new BasicMainResourcePatternDefiner(mainPackage);

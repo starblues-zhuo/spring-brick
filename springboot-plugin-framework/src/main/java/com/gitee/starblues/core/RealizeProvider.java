@@ -1,5 +1,6 @@
 package com.gitee.starblues.core;
 
+import com.gitee.starblues.core.checker.PluginBasicChecker;
 import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
 import com.gitee.starblues.core.scanner.PluginScanner;
 import com.gitee.starblues.core.version.VersionInspector;
@@ -26,6 +27,12 @@ public interface RealizeProvider {
      * @return PluginScanner
      */
     PluginScanner getPluginScanner();
+
+    /**
+     * 得到插件基本的检查者
+     * @return PluginBasicChecker
+     */
+    PluginBasicChecker getPluginBasicChecker();
 
     /**
      * 得到 PluginDescriptorLoader 实现

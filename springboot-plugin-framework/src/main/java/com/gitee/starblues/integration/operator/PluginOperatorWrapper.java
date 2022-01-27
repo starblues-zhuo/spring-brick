@@ -63,11 +63,11 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public boolean unload(String pluginId, boolean isBackup) throws PluginException {
+    public boolean unload(String pluginId) throws PluginException {
         if(isDisable()){
             return false;
         }
-        return pluginOperator.unload(pluginId, isBackup);
+        return pluginOperator.unload(pluginId);
     }
 
     @Override
@@ -79,11 +79,11 @@ public class PluginOperatorWrapper implements PluginOperator{
     }
 
     @Override
-    public PluginInfo load(Path jarPath, boolean unpackPlugin) throws PluginException {
+    public PluginInfo load(Path pluginPath, boolean unpackPlugin) throws PluginException {
         if(isDisable()){
             return null;
         }
-        return pluginOperator.install(jarPath, unpackPlugin);
+        return pluginOperator.install(pluginPath, unpackPlugin);
     }
 
     @Override

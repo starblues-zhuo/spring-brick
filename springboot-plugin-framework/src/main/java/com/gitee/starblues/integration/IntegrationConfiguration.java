@@ -108,6 +108,24 @@ public interface IntegrationConfiguration {
      */
     default void checkConfig(){};
 
+
+    /**
+     * 是否是开发环境
+     * @return boolean
+     */
+    default boolean isDev(){
+        return environment() == RuntimeMode.DEV;
+    }
+
+    /**
+     * 是否是生产环境
+     * @return boolean
+     */
+    default boolean isProd(){
+        return environment() == RuntimeMode.PROD;
+    }
+
+
     /**
      * 是否被启动
      * @param pluginId 插件id
