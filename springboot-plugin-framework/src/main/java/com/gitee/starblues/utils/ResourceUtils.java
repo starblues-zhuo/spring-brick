@@ -195,36 +195,6 @@ public class ResourceUtils {
     }
 
 
-//    /**
-//     * 根据 ~ 标记获取, 得到绝对路径
-//     * @param pluginRegistryInfo pluginRegistryInfo
-//     * @param rootDir 根目录
-//     * @return java.lang.String
-//     **/
-//    public static String getAbsolutePath(PluginRegistryInfo pluginRegistryInfo, String rootDir){
-//        if(StringUtils.isNullOrEmpty(rootDir)){
-//            return rootDir;
-//        }
-//        String home = null;
-//        if(rootDir.startsWith(ResourceUtils.ROOT_PLUGIN_SIGN)){
-//            String pluginRootDir;
-//            PluginWrapper pluginWrapper = pluginRegistryInfo.getPluginWrapper();
-//            RuntimeMode runtimeMode = pluginWrapper.getRuntimeMode();
-//            if(runtimeMode == RuntimeMode.DEVELOPMENT){
-//                pluginRootDir = pluginWrapper.getPluginPath().toString();
-//            } else {
-//                pluginRootDir = System.getProperty("user.dir");
-//            }
-//            // 如果root路径中开始存在ROOT_PLUGIN_SIGN,则说明进行插件根路替换
-//            home = rootDir.replaceFirst("\\" + ResourceUtils.ROOT_PLUGIN_SIGN, "");
-//            home = CommonUtils.joiningFilePath(pluginRootDir, home);
-//        } else {
-//            home = rootDir;
-//        }
-//        return home;
-//    }
-
-
     public static boolean isUrl(String resourceLocation) {
         if (resourceLocation == null) {
             return false;
@@ -256,6 +226,18 @@ public class ResourceUtils {
                     consumer.accept(e);
                 }
             }
+        }
+    }
+
+    public static String getFileSuffix(String fileName){
+        if(fileName == null){
+            return null;
+        }
+        int i = fileName.lastIndexOf(".");
+        if(i > 0 && fileName.length() >= (i + 1)){
+            return fileName.substring(i + 1);
+        } else {
+            return "";
         }
     }
 

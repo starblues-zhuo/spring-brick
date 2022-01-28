@@ -44,12 +44,9 @@ public abstract class ReflectionUtils {
 
 
         Field[] declaredFields = clazz.getDeclaredFields();
-        if(declaredFields.length == 0){
-            return null;
-        }
         while (true){
             for (Field field : declaredFields) {
-                if(filter.filter(field)){
+                if (filter.filter(field)) {
                     return field;
                 }
             }

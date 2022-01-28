@@ -1,6 +1,8 @@
 package com.gitee.starblues.bootstrap;
 
+import com.gitee.starblues.bootstrap.processor.ProcessorContext;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
+import com.gitee.starblues.integration.AutoIntegrationConfiguration;
 import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.PluginFileUtils;
@@ -28,11 +30,13 @@ class ConfigurePluginEnvironment {
     public static final String REGISTER_SHUTDOWN_HOOK_PROPERTY = "logging.register-shutdown-hook";
     public static final String MBEAN_DOMAIN_PROPERTY_NAME = "spring.liveBeansView.mbeanDomain";
 
-
+    private final ProcessorContext processorContext;
     private final InsidePluginDescriptor pluginDescriptor;
 
-    ConfigurePluginEnvironment(InsidePluginDescriptor pluginDescriptor) {
-        this.pluginDescriptor = Assert.isNotNull(pluginDescriptor, "pluginDescriptor 不能为空");
+    ConfigurePluginEnvironment(ProcessorContext processorContext) {
+        this.processorContext = Assert.isNotNull(processorContext, "processorContext 不能为空");
+        this.pluginDescriptor = Assert.isNotNull(processorContext.getPluginDescriptor(),
+                "pluginDescriptor 不能为空");
     }
 
     void configureEnvironment(ConfigurableEnvironment environment, String[] args) {
@@ -42,11 +46,18 @@ class ConfigurePluginEnvironment {
         if(!ObjectUtils.isEmpty(configFileName)){
             env.put(SPRING_CONFIG_NAME, PluginFileUtils.getFileName(configFileName));
         }
+        env.put(AutoIntegrationConfiguration.ENABLE_STARTER_KEY, false);
         env.put(SPRING_JMX_UNIQUE_NAMES, true);
         env.put(SPRING_ADMIN_JMX_NAME, SPRING_ADMIN_JMX_VALUE + pluginId);
         env.put(REGISTER_SHUTDOWN_HOOK_PROPERTY, false);
         env.put(MBEAN_DOMAIN_PROPERTY_NAME, null);
         environment.getPropertySources().addLast(new MapPropertySource(PLUGIN_PROPERTY_NAME, env));
+
+        if(processorContext.runMode() == ProcessorContext.RunMode.ONESELF){
+            ConfigureMainPluginEnvironment configureMainPluginEnvironment =
+                    new ConfigureMainPluginEnvironment(processorContext);
+            configureMainPluginEnvironment.configureEnvironment(environment, args);
+        }
     }
 
 }

@@ -21,6 +21,8 @@ import org.springframework.util.ClassUtils;
  */
 public class DefaultProcessorContext extends CacheRegistryInfo implements ProcessorContext{
 
+    private final RunMode runMode;
+
     private final SpringPluginBootstrap springPluginBootstrap;
     private final PluginInteractive pluginInteractive;
     private final Class<? extends SpringPluginBootstrap> runnerClass;
@@ -33,9 +35,9 @@ public class DefaultProcessorContext extends CacheRegistryInfo implements Proces
 
     private GenericApplicationContext applicationContext;
 
-    public DefaultProcessorContext(SpringPluginBootstrap springPluginBootstrap,
-                                   PluginInteractive pluginInteractive,
-                                   Class<? extends SpringPluginBootstrap> runnerClass) {
+    public DefaultProcessorContext(RunMode runMode, SpringPluginBootstrap springPluginBootstrap,
+                                   PluginInteractive pluginInteractive, Class<? extends SpringPluginBootstrap> runnerClass) {
+        this.runMode = runMode;
         this.springPluginBootstrap = springPluginBootstrap;
         this.pluginInteractive = pluginInteractive;
         this.runnerClass = runnerClass;
@@ -44,6 +46,11 @@ public class DefaultProcessorContext extends CacheRegistryInfo implements Proces
         this.mainApplicationContext = pluginInteractive.getMainApplicationContext();
         this.configuration = pluginInteractive.getConfiguration();
         this.webConfig = new WebConfig();
+    }
+
+    @Override
+    public RunMode runMode() {
+        return runMode;
     }
 
     @Override

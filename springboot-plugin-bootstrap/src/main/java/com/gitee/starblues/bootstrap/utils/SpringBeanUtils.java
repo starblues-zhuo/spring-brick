@@ -3,6 +3,7 @@ package com.gitee.starblues.bootstrap.utils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ClassUtils;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
@@ -11,6 +12,17 @@ import java.util.*;
  * @version 3.0.0
  */
 public class SpringBeanUtils {
+    /**
+     * 获取bean名称
+     * @param applicationContext ApplicationContext
+     * @return bean名称集合
+     */
+    public static Set<String> getBeanName(ApplicationContext applicationContext){
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+        Set<String> set = new HashSet<>(beanDefinitionNames.length);
+        set.addAll(Arrays.asList(beanDefinitionNames));
+        return set;
+    }
 
     /**
      * 得到ApplicationContext中的bean的实现
@@ -25,46 +37,6 @@ public class SpringBeanUtils {
             return new ArrayList<>();
         }
         return new ArrayList<>(beansOfTypeMap.values());
-    }
-
-    /**
-     * 得到某个接口的实现对象
-     * @param sourceObject 遍历的对象
-     * @param interfaceClass 接口类类型
-     * @param <T> 接口类型
-     * @return 实现对象
-     */
-    public static <T> T getObjectByInterfaceClass(Set<Object> sourceObject, Class<T> interfaceClass){
-        if(sourceObject == null || sourceObject.isEmpty()){
-            return null;
-        }
-        for (Object configSingletonObject : sourceObject) {
-            Set<Class<?>> allInterfacesForClassAsSet = ClassUtils
-                    .getAllInterfacesAsSet(configSingletonObject);
-            if(allInterfacesForClassAsSet.contains(interfaceClass)){
-                return (T) configSingletonObject;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 获取具体类的对象
-     * @param sourceObject 源对象集合
-     * @param aClass 对象对应的类类型
-     * @param <T> 类实现
-     * @return T
-     */
-    public static <T> T getObjectClass(Set<Object> sourceObject, Class<T> aClass){
-        if(sourceObject == null || sourceObject.isEmpty()){
-            return null;
-        }
-        for (Object configSingletonObject : sourceObject) {
-            if(Objects.equals(configSingletonObject.getClass(), aClass)){
-                return (T) configSingletonObject;
-            }
-        }
-        return null;
     }
 
     /**
@@ -90,6 +62,7 @@ public class SpringBeanUtils {
      * @param <T> 返回的bean类型
      * @return 存在bean对象, 不存在返回null
      */
+    @SuppressWarnings("unchecked")
     public static <T> T getExistBean(ApplicationContext applicationContext, String beanName){
         if(applicationContext.containsBean(beanName)){
             Object bean = applicationContext.getBean(beanName);
@@ -98,5 +71,18 @@ public class SpringBeanUtils {
             return null;
         }
     }
+
+    /**
+     * 通过注解获取bean
+     * @param applicationContext applicationContext
+     * @param annotationType 注解类型
+     * @return List<Object>
+     */
+    public static List<Object> getBeansWithAnnotation(ApplicationContext applicationContext,
+                                                      Class<? extends Annotation> annotationType){
+        Map<String, Object> beanMap = applicationContext.getBeansWithAnnotation(annotationType);
+        return new ArrayList<>(beanMap.values());
+    }
+
 
 }

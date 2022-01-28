@@ -20,6 +20,12 @@ import org.springframework.core.io.ResourceLoader;
 public interface ProcessorContext extends RegistryInfo {
 
     /**
+     * 当前运行模式
+     * @return RunMode
+     */
+    RunMode runMode();
+
+    /**
      * 得到入口类对象-SpringPluginBootstrap
      * @return SpringPluginBootstrap
      */
@@ -91,5 +97,26 @@ public interface ProcessorContext extends RegistryInfo {
      * @param applicationContext GenericApplicationContext
      */
     void setApplicationContext(GenericApplicationContext applicationContext);
+
+    /**
+     * 运行模式
+     */
+    enum RunMode{
+        /**
+         * 全部运行
+         */
+        ALL,
+
+        /**
+         * 插件环境运行
+         */
+        PLUGIN,
+
+        /**
+         * 插件独立运行
+         */
+        ONESELF
+    }
+
 
 }

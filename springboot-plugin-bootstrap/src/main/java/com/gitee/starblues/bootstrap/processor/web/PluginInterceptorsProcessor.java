@@ -96,8 +96,8 @@ public class PluginInterceptorsProcessor implements SpringPluginProcessor {
     }
 
     @Override
-    public RunMode runMode() {
-        return RunMode.PLUGIN;
+    public ProcessorContext.RunMode runMode() {
+        return ProcessorContext.RunMode.PLUGIN;
     }
 
     /**

@@ -6,10 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 该接口用于在主程序操作Spring管理的插件bean.
- *  主要用途: 在主程序定义接口。插件中实现该接口做扩展, 主程序通过接口class可以获取到插件中的实现类。
+ * 该接口用于在主程序操作获取主程序/插件中 Spring 管理 Bean
  * @author starBlues
- * @version 2.2.2
+ * @version 3.0.0
  */
 public interface PluginUser {
 

@@ -17,7 +17,7 @@ import java.util.List;
  */
 public abstract class SpringPluginBootstrap {
 
-    private SpringPluginProcessor.RunMode runMode = SpringPluginProcessor.RunMode.ONESELF;
+    private ProcessorContext.RunMode runMode = ProcessorContext.RunMode.ONESELF;
 
     private volatile PluginInteractive pluginInteractive;
 
@@ -36,11 +36,11 @@ public abstract class SpringPluginBootstrap {
     }
 
     private SpringPluginHook start(Class<?>[] primarySources, String[] args){
-        addCustomSpringPluginProcessor();
         createPluginInteractive();
+        addCustomSpringPluginProcessor();
         SpringPluginProcessor pluginProcessor = new ComposeSpringPluginProcessor(runMode, customPluginProcessors);
         ProcessorContext processorContext = new DefaultProcessorContext(
-                this, pluginInteractive, this.getClass()
+                runMode, this, pluginInteractive, this.getClass()
         );
         PluginSpringApplication springApplication = new PluginSpringApplication(
                 pluginProcessor,
@@ -52,7 +52,7 @@ public abstract class SpringPluginBootstrap {
 
     public final SpringPluginBootstrap setPluginInteractive(PluginInteractive pluginInteractive) {
         this.pluginInteractive = pluginInteractive;
-        this.runMode = SpringPluginProcessor.RunMode.PLUGIN;
+        this.runMode = ProcessorContext.RunMode.PLUGIN;
         return this;
     }
 

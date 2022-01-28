@@ -4,9 +4,11 @@ import com.gitee.starblues.bootstrap.SpringPluginBootstrap;
 import com.gitee.starblues.bootstrap.annotation.DisablePluginWeb;
 import com.gitee.starblues.bootstrap.processor.web.PluginControllerProcessor;
 import com.gitee.starblues.bootstrap.processor.web.PluginInterceptorsProcessor;
+import com.gitee.starblues.bootstrap.processor.web.PluginSpringDocControllerProcessor;
 import com.gitee.starblues.bootstrap.processor.web.PluginStaticResourceProcessor;
 import com.gitee.starblues.bootstrap.processor.web.thymeleaf.PluginThymeleafProcessor;
 import com.gitee.starblues.bootstrap.utils.AnnotationUtils;
+import com.gitee.starblues.bootstrap.utils.ProcessorUtils;
 import com.gitee.starblues.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.OrderPriority;
@@ -26,15 +28,15 @@ public class ComposeSpringPluginProcessor implements SpringPluginProcessor {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final RunMode runMode;
+    private final ProcessorContext.RunMode runMode;
 
     private List<SpringPluginProcessor> processors;
 
-    public ComposeSpringPluginProcessor(RunMode runMode) {
+    public ComposeSpringPluginProcessor(ProcessorContext.RunMode runMode) {
         this(runMode, null);
     }
 
-    public ComposeSpringPluginProcessor(RunMode runMode, List<SpringPluginProcessor> processors) {
+    public ComposeSpringPluginProcessor(ProcessorContext.RunMode runMode, List<SpringPluginProcessor> processors) {
         this.runMode = runMode;
         if(!ObjectUtils.isEmpty(processors)){
             this.processors = processors;
@@ -57,8 +59,8 @@ public class ComposeSpringPluginProcessor implements SpringPluginProcessor {
         processors.addAll(this.processors);
         this.processors = processors.stream()
                 .filter(p->{
-                    RunMode runMode = p.runMode();
-                    return runMode == RunMode.ALL || runMode == this.runMode;
+                    ProcessorContext.RunMode runMode = p.runMode();
+                    return runMode == ProcessorContext.RunMode.ALL || runMode == this.runMode;
                 })
                 .sorted(CommonUtils.orderPriority(SpringPluginProcessor::order))
                 .collect(Collectors.toList());
@@ -121,8 +123,8 @@ public class ComposeSpringPluginProcessor implements SpringPluginProcessor {
     }
 
     @Override
-    public RunMode runMode() {
-        return RunMode.ALL;
+    public ProcessorContext.RunMode runMode() {
+        return ProcessorContext.RunMode.ALL;
     }
 
     /**
@@ -153,6 +155,7 @@ public class ComposeSpringPluginProcessor implements SpringPluginProcessor {
         processors.add(new PluginInterceptorsProcessor());
         processors.add(new PluginStaticResourceProcessor());
         processors.add(new PluginThymeleafProcessor());
+        ProcessorUtils.add(processors, PluginSpringDocControllerProcessor::new);
     }
 
     private void processException(SpringPluginProcessor processor, String executeType,

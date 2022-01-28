@@ -41,7 +41,7 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
         }
         includeResourcePatterns.add(FRAMEWORK);
         addWebIncludeResourcePatterns(includeResourcePatterns);
-        addSwagger(includeResourcePatterns);
+        addApiDoc(includeResourcePatterns);
 
         // 配置插件自定义从主程序加载的资源匹配
         Set<String> includeMainResourcePatterns = descriptor.getIncludeMainResourcePatterns();
@@ -84,11 +84,13 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
         patterns.add("org/springframework/ui/**");
 
         patterns.add("com/fasterxml/jackson/**");
+
     }
 
-    protected void addSwagger(Set<String> patterns){
+    protected void addApiDoc(Set<String> patterns){
         patterns.add("springfox/documentation/**");
         patterns.add("io/swagger/**");
+        patterns.add("org/springdoc/**");
     }
 
     /**

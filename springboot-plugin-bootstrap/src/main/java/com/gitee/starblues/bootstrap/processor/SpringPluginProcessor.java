@@ -68,26 +68,7 @@ public interface SpringPluginProcessor extends Order {
      * 处理器运行模式
      * @return RunMode
      */
-    RunMode runMode();
+    ProcessorContext.RunMode runMode();
 
-    /**
-     * 运行模式
-     */
-    enum RunMode{
-        /**
-         * 全部运行
-         */
-        ALL,
-
-        /**
-         * 插件环境运行
-         */
-        PLUGIN,
-
-        /**
-         * 插件独立运行
-         */
-        ONESELF
-    }
 
 }

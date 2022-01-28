@@ -52,8 +52,8 @@ public class InvokeOtherPluginProcessor implements SpringPluginProcessor {
     }
 
     @Override
-    public RunMode runMode() {
-        return RunMode.ALL;
+    public ProcessorContext.RunMode runMode() {
+        return ProcessorContext.RunMode.ALL;
     }
 
 

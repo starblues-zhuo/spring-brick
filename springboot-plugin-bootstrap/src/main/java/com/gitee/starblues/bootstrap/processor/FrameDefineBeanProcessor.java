@@ -3,8 +3,11 @@ package com.gitee.starblues.bootstrap.processor;
 
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
+import com.gitee.starblues.integration.AutoIntegrationConfiguration;
+import com.gitee.starblues.integration.ExtendPointConfiguration;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
 /**
  * 框架内置bean注册
@@ -15,15 +18,20 @@ public class FrameDefineBeanProcessor implements SpringPluginProcessor {
 
     @Override
     public void refreshBefore(ProcessorContext context) throws ProcessorException {
-        ConfigurableApplicationContext applicationContext = context.getApplicationContext();
+        GenericApplicationContext applicationContext = context.getApplicationContext();
         InsidePluginDescriptor pluginDescriptor = context.getPluginDescriptor();
         ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
         beanFactory.registerSingleton("pluginDescriptor", pluginDescriptor.toPluginDescriptor());
+
+        if(context.runMode() == ProcessorContext.RunMode.ONESELF){
+            beanFactory.registerSingleton("integrationConfiguration", new AutoIntegrationConfiguration());
+            applicationContext.registerBean(ExtendPointConfiguration.class);
+        }
     }
 
     @Override
-    public RunMode runMode() {
-        return RunMode.ALL;
+    public ProcessorContext.RunMode runMode() {
+        return ProcessorContext.RunMode.ALL;
     }
 
 }

@@ -33,7 +33,7 @@ public class PluginControllerProcessor implements SpringPluginProcessor {
 
     private final static Logger LOG = LoggerFactory.getLogger(PluginControllerProcessor.class);
 
-    private static final String PROCESS_CONTROLLERS = "PROCESS_SUCCESS";
+    static final String PROCESS_CONTROLLERS = "PROCESS_SUCCESS";
 
 
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
@@ -116,11 +116,12 @@ public class PluginControllerProcessor implements SpringPluginProcessor {
         for (ControllerWrapper controllerWrapper : controllerWrappers) {
             unregister(controllerWrapper);
         }
+        controllerWrappers.clear();
     }
 
     @Override
-    public RunMode runMode() {
-        return RunMode.PLUGIN;
+    public ProcessorContext.RunMode runMode() {
+        return ProcessorContext.RunMode.PLUGIN;
     }
 
 
@@ -250,7 +251,7 @@ public class PluginControllerProcessor implements SpringPluginProcessor {
     }
 
 
-    private static class ControllerWrapper{
+    static class ControllerWrapper{
 
         /**
          * controller bean 名称
