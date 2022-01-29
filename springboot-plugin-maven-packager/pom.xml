@@ -6,7 +6,7 @@
 
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-maven-packager</artifactId>
-    <version>3.0.0-RELEASE</version>
+    <version>3.0.0-alpha</version>
 
     <properties>
         <java.version>8</java.version>
@@ -63,6 +63,8 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

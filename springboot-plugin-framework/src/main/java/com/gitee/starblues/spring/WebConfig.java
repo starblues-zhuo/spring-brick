@@ -16,6 +16,8 @@
 
 package com.gitee.starblues.spring;
 
+import lombok.Data;
+
 import java.util.Set;
 
 /**
@@ -23,24 +25,10 @@ import java.util.Set;
  * @author starBlues
  * @version 3.0.0
  */
+@Data
 public class WebConfig {
 
     private boolean enable = false;
     private Set<String> resourceLocations = null;
 
-    public void setEnable(boolean enable) {
-        this.enable = enable;
-    }
-
-    public boolean isEnable() {
-        return enable;
-    }
-
-    public Set<String> getResourceLocations() {
-        return resourceLocations;
-    }
-
-    public void setResourceLocations(Set<String> resourceLocations) {
-        this.resourceLocations = resourceLocations;
-    }
 }

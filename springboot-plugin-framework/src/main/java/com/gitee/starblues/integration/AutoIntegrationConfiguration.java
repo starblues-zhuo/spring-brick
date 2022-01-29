@@ -18,6 +18,8 @@ package com.gitee.starblues.integration;
 
 import com.gitee.starblues.core.RuntimeMode;
 import com.gitee.starblues.utils.ResourceUtils;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -31,8 +33,10 @@ import java.util.Set;
  * @author starBlues
  * @version 3.0.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Component
 @ConfigurationProperties(prefix = "plugin")
+@Data
 public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguration{
 
     public static final String ENABLE_KEY = "plugin.enable";
@@ -183,146 +187,6 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
         } else {
             return enablePluginIdRestPathPrefix;
         }
-    }
-
-    @Override
-    public Set<String> enablePluginIds() {
-        return enablePluginIds;
-    }
-
-    @Override
-    public Set<String> disablePluginIds() {
-        return disablePluginIds;
-    }
-
-    @Override
-    public List<String> sortInitPluginIds() {
-        return sortInitPluginIds;
-    }
-
-    @Override
-    public String version() {
-        return version;
-    }
-
-    @Override
-    public boolean exactVersion() {
-        if(exactVersion == null){
-            return false;
-        }
-        return exactVersion;
-    }
-
-    public Boolean getEnable() {
-        return enable;
-    }
-
-    public void setEnable(Boolean enable) {
-        this.enable = enable;
-    }
-
-    public String getRunMode() {
-        return runMode;
-    }
-
-    public void setRunMode(String runMode) {
-        this.runMode = runMode;
-    }
-
-    public String getMainPackage() {
-        return mainPackage;
-    }
-
-    public void setMainPackage(String mainPackage) {
-        this.mainPackage = mainPackage;
-    }
-
-    public List<String> getPluginPath() {
-        return pluginPath;
-    }
-
-    public void setPluginPath(List<String> pluginPath) {
-        this.pluginPath = pluginPath;
-    }
-
-    public String getPluginRestPathPrefix() {
-        return pluginRestPathPrefix;
-    }
-
-    public void setPluginRestPathPrefix(String pluginRestPathPrefix) {
-        this.pluginRestPathPrefix = pluginRestPathPrefix;
-    }
-
-    public Boolean getEnablePluginRestController() {
-        return enablePluginRestController;
-    }
-
-    public void setEnablePluginRestController(Boolean enablePluginRestController) {
-        this.enablePluginRestController = enablePluginRestController;
-    }
-
-    public Boolean getEnablePluginIdRestPathPrefix() {
-        return enablePluginIdRestPathPrefix;
-    }
-
-    public void setEnablePluginIdRestPathPrefix(Boolean enablePluginIdRestPathPrefix) {
-        this.enablePluginIdRestPathPrefix = enablePluginIdRestPathPrefix;
-    }
-
-    public String getBackupPath() {
-        return backupPath;
-    }
-
-    public void setBackupPath(String backupPath) {
-        this.backupPath = backupPath;
-    }
-
-    public String getUploadTempPath() {
-        return uploadTempPath;
-    }
-
-    public void setUploadTempPath(String uploadTempPath) {
-        this.uploadTempPath = uploadTempPath;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public Boolean getExactVersion() {
-        return exactVersion;
-    }
-
-    public void setExactVersion(Boolean exactVersion) {
-        this.exactVersion = exactVersion;
-    }
-
-    public Set<String> getEnablePluginIds() {
-        return enablePluginIds;
-    }
-
-    public void setEnablePluginIds(Set<String> enablePluginIds) {
-        this.enablePluginIds = enablePluginIds;
-    }
-
-    public Set<String> getDisablePluginIds() {
-        return disablePluginIds;
-    }
-
-    public void setDisablePluginIds(Set<String> disablePluginIds) {
-        this.disablePluginIds = disablePluginIds;
-    }
-
-    public List<String> getSortInitPluginIds() {
-        return sortInitPluginIds;
-    }
-
-    public void setSortInitPluginIds(List<String> sortInitPluginIds) {
-        this.sortInitPluginIds = sortInitPluginIds;
     }
 
 }

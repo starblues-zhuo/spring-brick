@@ -6,7 +6,7 @@
 
     <groupId>com.gitee.starblues</groupId>
     <artifactId>spring-plugin-framework-common</artifactId>
-    <version>3.0.0-RELEASE</version>
+    <version>3.0.0-alpha</version>
     <packaging>jar</packaging>
 
     <properties>

@@ -55,8 +55,6 @@ public class PluginLauncher extends AbstractLauncher<SpringPluginHook> {
     @Override
     protected ClassLoader createClassLoader() throws Exception {
         PluginClassLoader pluginClassLoader = getPluginClassLoader();
-        //TODO 添加框架的引导
-        pluginClassLoader.addResource(Paths.get("D:\\etc\\kitte\\ksm\\springboot-plugin-framework-parent\\springboot-plugin-bootstrap\\target\\classes"));
         pluginClassLoader.addResource(pluginDescriptor);
         return pluginClassLoader;
     }

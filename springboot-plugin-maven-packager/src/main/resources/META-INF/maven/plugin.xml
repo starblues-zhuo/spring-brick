@@ -6,7 +6,7 @@
     <name>Spring Boot Plugin Maven Packager</name>
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-maven-packager</artifactId>
-    <version>3.0.0-RELEASE</version>
+    <version>3.0.0-alpha</version>
     <goalPrefix>springboot-plugin</goalPrefix>
     <isolatedRealm>false</isolatedRealm>
     <inheritedByDefault>true</inheritedByDefault>
