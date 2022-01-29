@@ -7,8 +7,9 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class ZipInflaterInputStream extends InflaterInputStream {
 

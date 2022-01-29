@@ -8,8 +8,9 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.ValueRange;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class CentralDirectoryFileHeader implements FileHeader {
 

@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public interface RandomAccessData {
 

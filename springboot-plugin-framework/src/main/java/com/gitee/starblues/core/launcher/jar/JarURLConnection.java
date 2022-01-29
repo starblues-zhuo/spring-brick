@@ -12,8 +12,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class JarURLConnection extends java.net.JarURLConnection {
 

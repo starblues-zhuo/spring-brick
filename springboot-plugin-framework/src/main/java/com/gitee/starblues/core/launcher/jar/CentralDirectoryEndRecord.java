@@ -3,8 +3,9 @@ package com.gitee.starblues.core.launcher.jar;
 import java.io.IOException;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class CentralDirectoryEndRecord {
 

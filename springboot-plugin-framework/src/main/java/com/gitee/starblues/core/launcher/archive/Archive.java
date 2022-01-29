@@ -8,8 +8,9 @@ import java.util.function.Consumer;
 import java.util.jar.Manifest;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 

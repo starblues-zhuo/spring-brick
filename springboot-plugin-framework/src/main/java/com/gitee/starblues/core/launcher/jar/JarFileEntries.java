@@ -9,8 +9,9 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 

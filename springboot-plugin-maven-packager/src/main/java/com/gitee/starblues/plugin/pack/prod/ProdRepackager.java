@@ -1,3 +1,19 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.gitee.starblues.plugin.pack.prod;
 
 import com.gitee.starblues.common.PackageStructure;
@@ -13,8 +29,9 @@ import org.apache.maven.plugin.MojoFailureException;
 
 
 /**
+ * 生产环境打包
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class ProdRepackager implements Repackager {
 
@@ -39,9 +56,9 @@ public class ProdRepackager implements Repackager {
             // jar
             repackager = new ZipProdRepackager(repackageMojo, prodConfig);
         }  else if(Constant.PACKAGE_TYPE_JAR.equalsIgnoreCase(packageType)){
-            repackager = new JarPackageGenerator(repackageMojo, prodConfig);
+            repackager = new JarProdRepackager(repackageMojo, prodConfig);
         } else if(Constant.PACKAGE_TYPE_DIR.equalsIgnoreCase(packageType)){
-            repackager = new DirPackageGenerator(repackageMojo, prodConfig);
+            repackager = new DirProdRepackager(repackageMojo, prodConfig);
         }  else {
             throw new MojoFailureException("Not found packageType:" + packageType);
         }

@@ -15,8 +15,9 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class Handler extends URLStreamHandler {
 

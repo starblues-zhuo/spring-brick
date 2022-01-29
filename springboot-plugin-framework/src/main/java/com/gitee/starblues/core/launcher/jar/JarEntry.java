@@ -9,8 +9,9 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 

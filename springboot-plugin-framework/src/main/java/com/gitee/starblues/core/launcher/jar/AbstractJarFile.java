@@ -8,8 +8,9 @@ import java.net.URL;
 import java.security.Permission;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public abstract class AbstractJarFile extends java.util.jar.JarFile{
 

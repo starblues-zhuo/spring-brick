@@ -19,8 +19,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class JarFileArchive implements Archive {
 

@@ -21,8 +21,9 @@ import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.JarEntry> {
 

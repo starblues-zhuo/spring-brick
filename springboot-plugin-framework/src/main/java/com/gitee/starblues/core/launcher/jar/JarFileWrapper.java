@@ -17,8 +17,9 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 /**
+ * copy from spring-boot-loader
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class JarFileWrapper extends AbstractJarFile {
 
