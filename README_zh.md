@@ -30,21 +30,21 @@
 2. 支持集成`Mybatis`、`Mybatis-Plus`、`Tk-Mybatis`
 3. 支持可在插件中独立配置数据源
 
-- 详见 [插件SpringBoot Mybatis扩展](http://www.starblues.cn/extension-doc/Mybatis%E6%89%A9%E5%B1%95.html)
+- 详见 [插件SpringBoot Mybatis扩展](https://www.yuque.com/starblues/iuyk4y/rzkxnx)
 
 #### 静态资源访问扩展包
 
 1. 支持通过http访问插件中静态资源
 2. 支持`Thymeleaf`模板引擎进行界面插件式开发
 
-- 详见 [插件静态资源访问扩展](http://www.starblues.cn/extension-doc/%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E8%AE%BF%E9%97%AE%E6%89%A9%E5%B1%95.html)
+- 详见 [插件静态资源访问扩展](https://www.yuque.com/starblues/iuyk4y/dztnst)
 
 #### 插件日志扩展包
 
 1. 插件可自主配置集成`logback`日志
 2. 插件可自主配置集成`log4j2`日志
 
-- 详见 [插件静态资源访问扩展](http://www.starblues.cn/extension-doc/Log%E6%89%A9%E5%B1%95.html)
+- 详见 [插件静态资源访问扩展](https://www.yuque.com/starblues/iuyk4y/eb8s99)
 - 感谢 [sousouki](https://gitee.com/caoshx_sousouki) 的开发提供
 
 ### 运行环境
@@ -58,7 +58,7 @@
 
 ### 文档地址
 
-- [http://www.starblues.cn/](http://www.starblues.cn/)
+- [https://www.yuque.com/starblues/iuyk4y](https://www.yuque.com/starblues/iuyk4y)
 
 ### 衍生产品
 #### 携带前后端插件功能的后台管理系统
@@ -75,6 +75,6 @@
 ### 框架维护
 **欢迎各位开发爱好者参与到框架的维护和扩展开发当中**
 
-扩展开发文档见: - [springboot-plugin-framework 扩展功能](http://www.starblues.cn/extension-doc/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%A9%E5%B1%95.html)
+扩展开发文档见: - [springboot-plugin-framework 扩展功能](https://www.yuque.com/starblues/iuyk4y/fa01y1)
 
 
