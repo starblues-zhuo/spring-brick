@@ -51,8 +51,7 @@ public class NestedPluginJarResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public void init() throws Exception {
-        super.init();
+    protected void initOfChild() throws Exception {
         try (JarFile jarFile = new JarFile(pluginDescriptor.getInsidePluginPath().toFile())) {
             addClassPath(jarFile);
             addLib(jarFile);

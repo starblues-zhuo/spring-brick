@@ -20,12 +20,12 @@ import com.gitee.starblues.loader.archive.Archive;
 import com.gitee.starblues.loader.archive.ExplodedArchive;
 import com.gitee.starblues.loader.archive.JarFileArchive;
 import com.gitee.starblues.loader.classloader.GenericClassLoader;
-import com.gitee.starblues.loader.classloader.JarFileResourceLoader;
+import com.gitee.starblues.loader.classloader.JarResourceLoader;
+import com.gitee.starblues.loader.classloader.ResourceLoaderFactory;
 import com.gitee.starblues.loader.launcher.runner.MethodRunner;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Objects;
@@ -38,6 +38,7 @@ import java.util.Objects;
 public class MainJarProgramLauncher extends MainProgramLauncher{
 
     private static final String PROD_CLASSES_PATH = "classes/";
+    private static final String PROD_CLASSES_URL_SIGN = "/classes!/";
 
     private static final String PROD_LIB_PATH = "lib/";
 
@@ -77,16 +78,28 @@ public class MainJarProgramLauncher extends MainProgramLauncher{
             Archive archive = archives.next();
             URL url = archive.getUrl();
             String path = url.getPath();
-            if(path.contains("/classes!/")){
-                JarFileResourceLoader jarResourceLoader = new JarFileResourceLoader(url);
-                jarResourceLoader.setFunction(name->{
-                    return name.replace("classes/", "");
-                });
-                classLoader.getResourceLoaderFactory().addResource(jarResourceLoader);
+            ResourceLoaderFactory resourceLoaderFactory = classLoader.getResourceLoaderFactory();
+            if(path.contains(PROD_CLASSES_URL_SIGN)){
+                MainJarResourceLoader jarResourceLoader = new MainJarResourceLoader(url);
+                resourceLoaderFactory.addResource(jarResourceLoader);
             } else {
-                JarFileResourceLoader jarResourceLoader = new JarFileResourceLoader(archive.getUrl());
-                classLoader.getResourceLoaderFactory().addResource(jarResourceLoader);
+                JarResourceLoader jarResourceLoader = new JarResourceLoader(url);
+                resourceLoaderFactory.addResource(jarResourceLoader);
             }
         }
     }
+
+    private static class MainJarResourceLoader extends JarResourceLoader {
+
+        public MainJarResourceLoader(URL url) throws Exception {
+            super(url);
+        }
+
+        @Override
+        protected String resolveName(String name) {
+            return name.replace(PROD_CLASSES_PATH, "");
+        }
+    }
+
+
 }

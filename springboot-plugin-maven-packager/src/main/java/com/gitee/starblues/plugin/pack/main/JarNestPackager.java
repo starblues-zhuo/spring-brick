@@ -99,7 +99,7 @@ public class JarNestPackager implements Repackager {
                 continue;
             }
             if(CommonUtils.isPluginFrameworkLoader(artifact)){
-                // 本框架依赖
+                // 本框架loader依赖
                 packageJar.copyZipToPackage(artifact.getFile());
             } else {
                 packageJar.writeDependency(artifact.getFile(), libDirEntryName);

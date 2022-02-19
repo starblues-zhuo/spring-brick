@@ -17,7 +17,9 @@
 package com.gitee.starblues.loader.classloader;
 
 import com.gitee.starblues.loader.classloader.filter.ExcludeResource;
+import com.gitee.starblues.loader.classloader.filter.IncludeResource;
 
+import java.io.File;
 import java.net.URL;
 import java.util.function.Function;
 import java.util.jar.JarEntry;
@@ -32,13 +34,17 @@ public class JarResourceLoader extends AbstractResourceLoader{
 
     private final JarInputStream jarInputStream;
 
-    private ExcludeResource excludeResource = (name)->false;
+    private ExcludeResource excludeResource = (jarEntry)->false;
+    private IncludeResource includeResource = (jarEntry)->true;
 
-
-    private Function<String, String> function = name->name;
+    public JarResourceLoader(File file)  throws Exception{
+        super(new URL("jar:" + file.toURI().toURL() + "!/"));
+        URL url = file.toURI().toURL();
+        this.jarInputStream = new JarInputStream(url.openStream());
+    }
 
     public JarResourceLoader(URL url)  throws Exception{
-        super(new URL("jar:" + url.toString() + "!/"));
+        super(url);
         this.jarInputStream = new JarInputStream(url.openStream());
     }
 
@@ -54,32 +60,38 @@ public class JarResourceLoader extends AbstractResourceLoader{
         this.excludeResource = excludeResource;
     }
 
-    public void setFunction(Function<String, String> function) {
-        this.function = function;
+    public void setIncludeResource(IncludeResource includeResource) {
+        if(includeResource == null){
+            return;
+        }
+        this.includeResource = includeResource;
     }
 
     @Override
-    public void init() throws Exception {
-        super.init();
+    protected void initOfChild() throws Exception {
         // 解析
         try {
             JarEntry jarEntry = null;
             while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
-                String name = jarEntry.getName();
-                name = function.apply(name);
-                if(excludeResource.exclude(name)){
+                if(excludeResource.exclude(jarEntry)){
                     continue;
                 }
-                URL url = new URL(baseUrl.toString() + name);
-                Resource resource = new Resource(name, baseUrl, url);
-                resource.setBytes(getClassBytes(name, jarInputStream, false));
-                addResource(name, resource);
-                jarInputStream.closeEntry();
+                if(includeResource.include(jarEntry)){
+                    String name = resolveName(jarEntry.getName());
+                    URL url = new URL(baseUrl.toString() + name);
+                    Resource resource = new Resource(name, baseUrl, url);
+                    resource.setBytes(getClassBytes(name, jarInputStream, false));
+                    addResource(name, resource);
+                    jarInputStream.closeEntry();
+                }
             }
         } finally {
             jarInputStream.close();
         }
     }
 
+    protected String resolveName(String name){
+        return name;
+    }
 
 }

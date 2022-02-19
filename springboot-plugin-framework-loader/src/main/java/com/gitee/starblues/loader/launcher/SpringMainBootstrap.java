@@ -16,6 +16,7 @@
 
 package com.gitee.starblues.loader.launcher;
 
+import com.gitee.starblues.loader.jar.JarFile;
 import com.gitee.starblues.loader.launcher.runner.MainMethodRunner;
 import com.gitee.starblues.loader.launcher.runner.MethodRunner;
 
@@ -50,6 +51,7 @@ public class SpringMainBootstrap {
         SpringMainBootstrap.springBootstrap = Objects.requireNonNull(springBootstrap, "springBootBootstrap 不能为空");
         MainMethodRunner mainMethodRunner = new MainMethodRunner(SpringMainBootstrap.class.getName(),
                 MAIN_RUN_METHOD, args);
+        JarFile.registerUrlProtocolHandler();
         Thread launchThread = new Thread(new Runner(mainMethodRunner));
         launchThread.start();
         try {

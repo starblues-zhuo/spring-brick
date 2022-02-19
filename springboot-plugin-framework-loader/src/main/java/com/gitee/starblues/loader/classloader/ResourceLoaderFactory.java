@@ -68,20 +68,22 @@ public class ResourceLoaderFactory extends AbstractResourceLoader {
         if(!Files.exists(path)){
             return;
         }
-        URL url = path.toUri().toURL();
-        addResource(url);
+        addResource(path.toUri().toURL());
     }
 
     public void addResource(URL url) throws Exception{
         AbstractResourceLoader resourceLoader = null;
         if(ResourceUtils.isJarFileUrl(url)) {
-            resourceLoader = new JarResourceLoader(url);
+            if(ResourceUtils.isJarProtocolUrl(url)){
+                resourceLoader = new JarResourceLoader(url);
+            } else {
+                resourceLoader = new JarResourceLoader(Paths.get(url.toURI()).toFile());
+            }
         } else if(ResourceUtils.isFileUrl(url)){
             resourceLoader = new ClassPathLoader(url);
         }
         if(resourceLoader != null){
-            resourceLoader.init();
-            resourceLoaders.add(resourceLoader);
+            addResource(resourceLoader);
         }
     }
 

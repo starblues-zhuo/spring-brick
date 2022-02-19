@@ -31,6 +31,16 @@ public class ResourceUtils {
     }
 
     /**
+     * 是否为jar协议的文件
+     * @param url url
+     * @return boolean
+     */
+    public static boolean isJarProtocolUrl(URL url) {
+        return URL_PROTOCOL_JAR_FILE.equals(url.getProtocol());
+    }
+
+
+    /**
      * 是否为普通文件
      * @param url url
      * @return boolean
@@ -40,4 +50,5 @@ public class ResourceUtils {
         return (URL_PROTOCOL_FILE.equals(protocol) || URL_PROTOCOL_VFSFILE.equals(protocol) ||
                 URL_PROTOCOL_VFS.equals(protocol));
     }
+
 }

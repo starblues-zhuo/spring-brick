@@ -32,7 +32,6 @@ public abstract class AbstractLauncher<R> implements Launcher<R> {
         ClassLoader oldClassLoader = thread.getContextClassLoader();
         try {
             thread.setContextClassLoader(classLoader);
-            JarFile.registerUrlProtocolHandler();
             return launch(classLoader, args);
         } finally {
             thread.setContextClassLoader(oldClassLoader);

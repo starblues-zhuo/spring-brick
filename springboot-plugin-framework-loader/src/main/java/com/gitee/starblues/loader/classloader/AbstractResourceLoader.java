@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 抽象的资源加载者
@@ -34,6 +35,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AbstractResourceLoader {
 
     private static final String CLASS_FILE_EXTENSION = ".class";
+
+    private boolean isInit = false;
 
     protected final URL baseUrl;
     private final Map<String, Resource> resourceCache = new ConcurrentHashMap<>();
@@ -53,11 +56,26 @@ public abstract class AbstractResourceLoader {
      * 初始化 resource
      * @throws Exception 初始异常
      */
-    public void init() throws Exception{
-        // 添加root 路径
-        Resource rootResource = new Resource("root", baseUrl, baseUrl);
-        resourceCache.put("/", rootResource);
+    public final synchronized void init() throws Exception{
+        if(isInit){
+            throw new Exception(this.getClass().getName()+": 已经初始化了, 不能再初始化!");
+        }
+        try {
+            // 添加root 路径
+            Resource rootResource = new Resource("root", baseUrl, baseUrl);
+            resourceCache.put("/", rootResource);
+            initOfChild();
+        } finally {
+            isInit = true;
+        }
     }
+
+    /**
+     * 子类初始化实现
+     * @throws Exception 初始异常
+     */
+    protected void initOfChild() throws Exception{};
+
 
     protected boolean existResource(String name){
         return resourceCache.containsKey(name);

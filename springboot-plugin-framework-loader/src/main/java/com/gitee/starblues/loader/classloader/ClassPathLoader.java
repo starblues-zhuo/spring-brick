@@ -18,7 +18,9 @@ package com.gitee.starblues.loader.classloader;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Objects;
 
 /**
@@ -28,8 +30,6 @@ import java.util.Objects;
  */
 public class ClassPathLoader extends AbstractResourceLoader{
 
-
-
     private final URL url;
 
     public ClassPathLoader(URL url) {
@@ -37,9 +37,18 @@ public class ClassPathLoader extends AbstractResourceLoader{
         this.url = Objects.requireNonNull(url, "url 不能为空");
     }
 
+    public ClassPathLoader(File file) throws MalformedURLException {
+        this(file.toPath());
+    }
+
+    public ClassPathLoader(Path path) throws MalformedURLException {
+        super(path.toUri().toURL());
+        this.url = super.baseUrl;
+    }
+
+
     @Override
-    public void init() throws Exception {
-        super.init();
+    protected void initOfChild() throws Exception {
         File file = new File(url.toURI());
         load(file, null);
     }

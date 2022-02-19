@@ -16,6 +16,7 @@
 
 package com.gitee.starblues.plugin.pack.utils;
 
+import com.gitee.starblues.common.PackageStructure;
 import com.gitee.starblues.utils.FilesUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -124,6 +125,10 @@ public class PackageZip implements Closeable{
             while (entries.hasMoreElements()){
                 ZipArchiveEntry zipArchiveEntry = entries.nextElement();
                 String name = zipArchiveEntry.getName();
+                if(name.contains(PackageStructure.META_INF_NAME)){
+                    // 不拷贝 mate-inf
+                    continue;
+                }
                 if(zipArchiveEntry.isDirectory()){
                     putDirEntry(name);
                 } else {

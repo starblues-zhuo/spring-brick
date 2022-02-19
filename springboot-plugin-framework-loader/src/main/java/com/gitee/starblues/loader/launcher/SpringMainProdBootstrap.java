@@ -36,6 +36,7 @@ public class SpringMainProdBootstrap {
     private static final String START_CLASS = "Start-Class";
 
     public static void main(String[] args) throws Exception {
+        JarFile.registerUrlProtocolHandler();
         new SpringMainProdBootstrap().run(args);
     }
 
