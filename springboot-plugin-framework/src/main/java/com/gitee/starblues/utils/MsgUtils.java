@@ -16,8 +16,8 @@
 
 package com.gitee.starblues.utils;
 
+
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
-import org.slf4j.Logger;
 
 /**
  * @author starBlues
@@ -44,10 +44,6 @@ public abstract class MsgUtils {
 
     public static String getThrowableMsg(String message){
         return ObjectUtils.isEmpty(message) ? "" : message;
-    }
-
-    public static void info(Logger logger, PluginDescriptor pluginDescriptor, String msg){
-        logger.info("插件[{}]{}", getPluginUnique(pluginDescriptor), msg);
     }
 
 }

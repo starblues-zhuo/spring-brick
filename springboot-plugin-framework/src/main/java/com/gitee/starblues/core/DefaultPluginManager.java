@@ -270,7 +270,7 @@ public class DefaultPluginManager implements PluginManager{
         }
         startedPlugins.remove(pluginId);
         unLoad(pluginId);
-        MsgUtils.info(log, wrapperInside.getPluginDescriptor(), "卸载成功");
+        LogUtils.info(log, wrapperInside.getPluginDescriptor(), "卸载成功");
     }
 
     @Override
@@ -402,7 +402,7 @@ public class DefaultPluginManager implements PluginManager{
             throw new PluginException(pluginInsideInfo.getPluginDescriptor(), "已经被加载");
         }
         resolvedPlugins.put(pluginId, pluginInsideInfo);
-        MsgUtils.info(log, pluginInsideInfo.getPluginDescriptor(), "加载成功");
+        LogUtils.info(log, pluginInsideInfo.getPluginDescriptor(), "加载成功");
         return pluginInsideInfo;
     }
 
@@ -465,7 +465,7 @@ public class DefaultPluginManager implements PluginManager{
             if(targetFile.isFile() && unpackPlugin){
                 // 需要解压, 检查解压后的文件名称是否存在同名文件
                 checkExistFile(pluginRootDir, resolvePluginFileName);
-                String unpackPluginPath = CommonUtils.joiningFilePath(pluginRootDir.getPath(), resolvePluginFileName);
+                String unpackPluginPath = FilesUtils.joiningFilePath(pluginRootDir.getPath(), resolvePluginFileName);
                 PluginFileUtils.decompressZip(targetFile.getPath(), unpackPluginPath);
                 resultPath = Paths.get(unpackPluginPath);
                 PluginFileUtils.deleteFile(targetFile);
@@ -478,11 +478,11 @@ public class DefaultPluginManager implements PluginManager{
             File pluginRootDirFile = new File(getDefaultPluginRoot());
             // 检查是否存在同名文件
             checkExistFile(pluginRootDirFile, resolvePluginFileName);
-            targetFile = Paths.get(CommonUtils.joiningFilePath(pluginRootDir.getPath(), resolvePluginFileName)).toFile();
+            targetFile = Paths.get(FilesUtils.joiningFilePath(pluginRootDir.getPath(), resolvePluginFileName)).toFile();
             if(pluginFile.isFile()){
                 if(unpackPlugin){
                     // 需要解压
-                    String unpackPluginPath = CommonUtils.joiningFilePath(pluginRootDir.getPath(), resolvePluginFileName);
+                    String unpackPluginPath = FilesUtils.joiningFilePath(pluginRootDir.getPath(), resolvePluginFileName);
                     PluginFileUtils.decompressZip(pluginFile.getPath(), unpackPluginPath);
                     resultPath = Paths.get(unpackPluginPath);
                 } else {

@@ -17,6 +17,7 @@
 package com.gitee.starblues.utils;
 
 import com.gitee.starblues.core.RuntimeMode;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 
 /**
  * 插件配置工具类
@@ -87,6 +88,29 @@ public class PluginConfigUtils {
         return fileNamePrefix + suffix + fileNamePrefixSuffix;
     }
 
+    /**
+     * 得到插件接口前缀
+     * @param configuration 配置
+     * @param pluginId 插件id
+     * @return 接口前缀
+     */
+    public static String getPluginRestPrefix(IntegrationConfiguration configuration, String pluginId){
+        String pathPrefix = configuration.pluginRestPathPrefix();
+        if(configuration.enablePluginIdRestPathPrefix()){
+            if(pathPrefix != null && !"".equals(pathPrefix)){
+                pathPrefix = FilesUtils.restJoiningPath(pathPrefix, pluginId);
+            } else {
+                pathPrefix = pluginId;
+            }
+            return pathPrefix;
+        } else {
+            if(pathPrefix == null || "".equals(pathPrefix)){
+                // 不启用插件id作为路径前缀, 并且路径前缀为空, 则直接返回。
+                return null;
+            }
+        }
+        return pathPrefix;
+    }
 
     public static class FileNamePack {
         private final String sourceFileName;

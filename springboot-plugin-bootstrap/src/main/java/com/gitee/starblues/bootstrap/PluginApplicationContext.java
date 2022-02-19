@@ -21,7 +21,6 @@ import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.io.ResourceLoader;
 
 /**
  * 插件ApplicationContext实现

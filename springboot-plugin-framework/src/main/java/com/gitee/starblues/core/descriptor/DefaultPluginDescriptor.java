@@ -31,7 +31,7 @@ import static com.gitee.starblues.common.PluginDescriptorKey.*;
  * @author starBlues
  * @version 3.0.0
  */
-public class DefaultPluginDescriptor implements PluginDescriptor{
+public class DefaultPluginDescriptor implements PluginDescriptor {
 
     private final String pluginId;
     private final String pluginVersion;
@@ -39,7 +39,7 @@ public class DefaultPluginDescriptor implements PluginDescriptor{
     private final String pluginPath;
 
 
-    private Type type;
+    private PluginType type;
     private String description;
     private String requires;
     private String provider;
@@ -72,7 +72,7 @@ public class DefaultPluginDescriptor implements PluginDescriptor{
         this.license = license;
     }
 
-    void setType(Type type) {
+    void setType(PluginType type) {
         this.type = type;
     }
 
@@ -127,7 +127,7 @@ public class DefaultPluginDescriptor implements PluginDescriptor{
 
 
     @Override
-    public Type getType() {
+    public PluginType getType() {
         return type;
     }
 

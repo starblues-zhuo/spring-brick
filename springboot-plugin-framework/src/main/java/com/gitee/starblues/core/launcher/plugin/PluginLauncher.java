@@ -16,16 +16,12 @@
 
 package com.gitee.starblues.core.launcher.plugin;
 
-import com.gitee.starblues.core.classloader.PluginClassLoader;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
-import com.gitee.starblues.core.launcher.AbstractLauncher;
-import com.gitee.starblues.core.launcher.PluginResourceStorage;
+import com.gitee.starblues.core.classloader.PluginClassLoader;
 import com.gitee.starblues.core.launcher.plugin.involved.PluginLaunchInvolved;
-import com.gitee.starblues.core.launcher.plugin.involved.PluginLaunchInvolvedFactory;
+import com.gitee.starblues.loader.launcher.AbstractLauncher;
 import com.gitee.starblues.spring.SpringPluginHook;
-import com.gitee.starblues.spring.web.PluginStaticResourceResolver;
 
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.WeakHashMap;
 

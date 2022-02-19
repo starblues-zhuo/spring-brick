@@ -25,7 +25,8 @@ import com.gitee.starblues.bootstrap.utils.SpringBeanUtils;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.utils.ClassUtils;
-import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.OrderUtils;
+import com.gitee.starblues.utils.PluginConfigUtils;
 import com.gitee.starblues.utils.SpringBeanCustomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public class PluginInterceptorsProcessor implements SpringPluginProcessor {
         }
         IntegrationConfiguration configuration = context.getConfiguration();
         String pluginId = context.getPluginDescriptor().getPluginId();
-        String pluginRestPrefix = CommonUtils.getPluginRestPrefix(configuration, pluginId);
+        String pluginRestPrefix = PluginConfigUtils.getPluginRestPrefix(configuration, pluginId);
 
         for (PluginInterceptorRegister interceptorRegister : interceptorRegisters) {
             PluginInterceptorRegistry interceptorRegistry = new PluginInterceptorRegistry(pluginRestPrefix);

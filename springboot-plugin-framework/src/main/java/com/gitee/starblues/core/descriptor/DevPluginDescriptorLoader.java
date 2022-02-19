@@ -17,17 +17,11 @@
 package com.gitee.starblues.core.descriptor;
 
 import com.gitee.starblues.common.PackageStructure;
-import com.gitee.starblues.common.PluginDescriptorKey;
-import com.gitee.starblues.common.utils.ManifestUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Properties;
-import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 /**
@@ -60,7 +54,7 @@ public class DevPluginDescriptorLoader extends AbstractPluginDescriptorLoader{
     @Override
     protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception {
         final DefaultInsidePluginDescriptor descriptor = super.create(manifest, path);
-        descriptor.setType(PluginDescriptor.Type.DEV);
+        descriptor.setType(PluginType.DEV);
         return descriptor;
     }
 }

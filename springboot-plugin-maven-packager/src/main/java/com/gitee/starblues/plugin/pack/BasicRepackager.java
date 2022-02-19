@@ -17,9 +17,12 @@
 package com.gitee.starblues.plugin.pack;
 
 import com.gitee.starblues.common.AbstractDependencyPlugin;
+import com.gitee.starblues.common.ManifestKey;
 import com.gitee.starblues.common.PackageStructure;
 import com.gitee.starblues.plugin.pack.dev.DevConfig;
 import com.gitee.starblues.plugin.pack.utils.CommonUtils;
+import com.gitee.starblues.utils.FilesUtils;
+import com.gitee.starblues.utils.ObjectUtils;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
@@ -38,15 +41,12 @@ import java.util.jar.Manifest;
 
 import static com.gitee.starblues.common.PackageStructure.*;
 import static com.gitee.starblues.common.PluginDescriptorKey.*;
-import static com.gitee.starblues.plugin.pack.utils.CommonUtils.isEmpty;
-import static com.gitee.starblues.plugin.pack.utils.CommonUtils.joinPath;
 
 /**
  * 基础打包
  * @author starBlues
  * @version 3.0.0
  */
-
 public class BasicRepackager implements Repackager{
 
     @Getter
@@ -64,6 +64,7 @@ public class BasicRepackager implements Repackager{
 
     @Override
     public void repackage() throws MojoExecutionException, MojoFailureException {
+        checkPluginInfo();
         rootDir = createRootDir();
         relativeManifestPath = getRelativeManifestPath();
         relativeResourcesDefinePath = getRelativeResourcesDefinePath();
@@ -73,6 +74,34 @@ public class BasicRepackager implements Repackager{
         } catch (Exception e) {
             repackageMojo.getLog().error(e.getMessage(), e);
             throw new MojoFailureException(e);
+        }
+    }
+
+    private void checkPluginInfo() throws MojoExecutionException {
+        PluginInfo pluginInfo = repackageMojo.getPluginInfo();
+        if(pluginInfo == null){
+            throw new MojoExecutionException("configuration.pluginInfo config cannot be empty");
+        }
+        if(ObjectUtils.isEmpty(pluginInfo.getId())){
+            throw new MojoExecutionException("configuration.pluginInfo.id config cannot be empty");
+        } else {
+            String id = pluginInfo.getId();
+            String illegal = PackageStructure.getIllegal(id);
+            if(illegal != null){
+                throw new MojoExecutionException("configuration.pluginInfo.id config can't contain: " + illegal);
+            }
+        }
+        if(ObjectUtils.isEmpty(pluginInfo.getBootstrapClass())){
+            throw new MojoExecutionException("configuration.pluginInfo.bootstrapClass config cannot be empty");
+        }
+        if(ObjectUtils.isEmpty(pluginInfo.getVersion())){
+            throw new MojoExecutionException("configuration.pluginInfo.version config cannot be empty");
+        } else {
+            String version = pluginInfo.getVersion();
+            String illegal = PackageStructure.getIllegal(version);
+            if(illegal != null){
+                throw new MojoExecutionException("configuration.pluginInfo.version config can't contain: " + illegal);
+            }
         }
     }
 
@@ -91,16 +120,16 @@ public class BasicRepackager implements Repackager{
         if(rootDir.mkdir()){
             return rootDirPath;
         }
-        throw new MojoFailureException("创建插件根目录失败. " + rootDirPath);
+        throw new MojoFailureException("Failed to create the plugin root directory. " + rootDirPath);
     }
 
     protected String getBasicRootDir(){
         File outputDirectory = repackageMojo.getOutputDirectory();
-        return joinPath(outputDirectory.getPath(), PackageStructure.META_INF_NAME);
+        return FilesUtils.joiningFilePath(outputDirectory.getPath(), PackageStructure.META_INF_NAME);
     }
 
     protected void writeManifest(Manifest manifest) throws Exception {
-        String manifestPath = CommonUtils.joinPath(rootDir, resolvePath(this.relativeManifestPath));
+        String manifestPath = FilesUtils.joiningFilePath(rootDir, resolvePath(this.relativeManifestPath));
         File file = new File(manifestPath);
         FileOutputStream outputStream = null;
         try {
@@ -124,38 +153,38 @@ public class BasicRepackager implements Repackager{
         PluginInfo pluginInfo = repackageMojo.getPluginInfo();
         Manifest manifest = new Manifest();
         Attributes attributes = manifest.getMainAttributes();
-        attributes.putValue("Manifest-Version", "1.0");
+        attributes.putValue(ManifestKey.MANIFEST_VERSION, ManifestKey.MANIFEST_VERSION_1_0);
         attributes.putValue(PLUGIN_ID, pluginInfo.getId());
         attributes.putValue(PLUGIN_BOOTSTRAP_CLASS, pluginInfo.getBootstrapClass());
         attributes.putValue(PLUGIN_VERSION, pluginInfo.getVersion());
         attributes.putValue(PLUGIN_PATH, getPluginPath());
 
         String resourcesDefineFilePath = writeResourcesDefineFile();
-        if(!CommonUtils.isEmpty(resourcesDefineFilePath)){
+        if(!ObjectUtils.isEmpty(resourcesDefineFilePath)){
             attributes.putValue(PLUGIN_RESOURCES_CONFIG, resourcesDefineFilePath);
         }
         String configFileName = pluginInfo.getConfigFileName();
-        if(!isEmpty(configFileName)){
+        if(!ObjectUtils.isEmpty(configFileName)){
             attributes.putValue(PLUGIN_CONFIG_FILE_NAME, configFileName);
         }
         String provider = pluginInfo.getProvider();
-        if(!isEmpty(provider)){
+        if(!ObjectUtils.isEmpty(provider)){
             attributes.putValue(PLUGIN_PROVIDER, provider);
         }
         String requires = pluginInfo.getRequires();
-        if(!isEmpty(requires)){
+        if(!ObjectUtils.isEmpty(requires)){
             attributes.putValue(PLUGIN_REQUIRES, requires);
         }
         String dependencyPlugins = getDependencyPlugin(pluginInfo);
-        if(!isEmpty(dependencyPlugins)){
+        if(!ObjectUtils.isEmpty(dependencyPlugins)){
             attributes.putValue(PLUGIN_DEPENDENCIES, dependencyPlugins);
         }
         String description = pluginInfo.getDescription();
-        if(!isEmpty(description)){
+        if(!ObjectUtils.isEmpty(description)){
             attributes.putValue(PLUGIN_DESCRIPTION, description);
         }
         String license = pluginInfo.getLicense();
-        if(!isEmpty(license)){
+        if(!ObjectUtils.isEmpty(license)){
             attributes.putValue(PLUGIN_LICENSE, license);
         }
         return manifest;
@@ -168,7 +197,7 @@ public class BasicRepackager implements Repackager{
 
     protected String getPluginPath(){
         DevConfig devConfig = repackageMojo.getDevConfig();
-        if(devConfig != null && !isEmpty(devConfig.getPluginPath())){
+        if(devConfig != null && !ObjectUtils.isEmpty(devConfig.getPluginPath())){
             return devConfig.getPluginPath();
         }
         return repackageMojo.getProject().getBuild().getOutputDirectory();
@@ -182,7 +211,7 @@ public class BasicRepackager implements Repackager{
     }
 
     protected File createResourcesDefineFile() throws IOException {
-        String path = joinPath(rootDir, resolvePath(relativeResourcesDefinePath));
+        String path = FilesUtils.joiningFilePath(rootDir, resolvePath(relativeResourcesDefinePath));
         try {
             File file = new File(path);
             FileUtils.forceMkdirParent(file);
@@ -207,7 +236,7 @@ public class BasicRepackager implements Repackager{
     }
 
     protected Set<String> getDependenciesIndexSet() throws Exception {
-        Set<Artifact> dependencies = repackageMojo.getDependencies();
+        Set<Artifact> dependencies = repackageMojo.getFilterDependencies();
         Set<String> libPaths = new HashSet<>(dependencies.size());
         for (Artifact artifact : dependencies) {
             if(filterArtifact(artifact)){
@@ -224,7 +253,7 @@ public class BasicRepackager implements Repackager{
 
     protected void writeLoadMainResources() throws Exception {
         String loadMainResources = getLoadMainResources();
-        if(CommonUtils.isEmpty(loadMainResources)){
+        if(ObjectUtils.isEmpty(loadMainResources)){
             return;
         }
         FileUtils.write(resourcesDefineFile, loadMainResources, CHARSET_NAME, true);
@@ -244,13 +273,13 @@ public class BasicRepackager implements Repackager{
     }
 
     private void addLoadMainResources(StringBuilder stringBuilder, String header, String[] patterns){
-        if(CommonUtils.isEmpty(patterns)){
+        if(ObjectUtils.isEmpty(patterns)){
            return;
         }
         Set<String> patternSet = new HashSet<>(Arrays.asList(patterns));
         stringBuilder.append(header).append("\n");
         for (String patternStr : patternSet) {
-            if(CommonUtils.isEmpty(patternStr)){
+            if(ObjectUtils.isEmpty(patternStr)){
                 continue;
             }
             stringBuilder.append(resolvePattern(patternStr)).append("\n");

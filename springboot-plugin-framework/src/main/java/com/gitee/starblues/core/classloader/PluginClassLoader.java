@@ -17,7 +17,7 @@
 package com.gitee.starblues.core.classloader;
 
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
+import com.gitee.starblues.loader.classloader.*;
 import com.gitee.starblues.utils.Assert;
 
 import java.io.IOException;

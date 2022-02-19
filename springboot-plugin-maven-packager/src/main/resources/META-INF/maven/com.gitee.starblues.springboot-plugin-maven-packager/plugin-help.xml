@@ -117,6 +117,14 @@
                     <editable>true</editable>
                     <description>prod打包模式配置</description>
                 </parameter>
+                <parameter>
+                    <name>mainConfig</name>
+                    <type>com.gitee.starblues.plugin.pack.main.MainConfig</type>
+                    <since>3.0.0</since>
+                    <required>false</required>
+                    <editable>true</editable>
+                    <description>main打包模式配置</description>
+                </parameter>
             </parameters>
             <configuration>
                 <project implementation="org.apache.maven.project.MavenProject" default-value="${project}"/>
@@ -129,6 +137,7 @@
                 <excludes implementation="java.util.List">${springboot-plugin.excludes}</excludes>
                 <devConfig implementation="com.gitee.starblues.plugin.pack.dev.DevConfig" />
                 <prodConfig implementation="com.gitee.starblues.plugin.pack.prod.ProdConfig" />
+                <mainConfig implementation="com.gitee.starblues.plugin.pack.main.MainConfig" />
             </configuration>
             <requirements>
                 <requirement>

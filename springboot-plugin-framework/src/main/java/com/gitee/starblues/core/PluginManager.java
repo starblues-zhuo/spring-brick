@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * 插件管理者
  * @author starBlues
+ * @version 3.0.0
  */
 public interface PluginManager {
 

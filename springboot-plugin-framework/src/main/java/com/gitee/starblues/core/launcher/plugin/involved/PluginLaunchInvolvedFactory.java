@@ -18,13 +18,11 @@ package com.gitee.starblues.core.launcher.plugin.involved;
 
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.integration.IntegrationConfiguration;
-import com.gitee.starblues.spring.MainApplicationContext;
 import com.gitee.starblues.spring.SpringPluginHook;
-import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.OrderUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.ArrayList;
@@ -65,7 +63,7 @@ public class PluginLaunchInvolvedFactory implements PluginLaunchInvolved{
         if(!ObjectUtils.isEmpty(pluginLaunchInvolvedMap)){
             pluginLaunchInvolvedList.addAll(pluginLaunchInvolvedMap.values());
         }
-        pluginLaunchInvolvedList.sort(CommonUtils.orderPriority(PluginLaunchInvolved::order));
+        pluginLaunchInvolvedList.sort(OrderUtils.orderPriority(PluginLaunchInvolved::order));
         return pluginLaunchInvolvedList;
     }
 

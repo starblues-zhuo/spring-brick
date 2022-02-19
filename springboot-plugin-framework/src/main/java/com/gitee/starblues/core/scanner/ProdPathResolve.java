@@ -17,7 +17,8 @@
 package com.gitee.starblues.core.scanner;
 
 import com.gitee.starblues.common.PackageStructure;
-import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.FilesUtils;
+import com.gitee.starblues.utils.OrderUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 
 import java.io.File;
@@ -69,7 +70,7 @@ public class ProdPathResolve implements PathResolve{
             return false;
         }
 
-        file = new File(CommonUtils.joiningFilePath(path.toString(), PackageStructure.resolvePath(
+        file = new File(FilesUtils.joiningFilePath(path.toString(), PackageStructure.resolvePath(
                 PackageStructure.PROD_MANIFEST_PATH
         )));
         return file.exists() && file.isFile();

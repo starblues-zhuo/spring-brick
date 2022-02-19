@@ -21,6 +21,7 @@ import com.gitee.starblues.common.PluginDescriptorKey;
 import com.gitee.starblues.plugin.pack.RepackageMojo;
 import com.gitee.starblues.plugin.pack.dev.DevRepackager;
 import com.gitee.starblues.plugin.pack.utils.CommonUtils;
+import com.gitee.starblues.utils.FilesUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -64,7 +65,7 @@ public class DirProdRepackager extends DevRepackager {
     @Override
     protected String createRootDir() throws MojoFailureException {
         String fileName = prodConfig.getFileName();
-        String dirPath = CommonUtils.joinPath(prodConfig.getOutputDirectory(), fileName);
+        String dirPath = FilesUtils.joiningFilePath(prodConfig.getOutputDirectory(), fileName);
         File dirFile = new File(dirPath);
         if(dirFile.exists() && dirFile.isFile()){
             int i = 0;
@@ -86,12 +87,12 @@ public class DirProdRepackager extends DevRepackager {
 
     @Override
     protected String getRelativeManifestPath() {
-        return CommonUtils.joinPath(META_INF_NAME, MANIFEST);
+        return FilesUtils.joiningFilePath(META_INF_NAME, MANIFEST);
     }
 
     @Override
     protected String getRelativeResourcesDefinePath() {
-        return CommonUtils.joinPath(META_INF_NAME, RESOURCES_DEFINE_NAME);
+        return FilesUtils.joiningFilePath(META_INF_NAME, RESOURCES_DEFINE_NAME);
     }
 
     @Override
@@ -105,7 +106,7 @@ public class DirProdRepackager extends DevRepackager {
 
     protected void resolveClasses() throws Exception {
         String buildDir = repackageMojo.getProject().getBuild().getOutputDirectory();
-        String path = CommonUtils.joinPath(getRootDir(), CLASSES_NAME);
+        String path = FilesUtils.joiningFilePath(getRootDir(), CLASSES_NAME);
         File file = new File(path);
         FileUtils.forceMkdir(file);
         FileUtils.copyDirectory(new File(buildDir), file);
@@ -113,7 +114,7 @@ public class DirProdRepackager extends DevRepackager {
 
     @Override
     protected Set<String> getDependenciesIndexSet() throws Exception {
-        Set<Artifact> dependencies = repackageMojo.getDependencies();
+        Set<Artifact> dependencies = repackageMojo.getFilterDependencies();
         String libDir = createLibDir();
         Set<String> dependencyIndexNames = new HashSet<>(dependencies.size());
         for (Artifact artifact : dependencies) {
@@ -121,14 +122,14 @@ public class DirProdRepackager extends DevRepackager {
                 continue;
             }
             File artifactFile = artifact.getFile();
-            FileUtils.copyFile(artifactFile, new File(CommonUtils.joinPath(libDir, artifactFile.getName())));
+            FileUtils.copyFile(artifactFile, new File(FilesUtils.joiningFilePath(libDir, artifactFile.getName())));
             dependencyIndexNames.add(PackageStructure.PROD_LIB_PATH + artifactFile.getName());
         }
         return dependencyIndexNames;
     }
 
     protected String createLibDir() throws IOException {
-        String dir = CommonUtils.joinPath(getRootDir(), PackageStructure.LIB_NAME);
+        String dir = FilesUtils.joiningFilePath(getRootDir(), PackageStructure.LIB_NAME);
         File file = new File(dir);
         if(file.mkdir()){
             return dir;

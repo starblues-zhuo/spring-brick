@@ -18,11 +18,9 @@ package com.gitee.starblues.bootstrap.processor;
 
 
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.integration.AutoIntegrationConfiguration;
 import com.gitee.starblues.integration.ExtendPointConfiguration;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
 /**

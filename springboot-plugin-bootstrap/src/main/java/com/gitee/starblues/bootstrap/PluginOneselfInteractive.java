@@ -17,7 +17,9 @@
 package com.gitee.starblues.bootstrap;
 
 import com.gitee.starblues.common.PackageStructure;
-import com.gitee.starblues.core.descriptor.*;
+import com.gitee.starblues.core.descriptor.DevPluginDescriptorLoader;
+import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
+import com.gitee.starblues.core.descriptor.PluginDescriptorLoader;
 import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
 import com.gitee.starblues.integration.AutoIntegrationConfiguration;
 import com.gitee.starblues.integration.IntegrationConfiguration;
@@ -26,7 +28,7 @@ import com.gitee.starblues.spring.extract.DefaultOpExtractFactory;
 import com.gitee.starblues.spring.extract.OpExtractFactory;
 import com.gitee.starblues.spring.invoke.DefaultInvokeSupperCache;
 import com.gitee.starblues.spring.invoke.InvokeSupperCache;
-import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.FilesUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -80,7 +82,7 @@ public class PluginOneselfInteractive implements PluginInteractive {
     private InsidePluginDescriptor createPluginDescriptor(){
         try (PluginDescriptorLoader pluginDescriptorLoader = new DevPluginDescriptorLoader()){
             Path classesPath = Paths.get(this.getClass().getResource("/").toURI()).getParent();
-            String metaInf = CommonUtils.joiningFilePath(classesPath.toString(), PackageStructure.META_INF_NAME);
+            String metaInf = FilesUtils.joiningFilePath(classesPath.toString(), PackageStructure.META_INF_NAME);
             InsidePluginDescriptor pluginDescriptor = pluginDescriptorLoader.load(Paths.get(metaInf));
             if(pluginDescriptor == null){
                 throw new RuntimeException("没有发现插件信息, 请使用框架提供的Maven插件器对插件进行编译!");

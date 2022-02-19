@@ -17,10 +17,8 @@
 package com.gitee.starblues.core.checker;
 
 import com.gitee.starblues.core.PluginInfo;
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.core.exception.PluginException;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 

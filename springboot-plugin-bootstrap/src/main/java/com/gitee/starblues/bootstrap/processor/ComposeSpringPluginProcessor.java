@@ -25,7 +25,7 @@ import com.gitee.starblues.bootstrap.processor.web.PluginStaticResourceProcessor
 import com.gitee.starblues.bootstrap.processor.web.thymeleaf.PluginThymeleafProcessor;
 import com.gitee.starblues.bootstrap.utils.AnnotationUtils;
 import com.gitee.starblues.bootstrap.utils.ProcessorUtils;
-import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.OrderUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.OrderPriority;
 import org.slf4j.Logger;
@@ -78,7 +78,7 @@ public class ComposeSpringPluginProcessor implements SpringPluginProcessor {
                     ProcessorContext.RunMode runMode = p.runMode();
                     return runMode == ProcessorContext.RunMode.ALL || runMode == this.runMode;
                 })
-                .sorted(CommonUtils.orderPriority(SpringPluginProcessor::order))
+                .sorted(OrderUtils.orderPriority(SpringPluginProcessor::order))
                 .collect(Collectors.toList());
         for (SpringPluginProcessor processor : this.processors) {
             try {

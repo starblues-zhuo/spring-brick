@@ -25,7 +25,7 @@ import java.util.jar.Manifest;
  * @author starBlues
  * @version 3.0.0
  */
-public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor implements InsidePluginDescriptor{
+public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor implements InsidePluginDescriptor {
 
     private final Path pluginPath;
     private final String pluginFileName;
@@ -110,7 +110,7 @@ public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor imple
     @Override
     public PluginDescriptor toPluginDescriptor() {
         Path pluginPath = getInsidePluginPath();
-        if(getType() == Type.DEV) {
+        if(getType() == PluginType.DEV) {
             // dev模式 插件路径展示项目目录
             pluginPath = pluginPath.getParent().getParent();
         }

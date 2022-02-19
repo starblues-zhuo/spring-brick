@@ -16,10 +16,11 @@
 
 package com.gitee.starblues.core.classloader;
 
+import com.gitee.starblues.core.descriptor.PluginType;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
+import com.gitee.starblues.loader.classloader.ResourceLoaderFactory;
+import com.gitee.starblues.utils.FilesUtils;
 import com.gitee.starblues.utils.ObjectUtils;
-import com.gitee.starblues.utils.PluginFileUtils;
 
 import java.io.File;
 import java.util.Set;
@@ -29,24 +30,25 @@ import java.util.Set;
  * @author starBlues
  * @version 3.0.0
  */
-public class PluginResourceLoaderFactory extends ResourceLoaderFactory{
+public class PluginResourceLoaderFactory extends ResourceLoaderFactory {
 
 
-    public synchronized void addResource(InsidePluginDescriptor pluginDescriptor) throws Exception{
-        PluginDescriptor.Type type = pluginDescriptor.getType();
-        if(type == PluginDescriptor.Type.JAR || type == PluginDescriptor.Type.ZIP){
-            NestedJarResourceLoader resourceLoader = new NestedJarResourceLoader(pluginDescriptor, this);
+    public synchronized void addResource(InsidePluginDescriptor descriptor) throws Exception{
+        PluginType pluginType = descriptor.getType();
+        if(pluginType == PluginType.JAR || pluginType == PluginType.ZIP){
+            NestedPluginJarResourceLoader resourceLoader =
+                    new NestedPluginJarResourceLoader(descriptor, this);
             resourceLoader.init();
             addResourceLoader(resourceLoader);
-        } else if(type == PluginDescriptor.Type.DIR || type == PluginDescriptor.Type.DEV){
-            addClasspath(pluginDescriptor);
-            addLibFile(pluginDescriptor);
+        } else if(pluginType == PluginType.DIR || pluginType == PluginType.DEV){
+            addClasspath(descriptor);
+            addLibFile(descriptor);
         }
     }
 
     private void addClasspath(InsidePluginDescriptor pluginDescriptor) throws Exception {
         String pluginClassPath = pluginDescriptor.getPluginClassPath();
-        File existFile = PluginFileUtils.getExistFile(pluginClassPath);
+        File existFile = FilesUtils.getExistFile(pluginClassPath);
         if(existFile != null){
             addResource(existFile);
         }
@@ -58,7 +60,7 @@ public class PluginResourceLoaderFactory extends ResourceLoaderFactory{
             return;
         }
         for (String pluginLibPath : pluginLibPaths) {
-            File existFile = PluginFileUtils.getExistFile(pluginLibPath);
+            File existFile = FilesUtils.getExistFile(pluginLibPath);
             if(existFile != null){
                 addResource(existFile);
             }

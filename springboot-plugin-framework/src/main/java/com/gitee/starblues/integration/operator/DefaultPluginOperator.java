@@ -16,7 +16,10 @@
 
 package com.gitee.starblues.integration.operator;
 
-import com.gitee.starblues.core.*;
+import com.gitee.starblues.core.PluginInfo;
+import com.gitee.starblues.core.PluginLauncherManager;
+import com.gitee.starblues.core.PluginManager;
+import com.gitee.starblues.core.RealizeProvider;
 import com.gitee.starblues.core.exception.PluginDisabledException;
 import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.integration.IntegrationConfiguration;
@@ -43,7 +46,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -274,7 +278,7 @@ public class DefaultPluginOperator implements PluginOperator {
             throw new PluginException("插件文件类型错误, 请上传 jar/zip 类型文件");
         }
 
-        String tempPathString = CommonUtils.joiningFilePath(configuration.uploadTempPath(), pluginFileName);
+        String tempPathString = FilesUtils.joiningFilePath(configuration.uploadTempPath(), pluginFileName);
         Path tempFilePath = Paths.get(tempPathString);
         File tempFile = PluginFileUtils.createExistFile(tempFilePath);
         // 将上传的插件拷贝到临时目录

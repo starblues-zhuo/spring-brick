@@ -49,7 +49,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo{
     @Parameter(property = "springboot-plugin.skip", defaultValue = "false")
     private boolean skip;
 
-    @Parameter(property = "springboot-plugin.pluginInfo", required = true)
+    @Parameter(property = "springboot-plugin.pluginInfo")
     private PluginInfo pluginInfo;
 
     @Parameter(property = "springboot-plugin.loadMainResourcePattern", required = false)
@@ -65,40 +65,21 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo{
             getLog().debug("skipping plugin package.");
             return;
         }
-        checkPluginInfo();
         pack();
     }
 
+    /**
+     * 打包
+     * @throws MojoExecutionException MojoExecutionException
+     * @throws MojoFailureException MojoFailureException
+     */
     protected abstract void pack() throws MojoExecutionException, MojoFailureException;
 
-    public final Set<Artifact> getDependencies() throws MojoExecutionException {
+    public final Set<Artifact> getFilterDependencies() throws MojoExecutionException {
         return filterDependencies(project.getArtifacts(), getFilters());
     }
 
-    private void checkPluginInfo() throws MojoExecutionException {
-        if(pluginInfo == null){
-            throw new MojoExecutionException("configuration.pluginInfo config cannot be empty");
-        }
-        if(CommonUtils.isEmpty(pluginInfo.getId())){
-            throw new MojoExecutionException("configuration.pluginInfo.id config cannot be empty");
-        } else {
-            String id = pluginInfo.getId();
-            String illegal = PackageStructure.getIllegal(id);
-            if(illegal != null){
-                throw new MojoExecutionException("configuration.pluginInfo.id config can't contain: " + illegal);
-            }
-        }
-        if(CommonUtils.isEmpty(pluginInfo.getBootstrapClass())){
-            throw new MojoExecutionException("configuration.pluginInfo.bootstrapClass config cannot be empty");
-        }
-        if(CommonUtils.isEmpty(pluginInfo.getVersion())){
-            throw new MojoExecutionException("configuration.pluginInfo.version config cannot be empty");
-        } else {
-            String version = pluginInfo.getVersion();
-            String illegal = PackageStructure.getIllegal(version);
-            if(illegal != null){
-                throw new MojoExecutionException("configuration.pluginInfo.version config can't contain: " + illegal);
-            }
-        }
+    public final Set<Artifact> getSourceDependencies() throws MojoExecutionException {
+        return project.getArtifacts();
     }
 }

@@ -20,7 +20,7 @@ package com.gitee.starblues.core.descriptor;
 import com.gitee.starblues.common.AbstractDependencyPlugin;
 import com.gitee.starblues.common.DependencyPlugin;
 import com.gitee.starblues.core.exception.PluginException;
-import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.FilesUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +30,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import static com.gitee.starblues.common.PackageStructure.MANIFEST;
 import static com.gitee.starblues.common.PluginDescriptorKey.*;
-import static com.gitee.starblues.common.PackageStructure.*;
-import static com.gitee.starblues.common.utils.ManifestUtils.*;
+import static com.gitee.starblues.utils.ManifestUtils.getValue;
 
 /**
  * 抽象的 PluginDescriptorLoader
@@ -118,7 +118,7 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
         if(!file.exists()){
             // 如果绝对路径不存在, 则判断相对路径
             String pluginPath = getValue(attributes, PLUGIN_PATH);
-            file = new File(CommonUtils.joiningFilePath(pluginPath, libIndex));
+            file = new File(FilesUtils.joiningFilePath(pluginPath, libIndex));
         }
         if(!file.exists()){
             // 都不存在, 则返回为空

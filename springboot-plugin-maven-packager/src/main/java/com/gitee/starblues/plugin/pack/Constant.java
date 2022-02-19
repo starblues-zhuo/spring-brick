@@ -28,12 +28,17 @@ public class Constant {
     public static final String SCOPE_COMPILE = "compile";
     public static final String SCOPE_TEST = "test";
 
+    public static final String MODE_MAIN = "main";
     public static final String MODE_DEV = "dev";
     public static final String MODE_PROD = "prod";
 
     public static final String PACKAGE_TYPE_JAR = "jar";
     public static final String PACKAGE_TYPE_ZIP = "zip";
     public static final String PACKAGE_TYPE_DIR = "dir";
+
+    public static final String MAIN_PACKAGE_TYPE_JAR_NEST = "jar-nest";
+    public static final String MAIN_PACKAGE_TYPE_JAR_OUTER = "jar-outer";
+    public static final String MAIN_PACKAGE_TYPE_WAR = "jar-war";
 
 
     public static boolean isPom(String packageType){

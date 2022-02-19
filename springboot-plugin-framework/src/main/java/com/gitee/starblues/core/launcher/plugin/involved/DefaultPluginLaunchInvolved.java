@@ -17,7 +17,7 @@
 package com.gitee.starblues.core.launcher.plugin.involved;
 
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
-import com.gitee.starblues.core.launcher.PluginResourceStorage;
+import com.gitee.starblues.loader.PluginResourceStorage;
 import com.gitee.starblues.spring.SpringPluginHook;
 import com.gitee.starblues.spring.web.PluginStaticResourceResolver;
 
@@ -30,7 +30,7 @@ public class DefaultPluginLaunchInvolved implements PluginLaunchInvolved{
 
     @Override
     public void before(InsidePluginDescriptor descriptor, ClassLoader classLoader) throws Exception {
-        PluginResourceStorage.addPlugin(descriptor);
+        PluginResourceStorage.addPlugin(descriptor.getPluginId(), descriptor.getPluginFileName());
     }
 
     @Override

@@ -217,7 +217,7 @@ public class PluginControllerProcessor implements SpringPluginProcessor {
         private void changePathForClass(String beanName, Class<?> aClass, RequestMapping requestMapping){
             String pluginId = processorContext.getPluginDescriptor().getPluginId();
             IntegrationConfiguration configuration = processorContext.getConfiguration();
-            String pathPrefix = CommonUtils.getPluginRestPrefix(configuration, pluginId);
+            String pathPrefix = PluginConfigUtils.getPluginRestPrefix(configuration, pluginId);
 
             if(ObjectUtils.isEmpty(pathPrefix)){
                 LOG.error("插件 [{}] Controller类 [{}] 未发现 path 配置, {}",
@@ -241,7 +241,7 @@ public class PluginControllerProcessor implements SpringPluginProcessor {
                     if(definePath.contains(pathPrefix)){
                         newPath[i++] = definePath;
                     } else {
-                        newPath[i++] = CommonUtils.restJoiningPath(pathPrefix, definePath);
+                        newPath[i++] = FilesUtils.restJoiningPath(pathPrefix, definePath);
                     }
                 }
                 if(newPath.length == 0){

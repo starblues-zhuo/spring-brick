@@ -18,7 +18,6 @@ package com.gitee.starblues.bootstrap.processor;
 
 import com.gitee.starblues.bootstrap.SpringPluginBootstrap;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
-import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.core.launcher.plugin.CacheRegistryInfo;
 import com.gitee.starblues.core.launcher.plugin.PluginInteractive;
 import com.gitee.starblues.integration.IntegrationConfiguration;

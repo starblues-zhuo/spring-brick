@@ -17,6 +17,8 @@
 package com.gitee.starblues.plugin.pack.prod;
 
 import com.gitee.starblues.plugin.pack.RepackageMojo;
+import com.gitee.starblues.plugin.pack.utils.PackageJar;
+import com.gitee.starblues.plugin.pack.utils.PackageZip;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
@@ -44,17 +46,7 @@ public class JarProdRepackager extends ZipProdRepackager {
     }
 
     @Override
-    protected String getPackageFileSuffix() {
-        return "jar";
-    }
-
-    @Override
-    protected ArchiveOutputStream getOutputStream(File packFile) throws Exception {
-        return new JarArchiveOutputStream(new FileOutputStream(packFile));
-    }
-
-    @Override
-    protected ZipArchiveEntry getArchiveEntry(String name) {
-        return new JarArchiveEntry(name);
+    protected PackageZip getPackageZip() throws Exception {
+        return new PackageJar(prodConfig.getOutputDirectory(), prodConfig.getFileName());
     }
 }

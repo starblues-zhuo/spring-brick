@@ -17,10 +17,9 @@
 package com.gitee.starblues.core.descriptor;
 
 import com.gitee.starblues.common.PluginDescriptorKey;
-import com.gitee.starblues.common.utils.ManifestUtils;
-import com.gitee.starblues.utils.CommonUtils;
+import com.gitee.starblues.utils.ManifestUtils;
+import com.gitee.starblues.utils.FilesUtils;
 import com.gitee.starblues.utils.ObjectUtils;
-import com.gitee.starblues.utils.ResourceUtils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -28,7 +27,6 @@ import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +45,7 @@ public class ProdDirPluginDescriptorLoader extends AbstractPluginDescriptorLoade
 
     @Override
     protected Manifest getManifest(Path location) throws Exception {
-        File file = new File(CommonUtils.joiningFilePath(location.toString(), resolvePath(PROD_MANIFEST_PATH)));
+        File file = new File(FilesUtils.joiningFilePath(location.toString(), resolvePath(PROD_MANIFEST_PATH)));
         if(!file.exists()){
             return null;
         }
@@ -61,9 +59,9 @@ public class ProdDirPluginDescriptorLoader extends AbstractPluginDescriptorLoade
     @Override
     protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception {
         DefaultInsidePluginDescriptor descriptor = super.create(manifest, path);
-        descriptor.setType(PluginDescriptor.Type.DIR);
+        descriptor.setType(PluginType.DIR);
         String pathStr = path.toFile().getPath();
-        descriptor.setPluginClassPath(CommonUtils.joiningPath(
+        descriptor.setPluginClassPath(FilesUtils.joiningFilePath(
                 pathStr, CLASSES_NAME
         ));
         System.out.println(descriptor.getPluginClassPath());
@@ -91,7 +89,7 @@ public class ProdDirPluginDescriptorLoader extends AbstractPluginDescriptorLoade
             File file = new File(index);
             if(!file.exists()){
                 // 如果直接读取的路径不存在, 则从相对路径读取
-                file = new File(CommonUtils.joiningFilePath(
+                file = new File(FilesUtils.joiningFilePath(
                         pathStr, index
                 ));
             }
@@ -107,12 +105,12 @@ public class ProdDirPluginDescriptorLoader extends AbstractPluginDescriptorLoade
         libIndexPath = resolvePath(libIndexPath);
         if(ObjectUtils.isEmpty(libIndexPath)){
             // 如果配置为空, 直接从默认路径读取
-            libIndexPath = CommonUtils.joiningFilePath(rootPath, resolvePath(PROD_RESOURCES_DEFINE_PATH));
+            libIndexPath = FilesUtils.joiningFilePath(rootPath, resolvePath(PROD_RESOURCES_DEFINE_PATH));
         } else {
             if(Files.exists(Paths.get(libIndexPath))){
                 return libIndexPath;
             }
-            libIndexPath = CommonUtils.joiningFilePath(rootPath, libIndexPath);
+            libIndexPath = FilesUtils.joiningFilePath(rootPath, libIndexPath);
         }
         if(Files.exists(Paths.get(libIndexPath))){
             return libIndexPath;

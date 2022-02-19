@@ -21,6 +21,7 @@ import com.gitee.starblues.plugin.pack.filter.ExcludeFilter;
 import com.gitee.starblues.plugin.pack.filter.Include;
 import com.gitee.starblues.plugin.pack.filter.IncludeFilter;
 import com.gitee.starblues.plugin.pack.utils.CommonUtils;
+import com.gitee.starblues.utils.ObjectUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.maven.artifact.Artifact;
@@ -69,10 +70,10 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
         for (ArtifactsFilter additionalFilter : additionalFilters) {
             filters.addFilter(additionalFilter);
         }
-        if (!CommonUtils.isEmpty(includes)) {
+        if (!ObjectUtils.isEmpty(includes)) {
             filters.addFilter(new IncludeFilter(this.includes));
         }
-        if(CommonUtils.isEmpty(excludes)){
+        if(ObjectUtils.isEmpty(excludes)){
             excludes = new ArrayList<>();
         }
         // 添加主框架排除
@@ -84,7 +85,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
     }
 
     private void addPluginFrameworkExclude(){
-        excludes.add(Exclude.get("com.gitee.starblues", "springboot-plugin-framework"));
+        excludes.add(CommonUtils.getPluginFrameworkExclude());
     }
 
     private void addSpringWebEnvExclude(){

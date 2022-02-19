@@ -17,6 +17,7 @@
 package com.gitee.starblues.core.descriptor;
 
 import com.gitee.starblues.common.DependencyPlugin;
+import com.gitee.starblues.core.descriptor.PluginType;
 
 import java.util.List;
 
@@ -85,33 +86,7 @@ public interface PluginDescriptor {
      * 得到插件类型
      * @return 插件类型
      */
-    Type getType();
-
-
-    /**
-     * 插件类型
-     */
-    enum Type{
-        /**
-         * jar文件
-         */
-        JAR,
-
-        /**
-         * zip 文件
-         */
-        ZIP,
-
-        /**
-         * 生产模式目录
-         */
-        DIR,
-
-        /**
-         * 开发模式目录
-         */
-        DEV;
-    }
+    PluginType getType();
 
 
 }

@@ -22,12 +22,10 @@ import com.gitee.starblues.plugin.pack.RepackageMojo;
 import com.gitee.starblues.plugin.pack.dev.Dependency;
 import com.gitee.starblues.plugin.pack.dev.DevConfig;
 import com.gitee.starblues.plugin.pack.dev.DevRepackager;
-import com.gitee.starblues.plugin.pack.utils.CommonUtils;
-import org.apache.commons.compress.archivers.ArchiveEntry;
+import com.gitee.starblues.plugin.pack.utils.PackageZip;
+import com.gitee.starblues.utils.FilesUtils;
+import com.gitee.starblues.utils.ObjectUtils;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
-import org.apache.commons.compress.archivers.zip.UnixStat;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -35,17 +33,16 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.zip.CRC32;
-import java.util.zip.ZipEntry;
 
 import static com.gitee.starblues.common.PackageStructure.*;
-import static com.gitee.starblues.plugin.pack.Constant.SCOPE_PROVIDED;
-import static com.gitee.starblues.plugin.pack.utils.CommonUtils.joinPath;
 
 /**
  * zip 打包
@@ -54,13 +51,10 @@ import static com.gitee.starblues.plugin.pack.utils.CommonUtils.joinPath;
  */
 public class ZipProdRepackager extends DevRepackager {
 
-    private static final int UNIX_FILE_MODE = UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM;
-
-    private static final int UNIX_DIR_MODE = UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM;
 
     protected final ProdConfig prodConfig;
 
-    protected ArchiveOutputStream outputStream;
+    protected PackageZip packageZip;
 
     public ZipProdRepackager(RepackageMojo repackageMojo, ProdConfig prodConfig) {
         super(repackageMojo);
@@ -69,63 +63,31 @@ public class ZipProdRepackager extends DevRepackager {
 
     @Override
     public void repackage() throws MojoExecutionException, MojoFailureException {
-        File packageFile = getPackageFile();
         try {
-            outputStream = getOutputStream(packageFile);
+            packageZip = getPackageZip();
             super.repackage();
             resolveClasses();
             resolveResourcesDefine();
-            outputStream.finish();
             String rootDir = getRootDir();
             try {
                 FileUtils.deleteDirectory(new File(rootDir));
             } catch (IOException e) {
                 // 忽略
             }
-            repackageMojo.getLog().info("Success package prod zip file : " + packageFile.getPath());
+            repackageMojo.getLog().info("Success package prod zip file : "
+                    + packageZip.getFile().getPath());
         } catch (Exception e){
             repackageMojo.getLog().error(e.getMessage(), e);
             throw new MojoFailureException(e);
         } finally {
-            if(outputStream != null){
-                IOUtils.closeQuietly(outputStream);
+            if(packageZip != null){
+                IOUtils.closeQuietly(packageZip);
             }
         }
     }
 
-    protected File getPackageFile() throws MojoFailureException {
-        String fileSuffix = getPackageFileSuffix();
-        String path = getPackageFilePath();
-        File file = new File(path + "." + fileSuffix);
-
-        if(file.exists()){
-            int i = 0;
-            while (true){
-                file = new File(path + "_" + i + "." + fileSuffix);
-                if(file.exists()){
-                    i = i + 1;
-                    continue;
-                }
-                break;
-            }
-        }
-        try {
-            if(file.createNewFile()){
-                return file;
-            }
-            throw new IOException("Create file '" + file.getPath() + "' failure.");
-        } catch (IOException e) {
-            repackageMojo.getLog().error(e.getMessage(), e);
-            throw new MojoFailureException("Create prod package file failure");
-        }
-    }
-
-    protected String getPackageFileSuffix(){
-        return "zip";
-    }
-
-    protected String getPackageFilePath(){
-        return CommonUtils.joinPath(prodConfig.getOutputDirectory(), prodConfig.getFileName());
+    protected PackageZip getPackageZip() throws Exception {
+        return new PackageZip(prodConfig.getOutputDirectory(), prodConfig.getFileName());
     }
 
     protected ArchiveOutputStream getOutputStream(File packFile) throws Exception {
@@ -135,7 +97,7 @@ public class ZipProdRepackager extends DevRepackager {
     @Override
     protected String getBasicRootDir(){
         File outputDirectory = repackageMojo.getOutputDirectory();
-        return joinPath(outputDirectory.getPath(), UUID.randomUUID().toString());
+        return FilesUtils.joiningFilePath(outputDirectory.getPath(), UUID.randomUUID().toString());
     }
 
     @Override
@@ -161,7 +123,7 @@ public class ZipProdRepackager extends DevRepackager {
 
     protected void resolveClasses() throws Exception {
         String buildDir = repackageMojo.getProject().getBuild().getOutputDirectory();
-        copyFileToPackage(new File(buildDir), "");
+        packageZip.copyDirToPackage(new File(buildDir), null);
     }
 
     @Override
@@ -175,10 +137,8 @@ public class ZipProdRepackager extends DevRepackager {
 
     @Override
     protected void writeManifest(Manifest manifest) throws Exception {
-        putDirEntry(META_INF_NAME + SEPARATOR);
-        outputStream.putArchiveEntry(getArchiveEntry(PROD_MANIFEST_PATH));
-        manifest.write(outputStream);
-        outputStream.closeArchiveEntry();
+        packageZip.putDirEntry(META_INF_NAME + SEPARATOR);
+        packageZip.write(PROD_MANIFEST_PATH, manifest::write);
     }
 
     protected void resolveResourcesDefine() throws Exception{
@@ -189,24 +149,24 @@ public class ZipProdRepackager extends DevRepackager {
             content.append(dependencyIndexName).append("\n");
         }
         String loadMainResources = super.getLoadMainResources();
-        if(!CommonUtils.isEmpty(loadMainResources)){
+        if(!ObjectUtils.isEmpty(loadMainResources)){
             content.append(loadMainResources).append("\n");
         }
         final byte[] bytes = content.toString().getBytes(StandardCharsets.UTF_8);
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)){
-            putInputStreamEntry(byteArrayInputStream, PROD_RESOURCES_DEFINE_PATH);
+            packageZip.putInputStreamEntry(byteArrayInputStream, PROD_RESOURCES_DEFINE_PATH);
         }
     }
 
     protected Set<String> resolveDependencies() throws Exception {
-        Set<Artifact> dependencies = repackageMojo.getDependencies();
+        Set<Artifact> dependencies = repackageMojo.getFilterDependencies();
         String libDirEntryName = createLibEntry();
         Set<String> dependencyIndexNames = new HashSet<>(dependencies.size());
         for (Artifact artifact : dependencies) {
             if(filterArtifact(artifact)){
                 continue;
             }
-            String dependencyIndexName = writeDependency(artifact.getFile(), libDirEntryName, outputStream);
+            String dependencyIndexName = packageZip.writeDependency(artifact.getFile(), libDirEntryName);
             dependencyIndexNames.add(dependencyIndexName);
         }
         return dependencyIndexNames;
@@ -214,99 +174,8 @@ public class ZipProdRepackager extends DevRepackager {
 
     protected String createLibEntry() throws Exception {
         String libDirEntryName = PROD_LIB_PATH;
-        putDirEntry(libDirEntryName);
+        packageZip.putDirEntry(libDirEntryName);
         return libDirEntryName;
-    }
-
-    protected String writeDependency(File dependencyFile, String libDirEntryName,
-                                     ArchiveOutputStream outputStream) throws Exception {
-        String indexName = libDirEntryName + dependencyFile.getName();
-        ZipArchiveEntry entry = getArchiveEntry(indexName);
-        entry.setTime(System.currentTimeMillis());
-        entry.setUnixMode(indexName.endsWith("/") ? UNIX_DIR_MODE : UNIX_FILE_MODE);
-        entry.getGeneralPurposeBit().useUTF8ForNames(true);
-        try(FileInputStream inputStream = new FileInputStream(dependencyFile)){
-             new CrcAndSize(inputStream).setupStoredEntry(entry);
-        }
-        try (FileInputStream inputStream = new FileInputStream(dependencyFile)){
-            outputStream.putArchiveEntry(entry);
-            IOUtils.copy(inputStream, outputStream);
-            outputStream.closeArchiveEntry();
-        }
-        return indexName;
-    }
-
-    protected void copyFileToPackage(File file, String rootDir) throws Exception {
-        if(CommonUtils.isEmpty(rootDir)){
-            rootDir = file.getName();
-        }
-        if (file.isDirectory()) {
-            File[] childFiles = file.listFiles();
-            rootDir = rootDir + "/";
-            putDirEntry(rootDir);
-            if(childFiles == null){
-                return;
-            }
-            for (File childFile : childFiles) {
-                copyFileToPackage(childFile, rootDir + childFile.getName());
-            }
-        } else {
-            putFileEntry(file, rootDir);
-        }
-    }
-
-    protected void putFileEntry(File destFile, String rootDir) throws Exception {
-        if(!destFile.exists()){
-            throw new FileNotFoundException("Not found file : " + destFile.getPath());
-        }
-        outputStream.putArchiveEntry(getArchiveEntry(rootDir));
-        FileUtils.copyFile(destFile, outputStream);
-        outputStream.closeArchiveEntry();
-    }
-
-    protected void putInputStreamEntry(InputStream inputStream, String name) throws Exception {
-        outputStream.putArchiveEntry(getArchiveEntry(name));
-        IOUtils.copy(inputStream, outputStream);
-        outputStream.closeArchiveEntry();
-    }
-
-    protected void putDirEntry(String dir) throws IOException {
-        outputStream.putArchiveEntry(getArchiveEntry(dir));
-        outputStream.closeArchiveEntry();
-    }
-
-    protected ZipArchiveEntry getArchiveEntry(String name){
-        return new ZipArchiveEntry(name);
-    }
-
-    private static class CrcAndSize {
-
-        private static final int BUFFER_SIZE = 32 * 1024;
-
-        private final CRC32 crc = new CRC32();
-
-        private long size;
-
-        CrcAndSize(InputStream inputStream) throws IOException {
-            load(inputStream);
-        }
-
-        private void load(InputStream inputStream) throws IOException {
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                this.crc.update(buffer, 0, bytesRead);
-                this.size += bytesRead;
-            }
-        }
-
-        void setupStoredEntry(ZipArchiveEntry entry) {
-            entry.setSize(this.size);
-            entry.setCompressedSize(this.size);
-            entry.setCrc(this.crc.getValue());
-            entry.setMethod(ZipEntry.STORED);
-        }
-
     }
 
 }

@@ -32,8 +32,6 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -119,22 +117,6 @@ public final class PluginFileUtils {
         return path.toFile();
     }
 
-    public static File getExistFile(String pathStr){
-        File file = new File(pathStr);
-        if(file.exists()){
-            return file;
-        }
-        return null;
-    }
-
-    public static File getExistFile(String pathStr, Supplier<String> secondPathSupplier){
-        File existFile = getExistFile(pathStr);
-        if(existFile != null){
-            return existFile;
-        }
-        return getExistFile(secondPathSupplier.get());
-    }
-
     /**
      * 得到文件名称
      * @param file 原始文件
@@ -214,7 +196,7 @@ public final class PluginFileUtils {
                 zipEntry = zipEnumeration.nextElement();
                 String zipEntryName = zipEntry.getName();
                 String currentZipPath = PackageStructure.resolvePath(zipEntryName);
-                String currentTargetPath = CommonUtils.joiningFilePath(targetDir, currentZipPath);
+                String currentTargetPath = FilesUtils.joiningFilePath(targetDir, currentZipPath);
                 //判断路径是否存在,不存在则创建文件路径
                 if (zipEntry.isDirectory()) {
                     FileUtils.forceMkdir(new File(currentTargetPath));
@@ -236,12 +218,6 @@ public final class PluginFileUtils {
                 }
             }
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        decompressZip("D:\\etc\\kitte\\ksm\\springboot-plugin-framework-parent\\springboot-plugin-framework-example\\plugin\\example-basic-1-1.0.0-SNAPSHOT_0.zip",
-
-                "D:\\etc\\kitte\\springboot-plugin-framework-parent\\springboot-plugin-framework\\src\\main\\java\\com\\gitee\\starblues\\integration\\operator");
     }
 
 }

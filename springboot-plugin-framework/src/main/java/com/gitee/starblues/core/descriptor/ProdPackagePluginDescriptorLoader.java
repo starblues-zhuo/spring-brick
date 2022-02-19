@@ -18,9 +18,8 @@ package com.gitee.starblues.core.descriptor;
 
 
 import com.gitee.starblues.common.PackageStructure;
-import com.gitee.starblues.common.utils.ManifestUtils;
+import com.gitee.starblues.utils.ManifestUtils;
 import com.gitee.starblues.utils.ObjectUtils;
-import com.gitee.starblues.utils.PluginFileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
@@ -41,21 +40,17 @@ import static com.gitee.starblues.common.PluginDescriptorKey.PLUGIN_RESOURCES_CO
  */
 public class ProdPackagePluginDescriptorLoader extends AbstractPluginDescriptorLoader{
 
-    private final PluginDescriptor.Type type;
+    private final PluginType type;
     private PluginResourcesConfig pluginResourcesConfig;
 
-    public ProdPackagePluginDescriptorLoader(PluginDescriptor.Type type) {
+    public ProdPackagePluginDescriptorLoader(PluginType type) {
         this.type = type;
     }
 
     @Override
     protected Manifest getManifest(Path location) throws Exception {
         try (JarFile jarFile = new JarFile(location.toFile())){
-            JarEntry jarEntry = jarFile.getJarEntry(PackageStructure.PROD_MANIFEST_PATH);
-            // TODO
-            InputStream jarFileInputStream = jarFile.getInputStream(jarEntry);
-            Manifest manifest = PluginFileUtils.getManifest(jarFileInputStream);
-            jarFileInputStream.close();
+            Manifest manifest = jarFile.getManifest();
             pluginResourcesConfig = getPluginResourcesConfig(jarFile, manifest);
             return manifest;
         }

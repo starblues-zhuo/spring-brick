@@ -17,7 +17,6 @@
 package com.gitee.starblues.core.launcher.plugin;
 
 import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
-import com.gitee.starblues.core.launcher.JavaMainResourcePatternDefiner;
 
 import java.util.HashSet;
 import java.util.Set;

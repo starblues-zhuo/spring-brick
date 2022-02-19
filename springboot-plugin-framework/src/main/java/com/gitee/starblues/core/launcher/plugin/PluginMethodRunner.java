@@ -17,12 +17,11 @@
 package com.gitee.starblues.core.launcher.plugin;
 
 import com.gitee.starblues.core.RuntimeMode;
-import com.gitee.starblues.core.launcher.MethodRunner;
+import com.gitee.starblues.loader.launcher.runner.MethodRunner;
 import com.gitee.starblues.utils.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**

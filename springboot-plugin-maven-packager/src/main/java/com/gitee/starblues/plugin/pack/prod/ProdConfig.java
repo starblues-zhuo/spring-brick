@@ -28,7 +28,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Data
 public class ProdConfig {
 
-
     /**
      * 打包类型。默认jar包
      */
@@ -36,7 +35,7 @@ public class ProdConfig {
     private String packageType = "jar";
 
     /**
-     * 文件名称。默认 pluginId-version.jar
+     * 文件名称。默认 pluginId-version-repackage
      */
     private String fileName;
 
@@ -44,16 +43,5 @@ public class ProdConfig {
      * 输出文件目录。默认target
      */
     private String outputDirectory;
-
-    /**
-     * 是否将依赖导入包中. 默认打入
-     */
-    @Parameter(required = true, defaultValue = "true")
-    private Boolean includeDependencies = true;
-
-    /**
-     * 生成环境依赖包的路径。默认 lib
-     */
-    private String libPath;
 
 }

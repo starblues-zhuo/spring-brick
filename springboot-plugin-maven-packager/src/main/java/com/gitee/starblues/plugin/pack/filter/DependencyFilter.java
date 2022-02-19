@@ -17,6 +17,7 @@
 package com.gitee.starblues.plugin.pack.filter;
 
 import com.gitee.starblues.plugin.pack.utils.CommonUtils;
+import com.gitee.starblues.utils.ObjectUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
@@ -40,7 +41,7 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 
     @Override
     public Set<Artifact> filter(Set<Artifact> artifacts) throws ArtifactFilterException {
-        if(CommonUtils.isEmpty(artifacts)){
+        if(ObjectUtils.isEmpty(artifacts)){
             return artifacts;
         }
         Set<Artifact> result = new HashSet<>();

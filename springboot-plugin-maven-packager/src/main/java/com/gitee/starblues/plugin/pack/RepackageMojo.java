@@ -16,10 +16,14 @@
 
 package com.gitee.starblues.plugin.pack;
 
+import com.gitee.starblues.common.PackageStructure;
 import com.gitee.starblues.plugin.pack.dev.DevConfig;
 import com.gitee.starblues.plugin.pack.dev.DevRepackager;
+import com.gitee.starblues.plugin.pack.main.MainConfig;
+import com.gitee.starblues.plugin.pack.main.MainRepackager;
 import com.gitee.starblues.plugin.pack.prod.ProdConfig;
 import com.gitee.starblues.plugin.pack.prod.ProdRepackager;
+import com.gitee.starblues.plugin.pack.utils.CommonUtils;
 import lombok.Getter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -45,14 +49,18 @@ public class RepackageMojo extends AbstractPackagerMojo {
     @Parameter(property = "springboot-plugin.prodConfig")
     private ProdConfig prodConfig;
 
+    @Parameter(property = "springboot-plugin.mainConfig")
+    private MainConfig mainConfig;
+
     @Override
     protected void pack() throws MojoExecutionException, MojoFailureException {
         String mode = getMode();
-
         if(Constant.MODE_PROD.equalsIgnoreCase(mode)){
             new ProdRepackager(this).repackage();
         } else if(Constant.MODE_DEV.equalsIgnoreCase(mode)){
             new DevRepackager(this).repackage();
+        } else if(Constant.MODE_MAIN.equalsIgnoreCase(mode)){
+            new MainRepackager(this).repackage();
         } else {
             throw new MojoExecutionException(mode  +" model not supported, mode support : "
                     + Constant.MODE_DEV + "/" + Constant.MODE_PROD);

@@ -58,6 +58,7 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
         includeResourcePatterns.add(FRAMEWORK);
         addWebIncludeResourcePatterns(includeResourcePatterns);
         addApiDoc(includeResourcePatterns);
+        addDbDriver(includeResourcePatterns);
 
         // 配置插件自定义从主程序加载的资源匹配
         Set<String> includeMainResourcePatterns = descriptor.getIncludeMainResourcePatterns();
@@ -91,8 +92,6 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
         return excludeResourcePatterns;
     }
 
-
-
     protected void addWebIncludeResourcePatterns(Set<String> patterns){
         patterns.add("org/springframework/web/**");
         patterns.add("org/springframework/http/**");
@@ -107,6 +106,10 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
         patterns.add("springfox/documentation/**");
         patterns.add("io/swagger/**");
         patterns.add("org/springdoc/**");
+    }
+
+    protected void addDbDriver(Set<String> patterns){
+        patterns.add("com/mysql/**");
     }
 
     /**
