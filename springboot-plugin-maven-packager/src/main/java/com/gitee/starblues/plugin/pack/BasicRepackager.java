@@ -54,7 +54,7 @@ public class BasicRepackager implements Repackager{
     private String relativeManifestPath;
     private String relativeResourcesDefinePath;
 
-    private File resourcesDefineFile;
+    protected File resourcesDefineFile;
 
     protected final RepackageMojo repackageMojo;
 
@@ -167,6 +167,10 @@ public class BasicRepackager implements Repackager{
         if(!ObjectUtils.isEmpty(configFileName)){
             attributes.putValue(PLUGIN_CONFIG_FILE_NAME, configFileName);
         }
+        String configFileLocation = pluginInfo.getConfigFileLocation();
+        if(!ObjectUtils.isEmpty(configFileLocation)){
+            attributes.putValue(PLUGIN_CONFIG_FILE_LOCATION, configFileLocation);
+        }
         String provider = pluginInfo.getProvider();
         if(!ObjectUtils.isEmpty(provider)){
             attributes.putValue(PLUGIN_PROVIDER, provider);
@@ -248,7 +252,7 @@ public class BasicRepackager implements Repackager{
     }
 
     protected String getLibIndex(Artifact artifact){
-        return artifact.getFile().getPath();
+        return artifact.getFile().getPath() + repackageMojo.resolveLoadToMain(artifact);
     }
 
     protected void writeLoadMainResources() throws Exception {
@@ -298,6 +302,7 @@ public class BasicRepackager implements Repackager{
     protected boolean filterArtifact(Artifact artifact){
         return Constant.scopeFilter(artifact.getScope());
     }
+
 
 
 }

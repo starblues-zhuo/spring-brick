@@ -1,3 +1,19 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.gitee.starblues.loader.archive;
 
 import java.io.File;
@@ -22,7 +38,7 @@ public class ExplodedArchive implements Archive {
 
     private final boolean recursive;
 
-    private File manifestFile;
+    private final File manifestFile;
 
     private Manifest manifest;
 
@@ -76,7 +92,6 @@ public class ExplodedArchive implements Archive {
     }
 
     @Override
-    @Deprecated
     public Iterator<Entry> iterator() {
         return new EntryIterator(this.root, this.recursive, null, null);
     }
@@ -106,7 +121,7 @@ public class ExplodedArchive implements Archive {
      */
     private abstract static class AbstractIterator<T> implements Iterator<T> {
 
-        private static final Comparator<File> entryComparator = Comparator.comparing(File::getAbsolutePath);
+        private static final Comparator<File> ENTRY_COMPARATOR = Comparator.comparing(File::getAbsolutePath);
 
         private final File root;
 
@@ -120,7 +135,7 @@ public class ExplodedArchive implements Archive {
 
         private FileEntry current;
 
-        private String rootUrl;
+        private final String rootUrl;
 
         AbstractIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
             this.root = root;
@@ -149,8 +164,12 @@ public class ExplodedArchive implements Archive {
 
         private FileEntry poll() {
             while (!this.stack.isEmpty()) {
-                while (this.stack.peek().hasNext()) {
-                    File file = this.stack.peek().next();
+                Iterator<File> peek = this.stack.peek();
+                if(peek == null){
+                    continue;
+                }
+                while (peek.hasNext()) {
+                    File file = peek.next();
                     if (SKIPPED_NAMES.contains(file.getName())) {
                         continue;
                     }
@@ -189,7 +208,7 @@ public class ExplodedArchive implements Archive {
             if (files == null) {
                 return Collections.emptyIterator();
             }
-            Arrays.sort(files, entryComparator);
+            Arrays.sort(files, ENTRY_COMPARATOR);
             return Arrays.asList(files).iterator();
         }
 

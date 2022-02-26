@@ -17,10 +17,10 @@
 package com.gitee.starblues.core.descriptor;
 
 
-import com.gitee.starblues.common.AbstractDependencyPlugin;
-import com.gitee.starblues.common.DependencyPlugin;
+import com.gitee.starblues.common.*;
 import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.utils.FilesUtils;
+import com.gitee.starblues.utils.ManifestUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -87,7 +87,7 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
         );
         PluginResourcesConfig pluginResourcesConfig = getPluginResourcesConfig(path, attributes);
 
-        descriptor.setPluginLibPath(pluginResourcesConfig.getDependenciesIndex());
+        descriptor.setPluginLibInfo(getPluginLibInfo(pluginResourcesConfig.getDependenciesIndex()));
         descriptor.setIncludeMainResourcePatterns(pluginResourcesConfig.getLoadMainResourceIncludes());
         descriptor.setExcludeMainResourcePatterns(pluginResourcesConfig.getLoadMainResourceExcludes());
 
@@ -98,9 +98,27 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
         descriptor.setProvider(getValue(attributes, PLUGIN_PROVIDER, false));
         descriptor.setLicense(getValue(attributes, PLUGIN_LICENSE, false));
         descriptor.setConfigFileName(getValue(attributes, PLUGIN_CONFIG_FILE_NAME, false));
+        descriptor.setConfigFileLocation(getValue(attributes, PLUGIN_CONFIG_FILE_LOCATION, false));
+
+        descriptor.setType(getPluginType(attributes));
 
         descriptor.setDependencyPlugins(getPluginDependency(attributes));
         return descriptor;
+    }
+
+    protected PluginType getPluginType(Attributes attributes){
+        String packageType = ManifestUtils.getValue(attributes, PluginDescriptorKey.PLUGIN_PACKAGE_TYPE, false);
+        if(Objects.equals(packageType, PackageType.PLUGIN_PACKAGE_TYPE_JAR)){
+            return PluginType.JAR;
+        } else if(Objects.equals(packageType, PackageType.PLUGIN_PACKAGE_TYPE_JAR_OUTER)){
+            return PluginType.JAR_OUTER;
+        } else if(Objects.equals(packageType, PackageType.PLUGIN_PACKAGE_TYPE_ZIP)){
+            return PluginType.ZIP;
+        } else if(Objects.equals(packageType, PackageType.PLUGIN_PACKAGE_TYPE_ZIP_OUTER)){
+            return PluginType.ZIP_OUTER;
+        } else {
+            return null;
+        }
     }
 
     protected List<DependencyPlugin> getPluginDependency(Attributes attributes){
@@ -130,6 +148,22 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
         } catch (IOException e) {
             throw new Exception("Load plugin lib index path failure. " + libIndex, e);
         }
+    }
+
+    protected Set<PluginLibInfo> getPluginLibInfo(Set<String> dependenciesIndex){
+        if(ObjectUtils.isEmpty(dependenciesIndex)){
+            return Collections.emptySet();
+        }
+        Set<PluginLibInfo> pluginLibInfos = new HashSet<>(dependenciesIndex.size());
+        for (String index : dependenciesIndex) {
+            if(index.endsWith(Constants.LOAD_TO_MAIN_SIGN)){
+                String path = index.substring(0, index.lastIndexOf(Constants.LOAD_TO_MAIN_SIGN));
+                pluginLibInfos.add(new PluginLibInfo(path, true));
+            } else {
+                pluginLibInfos.add(new PluginLibInfo(index, false));
+            }
+        }
+        return pluginLibInfos;
     }
 
     protected Manifest getManifest(InputStream inputStream) throws Exception{

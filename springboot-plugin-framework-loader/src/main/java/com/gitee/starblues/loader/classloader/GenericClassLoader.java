@@ -17,6 +17,11 @@
 package com.gitee.starblues.loader.classloader;
 
 
+import com.gitee.starblues.loader.classloader.resource.Resource;
+import com.gitee.starblues.loader.classloader.resource.loader.ResourceLoader;
+import com.gitee.starblues.loader.classloader.resource.loader.ResourceLoaderFactory;
+import com.gitee.starblues.loader.classloader.resource.loader.ResourceLoaderGetter;
+import com.gitee.starblues.loader.utils.Assert;
 import com.gitee.starblues.loader.utils.IOUtils;
 import com.gitee.starblues.loader.utils.ObjectUtils;
 
@@ -44,26 +49,16 @@ public class GenericClassLoader extends URLClassLoader {
 
     private final Map<String, Class<?>> pluginClassCache = new ConcurrentHashMap<>();
 
-    public GenericClassLoader(String name) {
-        this(name, null);
+    public GenericClassLoader(String name, ResourceLoaderFactory resourceLoaderFactory) {
+        this(name, null, resourceLoaderFactory);
     }
 
-    public GenericClassLoader(String name, ClassLoader parent) {
-        this(name, parent, null);
-    }
-
-    public GenericClassLoader(String name, ClassLoader parent, ResourceLoaderFactory loaderFactory) {
+    public GenericClassLoader(String name, ClassLoader parent, ResourceLoaderFactory resourceLoaderFactory) {
         super(new URL[]{}, null);
-        if(ObjectUtils.isEmpty(name)){
-            throw new IllegalArgumentException("参数 name 不能为空");
-        }
-        this.name = name;
+        this.name = Assert.isNotEmpty(name, "name 不能为空");
+        this.resourceLoaderFactory = Assert.isNotNull(resourceLoaderFactory, "resourceLoaderFactory 不能为空");
         this.parent = parent;
-        if(loaderFactory == null){
-            resourceLoaderFactory = new ResourceLoaderFactory();
-        } else {
-            resourceLoaderFactory = loaderFactory;
-        }
+
     }
 
     public String getName() {
@@ -87,8 +82,12 @@ public class GenericClassLoader extends URLClassLoader {
         resourceLoaderFactory.addResource(url);
     }
 
-    public ResourceLoaderFactory getResourceLoaderFactory(){
-        return resourceLoaderFactory;
+    public void addResource(ResourceLoader resourceLoader) throws Exception{
+        resourceLoaderFactory.addResource(resourceLoader);
+    }
+
+    public ClassLoader getParentClassLoader(){
+        return parent;
     }
 
     @Override
@@ -127,37 +126,35 @@ public class GenericClassLoader extends URLClassLoader {
     }
 
     protected Class<?> findClassFromLocal(String name) {
-        synchronized (pluginClassCache){
-            Class<?> aClass;
-            String formatClassName = formatClassName(name);
-            aClass = pluginClassCache.get(formatClassName);
-            if (aClass != null) {
-                return aClass;
-            }
-            Resource resource = resourceLoaderFactory.findResource(formatClassName);
-            byte[] bytes = null;
-            if(resource != null){
-                bytes = resource.getBytes();
-            }
-            if(bytes == null || bytes.length == 0){
-                bytes = getClassByte(formatClassName);
-            }
-            if(bytes == null || bytes.length == 0){
-                return null;
-            }
-            aClass = defineClass(name, bytes, 0, bytes.length );
-            if(aClass == null) {
-                return null;
-            }
-            if (aClass.getPackage() == null) {
-                int lastDotIndex = name.lastIndexOf( '.' );
-                String packageName = (lastDotIndex >= 0) ? name.substring( 0, lastDotIndex) : "";
-                definePackage(packageName, null, null, null,
-                        null, null, null, null );
-            }
-            pluginClassCache.put(name, aClass);
+        Class<?> aClass;
+        String formatClassName = formatClassName(name);
+        aClass = pluginClassCache.get(formatClassName);
+        if (aClass != null) {
             return aClass;
         }
+        Resource resource = resourceLoaderFactory.findResource(formatClassName);
+        byte[] bytes = null;
+        if(resource != null){
+            bytes = resource.getBytes();
+        }
+        if(bytes == null || bytes.length == 0){
+            bytes = getClassByte(formatClassName);
+        }
+        if(bytes == null || bytes.length == 0){
+            return null;
+        }
+        aClass = defineClass(name, bytes, 0, bytes.length );
+        if(aClass == null) {
+            return null;
+        }
+        if (aClass.getPackage() == null) {
+            int lastDotIndex = name.lastIndexOf( '.' );
+            String packageName = (lastDotIndex >= 0) ? name.substring( 0, lastDotIndex) : "";
+            definePackage(packageName, null, null, null,
+                    null, null, null, null );
+        }
+        pluginClassCache.put(name, aClass);
+        return aClass;
     }
 
     private byte[] getClassByte(String formatClassName){
@@ -165,25 +162,13 @@ public class GenericClassLoader extends URLClassLoader {
         if(inputStream == null){
             return null;
         }
-        ByteArrayOutputStream byteArrayOutputStream = null;
-        byte[] bytes = null;
         try {
-            if(inputStream instanceof ByteArrayInputStream){
-                bytes = IOUtils.read(inputStream);
-            } else {
-                byteArrayOutputStream = new ByteArrayOutputStream();
-                IOUtils.copy(inputStream, byteArrayOutputStream);
-                bytes = byteArrayOutputStream.toByteArray();
-            }
-            return bytes;
+            return IOUtils.read(inputStream);
         } catch (Exception e){
             e.printStackTrace();
             return null;
         } finally {
             IOUtils.closeQuietly(inputStream);
-            if(byteArrayOutputStream != null){
-                IOUtils.closeQuietly(byteArrayOutputStream);
-            }
         }
     }
 
@@ -319,7 +304,7 @@ public class GenericClassLoader extends URLClassLoader {
     public void close() throws IOException {
         synchronized (pluginClassCache){
             pluginClassCache.clear();
-            resourceLoaderFactory.clear();
+            IOUtils.closeQuietly(resourceLoaderFactory);
         }
     }
 

@@ -19,6 +19,8 @@ package com.gitee.starblues.core;
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.utils.Assert;
 
+import java.util.Date;
+
 /**
  * 外部 PluginWrapperFace
  * @author starBlues
@@ -30,11 +32,16 @@ public class PluginInfoFace implements PluginInfo {
     private final PluginState pluginState;
     private final boolean followSystem;
 
+    private final Date startTime;
+    private final Date stopTime;
+
     public PluginInfoFace(PluginInsideInfo pluginInsideInfo) {
         Assert.isNotNull(pluginInsideInfo, "参数 pluginWrapperInside 不能为空");
         this.pluginDescriptor = pluginInsideInfo.getPluginDescriptor().toPluginDescriptor();
         this.pluginState = pluginInsideInfo.getPluginState();
         this.followSystem = pluginInsideInfo.isFollowSystem();
+        this.startTime = pluginInsideInfo.startTime();
+        this.stopTime = pluginInsideInfo.stopTime();
     }
 
     @Override
@@ -55,6 +62,16 @@ public class PluginInfoFace implements PluginInfo {
     @Override
     public PluginState getPluginState() {
         return pluginState;
+    }
+
+    @Override
+    public Date startTime() {
+        return startTime;
+    }
+
+    @Override
+    public Date stopTime() {
+        return stopTime;
     }
 
     @Override

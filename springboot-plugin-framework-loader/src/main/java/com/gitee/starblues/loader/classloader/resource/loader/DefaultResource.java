@@ -14,63 +14,57 @@
  * limitations under the License.
  */
 
-package com.gitee.starblues.loader.classloader;
+package com.gitee.starblues.loader.classloader.resource.loader;
+
+import com.gitee.starblues.loader.classloader.resource.Resource;
+import com.gitee.starblues.loader.classloader.resource.ResourceByteGetter;
 
 import java.net.URL;
-import java.nio.file.Paths;
 
 /**
- * 资源信息
+ * 默认的资源信息
  * @author starBlues
  * @version 3.0.0
  */
-public class Resource {
-
-    public static final String PACKAGE_SPLIT = "/";
+public class DefaultResource implements Resource {
 
     private final String name;
     private final URL baseUrl;
     private final URL url;
 
-    private byte[] bytes;
-
-    public Resource(String name, URL baseUrl, URL url) {
+    public DefaultResource(String name, URL baseUrl, URL url) {
         this.name = name;
         this.baseUrl = baseUrl;
         this.url = url;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public URL getBaseUrl() {
         return baseUrl;
     }
 
+    @Override
     public URL getUrl() {
         return url;
     }
 
+    @Override
     public byte[] getBytes() {
-        return bytes;
+        return null;
     }
 
-    public void setBytes(byte[] bytes) {
-        this.bytes = bytes;
+    @Override
+    public void setBytes(ResourceByteGetter byteGetter) throws Exception{
+        // 忽略
     }
 
-    void tryCloseUrlSystemFile(){
-        try {
-            Paths.get(baseUrl.toURI()).getFileSystem().close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            Paths.get(url.toURI()).getFileSystem().close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    @Override
+    public void close() throws Exception {
 
+    }
 }

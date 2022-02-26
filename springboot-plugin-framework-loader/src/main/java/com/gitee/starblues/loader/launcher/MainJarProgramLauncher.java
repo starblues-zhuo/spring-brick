@@ -20,8 +20,8 @@ import com.gitee.starblues.loader.archive.Archive;
 import com.gitee.starblues.loader.archive.ExplodedArchive;
 import com.gitee.starblues.loader.archive.JarFileArchive;
 import com.gitee.starblues.loader.classloader.GenericClassLoader;
-import com.gitee.starblues.loader.classloader.JarResourceLoader;
-import com.gitee.starblues.loader.classloader.ResourceLoaderFactory;
+import com.gitee.starblues.loader.classloader.resource.loader.JarResourceLoader;
+import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
 import com.gitee.starblues.loader.launcher.runner.MethodRunner;
 
 import java.io.File;
@@ -78,21 +78,19 @@ public class MainJarProgramLauncher extends MainProgramLauncher{
             Archive archive = archives.next();
             URL url = archive.getUrl();
             String path = url.getPath();
-            ResourceLoaderFactory resourceLoaderFactory = classLoader.getResourceLoaderFactory();
+            ResourceStorage resourceStorage = ResourceLoaderFactoryGetter.getMainResourceStorage();
             if(path.contains(PROD_CLASSES_URL_SIGN)){
-                MainJarResourceLoader jarResourceLoader = new MainJarResourceLoader(url);
-                resourceLoaderFactory.addResource(jarResourceLoader);
+                classLoader.addResource(new MainJarResourceLoader(url, resourceStorage));
             } else {
-                JarResourceLoader jarResourceLoader = new JarResourceLoader(url);
-                resourceLoaderFactory.addResource(jarResourceLoader);
+                classLoader.addResource(new JarResourceLoader(url, resourceStorage));
             }
         }
     }
 
     private static class MainJarResourceLoader extends JarResourceLoader {
 
-        public MainJarResourceLoader(URL url) throws Exception {
-            super(url);
+        public MainJarResourceLoader(URL url, ResourceStorage resourceStorage) throws Exception {
+            super(url, resourceStorage);
         }
 
         @Override

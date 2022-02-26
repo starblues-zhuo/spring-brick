@@ -33,12 +33,19 @@ public interface InsidePluginDescriptor extends PluginDescriptor{
      */
     Manifest getManifest();
 
-
     /**
-     * 获取插件配置文件名称
+     * 获取插件配置文件名称。
+     * 和 getConfigFileLocation 配置二选一, 如果都有值则默认使用 getConfigFileName
      * @return String
      */
     String getConfigFileName();
+
+    /**
+     * 获取插件配置文件路径。
+     * 和 getConfigFileName 配置二选一, 如果都有值则默认使用 getConfigFileName
+     * @return String
+     */
+    String getConfigFileLocation();
 
     /**
      * 得到内部的插件路径
@@ -63,7 +70,7 @@ public interface InsidePluginDescriptor extends PluginDescriptor{
      * 获取插件依赖的路径
      * @return String
      */
-    Set<String> getPluginLibPaths();
+    Set<PluginLibInfo> getPluginLibInfo();
 
     /**
      * 设置当前插件包含主程序加载资源的匹配

@@ -38,6 +38,7 @@ class ConfigurePluginEnvironment {
     private final static String PLUGIN_PROPERTY_NAME = "pluginPropertySources";
 
     private final static String SPRING_CONFIG_NAME = "spring.config.name";
+    private final static String SPRING_CONFIG_LOCATION = "spring.config.location";
 
     private final static String SPRING_JMX_UNIQUE_NAMES = "spring.jmx.unique-names";
     private final static String SPRING_ADMIN_JMX_NAME = "spring.application.admin.jmx-name";
@@ -61,6 +62,10 @@ class ConfigurePluginEnvironment {
         String configFileName = pluginDescriptor.getConfigFileName();
         if(!ObjectUtils.isEmpty(configFileName)){
             env.put(SPRING_CONFIG_NAME, PluginFileUtils.getFileName(configFileName));
+        }
+        String configFileLocation = pluginDescriptor.getConfigFileLocation();
+        if(!ObjectUtils.isEmpty(configFileLocation)){
+            env.put(SPRING_CONFIG_LOCATION, configFileLocation);
         }
         env.put(AutoIntegrationConfiguration.ENABLE_STARTER_KEY, false);
         env.put(SPRING_JMX_UNIQUE_NAMES, true);

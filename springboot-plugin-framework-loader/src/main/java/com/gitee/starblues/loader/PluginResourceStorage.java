@@ -36,40 +36,61 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PluginResourceStorage {
 
-    public final static Map<String, Storage> STORAGES = new ConcurrentHashMap<>();
+    public final static Map<String, Storage> STORAGE_MAP = new ConcurrentHashMap<>();
 
-
+    /**
+     * 添加插件资源
+     * @param pluginId 插件id
+     * @param pluginFileName 插件文件名称
+     */
     public static void addPlugin(String pluginId, String pluginFileName){
-        if(STORAGES.containsKey(pluginId)){
+        if(STORAGE_MAP.containsKey(pluginId)){
             return;
         }
-        STORAGES.put(pluginId, new Storage(pluginFileName));
+        STORAGE_MAP.put(pluginId, new Storage(pluginFileName));
     }
 
-
+    /**
+     * 移除插件
+     * @param pluginId 插件
+     */
     public static void removePlugin(String pluginId){
-        Storage storage = STORAGES.get(pluginId);
+        Storage storage = STORAGE_MAP.get(pluginId);
         if(storage == null){
             return;
         }
         IOUtils.closeQuietly(storage);
-        STORAGES.remove(pluginId);
+        STORAGE_MAP.remove(pluginId);
     }
 
+    /**
+     * 添加插件jar文件
+     * @param jarFile jar插件文件
+     */
     public static void addJarFile(AbstractJarFile jarFile){
-        STORAGES.forEach((k,v)->{
+        STORAGE_MAP.forEach((k,v)->{
             v.addJarFile(jarFile.getName(), jarFile);
         });
     }
 
+    /**
+     * 添加插件根的jar文件
+     * @param file 插件文件
+     * @param jarFile 插件jar文件
+     */
     public static void addRootJarFile(File file, JarFile jarFile){
-        STORAGES.forEach((k,v)->{
+        STORAGE_MAP.forEach((k,v)->{
             v.addRootJarFile(file, jarFile);
         });
     }
 
+    /**
+     * 通过插件文件获取插件jar文件
+     * @param file 插件文件
+     * @return 插件jar文件
+     */
     public static JarFile getRootJarFile(File file){
-        for (Storage value : STORAGES.values()) {
+        for (Storage value : STORAGE_MAP.values()) {
             JarFile jarFile = value.getRootJarFile(file);
             if(jarFile != null){
                 return jarFile;

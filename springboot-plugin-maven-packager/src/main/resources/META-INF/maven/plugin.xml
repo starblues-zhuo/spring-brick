@@ -125,6 +125,14 @@
                     <editable>true</editable>
                     <description>main打包模式配置</description>
                 </parameter>
+                <parameter>
+                    <name>loadToMain</name>
+                    <type>com.gitee.starblues.plugin.pack.LoadToMain</type>
+                    <since>3.0.0</since>
+                    <required>false</required>
+                    <editable>true</editable>
+                    <description>加载到主程序的依赖</description>
+                </parameter>
             </parameters>
             <configuration>
                 <project implementation="org.apache.maven.project.MavenProject" default-value="${project}"/>
@@ -138,6 +146,7 @@
                 <devConfig implementation="com.gitee.starblues.plugin.pack.dev.DevConfig" />
                 <prodConfig implementation="com.gitee.starblues.plugin.pack.prod.ProdConfig" />
                 <mainConfig implementation="com.gitee.starblues.plugin.pack.main.MainConfig" />
+                <loadToMain implementation="com.gitee.starblues.plugin.pack.LoadToMain" />
             </configuration>
             <requirements>
                 <requirement>

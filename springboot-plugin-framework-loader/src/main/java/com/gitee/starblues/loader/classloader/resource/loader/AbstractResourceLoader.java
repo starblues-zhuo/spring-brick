@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.gitee.starblues.loader.classloader;
+package com.gitee.starblues.loader.classloader.resource.loader;
 
 
+import com.gitee.starblues.loader.classloader.resource.Resource;
+import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
 import com.gitee.starblues.loader.utils.IOUtils;
 
 import java.io.*;
@@ -25,48 +27,47 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 抽象的资源加载者
  * @author starBlues
  * @version 3.0.0
  */
-public abstract class AbstractResourceLoader {
+public abstract class AbstractResourceLoader implements ResourceLoader{
 
     private static final String CLASS_FILE_EXTENSION = ".class";
 
-    private boolean isInit = false;
+    private boolean loaded = false;
 
     protected final URL baseUrl;
-    private final Map<String, Resource> resourceCache = new ConcurrentHashMap<>();
 
-    protected AbstractResourceLoader(URL baseUrl) {
+    protected final ResourceStorage resourceStorage;
+
+    protected AbstractResourceLoader(URL baseUrl, ResourceStorage resourceStorage) {
         this.baseUrl = baseUrl;
+        this.resourceStorage = resourceStorage;
     }
 
-    protected void addResource(String name, Resource resource) {
-        if(resourceCache.containsKey(name)){
-            return;
-        }
-        resourceCache.put(name, resource);
+    @Override
+    public URL getBaseUrl() {
+        return baseUrl;
     }
 
     /**
      * 初始化 resource
      * @throws Exception 初始异常
      */
-    public final synchronized void init() throws Exception{
-        if(isInit){
+    @Override
+    public final synchronized void load() throws Exception{
+        if(loaded){
             throw new Exception(this.getClass().getName()+": 已经初始化了, 不能再初始化!");
         }
         try {
             // 添加root 路径
-            Resource rootResource = new Resource("root", baseUrl, baseUrl);
-            resourceCache.put("/", rootResource);
-            initOfChild();
+            resourceStorage.add("/", baseUrl, baseUrl);
+            loadOfChild();
         } finally {
-            isInit = true;
+            loaded = true;
         }
     }
 
@@ -74,24 +75,20 @@ public abstract class AbstractResourceLoader {
      * 子类初始化实现
      * @throws Exception 初始异常
      */
-    protected void initOfChild() throws Exception{};
+    protected void loadOfChild() throws Exception{};
 
-
-    protected boolean existResource(String name){
-        return resourceCache.containsKey(name);
-    }
-
+    @Override
     public Resource findResource(final String name) {
-        return resourceCache.get(name);
+        return resourceStorage.get(name);
     }
 
+    @Override
     public InputStream getInputStream(final String name) {
-        Resource resourceInfo = resourceCache.get(name);
+        Resource resourceInfo = resourceStorage.get(name);
         if (resourceInfo != null) {
             try (InputStream inputStream = resourceInfo.getUrl().openStream();
                  ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()){
                 IOUtils.copy(inputStream, byteArrayOutputStream);
-
                 return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
             } catch (Exception e){
                 e.printStackTrace();
@@ -102,12 +99,9 @@ public abstract class AbstractResourceLoader {
         }
     }
 
+    @Override
     public List<Resource> getResources(){
-        return new ArrayList<>(resourceCache.values());
-    }
-
-    public void clear() {
-        resourceCache.clear();
+        return resourceStorage.getAll();
     }
 
     protected byte[] getClassBytes(String path, InputStream inputStream, boolean isClose) throws Exception{
@@ -124,6 +118,11 @@ public abstract class AbstractResourceLoader {
             }
             IOUtils.closeQuietly(byteArrayOutputStream);
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        resourceStorage.close();
     }
 
     private static boolean isClass(String path){

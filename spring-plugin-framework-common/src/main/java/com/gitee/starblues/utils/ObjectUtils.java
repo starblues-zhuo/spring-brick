@@ -22,6 +22,7 @@ import java.util.*;
 
 /**
  * Object 工具类
+ *
  * @author starBlues
  * @version 3.0.0
  */
@@ -41,11 +42,22 @@ public class ObjectUtils {
 
     private ObjectUtils(){}
 
-
-    public static boolean isEmpty(CharSequence cs) {
-        return cs == null || cs.length() == 0;
+    /**
+     * 字符串是否为空
+     *
+     * @param charSequence 字符串
+     * @return true 为空, false 不为空
+     */
+    public static boolean isEmpty(CharSequence charSequence) {
+        return charSequence == null || charSequence.length() == 0;
     }
 
+    /**
+     * 对象是否为空
+     *
+     * @param obj 对象
+     * @return true 为空, false 不为空
+     */
     public static boolean isEmpty(Object obj) {
         if (obj == null) {
             return true;
@@ -69,10 +81,22 @@ public class ObjectUtils {
         return false;
     }
 
+    /**
+     * 是否存在字符
+     *
+     * @param str str
+     * @return true 存在, false 不存在
+     */
     public static boolean hasText(CharSequence str) {
         return (str != null && str.length() > 0 && containsText(str));
     }
 
+    /**
+     * 设置数组字符的空格
+     *
+     * @param array array
+     * @return result array
+     */
     public static String[] trimArrayElements(String[] array) {
         if (isEmpty(array)) {
             return array;
@@ -87,14 +111,35 @@ public class ObjectUtils {
     }
 
 
+    /**
+     * 将逗号分割的字符串转换为字符转租
+     *
+     * @param str 逗号分割的字符
+     * @return 字符数组
+     */
     public static String[] commaDelimitedListToStringArray(String str) {
         return delimitedListToStringArray(str, ",");
     }
 
+    /**
+     * 自定义符号分割的字符串转换为字符转租
+     *
+     * @param str 待处理字符串
+     * @param delimiter 分割符号
+     * @return 字符数组
+     */
     public static String[] delimitedListToStringArray(String str, String delimiter) {
         return delimitedListToStringArray(str, delimiter, null);
     }
 
+    /**
+     * 自定义符号分割的字符串转换为字符转租
+     *
+     * @param str 待处理字符串
+     * @param delimiter 分割符号
+     * @param charsToDelete 要删除的字符
+     * @return 字符数组
+     */
     public static String[] delimitedListToStringArray(
             String str, String delimiter, String charsToDelete) {
 
@@ -126,11 +171,23 @@ public class ObjectUtils {
         return toStringArray(result);
     }
 
+    /**
+     * 将集合字符串转换为数组字符串
+     *
+     * @param collection 集合
+     * @return 数字字符串
+     */
     public static String[] toStringArray(Collection<String> collection) {
         return (!isEmpty(collection) ? collection.toArray(EMPTY_STRING_ARRAY) : EMPTY_STRING_ARRAY);
     }
 
-
+    /**
+     * 从字符串中删除某个字符字符
+     *
+     * @param inString 待处理字符串
+     * @param charsToDelete 要删除的字符
+     * @return 处理后的字符串
+     */
     public static String deleteAny(String inString, String charsToDelete) {
         if (!hasLength(inString) || !hasLength(charsToDelete)) {
             return inString;
@@ -150,14 +207,33 @@ public class ObjectUtils {
         return new String(result, 0, lastCharIndex);
     }
 
+    /**
+     * 字符串是否存在长度
+     *
+     * @param str 字符串
+     * @return true 存在长度, false 不存在长度
+     */
     public static boolean hasLength(String str) {
         return (str != null && !str.isEmpty());
     }
 
+    /**
+     * 将集合字转换为逗号分割的字符串
+     *
+     * @param coll 集合
+     * @return 字符串
+     */
     public static String collectionToCommaDelimitedString(Collection<?> coll) {
         return collectionToDelimitedString(coll, ",");
     }
 
+    /**
+     * 将集合字转换为逗号分割的字符串
+     *
+     * @param coll  集合
+     * @param delim 分割符号
+     * @return 字符串
+     */
     public static String collectionToDelimitedString(Collection<?> coll, String delim) {
         return collectionToDelimitedString(coll, delim, "", "");
     }

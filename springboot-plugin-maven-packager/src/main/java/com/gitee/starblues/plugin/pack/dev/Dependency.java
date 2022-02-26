@@ -20,8 +20,9 @@ import lombok.Data;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
+ * 开发环境下配置本地依赖的Bean
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 @Data
 public class Dependency {

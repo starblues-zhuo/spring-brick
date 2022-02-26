@@ -17,13 +17,20 @@
 package com.gitee.starblues.core.classloader;
 
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
+import com.gitee.starblues.core.descriptor.PluginLibInfo;
+import com.gitee.starblues.core.descriptor.PluginType;
 import com.gitee.starblues.loader.classloader.*;
+import com.gitee.starblues.loader.classloader.resource.loader.ResourceLoaderFactory;
 import com.gitee.starblues.utils.Assert;
+import com.gitee.starblues.utils.FilesUtils;
+import com.gitee.starblues.utils.ObjectUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Set;
 
 /**
  * 插件 classLoader
@@ -32,18 +39,13 @@ import java.util.Enumeration;
  */
 public class PluginClassLoader extends GenericClassLoader {
 
+    private final GenericClassLoader parentClassLoader;
     private MainResourceMatcher mainResourceMatcher;
 
-    public PluginClassLoader(String name) {
-        this(name, null);
-    }
-
-    public PluginClassLoader(String name, ClassLoader parentClassLoader) {
-        this(name, parentClassLoader, null);
-    }
-
-    public PluginClassLoader(String name, ClassLoader parentClassLoader, MainResourcePatternDefiner patternDefiner) {
-        super(name, parentClassLoader, new PluginResourceLoaderFactory());
+    public PluginClassLoader(String name, GenericClassLoader parentClassLoader, MainResourcePatternDefiner patternDefiner,
+                             ResourceLoaderFactory resourceLoaderFactory) {
+        super(name, parentClassLoader, resourceLoaderFactory);
+        this.parentClassLoader = parentClassLoader;
         if(patternDefiner != null){
             setMainResourceMatcher(new CacheMainResourceMatcher(patternDefiner));
         } else {
@@ -51,12 +53,46 @@ public class PluginClassLoader extends GenericClassLoader {
         }
     }
 
-    public void addResource(InsidePluginDescriptor pluginDescriptor) throws Exception {
-        ((PluginResourceLoaderFactory) resourceLoaderFactory).addResource(pluginDescriptor);
-    }
-
     public void setMainResourceMatcher(MainResourceMatcher mainResourceMatcher){
         this.mainResourceMatcher = Assert.isNotNull(mainResourceMatcher, "参数 mainResourceMatcher 不能为空");
+    }
+
+    public void addResource(InsidePluginDescriptor descriptor) throws Exception {
+        PluginType pluginType = descriptor.getType();
+        if(pluginType == PluginType.JAR || pluginType == PluginType.ZIP){
+            NestedPluginJarResourceLoader resourceLoader =
+                    new NestedPluginJarResourceLoader(descriptor, parentClassLoader);
+            resourceLoaderFactory.addResource(resourceLoader);
+        } else {
+            addClasspath(descriptor);
+            addLibFile(descriptor);
+        }
+    }
+
+    private void addClasspath(InsidePluginDescriptor pluginDescriptor) throws Exception {
+        String pluginClassPath = pluginDescriptor.getPluginClassPath();
+        File existFile = FilesUtils.getExistFile(pluginClassPath);
+        if(existFile != null){
+            addResource(existFile);
+        }
+    }
+
+    private void addLibFile(InsidePluginDescriptor pluginDescriptor) throws Exception {
+        Set<PluginLibInfo> pluginLibInfos = pluginDescriptor.getPluginLibInfo();
+        if(ObjectUtils.isEmpty(pluginLibInfos)){
+            return;
+        }
+        for (PluginLibInfo pluginLibInfo : pluginLibInfos) {
+            File existFile = FilesUtils.getExistFile(pluginLibInfo.getPath());
+            if(existFile != null){
+                if(pluginLibInfo.isLoadToMain()){
+                    // 加载到主程序中
+                    parentClassLoader.addResource(existFile);
+                } else {
+                    addResource(existFile);
+                }
+            }
+        }
     }
 
 

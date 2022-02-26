@@ -18,6 +18,7 @@ package com.gitee.starblues.utils;
 
 /**
  * 比较两个类类型
+ *
  * @author starBlues
  * @version 3.0.0
  */

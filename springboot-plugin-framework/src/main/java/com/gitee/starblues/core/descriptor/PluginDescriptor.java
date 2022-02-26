@@ -17,7 +17,6 @@
 package com.gitee.starblues.core.descriptor;
 
 import com.gitee.starblues.common.DependencyPlugin;
-import com.gitee.starblues.core.descriptor.PluginType;
 
 import java.util.List;
 

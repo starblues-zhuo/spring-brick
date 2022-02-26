@@ -30,6 +30,12 @@ public class ProdConfig {
 
     /**
      * 打包类型。默认jar包
+     *
+     * {@link com.gitee.starblues.common.PackageType#PLUGIN_PACKAGE_TYPE_JAR}
+     * {@link com.gitee.starblues.common.PackageType#PLUGIN_PACKAGE_TYPE_JAR_OUTER}
+     * {@link com.gitee.starblues.common.PackageType#PLUGIN_PACKAGE_TYPE_ZIP}
+     * {@link com.gitee.starblues.common.PackageType#PLUGIN_PACKAGE_TYPE_ZIP_OUTER}
+     * {@link com.gitee.starblues.common.PackageType#PLUGIN_PACKAGE_TYPE_DIR}
      */
     @Parameter(required = true, defaultValue = "jar")
     private String packageType = "jar";

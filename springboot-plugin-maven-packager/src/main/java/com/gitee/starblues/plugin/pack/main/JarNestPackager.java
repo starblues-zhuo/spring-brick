@@ -16,14 +16,12 @@
 
 package com.gitee.starblues.plugin.pack.main;
 
-import com.gitee.starblues.common.Constants;
-import com.gitee.starblues.common.PluginDescriptorKey;
 import com.gitee.starblues.plugin.pack.Constant;
 import com.gitee.starblues.plugin.pack.RepackageMojo;
 import com.gitee.starblues.plugin.pack.Repackager;
 import com.gitee.starblues.plugin.pack.utils.CommonUtils;
 import com.gitee.starblues.plugin.pack.utils.PackageJar;
-import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import com.gitee.starblues.utils.ObjectUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -47,7 +45,7 @@ public class JarNestPackager implements Repackager {
     protected final MainConfig mainConfig;
     protected final RepackageMojo repackageMojo;
 
-    private PackageJar packageJar;
+    protected PackageJar packageJar;
 
     public JarNestPackager(MainRepackager mainRepackager) {
         this.mainConfig = mainRepackager.getMainConfig();

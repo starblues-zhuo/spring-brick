@@ -1,3 +1,19 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.gitee.starblues.loader.archive;
 
 import java.io.IOException;
@@ -35,48 +51,22 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
      * @param includeFilter filter used to determine which entries should be included in
      * the result or {@code null} if all entries should be included
      * @return the nested archives
-     * @throws IOException on IO error
+     * @throws IOException io exception
      * @since 2.3.0
      */
-    default Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter)
-            throws IOException {
-        EntryFilter combinedFilter = (entry) -> (searchFilter == null || searchFilter.matches(entry))
-                && (includeFilter == null || includeFilter.matches(entry));
-        List<Archive> nestedArchives = getNestedArchives(combinedFilter);
-        return nestedArchives.iterator();
-    }
-
-    /**
-     * Returns nested {@link Archive}s for entries that match the specified filter.
-     * @param filter the filter used to limit entries
-     * @return nested archives
-     * @throws IOException if nested archives cannot be read
-     * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
-     * {@link #getNestedArchives(EntryFilter, EntryFilter)}
-     */
-    @Deprecated
-    default List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
-        throw new IllegalStateException("Unexpected call to getNestedArchives(filter)");
-    }
+    Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter) throws IOException;
 
     /**
      * Return a new iterator for the archive entries.
-     * @see java.lang.Iterable#iterator()
-     * @deprecated since 2.3.0 for removal in 2.5.0 in favor of using
-     * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
-     * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
+     * @return {@link Iterable}
      */
-    @Deprecated
     @Override
     Iterator<Entry> iterator();
 
     /**
      * Performs the given action for each element of the {@code Iterable} until all
      * elements have been processed or the action throws an exception.
-     * @see Iterable#forEach
-     * @deprecated since 2.3.0 for removal in 2.5.0 in favor of using
-     * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
-     * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
+     * @param action consumer entry
      */
     @Override
     default void forEach(Consumer<? super Entry> action) {
@@ -89,9 +79,7 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
     /**
      * Creates a {@link Spliterator} over the elements described by this {@code Iterable}.
      * @see Iterable#spliterator
-     * @deprecated since 2.3.0 for removal in 2.5.0 in favor of using
-     * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
-     * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
+     * @return {@link Spliterator}
      */
     @Override
     default Spliterator<Entry> spliterator() {

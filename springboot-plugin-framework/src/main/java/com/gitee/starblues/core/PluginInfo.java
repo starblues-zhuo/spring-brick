@@ -18,6 +18,8 @@ package com.gitee.starblues.core;
 
 import com.gitee.starblues.core.descriptor.PluginDescriptor;
 
+import java.util.Date;
+
 /**
  * 插件信息
  * @author starBlues
@@ -48,6 +50,19 @@ public interface PluginInfo {
      * @return PluginState
      */
     PluginState getPluginState();
+
+    /**
+     * 启动时间. 只有启动状态 {@link PluginState#STARTED} 才有值。
+     * @return Date
+     */
+    Date startTime();
+
+    /**
+     * 停止时间. 只有停止状态 {@link PluginState#STOPPED} 才有值。
+     * @return Date
+     */
+    Date stopTime();
+
 
     /**
      * 是否跟随系统启动而加载的插件

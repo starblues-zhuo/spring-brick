@@ -17,6 +17,7 @@
 package com.gitee.starblues.loader.launcher;
 
 import com.gitee.starblues.loader.classloader.GenericClassLoader;
+import com.gitee.starblues.loader.classloader.resource.loader.ResourceLoaderFactory;
 import com.gitee.starblues.loader.launcher.runner.MethodRunner;
 import com.gitee.starblues.loader.utils.ObjectUtils;
 
@@ -32,7 +33,7 @@ import java.net.URLClassLoader;
  */
 public class MainProgramLauncher extends AbstractLauncher<ClassLoader>{
 
-    private static final String MAIN_CLASS_LOADER_NAME = "MainProgramLauncherClassLoader";
+    public static final String MAIN_CLASS_LOADER_NAME = "MainProgramLauncherClassLoader";
 
     private final MethodRunner methodRunner;
 
@@ -41,8 +42,9 @@ public class MainProgramLauncher extends AbstractLauncher<ClassLoader>{
     }
 
     @Override
-    protected ClassLoader createClassLoader() throws Exception {
-        GenericClassLoader classLoader = new GenericClassLoader(MAIN_CLASS_LOADER_NAME, getParentClassLoader());
+    protected ClassLoader createClassLoader(String... args) throws Exception {
+        GenericClassLoader classLoader = new GenericClassLoader(MAIN_CLASS_LOADER_NAME, getParentClassLoader(),
+                getResourceLoaderFactory());
         addResource(classLoader);
         return classLoader;
     }
@@ -51,6 +53,10 @@ public class MainProgramLauncher extends AbstractLauncher<ClassLoader>{
     protected ClassLoader launch(ClassLoader classLoader, String... args) throws Exception {
         methodRunner.run(classLoader);
         return classLoader;
+    }
+
+    protected ResourceLoaderFactory getResourceLoaderFactory(String... args){
+        return ResourceLoaderFactoryGetter.create(MAIN_CLASS_LOADER_NAME, args);
     }
 
     protected ClassLoader getParentClassLoader(){

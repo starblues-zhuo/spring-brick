@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package com.gitee.starblues.loader.classloader;
+package com.gitee.starblues.plugin.pack;
 
-import java.net.URL;
-import java.net.URLClassLoader;
+import lombok.Data;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * 插件 ClassLoader
+ * 依赖Bean
  * @author starBlues
  * @version 3.0.0
  */
-public abstract class AbstractPluginClassLoader extends URLClassLoader {
-    public AbstractPluginClassLoader() {
-        super(new URL[]{}, null);
-    }
+@Data
+public class Dependency {
+
+    @Parameter(required = true)
+    private String groupId;
+
+    @Parameter(required = true)
+    private String artifactId;
+
 }

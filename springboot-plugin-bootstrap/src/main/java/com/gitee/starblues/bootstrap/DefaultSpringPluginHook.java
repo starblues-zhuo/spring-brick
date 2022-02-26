@@ -19,6 +19,7 @@ package com.gitee.starblues.bootstrap;
 import com.gitee.starblues.bootstrap.processor.ProcessorContext;
 import com.gitee.starblues.bootstrap.processor.SpringPluginProcessor;
 import com.gitee.starblues.bootstrap.processor.web.thymeleaf.PluginThymeleafProcessor;
+import com.gitee.starblues.bootstrap.realize.PluginCloseListener;
 import com.gitee.starblues.bootstrap.realize.StopValidator;
 import com.gitee.starblues.bootstrap.utils.DestroyUtils;
 import com.gitee.starblues.bootstrap.utils.SpringBeanUtils;
@@ -31,6 +32,7 @@ import com.gitee.starblues.spring.web.thymeleaf.ThymeleafConfig;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,8 +78,9 @@ public class DefaultSpringPluginHook implements SpringPluginHook {
     @Override
     public void close() throws Exception{
         try {
-            pluginProcessor.close(processorContext);
             GenericApplicationContext applicationContext = processorContext.getApplicationContext();
+            callPluginCloseListener(applicationContext);
+            pluginProcessor.close(processorContext);
             if(applicationContext != null){
                 applicationContext.close();
             }
@@ -102,4 +105,20 @@ public class DefaultSpringPluginHook implements SpringPluginHook {
     public ThymeleafConfig getThymeleafConfig() {
         return processorContext.getRegistryInfo(PluginThymeleafProcessor.CONFIG_KEY);
     }
+
+    private void callPluginCloseListener(GenericApplicationContext applicationContext){
+        List<PluginCloseListener> pluginCloseListeners = SpringBeanUtils.getBeans(
+                applicationContext, PluginCloseListener.class);
+        if(pluginCloseListeners.isEmpty()){
+            return;
+        }
+        for (PluginCloseListener pluginCloseListener : pluginCloseListeners) {
+            try {
+                pluginCloseListener.close(processorContext.getPluginDescriptor());
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

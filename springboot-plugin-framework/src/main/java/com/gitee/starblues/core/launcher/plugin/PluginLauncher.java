@@ -19,7 +19,9 @@ package com.gitee.starblues.core.launcher.plugin;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.classloader.PluginClassLoader;
 import com.gitee.starblues.core.launcher.plugin.involved.PluginLaunchInvolved;
+import com.gitee.starblues.loader.classloader.GenericClassLoader;
 import com.gitee.starblues.loader.launcher.AbstractLauncher;
+import com.gitee.starblues.loader.launcher.ResourceLoaderFactoryGetter;
 import com.gitee.starblues.spring.SpringPluginHook;
 
 import java.util.Map;
@@ -49,27 +51,34 @@ public class PluginLauncher extends AbstractLauncher<SpringPluginHook> {
     }
 
     @Override
-    protected ClassLoader createClassLoader() throws Exception {
+    protected ClassLoader createClassLoader(String... args) throws Exception {
         PluginClassLoader pluginClassLoader = getPluginClassLoader();
         pluginClassLoader.addResource(pluginDescriptor);
         return pluginClassLoader;
     }
 
-    protected synchronized PluginClassLoader getPluginClassLoader(){
+    protected synchronized PluginClassLoader getPluginClassLoader() throws Exception {
         String pluginId = pluginDescriptor.getPluginId();
         PluginClassLoader classLoader = CLASS_LOADER_CACHE.get(pluginId);
         if(classLoader != null){
             return classLoader;
         }
         PluginClassLoader pluginClassLoader = new PluginClassLoader(
-                pluginId, getParentClassLoader(), mainResourcePatternDefiner
+                pluginId, getParentClassLoader(), mainResourcePatternDefiner,
+                ResourceLoaderFactoryGetter.get(pluginId)
         );
         CLASS_LOADER_CACHE.put(pluginId, pluginClassLoader);
         return pluginClassLoader;
     }
 
-    protected ClassLoader getParentClassLoader(){
-        return PluginLauncher.class.getClassLoader();
+
+    protected GenericClassLoader getParentClassLoader() throws Exception {
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        if(contextClassLoader instanceof GenericClassLoader){
+            return (GenericClassLoader) contextClassLoader;
+        } else {
+            throw new Exception("非法父类加载器: " + contextClassLoader.getClass().getName());
+        }
     }
 
     @Override

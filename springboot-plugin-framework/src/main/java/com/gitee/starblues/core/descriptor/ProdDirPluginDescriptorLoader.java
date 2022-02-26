@@ -38,6 +38,7 @@ import static com.gitee.starblues.common.PackageStructure.*;
 
 /**
  * 生产环境目录式插件 PluginDescriptorLoader 加载者
+ * 解析生产的dir
  * @author starBlues
  * @version 3.0.0
  */
@@ -59,12 +60,10 @@ public class ProdDirPluginDescriptorLoader extends AbstractPluginDescriptorLoade
     @Override
     protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception {
         DefaultInsidePluginDescriptor descriptor = super.create(manifest, path);
-        descriptor.setType(PluginType.DIR);
         String pathStr = path.toFile().getPath();
         descriptor.setPluginClassPath(FilesUtils.joiningFilePath(
-                pathStr, CLASSES_NAME
+                pathStr, descriptor.getPluginClassPath()
         ));
-        System.out.println(descriptor.getPluginClassPath());
         return descriptor;
     }
 

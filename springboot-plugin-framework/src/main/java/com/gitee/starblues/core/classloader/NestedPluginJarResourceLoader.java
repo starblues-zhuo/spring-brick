@@ -17,12 +17,13 @@
 package com.gitee.starblues.core.classloader;
 
 
+import com.gitee.starblues.core.descriptor.PluginLibInfo;
 import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
-import com.gitee.starblues.loader.classloader.AbstractResourceLoader;
-import com.gitee.starblues.loader.classloader.JarResourceLoader;
-import com.gitee.starblues.loader.classloader.Resource;
-import com.gitee.starblues.loader.classloader.ResourceLoaderFactory;
+import com.gitee.starblues.loader.classloader.*;
+import com.gitee.starblues.loader.classloader.resource.loader.*;
+import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
+import com.gitee.starblues.loader.launcher.ResourceLoaderFactoryGetter;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -41,17 +42,18 @@ import java.util.zip.ZipEntry;
 public class NestedPluginJarResourceLoader extends AbstractResourceLoader {
 
     private final InsidePluginDescriptor pluginDescriptor;
-    private final ResourceLoaderFactory resourceLoaderFactory;
+    private final GenericClassLoader parentClassLoader;
 
     public NestedPluginJarResourceLoader(InsidePluginDescriptor pluginDescriptor,
-                                         ResourceLoaderFactory resourceLoaderFactory) throws Exception {
-        super(new URL("jar:" + pluginDescriptor.getInsidePluginPath().toUri().toURL() + "!/"));
+                                         GenericClassLoader parentClassLoader) throws Exception {
+        super(new URL("jar:" + pluginDescriptor.getInsidePluginPath().toUri().toURL() + "!/"),
+                ResourceLoaderFactoryGetter.getResourceStorage(pluginDescriptor.getPluginId()));
         this.pluginDescriptor = pluginDescriptor;
-        this.resourceLoaderFactory = resourceLoaderFactory;
+        this.parentClassLoader = parentClassLoader;
     }
 
     @Override
-    protected void initOfChild() throws Exception {
+    protected void loadOfChild() throws Exception {
         try (JarFile jarFile = new JarFile(pluginDescriptor.getInsidePluginPath().toFile())) {
             addClassPath(jarFile);
             addLib(jarFile);
@@ -61,38 +63,38 @@ public class NestedPluginJarResourceLoader extends AbstractResourceLoader {
     private void addClassPath(JarFile jarFile) throws Exception{
         String classesPath = pluginDescriptor.getPluginClassPath();
         Enumeration<JarEntry> entries = jarFile.entries();
-        JarEntry jarEntry;
         while (entries.hasMoreElements()){
-            jarEntry = entries.nextElement();
+            JarEntry jarEntry = entries.nextElement();
             if(!jarEntry.getName().startsWith(classesPath)){
                 continue;
             }
             String realName = jarEntry.getName().replace(classesPath, "");
             URL url = new URL(baseUrl.toString() + jarEntry.getName());
-            Resource resource = new Resource(realName, baseUrl, url);
-            resource.setBytes(getClassBytes(realName, jarFile.getInputStream(jarEntry), true));
-            addResource(realName, resource);
+            super.resourceStorage.add(realName, baseUrl, url, ()->{
+                return getClassBytes(realName, jarFile.getInputStream(jarEntry), true);
+            });
         }
     }
 
     private void addLib(JarFile jarFile) throws Exception {
         JarEntry jarEntry = null;
-        Set<String> pluginLibPaths = pluginDescriptor.getPluginLibPaths();
-        for (String pluginLibPath : pluginLibPaths) {
-            jarEntry = jarFile.getJarEntry(pluginLibPath);
+        Set<PluginLibInfo> pluginLibInfos = pluginDescriptor.getPluginLibInfo();
+        for (PluginLibInfo pluginLibInfo : pluginLibInfos) {
+            jarEntry = jarFile.getJarEntry(pluginLibInfo.getPath());
             if (jarEntry.getMethod() != ZipEntry.STORED) {
                 throw new PluginException("插件依赖压缩方式错误, 必须是: 存储(stored)压缩方式");
             }
             InputStream jarFileInputStream = jarFile.getInputStream(jarEntry);
-            URL url = new URL(baseUrl.toString() + pluginLibPath + "!/");
-            JarResourceLoader jarResourceLoader = new JarResourceLoader(url, new JarInputStream(jarFileInputStream));
-            jarResourceLoader.init();
-            resourceLoaderFactory.addResourceLoader(jarResourceLoader);
+            URL url = new URL(baseUrl.toString() + pluginLibInfo.getPath() + "!/");
+            if(pluginLibInfo.isLoadToMain()){
+                parentClassLoader.addResource(new JarResourceLoader(url, new JarInputStream(jarFileInputStream),
+                        ResourceLoaderFactoryGetter.getMainResourceStorage()));
+            } else {
+                JarResourceLoader jarResourceLoader = new JarResourceLoader(url,
+                        new JarInputStream(jarFileInputStream), resourceStorage);
+                jarResourceLoader.load();
+            }
         }
     }
 
-    @Override
-    public void clear() {
-        super.clear();
-    }
 }

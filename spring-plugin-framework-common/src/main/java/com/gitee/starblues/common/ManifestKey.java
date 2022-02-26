@@ -17,6 +17,8 @@
 package com.gitee.starblues.common;
 
 /**
+ * Manifest-Key
+ *
  * @author starBlues
  * @version 3.0.0
  */
@@ -48,6 +50,9 @@ public class ManifestKey {
      */
     public static final String START_CLASS = "Start-Class";
 
-
+    /**
+     * jar class path
+     */
+    public static final String CLASS_PATH = "Class-Path";
 
 }

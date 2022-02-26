@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * 抽象可过滤依赖的 mojo
  * @author starBlues
  * @version 3.0.0
  */

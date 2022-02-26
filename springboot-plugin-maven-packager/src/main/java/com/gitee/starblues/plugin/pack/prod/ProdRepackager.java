@@ -16,12 +16,12 @@
 
 package com.gitee.starblues.plugin.pack.prod;
 
+import com.gitee.starblues.common.PackageType;
 import com.gitee.starblues.plugin.pack.Constant;
 import com.gitee.starblues.plugin.pack.PluginInfo;
 import com.gitee.starblues.plugin.pack.RepackageMojo;
 import com.gitee.starblues.plugin.pack.Repackager;
 import com.gitee.starblues.plugin.pack.dev.DevRepackager;
-import com.gitee.starblues.plugin.pack.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import lombok.Getter;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -53,12 +53,15 @@ public class ProdRepackager implements Repackager {
         String packageType = prodConfig.getPackageType();
         Repackager repackager = null;
 
-        if(Constant.PACKAGE_TYPE_ZIP.equalsIgnoreCase(packageType)){
-            // jar
+        if(PackageType.PLUGIN_PACKAGE_TYPE_ZIP.equalsIgnoreCase(packageType)){
             repackager = new ZipProdRepackager(repackageMojo, prodConfig);
-        }  else if(Constant.PACKAGE_TYPE_JAR.equalsIgnoreCase(packageType)){
-            repackager = new JarProdRepackager(repackageMojo, prodConfig);
-        } else if(Constant.PACKAGE_TYPE_DIR.equalsIgnoreCase(packageType)){
+        }  else if(PackageType.PLUGIN_PACKAGE_TYPE_JAR.equalsIgnoreCase(packageType)){
+            repackager = new JarNestedProdRepackager(repackageMojo, prodConfig);
+        } else if(PackageType.PLUGIN_PACKAGE_TYPE_ZIP_OUTER.equalsIgnoreCase(packageType)){
+            repackager = new ZipOuterProdRepackager(repackageMojo, prodConfig);
+        } else if(PackageType.PLUGIN_PACKAGE_TYPE_JAR_OUTER.equalsIgnoreCase(packageType)){
+            repackager = new JarOuterProdRepackager(repackageMojo, prodConfig);
+        } else if(PackageType.PLUGIN_PACKAGE_TYPE_DIR.equalsIgnoreCase(packageType)){
             repackager = new DirProdRepackager(repackageMojo, prodConfig);
         }  else {
             throw new MojoFailureException("Not found packageType : " + packageType);
@@ -72,7 +75,7 @@ public class ProdRepackager implements Repackager {
             prodConfig = new ProdConfig();
         }
         if(ObjectUtils.isEmpty(prodConfig.getPackageType())){
-            prodConfig.setPackageType(Constant.PACKAGE_TYPE_JAR);
+            prodConfig.setPackageType(PackageType.PLUGIN_PACKAGE_TYPE_JAR);
         }
         String fileName = prodConfig.getFileName();
         if(ObjectUtils.isEmpty(fileName)) {

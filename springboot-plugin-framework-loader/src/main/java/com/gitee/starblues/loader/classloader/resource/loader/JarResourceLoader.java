@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.gitee.starblues.loader.classloader;
+package com.gitee.starblues.loader.classloader.resource.loader;
 
 import com.gitee.starblues.loader.classloader.filter.ExcludeResource;
 import com.gitee.starblues.loader.classloader.filter.IncludeResource;
+import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
 
 import java.io.File;
 import java.net.URL;
-import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
@@ -30,26 +30,26 @@ import java.util.jar.JarInputStream;
  * @author starBlues
  * @version 3.0.0
  */
-public class JarResourceLoader extends AbstractResourceLoader{
+public class JarResourceLoader extends AbstractResourceLoader {
 
     private final JarInputStream jarInputStream;
 
     private ExcludeResource excludeResource = (jarEntry)->false;
     private IncludeResource includeResource = (jarEntry)->true;
 
-    public JarResourceLoader(File file)  throws Exception{
-        super(new URL("jar:" + file.toURI().toURL() + "!/"));
+    public JarResourceLoader(File file, ResourceStorage resourceStorage)  throws Exception{
+        super(new URL("jar:" + file.toURI().toURL() + "!/"), resourceStorage);
         URL url = file.toURI().toURL();
         this.jarInputStream = new JarInputStream(url.openStream());
     }
 
-    public JarResourceLoader(URL url)  throws Exception{
-        super(url);
+    public JarResourceLoader(URL url, ResourceStorage resourceStorage)  throws Exception{
+        super(url, resourceStorage);
         this.jarInputStream = new JarInputStream(url.openStream());
     }
 
-    public JarResourceLoader(URL url, JarInputStream jarInputStream)  throws Exception{
-        super(url);
+    public JarResourceLoader(URL url, JarInputStream jarInputStream, ResourceStorage resourceStorage)  throws Exception{
+        super(url, resourceStorage);
         this.jarInputStream = jarInputStream;
     }
 
@@ -68,7 +68,7 @@ public class JarResourceLoader extends AbstractResourceLoader{
     }
 
     @Override
-    protected void initOfChild() throws Exception {
+    protected void loadOfChild() throws Exception {
         // 解析
         try {
             JarEntry jarEntry = null;
@@ -79,9 +79,9 @@ public class JarResourceLoader extends AbstractResourceLoader{
                 if(includeResource.include(jarEntry)){
                     String name = resolveName(jarEntry.getName());
                     URL url = new URL(baseUrl.toString() + name);
-                    Resource resource = new Resource(name, baseUrl, url);
-                    resource.setBytes(getClassBytes(name, jarInputStream, false));
-                    addResource(name, resource);
+                    resourceStorage.add(name, baseUrl, url, ()->{
+                        return getClassBytes(name, jarInputStream, false);
+                    });
                     jarInputStream.closeEntry();
                 }
             }

@@ -16,8 +16,6 @@
 
 package com.gitee.starblues.plugin.pack;
 
-import com.gitee.starblues.common.PackageStructure;
-import com.gitee.starblues.plugin.pack.utils.CommonUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.maven.artifact.Artifact;
@@ -30,6 +28,7 @@ import java.io.File;
 import java.util.Set;
 
 /**
+ * 抽象的重新打包 mojo
  * @author starBlues
  * @version 3.0.0
  */

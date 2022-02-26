@@ -20,7 +20,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * 重新打包者
+ * 重新打包j接口
  * @author starBlues
  * @version 3.0.0
  */

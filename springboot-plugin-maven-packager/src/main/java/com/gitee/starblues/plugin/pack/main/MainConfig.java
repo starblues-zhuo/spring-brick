@@ -19,6 +19,7 @@ package com.gitee.starblues.plugin.pack.main;
 
 import lombok.Data;
 import org.apache.maven.plugins.annotations.Parameter;
+import com.gitee.starblues.plugin.pack.Constant;
 
 /**
  * 主程序打包配置
@@ -35,7 +36,10 @@ public class MainConfig {
     private String mainClass;
 
     /**
-     * 打包类型。默认：jar-nest
+     * 打包类型。默认：jar
+     *
+     * {@link com.gitee.starblues.common.PackageType#MAIN_PACKAGE_TYPE_JAR}
+     * {@link com.gitee.starblues.common.PackageType#MAIN_PACKAGE_TYPE_JAR_OUTER}
      */
     private String packageType;
 
@@ -48,5 +52,6 @@ public class MainConfig {
      * 输出文件目录。默认target
      */
     private String outputDirectory;
+
 
 }

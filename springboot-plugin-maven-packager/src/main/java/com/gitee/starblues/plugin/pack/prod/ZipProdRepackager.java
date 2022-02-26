@@ -16,6 +16,7 @@
 
 package com.gitee.starblues.plugin.pack.prod;
 
+import com.gitee.starblues.common.PackageType;
 import com.gitee.starblues.common.PluginDescriptorKey;
 import com.gitee.starblues.plugin.pack.Constant;
 import com.gitee.starblues.plugin.pack.RepackageMojo;
@@ -90,10 +91,6 @@ public class ZipProdRepackager extends DevRepackager {
         return new PackageZip(prodConfig.getOutputDirectory(), prodConfig.getFileName());
     }
 
-    protected ArchiveOutputStream getOutputStream(File packFile) throws Exception {
-        return new ZipArchiveOutputStream(new FileOutputStream(packFile));
-    }
-
     @Override
     protected String getBasicRootDir(){
         File outputDirectory = repackageMojo.getOutputDirectory();
@@ -113,7 +110,7 @@ public class ZipProdRepackager extends DevRepackager {
 
     @Override
     protected String getLibIndex(Artifact artifact){
-        return PROD_LIB_PATH + artifact.getFile().getName();
+        return PROD_LIB_PATH + artifact.getFile().getName() + repackageMojo.resolveLoadToMain(artifact);
     }
 
     @Override
@@ -132,13 +129,13 @@ public class ZipProdRepackager extends DevRepackager {
         Attributes attributes = manifest.getMainAttributes();
         attributes.putValue(PluginDescriptorKey.PLUGIN_PATH, PROD_CLASSES_PATH);
         attributes.putValue(PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG, PROD_RESOURCES_DEFINE_PATH);
+        attributes.putValue(PluginDescriptorKey.PLUGIN_PACKAGE_TYPE, PackageType.PLUGIN_PACKAGE_TYPE_ZIP);
         return manifest;
     }
 
     @Override
     protected void writeManifest(Manifest manifest) throws Exception {
-        packageZip.putDirEntry(META_INF_NAME + SEPARATOR);
-        packageZip.write(PROD_MANIFEST_PATH, manifest::write);
+        packageZip.writeManifest(manifest);
     }
 
     protected void resolveResourcesDefine() throws Exception{
@@ -154,7 +151,7 @@ public class ZipProdRepackager extends DevRepackager {
         }
         final byte[] bytes = content.toString().getBytes(StandardCharsets.UTF_8);
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)){
-            packageZip.putInputStreamEntry(byteArrayInputStream, PROD_RESOURCES_DEFINE_PATH);
+            packageZip.putInputStreamEntry(PROD_RESOURCES_DEFINE_PATH, byteArrayInputStream);
         }
     }
 

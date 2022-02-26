@@ -1,5 +1,20 @@
-package com.gitee.starblues.loader.jar;
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
+package com.gitee.starblues.loader.jar;
 
 import com.gitee.starblues.loader.PluginResourceStorage;
 
@@ -119,8 +134,8 @@ public class Handler extends URLStreamHandler {
                 URLConnection connection = openConnection(new URL("jar:file:" + file));
                 connection.getInputStream().close();
                 return connection;
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
+                // ignore
             }
         }
         return null;
@@ -133,8 +148,8 @@ public class Handler extends URLStreamHandler {
                 if (connection.getClass().getName().startsWith("org.apache.catalina")) {
                     return true;
                 }
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
+                // ignore
             }
         }
         return false;
@@ -154,6 +169,7 @@ public class Handler extends URLStreamHandler {
                 return new URL(jarContextUrl, url.toExternalForm()).openConnection();
             }
         } catch (Exception ex) {
+            // ignore
         }
         return null;
     }
@@ -179,8 +195,7 @@ public class Handler extends URLStreamHandler {
                 Class<?> handlerClass = Class.forName(handlerClassName);
                 this.fallbackHandler = (URLStreamHandler) handlerClass.getDeclaredConstructor().newInstance();
                 return this.fallbackHandler;
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 // Ignore
             }
         }
@@ -191,8 +206,7 @@ public class Handler extends URLStreamHandler {
         try {
             Level level = warning ? Level.WARNING : Level.FINEST;
             Logger.getLogger(getClass().getName()).log(level, message, cause);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             if (warning) {
                 System.err.println("WARNING: " + message);
             }
@@ -203,8 +217,7 @@ public class Handler extends URLStreamHandler {
     protected void parseURL(URL context, String spec, int start, int limit) {
         if (spec.regionMatches(true, 0, JAR_PROTOCOL, 0, JAR_PROTOCOL.length())) {
             setFile(context, getFileFromSpec(spec.substring(start, limit)));
-        }
-        else {
+        } else {
             setFile(context, getFileFromContext(context, spec.substring(start, limit)));
         }
     }
@@ -217,8 +230,7 @@ public class Handler extends URLStreamHandler {
         try {
             new URL(spec.substring(0, separatorIndex));
             return spec;
-        }
-        catch (MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             throw new IllegalArgumentException("Invalid spec URL '" + spec + "'", ex);
         }
     }
@@ -274,8 +286,7 @@ public class Handler extends URLStreamHandler {
             int precedingSlashIndex = file.lastIndexOf('/', parentDirIndex - 1);
             if (precedingSlashIndex >= 0) {
                 file = file.substring(0, precedingSlashIndex) + file.substring(parentDirIndex + 3);
-            }
-            else {
+            } else {
                 file = file.substring(parentDirIndex + 4);
             }
         }
@@ -301,8 +312,7 @@ public class Handler extends URLStreamHandler {
         String entry = canonicalize(file.substring(separatorIndex + 2));
         try {
             result += new URL(source).hashCode();
-        }
-        catch (MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             result += source.hashCode();
         }
         result += entry.hashCode();
@@ -332,8 +342,7 @@ public class Handler extends URLStreamHandler {
         String root2 = u2.getFile().substring(0, separator2);
         try {
             return super.sameFile(new URL(root1), new URL(root2));
-        }
-        catch (MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             // Continue
         }
         return super.sameFile(u1, u2);
@@ -401,15 +410,13 @@ public class Handler extends URLStreamHandler {
                     if (connection instanceof JarURLConnection) {
                         jarContextUrl = null;
                     }
+                } catch (Exception ex) {
+                    // ignore
                 }
-                catch (Exception ex) {
-                }
-            }
-            finally {
+            } finally {
                 if (handlers == null) {
                     System.clearProperty(PROTOCOL_HANDLER);
-                }
-                else {
+                } else {
                     System.setProperty(PROTOCOL_HANDLER, handlers);
                 }
             }
@@ -421,8 +428,7 @@ public class Handler extends URLStreamHandler {
         try {
             resetCachedUrlHandlers();
             return true;
-        }
-        catch (Error ex) {
+        } catch (Error ex) {
             return false;
         }
     }

@@ -1,3 +1,19 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.gitee.starblues.loader.jar;
 
 import java.io.File;
@@ -108,8 +124,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
         parser.addVisitor(centralDirectoryVisitor());
         try {
             this.data = parser.parse(data, filter == null);
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
             close();
             throw ex;
         }
@@ -119,8 +134,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
                     return null;
                 }
                 return new Manifest(inputStream);
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         };
@@ -168,8 +182,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
         if (manifest == null) {
             try {
                 manifest = this.manifestSupplier.get();
-            }
-            catch (RuntimeException ex) {
+            } catch (RuntimeException ex) {
                 throw new IOException(ex);
             }
             this.manifest = new SoftReference<>(manifest);
@@ -360,8 +373,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
     JarEntryCertification getCertification(JarEntry entry) {
         try {
             return this.entries.getCertification(entry);
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             throw new IllegalStateException(ex);
         }
     }
@@ -399,8 +411,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
     private static void resetCachedUrlHandlers() {
         try {
             URL.setURLStreamHandlerFactory(null);
-        }
-        catch (Error ex) {
+        } catch (Error ex) {
             // Ignore
         }
     }

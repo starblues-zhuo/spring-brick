@@ -17,6 +17,9 @@
 package com.gitee.starblues.core;
 
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
+import com.gitee.starblues.utils.Assert;
+
+import java.util.Date;
 
 /**
  * 默认的内部PluginWrapperInside实现
@@ -30,6 +33,9 @@ public class DefaultPluginInsideInfo implements PluginInsideInfo {
     private PluginState pluginState;
     private boolean isFollowInitial = false;
 
+    private Date startTime;
+    private Date stopTime;
+
     public DefaultPluginInsideInfo(InsidePluginDescriptor pluginDescriptor) {
         this.pluginId = pluginDescriptor.getPluginId();
         this.pluginDescriptor = pluginDescriptor;
@@ -37,7 +43,8 @@ public class DefaultPluginInsideInfo implements PluginInsideInfo {
 
     @Override
     public void setPluginState(PluginState pluginState) {
-        this.pluginState = pluginState;
+        this.pluginState = Assert.isNotNull(pluginState, "pluginState 不能为空");
+        resolveTime(pluginState);
     }
 
     @Override
@@ -71,9 +78,31 @@ public class DefaultPluginInsideInfo implements PluginInsideInfo {
     }
 
     @Override
+    public Date startTime() {
+        return startTime;
+    }
+
+    @Override
+    public Date stopTime() {
+        return stopTime;
+    }
+
+    @Override
     public boolean isFollowSystem() {
         return isFollowInitial;
     }
 
+    private void resolveTime(PluginState pluginState){
+        if(pluginState == PluginState.STARTED){
+            startTime = new Date();
+            stopTime = null;
+        } if(pluginState == PluginState.STOPPED){
+            stopTime = new Date();
+            startTime = null;
+        } else {
+            startTime = null;
+            stopTime = null;
+        }
+    }
 
 }

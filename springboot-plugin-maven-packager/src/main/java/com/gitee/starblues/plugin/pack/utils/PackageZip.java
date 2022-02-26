@@ -29,8 +29,11 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.util.Enumeration;
+import java.util.jar.Manifest;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
+
+import static com.gitee.starblues.common.PackageStructure.*;
 
 /**
  * zip 打包工具
@@ -57,11 +60,14 @@ public class PackageZip implements Closeable{
         String rootPath = FilesUtils.joiningFilePath(outputDirectory, packageName);
         this.file = getPackageFile(rootPath);
         this.outputStream = getOutputStream(file);
-
     }
 
     public File getFile(){
         return file;
+    }
+
+    public String getFileName(){
+        return file.getName();
     }
 
     protected File getPackageFile(String rootPath) throws Exception {
@@ -133,7 +139,7 @@ public class PackageZip implements Closeable{
                     putDirEntry(name);
                 } else {
                     try (InputStream inputStream = zipFile.getInputStream(zipArchiveEntry)){
-                        putInputStreamEntry(inputStream, name);
+                        putInputStreamEntry(name, inputStream);
                     }
                 }
             }
@@ -166,7 +172,7 @@ public class PackageZip implements Closeable{
         outputStream.closeArchiveEntry();
     }
 
-    public void putInputStreamEntry(InputStream inputStream, String name) throws Exception {
+    public void putInputStreamEntry(String name, InputStream inputStream) throws Exception {
         outputStream.putArchiveEntry(getArchiveEntry(name));
         IOUtils.copy(inputStream, outputStream);
         outputStream.closeArchiveEntry();
@@ -176,6 +182,19 @@ public class PackageZip implements Closeable{
         outputStream.putArchiveEntry(getArchiveEntry(name));
         writer.write(outputStream);
         outputStream.closeArchiveEntry();
+    }
+
+    public void write(String name, File file) throws Exception {
+        outputStream.putArchiveEntry(getArchiveEntry(name));
+        try (FileInputStream fileInputStream = new FileInputStream(file)){
+            IOUtils.copy(fileInputStream, outputStream);
+            outputStream.closeArchiveEntry();
+        }
+    }
+
+    public void writeManifest(Manifest manifest) throws Exception {
+        putDirEntry(META_INF_NAME + SEPARATOR);
+        write(PROD_MANIFEST_PATH, manifest::write);
     }
 
     public void putDirEntry(String dir) throws IOException {

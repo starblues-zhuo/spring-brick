@@ -109,7 +109,30 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
     }
 
     protected void addDbDriver(Set<String> patterns){
+        // mysql
         patterns.add("com/mysql/**");
+        // oracle
+        patterns.add("oracle/jdbc/**");
+        // sqlserver
+        patterns.add("com/microsoft/jdbc/sqlserver/**");
+        // DB2
+        patterns.add("com/ibm/db2/jdbc/**");
+        // DB2/AS400
+        patterns.add("com/ibm/as400/**");
+        // Informix
+        patterns.add("com/informix/jdbc/**");
+        // Hypersonic
+        patterns.add("org/hsql/**");
+        // MS SQL
+        patterns.add("com/microsoft/jdbc/**");
+        // Postgres
+        patterns.add("org/postgresql/**");
+        // Sybase
+        patterns.add("com/sybase/jdbc2/**");
+        // Weblogic
+        patterns.add("weblogic/jdbc/**");
+        // h2
+        patterns.add("jdbc/h2/**");
     }
 
     /**

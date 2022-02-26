@@ -28,6 +28,7 @@ import java.security.ProtectionDomain;
 import java.util.jar.Manifest;
 
 /**
+ * 主程序生成环境启动引导器
  * @author starBlues
  * @version 3.0.0
  */

@@ -16,6 +16,8 @@
 
 package com.gitee.starblues.plugin.pack.prod;
 
+import com.gitee.starblues.common.PackageType;
+import com.gitee.starblues.common.PluginDescriptorKey;
 import com.gitee.starblues.plugin.pack.RepackageMojo;
 import com.gitee.starblues.plugin.pack.utils.PackageJar;
 import com.gitee.starblues.plugin.pack.utils.PackageZip;
@@ -27,16 +29,21 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.*;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+
+import static com.gitee.starblues.common.PackageStructure.PROD_CLASSES_PATH;
+import static com.gitee.starblues.common.PackageStructure.PROD_RESOURCES_DEFINE_PATH;
 
 /**
  * jar包生成
  * @author starBlues
  * @version 3.0.0
  */
-public class JarProdRepackager extends ZipProdRepackager {
+public class JarNestedProdRepackager extends ZipProdRepackager {
 
 
-    public JarProdRepackager(RepackageMojo repackageMojo, ProdConfig prodConfig) {
+    public JarNestedProdRepackager(RepackageMojo repackageMojo, ProdConfig prodConfig) {
         super(repackageMojo, prodConfig);
     }
 
@@ -49,4 +56,13 @@ public class JarProdRepackager extends ZipProdRepackager {
     protected PackageZip getPackageZip() throws Exception {
         return new PackageJar(prodConfig.getOutputDirectory(), prodConfig.getFileName());
     }
+
+    @Override
+    protected Manifest getManifest() throws Exception {
+        Manifest manifest = super.getManifest();
+        manifest.getMainAttributes().putValue(PluginDescriptorKey.PLUGIN_PACKAGE_TYPE, PackageType.PLUGIN_PACKAGE_TYPE_JAR);
+        return manifest;
+    }
+
+
 }

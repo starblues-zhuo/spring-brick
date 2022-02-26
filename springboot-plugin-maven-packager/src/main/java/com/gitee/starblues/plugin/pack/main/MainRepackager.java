@@ -16,10 +16,9 @@
 
 package com.gitee.starblues.plugin.pack.main;
 
-import com.gitee.starblues.plugin.pack.Constant;
+import com.gitee.starblues.common.PackageType;
 import com.gitee.starblues.plugin.pack.RepackageMojo;
 import com.gitee.starblues.plugin.pack.Repackager;
-import com.gitee.starblues.plugin.pack.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import lombok.Getter;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -46,8 +45,10 @@ public class MainRepackager implements Repackager {
     public void repackage() throws MojoExecutionException, MojoFailureException {
         checkConfig();
         String packageType = mainConfig.getPackageType();
-        if(Constant.MAIN_PACKAGE_TYPE_JAR_NEST.equalsIgnoreCase(packageType)){
+        if(PackageType.MAIN_PACKAGE_TYPE_JAR.equalsIgnoreCase(packageType)){
             new JarNestPackager(this).repackage();
+        } else if(PackageType.MAIN_PACKAGE_TYPE_JAR_OUTER.equalsIgnoreCase(packageType)){
+            new JarOuterPackager(this).repackage();
         } else {
             throw new MojoFailureException("Not found packageType : " + packageType);
         }
@@ -67,7 +68,7 @@ public class MainRepackager implements Repackager {
         }
         String packageType = mainConfig.getPackageType();
         if(ObjectUtils.isEmpty(packageType)) {
-            mainConfig.setPackageType(Constant.MAIN_PACKAGE_TYPE_JAR_NEST);
+            mainConfig.setPackageType(PackageType.MAIN_PACKAGE_TYPE_JAR);
         }
         String outputDirectory = mainConfig.getOutputDirectory();
         if(ObjectUtils.isEmpty(outputDirectory)){

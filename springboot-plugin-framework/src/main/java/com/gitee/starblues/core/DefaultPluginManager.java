@@ -242,7 +242,7 @@ public class DefaultPluginManager implements PluginManager{
             }
             PluginException pluginException = PluginException.getPluginException(e, ()-> {
                 unLoad(loadPluginInfo.getPluginId());
-                throw new PluginException("插件包安装失败: " + pluginPath);
+                throw new PluginException("插件包[ " + pluginPath + " ]安装失败: " + e.getMessage(), e);
             });
             pluginListenerFactory.startFailure(pluginInfo, pluginException);
             throw pluginException;

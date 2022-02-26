@@ -16,8 +16,6 @@
 
 package com.gitee.starblues.loader.launcher;
 
-import com.gitee.starblues.loader.jar.JarFile;
-
 /**
  * 抽象的启动引导者
  * @author starBlues
@@ -27,7 +25,7 @@ public abstract class AbstractLauncher<R> implements Launcher<R> {
 
     @Override
     public R run(String... args) throws Exception {
-        ClassLoader classLoader = createClassLoader();
+        ClassLoader classLoader = createClassLoader(args);
         Thread thread = Thread.currentThread();
         ClassLoader oldClassLoader = thread.getContextClassLoader();
         try {
@@ -43,7 +41,7 @@ public abstract class AbstractLauncher<R> implements Launcher<R> {
      * @return ClassLoader
      * @throws Exception 创建异常
      */
-    protected abstract ClassLoader createClassLoader() throws Exception;
+    protected abstract ClassLoader createClassLoader(String... args) throws Exception;
 
     /**
      * 子类实现具体的启动方法

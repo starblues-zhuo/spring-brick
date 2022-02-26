@@ -1,3 +1,19 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.gitee.starblues.loader.archive;
 
 import com.gitee.starblues.loader.jar.JarFile;
@@ -75,7 +91,6 @@ public class JarFileArchive implements Archive {
     }
 
     @Override
-    @Deprecated
     public Iterator<Entry> iterator() {
         return new EntryIterator(this.jarFile.iterator(), null, null);
     }
@@ -93,8 +108,7 @@ public class JarFileArchive implements Archive {
         try {
             JarFile jarFile = this.jarFile.getNestedJarFile(jarEntry);
             return new JarFileArchive(jarFile);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException("Failed to get nested archive for entry " + entry.getName(), ex);
         }
     }
@@ -127,8 +141,8 @@ public class JarFileArchive implements Archive {
             try {
                 createDirectory(unpackDirectory);
                 return unpackDirectory;
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
+                // ignore
             }
         }
         throw new IllegalStateException("Failed to create unpack directory in directory '" + parent + "'");
@@ -168,8 +182,7 @@ public class JarFileArchive implements Archive {
     public String toString() {
         try {
             return getUrl().toString();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             return "jar archive";
         }
     }
@@ -250,8 +263,7 @@ public class JarFileArchive implements Archive {
         protected Archive adapt(Entry entry) {
             try {
                 return getNestedArchive(entry);
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 throw new IllegalStateException(ex);
             }
         }

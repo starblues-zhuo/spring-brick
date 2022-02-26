@@ -17,6 +17,7 @@
 package com.gitee.starblues.plugin.pack.prod;
 
 import com.gitee.starblues.common.PackageStructure;
+import com.gitee.starblues.common.PackageType;
 import com.gitee.starblues.common.PluginDescriptorKey;
 import com.gitee.starblues.plugin.pack.RepackageMojo;
 import com.gitee.starblues.plugin.pack.dev.DevRepackager;
@@ -43,7 +44,7 @@ import static com.gitee.starblues.common.PackageStructure.*;
  */
 public class DirProdRepackager extends DevRepackager {
 
-    private final ProdConfig prodConfig;
+    protected final ProdConfig prodConfig;
 
 
     public DirProdRepackager(RepackageMojo repackageMojo, ProdConfig prodConfig) {
@@ -101,6 +102,7 @@ public class DirProdRepackager extends DevRepackager {
         Attributes attributes = manifest.getMainAttributes();
         attributes.putValue(PluginDescriptorKey.PLUGIN_PATH, CLASSES_NAME);
         attributes.putValue(PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG, PROD_RESOURCES_DEFINE_PATH);
+        attributes.putValue(PluginDescriptorKey.PLUGIN_PACKAGE_TYPE, PackageType.PLUGIN_PACKAGE_TYPE_DIR);
         return manifest;
     }
 
@@ -123,7 +125,8 @@ public class DirProdRepackager extends DevRepackager {
             }
             File artifactFile = artifact.getFile();
             FileUtils.copyFile(artifactFile, new File(FilesUtils.joiningFilePath(libDir, artifactFile.getName())));
-            dependencyIndexNames.add(PackageStructure.PROD_LIB_PATH + artifactFile.getName());
+            dependencyIndexNames.add(PackageStructure.PROD_LIB_PATH + artifactFile.getName()
+                    + repackageMojo.resolveLoadToMain(artifact));
         }
         return dependencyIndexNames;
     }

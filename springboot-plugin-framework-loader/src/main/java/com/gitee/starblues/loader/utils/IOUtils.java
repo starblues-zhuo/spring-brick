@@ -19,6 +19,8 @@ import java.io.*;
 import java.util.function.Consumer;
 
 /**
+ * io utils
+ *
  * @author starBlues
  * @version 3.0.0
  */
@@ -54,15 +56,15 @@ public class IOUtils {
         return output.toByteArray();
     }
 
-    public static void closeQuietly(final Closeable closeable) {
+    public static void closeQuietly(final AutoCloseable closeable) {
         closeQuietly(closeable, null);
     }
 
-    public static void closeQuietly(final Closeable closeable, final Consumer<IOException> consumer) {
+    public static void closeQuietly(final AutoCloseable closeable, final Consumer<Exception> consumer) {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (final IOException e) {
+            } catch (final Exception e) {
                 if (consumer != null) {
                     consumer.accept(e);
                 }

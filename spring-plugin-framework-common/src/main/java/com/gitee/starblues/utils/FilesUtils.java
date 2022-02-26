@@ -1,14 +1,38 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.gitee.starblues.utils;
 
 import java.io.File;
 import java.util.function.Supplier;
 
 /**
+ * 文件工具类
+ *
  * @author starBlues
  * @version 3.0.0
  */
 public class FilesUtils {
 
+    /**
+     * 获取存在的文件
+     *
+     * @param pathStr 文件路径
+     * @return File
+     */
     public static File getExistFile(String pathStr){
         File file = new File(pathStr);
         if(file.exists()){
@@ -17,16 +41,10 @@ public class FilesUtils {
         return null;
     }
 
-    public static File getExistFile(String pathStr, Supplier<String> secondPathSupplier){
-        File existFile = getExistFile(pathStr);
-        if(existFile != null){
-            return existFile;
-        }
-        return getExistFile(secondPathSupplier.get());
-    }
 
     /**
      * rest接口拼接路径
+     *
      * @param path1 路径1
      * @param path2 路径2
      * @return 拼接的路径
@@ -52,6 +70,7 @@ public class FilesUtils {
 
     /**
      * 拼接url路径
+     *
      * @param paths 拼接的路径
      * @return 拼接的路径
      */
@@ -81,6 +100,7 @@ public class FilesUtils {
 
     /**
      * 拼接file路径
+     *
      * @param paths 拼接的路径
      * @return 拼接的路径
      */

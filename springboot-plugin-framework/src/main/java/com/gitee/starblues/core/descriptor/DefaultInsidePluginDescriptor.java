@@ -16,6 +16,9 @@
 
 package com.gitee.starblues.core.descriptor;
 
+import lombok.Data;
+import lombok.Setter;
+
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.jar.Manifest;
@@ -30,11 +33,19 @@ public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor imple
     private final Path pluginPath;
     private final String pluginFileName;
 
+    @Setter
     private String pluginClassPath;
+    @Setter
     private Manifest manifest;
+    @Setter
     private String configFileName;
-    private Set<String> pluginLibPaths;
+    @Setter
+    private String configFileLocation;
+    @Setter
+    private Set<PluginLibInfo> pluginLibInfo;
+    @Setter
     private Set<String> includeMainResourcePatterns;
+    @Setter
     private Set<String> excludeMainResourcePatterns;
 
     public DefaultInsidePluginDescriptor(String pluginId, String pluginVersion, String pluginClass, Path pluginPath) {
@@ -43,29 +54,6 @@ public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor imple
         this.pluginFileName = pluginPath.toFile().getName();
     }
 
-    public void setPluginClassPath(String pluginClassPath) {
-        this.pluginClassPath = pluginClassPath;
-    }
-
-    public void setManifest(Manifest manifest){
-        this.manifest = manifest;
-    }
-
-    public void setConfigFileName(String configFileName) {
-        this.configFileName = configFileName;
-    }
-
-    public void setPluginLibPath(Set<String> pluginLibPaths) {
-        this.pluginLibPaths = pluginLibPaths;
-    }
-
-    public void setIncludeMainResourcePatterns(Set<String> includeMainResourcePatterns) {
-        this.includeMainResourcePatterns = includeMainResourcePatterns;
-    }
-
-    public void setExcludeMainResourcePatterns(Set<String> excludeMainResourcePatterns) {
-        this.excludeMainResourcePatterns = excludeMainResourcePatterns;
-    }
 
     @Override
     public String getPluginClassPath() {
@@ -73,8 +61,8 @@ public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor imple
     }
 
     @Override
-    public Set<String> getPluginLibPaths() {
-        return pluginLibPaths;
+    public Set<PluginLibInfo> getPluginLibInfo() {
+        return pluginLibInfo;
     }
 
     @Override
@@ -90,6 +78,11 @@ public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor imple
     @Override
     public String getConfigFileName() {
         return configFileName;
+    }
+
+    @Override
+    public String getConfigFileLocation() {
+        return configFileLocation;
     }
 
     @Override

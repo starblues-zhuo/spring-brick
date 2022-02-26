@@ -18,6 +18,9 @@ package com.gitee.starblues.core.descriptor;
 
 
 import com.gitee.starblues.common.PackageStructure;
+import com.gitee.starblues.common.PackageType;
+import com.gitee.starblues.common.PluginDescriptorKey;
+import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.utils.ManifestUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.apache.commons.io.IOUtils;
@@ -25,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -35,6 +39,7 @@ import static com.gitee.starblues.common.PluginDescriptorKey.PLUGIN_RESOURCES_CO
 
 /**
  * 生产环境打包好的插件 PluginDescriptorLoader 加载者
+ * 解析 jar、zip
  * @author starBlues
  * @version 3.0.0
  */
@@ -64,7 +69,11 @@ public class ProdPackagePluginDescriptorLoader extends AbstractPluginDescriptorL
     @Override
     protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception {
         DefaultInsidePluginDescriptor descriptor = super.create(manifest, path);
-        descriptor.setType(type);
+        PluginType manifestPluginType = descriptor.getType();
+        if(manifestPluginType == null){
+            descriptor.setType(type);
+            return descriptor;
+        }
         return descriptor;
     }
 

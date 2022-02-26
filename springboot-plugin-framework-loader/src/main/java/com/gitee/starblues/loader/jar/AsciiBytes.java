@@ -1,3 +1,19 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.gitee.starblues.loader.jar;
 
 import java.nio.charset.StandardCharsets;
@@ -122,8 +138,7 @@ public class AsciiBytes {
                 if (c != b) {
                     return false;
                 }
-            }
-            else {
+            } else {
                 if (c != ((b >> 0xA) + 0xD7C0)) {
                     return false;
                 }
@@ -193,8 +208,7 @@ public class AsciiBytes {
                 }
                 if (b <= 0xFFFF) {
                     hash = 31 * hash + b;
-                }
-                else {
+                } else {
                     hash = 31 * hash + ((b >> 0xA) + 0xD7C0);
                     hash = 31 * hash + ((b & 0x3FF) + 0xDC00);
                 }
@@ -209,8 +223,7 @@ public class AsciiBytes {
         if (this.string == null) {
             if (this.length == 0) {
                 this.string = EMPTY_STRING;
-            }
-            else {
+            } else {
                 this.string = new String(this.bytes, this.offset, this.length, StandardCharsets.UTF_8);
             }
         }

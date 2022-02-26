@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 
 /**
  * 文过滤接口
+ *
  * @author starBlues
  * @version 3.0.0
  */
@@ -28,6 +29,7 @@ public interface FieldFilter {
 
     /**
      * 过滤
+     *
      * @param field 当前字段
      * @return true 允许, false 不允许
      */

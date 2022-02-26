@@ -12,9 +12,19 @@ public enum PluginType {
     JAR,
 
     /**
+     * jar-outer 文件
+     */
+    JAR_OUTER,
+
+    /**
      * zip 文件
      */
     ZIP,
+
+    /**
+     * zip-outer 文件
+     */
+    ZIP_OUTER,
 
     /**
      * 生产模式目录

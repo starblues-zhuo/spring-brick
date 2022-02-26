@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.gitee.starblues.loader.classloader;
+package com.gitee.starblues.loader.classloader.resource.loader;
+import com.gitee.starblues.loader.classloader.resource.Resource;
+import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,27 +30,26 @@ import java.util.Objects;
  * @author starBlues
  * @version 3.0.0
  */
-public class ClassPathLoader extends AbstractResourceLoader{
+public class ClassPathLoader extends AbstractResourceLoader {
 
     private final URL url;
 
-    public ClassPathLoader(URL url) {
-        super(url);
+    public ClassPathLoader(URL url, ResourceStorage resourceStorage) {
+        super(url, resourceStorage);
         this.url = Objects.requireNonNull(url, "url 不能为空");
     }
 
-    public ClassPathLoader(File file) throws MalformedURLException {
-        this(file.toPath());
+    public ClassPathLoader(File file, ResourceStorage resourceStorage) throws MalformedURLException {
+        this(file.toPath(), resourceStorage);
     }
 
-    public ClassPathLoader(Path path) throws MalformedURLException {
-        super(path.toUri().toURL());
+    public ClassPathLoader(Path path, ResourceStorage resourceStorage) throws MalformedURLException {
+        super(path.toUri().toURL(), resourceStorage);
         this.url = super.baseUrl;
     }
 
-
     @Override
-    protected void initOfChild() throws Exception {
+    protected void loadOfChild() throws Exception {
         File file = new File(url.toURI());
         load(file, null);
     }
@@ -85,16 +86,14 @@ public class ClassPathLoader extends AbstractResourceLoader{
     }
 
     private void addResource(File file, String packageName) throws Exception {
-        Resource resource = new Resource(
-                file.getName(), url, new URL(url.toString() + packageName)
-        );
-        if(file.exists() && file.isFile()){
-            resource.setBytes(getClassBytes(file.getPath(), new FileInputStream(file), true));
-        }
-        addResource(packageName, resource);
+        resourceStorage.add(packageName, url, new URL(url.toString() + packageName), ()->{
+            if(file.exists() && file.isFile()){
+                return getClassBytes(file.getPath(), new FileInputStream(file), true);
+            } else {
+                return null;
+            }
+        });
     }
-
-
 
 
 }
