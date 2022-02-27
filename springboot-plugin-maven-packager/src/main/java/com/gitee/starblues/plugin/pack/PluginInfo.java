@@ -49,13 +49,11 @@ public class PluginInfo {
 
     /**
      * 插件配置文件名称。
-     * 和 configFileLocation 配置二选一, 如果都有值则默认使用 getConfigFileName
      */
     private String configFileName;
 
     /**
-     * 插件配置文件路径
-     * 和 configFileName 配置二选一, 如果都有值则默认使用 getConfigFileName
+     * 插件配置文件所在目录。如果不填写, 默认从 target/classes 下读取
      */
     private String configFileLocation;
 

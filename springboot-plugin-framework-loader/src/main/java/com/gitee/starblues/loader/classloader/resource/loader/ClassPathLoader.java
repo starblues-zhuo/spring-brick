@@ -34,27 +34,27 @@ public class ClassPathLoader extends AbstractResourceLoader {
 
     private final URL url;
 
-    public ClassPathLoader(URL url, ResourceStorage resourceStorage) {
-        super(url, resourceStorage);
+    public ClassPathLoader(URL url) {
+        super(url);
         this.url = Objects.requireNonNull(url, "url 不能为空");
     }
 
-    public ClassPathLoader(File file, ResourceStorage resourceStorage) throws MalformedURLException {
-        this(file.toPath(), resourceStorage);
+    public ClassPathLoader(File file) throws MalformedURLException {
+        this(file.toPath());
     }
 
-    public ClassPathLoader(Path path, ResourceStorage resourceStorage) throws MalformedURLException {
-        super(path.toUri().toURL(), resourceStorage);
+    public ClassPathLoader(Path path) throws MalformedURLException {
+        super(path.toUri().toURL());
         this.url = super.baseUrl;
     }
 
     @Override
-    protected void loadOfChild() throws Exception {
+    protected void loadOfChild(ResourceStorage resourceStorage) throws Exception {
         File file = new File(url.toURI());
-        load(file, null);
+        load(resourceStorage, file, null);
     }
 
-    private void load(File file, String currentPackageName) throws Exception {
+    private void load(ResourceStorage resourceStorage, File file, String currentPackageName) throws Exception {
         if(currentPackageName == null){
             // 根目录
             currentPackageName = "";
@@ -64,7 +64,7 @@ public class ClassPathLoader extends AbstractResourceLoader {
             } else {
                 currentPackageName = currentPackageName + Resource.PACKAGE_SPLIT + file.getName();
             }
-            loadResource(file, currentPackageName);
+            loadResource(resourceStorage, file, currentPackageName);
         }
         if(file.isDirectory()){
             File[] listFiles = file.listFiles();
@@ -72,20 +72,20 @@ public class ClassPathLoader extends AbstractResourceLoader {
                 return;
             }
             for (File subFile : listFiles) {
-                load(subFile, currentPackageName);
+                load(resourceStorage, subFile, currentPackageName);
             }
         }
     }
 
-    private void loadResource(File file, String packageName) throws Exception{
+    private void loadResource(ResourceStorage resourceStorage, File file, String packageName) throws Exception{
         if(file.isDirectory()){
-            addResource(file, packageName + Resource.PACKAGE_SPLIT);
+            addResource(resourceStorage, file, packageName + Resource.PACKAGE_SPLIT);
         } else {
-            addResource(file, packageName);
+            addResource(resourceStorage, file, packageName);
         }
     }
 
-    private void addResource(File file, String packageName) throws Exception {
+    private void addResource(ResourceStorage resourceStorage, File file, String packageName) throws Exception {
         resourceStorage.add(packageName, url, new URL(url.toString() + packageName), ()->{
             if(file.exists() && file.isFile()){
                 return getClassBytes(file.getPath(), new FileInputStream(file), true);

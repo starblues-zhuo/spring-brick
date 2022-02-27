@@ -17,6 +17,7 @@
 package com.gitee.starblues.loader.classloader.resource.loader;
 
 import com.gitee.starblues.loader.classloader.resource.Resource;
+import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
 import com.gitee.starblues.loader.launcher.ResourceLoaderFactoryGetter;
 import com.gitee.starblues.loader.utils.IOUtils;
 import com.gitee.starblues.loader.utils.ResourceUtils;
@@ -40,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
 
-    private final Map<URL, ResourceLoader> resourceLoaderMap = new ConcurrentHashMap<>();
+    private final Map<URL, ResourceStorage> resourceLoaderMap = new ConcurrentHashMap<>();
 
     private final String classLoaderName;
 
@@ -81,15 +82,12 @@ public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
         AbstractResourceLoader resourceLoader = null;
         if(ResourceUtils.isJarFileUrl(url)) {
             if(ResourceUtils.isJarProtocolUrl(url)){
-                resourceLoader = new JarResourceLoader(url,
-                        ResourceLoaderFactoryGetter.getResourceStorage(classLoaderName));
+                resourceLoader = new JarResourceLoader(url);
             } else {
-                resourceLoader = new JarResourceLoader(Paths.get(url.toURI()).toFile(),
-                        ResourceLoaderFactoryGetter.getResourceStorage(classLoaderName));
+                resourceLoader = new JarResourceLoader(Paths.get(url.toURI()).toFile());
             }
         } else if(ResourceUtils.isFileUrl(url)){
-            resourceLoader = new ClassPathLoader(url,
-                    ResourceLoaderFactoryGetter.getResourceStorage(classLoaderName));
+            resourceLoader = new ClassPathLoader(url);
         }
         if(resourceLoader != null){
             addResource(resourceLoader);
@@ -104,15 +102,18 @@ public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
         if (resourceLoaderMap.containsKey(resourceLoader.getBaseUrl())) {
             return;
         }
-        resourceLoader.load();
-        resourceLoaderMap.put(resourceLoader.getBaseUrl(), resourceLoader);
+        ResourceStorage resourceStorage = ResourceLoaderFactoryGetter.getResourceStorage(classLoaderName);
+        resourceLoader.load(resourceStorage);
+        if(!resourceStorage.isEmpty()){
+            resourceLoaderMap.put(resourceLoader.getBaseUrl(), resourceStorage);
+        }
     }
 
     @Override
     public List<Resource> findResources(String name) {
         List<Resource> resources = new ArrayList<>();
-        for (ResourceLoader resourceLoader : resourceLoaderMap.values()) {
-            Resource resource = resourceLoader.findResource(name);
+        for (ResourceStorage resourceStorage : resourceLoaderMap.values()) {
+            Resource resource = resourceStorage.get(name);
             if(resource != null){
                 resources.add(resource);
             }
@@ -120,20 +121,11 @@ public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
         return resources;
     }
 
-    @Override
-    public URL getBaseUrl() {
-        return null;
-    }
-
-    @Override
-    public void load() throws Exception {
-        // 忽略
-    }
 
     @Override
     public Resource findResource(String name) {
-        for (ResourceLoader resourceLoader : resourceLoaderMap.values()) {
-            Resource resourceInfo = resourceLoader.findResource(name);
+        for (ResourceStorage resourceStorage : resourceLoaderMap.values()) {
+            Resource resourceInfo = resourceStorage.get(name);
             if(resourceInfo != null){
                 return resourceInfo;
             }
@@ -143,8 +135,8 @@ public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
 
     @Override
     public InputStream getInputStream(String name) {
-        for (ResourceLoader resourceLoader : resourceLoaderMap.values()) {
-            InputStream inputStream = resourceLoader.getInputStream(name);
+        for (ResourceStorage resourceStorage : resourceLoaderMap.values()) {
+            InputStream inputStream = resourceStorage.getInputStream(name);
             if(inputStream != null){
                 return inputStream;
             }
@@ -155,16 +147,16 @@ public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
     @Override
     public List<Resource> getResources() {
         List<Resource> resources = new ArrayList<>();
-        for (ResourceLoader resourceLoader : resourceLoaderMap.values()) {
-            resources.addAll(resourceLoader.getResources());
+        for (ResourceStorage resourceStorage : resourceLoaderMap.values()) {
+            resources.addAll(resourceStorage.getAll());
         }
         return resources;
     }
 
     @Override
     public void close() throws Exception {
-        for (ResourceLoader resourceLoader : resourceLoaderMap.values()) {
-            IOUtils.closeQuietly(resourceLoader);
+        for (ResourceStorage resourceStorage : resourceLoaderMap.values()) {
+            IOUtils.closeQuietly(resourceStorage);
         }
         resourceLoaderMap.clear();
     }

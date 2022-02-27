@@ -4,6 +4,7 @@ import com.gitee.starblues.loader.classloader.resource.Resource;
 import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  * @author starBlues
  * @version 3.0.0
  */
-public interface ResourceLoaderFactory extends ResourceLoader{
+public interface ResourceLoaderFactory extends AutoCloseable{
 
 
     void addResource(String path) throws Exception;
@@ -27,6 +28,12 @@ public interface ResourceLoaderFactory extends ResourceLoader{
 
     void addResource(ResourceLoader resourceLoader) throws Exception;
 
+    Resource findResource(String name);
+
     List<Resource> findResources(String name);
+
+    InputStream getInputStream(String name);
+
+    List<Resource> getResources();
 
 }

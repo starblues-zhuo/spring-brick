@@ -43,24 +43,27 @@ public class NestedPluginJarResourceLoader extends AbstractResourceLoader {
 
     private final InsidePluginDescriptor pluginDescriptor;
     private final GenericClassLoader parentClassLoader;
+    private final ResourceLoaderFactory resourceLoaderFactory;
+
 
     public NestedPluginJarResourceLoader(InsidePluginDescriptor pluginDescriptor,
-                                         GenericClassLoader parentClassLoader) throws Exception {
-        super(new URL("jar:" + pluginDescriptor.getInsidePluginPath().toUri().toURL() + "!/"),
-                ResourceLoaderFactoryGetter.getResourceStorage(pluginDescriptor.getPluginId()));
+                                         GenericClassLoader parentClassLoader,
+                                         ResourceLoaderFactory resourceLoaderFactory) throws Exception {
+        super(new URL("jar:" + pluginDescriptor.getInsidePluginPath().toUri().toURL() + "!/"));
         this.pluginDescriptor = pluginDescriptor;
         this.parentClassLoader = parentClassLoader;
+        this.resourceLoaderFactory = resourceLoaderFactory;
     }
 
     @Override
-    protected void loadOfChild() throws Exception {
+    protected void loadOfChild(ResourceStorage resourceStorage) throws Exception {
         try (JarFile jarFile = new JarFile(pluginDescriptor.getInsidePluginPath().toFile())) {
-            addClassPath(jarFile);
+            addClassPath(resourceStorage, jarFile);
             addLib(jarFile);
         }
     }
 
-    private void addClassPath(JarFile jarFile) throws Exception{
+    private void addClassPath(ResourceStorage resourceStorage, JarFile jarFile) throws Exception{
         String classesPath = pluginDescriptor.getPluginClassPath();
         Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()){
@@ -70,7 +73,7 @@ public class NestedPluginJarResourceLoader extends AbstractResourceLoader {
             }
             String realName = jarEntry.getName().replace(classesPath, "");
             URL url = new URL(baseUrl.toString() + jarEntry.getName());
-            super.resourceStorage.add(realName, baseUrl, url, ()->{
+            resourceStorage.add(realName, baseUrl, url, ()->{
                 return getClassBytes(realName, jarFile.getInputStream(jarEntry), true);
             });
         }
@@ -87,12 +90,10 @@ public class NestedPluginJarResourceLoader extends AbstractResourceLoader {
             InputStream jarFileInputStream = jarFile.getInputStream(jarEntry);
             URL url = new URL(baseUrl.toString() + pluginLibInfo.getPath() + "!/");
             if(pluginLibInfo.isLoadToMain()){
-                parentClassLoader.addResource(new JarResourceLoader(url, new JarInputStream(jarFileInputStream),
-                        ResourceLoaderFactoryGetter.getMainResourceStorage()));
+                parentClassLoader.addResource(new JarResourceLoader(url, new JarInputStream(jarFileInputStream)));
             } else {
-                JarResourceLoader jarResourceLoader = new JarResourceLoader(url,
-                        new JarInputStream(jarFileInputStream), resourceStorage);
-                jarResourceLoader.load();
+                JarResourceLoader jarResourceLoader = new JarResourceLoader(url, new JarInputStream(jarFileInputStream));
+                resourceLoaderFactory.addResource(jarResourceLoader);
             }
         }
     }

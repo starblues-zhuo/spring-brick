@@ -21,6 +21,9 @@ import com.gitee.starblues.loader.classloader.resource.Resource;
 import com.gitee.starblues.loader.classloader.resource.ResourceByteGetter;
 import com.gitee.starblues.loader.utils.IOUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,8 +69,30 @@ public class DefaultResourceStorage implements ResourceStorage{
     }
 
     @Override
+    public InputStream getInputStream(String name) {
+        Resource resourceInfo = resourceStorage.get(name);
+        if (resourceInfo != null) {
+            try (InputStream inputStream = resourceInfo.getUrl().openStream();
+                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()){
+                IOUtils.copy(inputStream, byteArrayOutputStream);
+                return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            } catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public List<Resource> getAll() {
         return new ArrayList<>(resourceStorage.values());
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return resourceStorage.isEmpty();
     }
 
     @Override

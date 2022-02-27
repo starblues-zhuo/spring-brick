@@ -78,19 +78,18 @@ public class MainJarProgramLauncher extends MainProgramLauncher{
             Archive archive = archives.next();
             URL url = archive.getUrl();
             String path = url.getPath();
-            ResourceStorage resourceStorage = ResourceLoaderFactoryGetter.getMainResourceStorage();
             if(path.contains(PROD_CLASSES_URL_SIGN)){
-                classLoader.addResource(new MainJarResourceLoader(url, resourceStorage));
+                classLoader.addResource(new MainJarResourceLoader(url));
             } else {
-                classLoader.addResource(new JarResourceLoader(url, resourceStorage));
+                classLoader.addResource(new JarResourceLoader(url));
             }
         }
     }
 
     private static class MainJarResourceLoader extends JarResourceLoader {
 
-        public MainJarResourceLoader(URL url, ResourceStorage resourceStorage) throws Exception {
-            super(url, resourceStorage);
+        public MainJarResourceLoader(URL url) throws Exception {
+            super(url);
         }
 
         @Override

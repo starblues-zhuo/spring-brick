@@ -61,7 +61,7 @@ public class PluginClassLoader extends GenericClassLoader {
         PluginType pluginType = descriptor.getType();
         if(pluginType == PluginType.JAR || pluginType == PluginType.ZIP){
             NestedPluginJarResourceLoader resourceLoader =
-                    new NestedPluginJarResourceLoader(descriptor, parentClassLoader);
+                    new NestedPluginJarResourceLoader(descriptor, parentClassLoader, resourceLoaderFactory);
             resourceLoaderFactory.addResource(resourceLoader);
         } else {
             addClasspath(descriptor);

@@ -56,7 +56,7 @@ public class MainProgramLauncher extends AbstractLauncher<ClassLoader>{
     }
 
     protected ResourceLoaderFactory getResourceLoaderFactory(String... args){
-        return ResourceLoaderFactoryGetter.create(MAIN_CLASS_LOADER_NAME, args);
+        return ResourceLoaderFactoryGetter.get(MAIN_CLASS_LOADER_NAME, args);
     }
 
     protected ClassLoader getParentClassLoader(){
@@ -80,6 +80,5 @@ public class MainProgramLauncher extends AbstractLauncher<ClassLoader>{
             }
         }
     }
-
 
 }

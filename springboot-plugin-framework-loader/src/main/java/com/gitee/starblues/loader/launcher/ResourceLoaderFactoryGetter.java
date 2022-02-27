@@ -56,7 +56,7 @@ public class ResourceLoaderFactoryGetter {
     private static volatile String resourceMode;
 
 
-    public static ResourceLoaderFactory create(String classLoaderName, String... args){
+    static ResourceLoaderFactory get(String classLoaderName, String... args){
         if(resourceMode == null){
             synchronized (ResourceLoaderFactory.class){
                 if(resourceMode == null){
@@ -64,11 +64,7 @@ public class ResourceLoaderFactoryGetter {
                 }
             }
         }
-        return instant(classLoaderName);
-    }
-
-    public static synchronized ResourceLoaderFactory get(String classLoaderName){
-        return instant(classLoaderName);
+        return new DefaultResourceLoaderFactory(classLoaderName);
     }
 
     private static String parseArg(String... args){
@@ -94,14 +90,6 @@ public class ResourceLoaderFactoryGetter {
             resourceStorage = new CacheResourceStorage();
         }
         return resourceStorage;
-    }
-
-    public static ResourceStorage getMainResourceStorage(){
-        return getResourceStorage(MainProgramLauncher.MAIN_CLASS_LOADER_NAME);
-    }
-
-    private static ResourceLoaderFactory instant(String classLoaderName){
-        return new DefaultResourceLoaderFactory(classLoaderName);
     }
 
 }

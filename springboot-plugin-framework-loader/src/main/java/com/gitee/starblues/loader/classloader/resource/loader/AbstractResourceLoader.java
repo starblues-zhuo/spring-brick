@@ -18,7 +18,9 @@ package com.gitee.starblues.loader.classloader.resource.loader;
 
 
 import com.gitee.starblues.loader.classloader.resource.Resource;
+import com.gitee.starblues.loader.classloader.resource.storage.DefaultResourceStorage;
 import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
+import com.gitee.starblues.loader.utils.Assert;
 import com.gitee.starblues.loader.utils.IOUtils;
 
 import java.io.*;
@@ -41,11 +43,8 @@ public abstract class AbstractResourceLoader implements ResourceLoader{
 
     protected final URL baseUrl;
 
-    protected final ResourceStorage resourceStorage;
-
-    protected AbstractResourceLoader(URL baseUrl, ResourceStorage resourceStorage) {
+    protected AbstractResourceLoader(URL baseUrl) {
         this.baseUrl = baseUrl;
-        this.resourceStorage = resourceStorage;
     }
 
     @Override
@@ -58,14 +57,14 @@ public abstract class AbstractResourceLoader implements ResourceLoader{
      * @throws Exception 初始异常
      */
     @Override
-    public final synchronized void load() throws Exception{
+    public final synchronized void load(ResourceStorage resourceStorage) throws Exception{
         if(loaded){
             throw new Exception(this.getClass().getName()+": 已经初始化了, 不能再初始化!");
         }
         try {
             // 添加root 路径
             resourceStorage.add("/", baseUrl, baseUrl);
-            loadOfChild();
+            loadOfChild(resourceStorage);
         } finally {
             loaded = true;
         }
@@ -75,34 +74,7 @@ public abstract class AbstractResourceLoader implements ResourceLoader{
      * 子类初始化实现
      * @throws Exception 初始异常
      */
-    protected void loadOfChild() throws Exception{};
-
-    @Override
-    public Resource findResource(final String name) {
-        return resourceStorage.get(name);
-    }
-
-    @Override
-    public InputStream getInputStream(final String name) {
-        Resource resourceInfo = resourceStorage.get(name);
-        if (resourceInfo != null) {
-            try (InputStream inputStream = resourceInfo.getUrl().openStream();
-                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()){
-                IOUtils.copy(inputStream, byteArrayOutputStream);
-                return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            } catch (Exception e){
-                e.printStackTrace();
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public List<Resource> getResources(){
-        return resourceStorage.getAll();
-    }
+    protected abstract void loadOfChild(ResourceStorage resourceStorage) throws Exception;
 
     protected byte[] getClassBytes(String path, InputStream inputStream, boolean isClose) throws Exception{
         if(!isClass(path)){
@@ -122,7 +94,7 @@ public abstract class AbstractResourceLoader implements ResourceLoader{
 
     @Override
     public void close() throws Exception {
-        resourceStorage.close();
+
     }
 
     private static boolean isClass(String path){

@@ -200,10 +200,6 @@ public class BasicRepackager implements Repackager{
     }
 
     protected String getPluginPath(){
-        DevConfig devConfig = repackageMojo.getDevConfig();
-        if(devConfig != null && !ObjectUtils.isEmpty(devConfig.getPluginPath())){
-            return devConfig.getPluginPath();
-        }
         return repackageMojo.getProject().getBuild().getOutputDirectory();
     }
 

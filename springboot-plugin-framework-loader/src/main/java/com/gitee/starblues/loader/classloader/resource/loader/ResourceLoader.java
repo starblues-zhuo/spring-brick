@@ -16,11 +16,9 @@
 
 package com.gitee.starblues.loader.classloader.resource.loader;
 
-import com.gitee.starblues.loader.classloader.resource.Resource;
+import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
 
-import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
 
 /**
  * 资源加载者
@@ -32,12 +30,6 @@ public interface ResourceLoader extends AutoCloseable{
 
     URL getBaseUrl();
 
-    void load() throws Exception;
-
-    Resource findResource(String name);
-
-    InputStream getInputStream(String name);
-
-    List<Resource> getResources();
+    void load(ResourceStorage resourceStorage) throws Exception;
 
 }

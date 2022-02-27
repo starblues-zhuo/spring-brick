@@ -37,19 +37,19 @@ public class JarResourceLoader extends AbstractResourceLoader {
     private ExcludeResource excludeResource = (jarEntry)->false;
     private IncludeResource includeResource = (jarEntry)->true;
 
-    public JarResourceLoader(File file, ResourceStorage resourceStorage)  throws Exception{
-        super(new URL("jar:" + file.toURI().toURL() + "!/"), resourceStorage);
+    public JarResourceLoader(File file)  throws Exception{
+        super(new URL("jar:" + file.toURI().toURL() + "!/"));
         URL url = file.toURI().toURL();
         this.jarInputStream = new JarInputStream(url.openStream());
     }
 
-    public JarResourceLoader(URL url, ResourceStorage resourceStorage)  throws Exception{
-        super(url, resourceStorage);
+    public JarResourceLoader(URL url)  throws Exception{
+        super(url);
         this.jarInputStream = new JarInputStream(url.openStream());
     }
 
-    public JarResourceLoader(URL url, JarInputStream jarInputStream, ResourceStorage resourceStorage)  throws Exception{
-        super(url, resourceStorage);
+    public JarResourceLoader(URL url, JarInputStream jarInputStream)  throws Exception{
+        super(url);
         this.jarInputStream = jarInputStream;
     }
 
@@ -68,7 +68,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    protected void loadOfChild() throws Exception {
+    protected void loadOfChild(ResourceStorage resourceStorage) throws Exception {
         // 解析
         try {
             JarEntry jarEntry = null;
