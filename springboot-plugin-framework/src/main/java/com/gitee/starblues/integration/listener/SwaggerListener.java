@@ -45,6 +45,11 @@ public class SwaggerListener implements PluginListener{
         refresh();
     }
 
+    @Override
+    public void stopSuccess(PluginInfo pluginInfo) {
+        refresh();
+    }
+
     void refresh(){
         try {
             DocumentationPluginsBootstrapper documentationPluginsBootstrapper = SpringBeanUtils.getExistBean(mainApplicationContext,

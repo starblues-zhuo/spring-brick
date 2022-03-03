@@ -18,20 +18,25 @@ package com.gitee.starblues.loader.classloader.resource.loader;
 
 import com.gitee.starblues.loader.classloader.resource.Resource;
 import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
+import com.gitee.starblues.loader.classloader.resource.storage.SameRootResourceStorage;
 import com.gitee.starblues.loader.launcher.ResourceLoaderFactoryGetter;
 import com.gitee.starblues.loader.utils.IOUtils;
 import com.gitee.starblues.loader.utils.ResourceUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * 默认的资源加载工厂
@@ -41,7 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
 
-    private final Map<URL, ResourceStorage> resourceLoaderMap = new ConcurrentHashMap<>();
+    private final Map<URL, SameRootResourceStorage> resourceLoaderMap = new ConcurrentHashMap<>();
 
     private final String classLoaderName;
 
@@ -102,7 +107,9 @@ public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
         if (resourceLoaderMap.containsKey(resourceLoader.getBaseUrl())) {
             return;
         }
-        ResourceStorage resourceStorage = ResourceLoaderFactoryGetter.getResourceStorage(classLoaderName);
+        SameRootResourceStorage resourceStorage = ResourceLoaderFactoryGetter.getResourceStorage(
+                classLoaderName,
+                resourceLoader.getBaseUrl());
         resourceLoader.load(resourceStorage);
         if(!resourceStorage.isEmpty()){
             resourceLoaderMap.put(resourceLoader.getBaseUrl(), resourceStorage);
@@ -110,32 +117,69 @@ public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
     }
 
     @Override
-    public List<Resource> findResources(String name) {
-        List<Resource> resources = new ArrayList<>();
-        for (ResourceStorage resourceStorage : resourceLoaderMap.values()) {
+    public Resource findResource(String name) {
+        for (Map.Entry<URL, SameRootResourceStorage> entry : resourceLoaderMap.entrySet()) {
+            ResourceStorage resourceStorage = entry.getValue();
             Resource resource = resourceStorage.get(name);
             if(resource != null){
-                resources.add(resource);
-            }
-        }
-        return resources;
-    }
-
-
-    @Override
-    public Resource findResource(String name) {
-        for (ResourceStorage resourceStorage : resourceLoaderMap.values()) {
-            Resource resourceInfo = resourceStorage.get(name);
-            if(resourceInfo != null){
-                return resourceInfo;
+                return resource;
             }
         }
         return null;
     }
 
     @Override
+    public Enumeration<Resource> findResources(String name) {
+        return new Enumeration<Resource>() {
+            private final List<SameRootResourceStorage> list  = new ArrayList<>(resourceLoaderMap.values());
+            private int index = 0;
+            private Resource resource = null;
+
+            @Override
+            public boolean hasMoreElements() {
+                return next();
+            }
+
+            @Override
+            public Resource nextElement() {
+                if (!next()) {
+                    throw new NoSuchElementException();
+                }
+                Resource r = resource;
+                resource = null;
+                return r;
+            }
+
+            private boolean next() {
+                if (resource != null) {
+                    return true;
+                } else {
+                    SameRootResourceStorage resourceStorage;
+                    while (index < list.size()){
+                        resourceStorage = list.get(index++);
+                        resource = getResource(resourceStorage);
+                        if(resource != null){
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+
+            private Resource getResource(SameRootResourceStorage resourceStorage){
+                resource = resourceStorage.get(name);
+                if(resource != null){
+                    return resource;
+                }
+                return null;
+            }
+        };
+    }
+
+    @Override
     public InputStream getInputStream(String name) {
-        for (ResourceStorage resourceStorage : resourceLoaderMap.values()) {
+        for (Map.Entry<URL, SameRootResourceStorage> entry : resourceLoaderMap.entrySet()) {
+            ResourceStorage resourceStorage = entry.getValue();
             InputStream inputStream = resourceStorage.getInputStream(name);
             if(inputStream != null){
                 return inputStream;
@@ -145,12 +189,8 @@ public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
     }
 
     @Override
-    public List<Resource> getResources() {
-        List<Resource> resources = new ArrayList<>();
-        for (ResourceStorage resourceStorage : resourceLoaderMap.values()) {
-            resources.addAll(resourceStorage.getAll());
-        }
-        return resources;
+    public List<URL> getUrls() {
+        return new ArrayList<>(resourceLoaderMap.keySet());
     }
 
     @Override
@@ -160,4 +200,5 @@ public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
         }
         resourceLoaderMap.clear();
     }
+
 }

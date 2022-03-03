@@ -47,7 +47,6 @@ public class JarOuterPackager extends JarNestPackager {
         super(mainRepackager);
     }
 
-
     @Override
     public void repackage() throws MojoExecutionException, MojoFailureException {
         // 生成依赖文件夹

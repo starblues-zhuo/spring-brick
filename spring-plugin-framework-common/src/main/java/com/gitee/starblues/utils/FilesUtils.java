@@ -16,6 +16,8 @@
 
 package com.gitee.starblues.utils;
 
+import com.gitee.starblues.common.Constants;
+
 import java.io.File;
 import java.util.function.Supplier;
 
@@ -128,6 +130,23 @@ public class FilesUtils {
         }
 
         return stringBuilder.toString();
+    }
+
+    /**
+     * 解决相对路径
+     * @param rootPath 根路径
+     * @param relativePath 以 ~ 开头的相对路径
+     * @return 处理后的路径
+     */
+    public static String resolveRelativePath(String rootPath, String relativePath){
+        if(ObjectUtils.isEmpty(relativePath)){
+            return relativePath;
+        }
+        if(relativePath.startsWith(Constants.RELATIVE_SIGN)){
+            return joiningFilePath(rootPath, relativePath.replaceFirst(Constants.RELATIVE_SIGN, ""));
+        } else {
+            return relativePath;
+        }
     }
 
 }

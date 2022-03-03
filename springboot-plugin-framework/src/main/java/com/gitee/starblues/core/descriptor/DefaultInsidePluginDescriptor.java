@@ -16,7 +16,6 @@
 
 package com.gitee.starblues.core.descriptor;
 
-import lombok.Data;
 import lombok.Setter;
 
 import java.nio.file.Path;

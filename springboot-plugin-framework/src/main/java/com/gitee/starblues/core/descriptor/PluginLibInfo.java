@@ -32,7 +32,14 @@ import lombok.ToString;
 @ToString
 public class PluginLibInfo {
 
+    /**
+     * 路径
+     */
     private final String path;
+
+    /**
+     * 是否加载到主程序中
+     */
     private final boolean loadToMain;
 
 }

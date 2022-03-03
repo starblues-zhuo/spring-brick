@@ -32,6 +32,8 @@ public class ResourceUtils {
     public static final String URL_PROTOCOL_VFSFILE = "vfsfile";
     public static final String URL_PROTOCOL_VFS = "vfs";
 
+    public static final String PACKAGE_SPLIT = "/";
+
     private ResourceUtils(){}
 
     /**
@@ -65,6 +67,34 @@ public class ResourceUtils {
         String protocol = url.getProtocol();
         return (URL_PROTOCOL_FILE.equals(protocol) || URL_PROTOCOL_VFSFILE.equals(protocol) ||
                 URL_PROTOCOL_VFS.equals(protocol));
+    }
+
+    /**
+     * 将资源名称统一格式化为标准格式
+     * 标准格式为 a/b/c
+     * @param name 原始资源名称
+     * @return 标准资源名称
+     */
+    public static String formatStandardName(String name){
+        if(ObjectUtils.isEmpty(name)) {
+            return PACKAGE_SPLIT;
+        }
+        String[] split = name.split(PACKAGE_SPLIT);
+        StringBuilder newPath = null;
+        for (String s : split) {
+            if ("".equals(s)) {
+                continue;
+            }
+            if (newPath == null) {
+                newPath = new StringBuilder(s);
+            } else {
+                newPath.append(PACKAGE_SPLIT).append(s);
+            }
+        }
+        if(newPath == null || newPath.length() == 0){
+            return PACKAGE_SPLIT;
+        }
+        return newPath.toString();
     }
 
 }

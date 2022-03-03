@@ -44,6 +44,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * 抽象的插件管理者
@@ -76,7 +77,7 @@ public class DefaultPluginManager implements PluginManager{
     public DefaultPluginManager(RealizeProvider realizeProvider, IntegrationConfiguration configuration) {
         this.provider = Assert.isNotNull(realizeProvider, "参数 realizeProvider 不能为空");
         this.configuration = Assert.isNotNull(configuration, "参数 configuration 不能为空");
-        this.pluginRootDirs = configuration.pluginPath();
+        this.pluginRootDirs = resolvePath(configuration.pluginPath());
         this.pathResolve = getComposePathResolve();
         this.basicChecker = realizeProvider.getPluginBasicChecker();
         this.launcherChecker = getComposeLauncherChecker(realizeProvider);
@@ -105,6 +106,9 @@ public class DefaultPluginManager implements PluginManager{
 
     @Override
     public String getDefaultPluginRoot() {
+        if(pluginRootDirs == null){
+            return null;
+        }
         return pluginRootDirs.stream().findFirst().orElseThrow(()->{
             return new PluginException("插件根路径未配置");
         });
@@ -581,6 +585,19 @@ public class DefaultPluginManager implements PluginManager{
         if(compareVersion <= 0){
             throw new PluginException("插件包版本[" + newPluginVersion + "]必须大于:"
                     + oldPluginVersion);
+        }
+    }
+
+    private List<String> resolvePath(List<String> path){
+        if(ObjectUtils.isEmpty(path)){
+            return Collections.emptyList();
+        } else {
+            File file = new File("");
+            String absolutePath = file.getAbsolutePath();
+            return path.stream()
+                    .filter(p->!ObjectUtils.isEmpty(p))
+                    .map(p->FilesUtils.resolveRelativePath(absolutePath, p))
+                    .collect(Collectors.toList());
         }
     }
 

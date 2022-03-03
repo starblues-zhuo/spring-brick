@@ -36,12 +36,14 @@ public class ShareResourceStorage extends DefaultResourceStorage{
 
     private final String key;
 
-    public ShareResourceStorage(String key) {
+    public ShareResourceStorage(String key, URL baseUrl) {
+        super(baseUrl);
         this.key = key;
     }
 
     @Override
-    public void add(String name, URL baseUrl, URL url, ResourceByteGetter byteGetter) throws Exception{
+    public void add(String name, URL url, ResourceByteGetter byteGetter) throws Exception{
+        name = formatResourceName(name);
         if(resourceStorage.containsKey(name)){
             return;
         }
@@ -102,19 +104,12 @@ public class ShareResourceStorage extends DefaultResourceStorage{
 
     private static class ByteStore{
 
-        private final String resourceName;
-
         private final String commonByteKey;
 
         private final Map<String, byte[]> bytesMap = new HashMap<>();
 
         private ByteStore(String resourceName) {
-            this.resourceName = resourceName;
             this.commonByteKey = resourceName + "_ByteStoreCommon";
-        }
-
-        public String getResourceName() {
-            return resourceName;
         }
 
         public synchronized void addByte(String key, byte[] bytes){
@@ -154,7 +149,6 @@ public class ShareResourceStorage extends DefaultResourceStorage{
                 return false;
             }
         }
-
     }
 
 }

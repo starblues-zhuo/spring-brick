@@ -40,8 +40,8 @@ public class PluginInfoFace implements PluginInfo {
         this.pluginDescriptor = pluginInsideInfo.getPluginDescriptor().toPluginDescriptor();
         this.pluginState = pluginInsideInfo.getPluginState();
         this.followSystem = pluginInsideInfo.isFollowSystem();
-        this.startTime = pluginInsideInfo.startTime();
-        this.stopTime = pluginInsideInfo.stopTime();
+        this.startTime = pluginInsideInfo.getStartTime();
+        this.stopTime = pluginInsideInfo.getStopTime();
     }
 
     @Override
@@ -65,12 +65,12 @@ public class PluginInfoFace implements PluginInfo {
     }
 
     @Override
-    public Date startTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
     @Override
-    public Date stopTime() {
+    public Date getStopTime() {
         return stopTime;
     }
 

@@ -23,6 +23,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
+ * spring-boot-starter
+ *
  * @author starBlues
  * @version 3.0.0
  */

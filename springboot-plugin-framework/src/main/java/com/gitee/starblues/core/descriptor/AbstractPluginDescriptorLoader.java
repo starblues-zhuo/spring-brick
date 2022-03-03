@@ -155,13 +155,19 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
             return Collections.emptySet();
         }
         Set<PluginLibInfo> pluginLibInfos = new HashSet<>(dependenciesIndex.size());
+        File file = new File("");
+        String absolutePath = file.getAbsolutePath();
         for (String index : dependenciesIndex) {
+            String libPath;
+            boolean loadToMain;
             if(index.endsWith(Constants.LOAD_TO_MAIN_SIGN)){
-                String path = index.substring(0, index.lastIndexOf(Constants.LOAD_TO_MAIN_SIGN));
-                pluginLibInfos.add(new PluginLibInfo(path, true));
+                libPath = index.substring(0, index.lastIndexOf(Constants.LOAD_TO_MAIN_SIGN));
+                loadToMain = true;
             } else {
-                pluginLibInfos.add(new PluginLibInfo(index, false));
+                libPath = index;
+                loadToMain = false;
             }
+            pluginLibInfos.add(new PluginLibInfo(FilesUtils.resolveRelativePath(absolutePath, libPath), loadToMain));
         }
         return pluginLibInfos;
     }

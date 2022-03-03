@@ -21,7 +21,7 @@ package com.gitee.starblues.integration.listener;
  * 插件初始化监听者
  *
  * @author starBlues
- * @version 1.0.0
+ * @version 3.0.0
  */
 public interface PluginInitializerListener {
 

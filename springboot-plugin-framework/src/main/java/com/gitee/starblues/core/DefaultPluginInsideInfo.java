@@ -78,12 +78,12 @@ public class DefaultPluginInsideInfo implements PluginInsideInfo {
     }
 
     @Override
-    public Date startTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
     @Override
-    public Date stopTime() {
+    public Date getStopTime() {
         return stopTime;
     }
 
@@ -96,7 +96,7 @@ public class DefaultPluginInsideInfo implements PluginInsideInfo {
         if(pluginState == PluginState.STARTED){
             startTime = new Date();
             stopTime = null;
-        } if(pluginState == PluginState.STOPPED){
+        } else if(pluginState == PluginState.STOPPED){
             stopTime = new Date();
             startTime = null;
         } else {

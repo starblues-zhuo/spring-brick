@@ -19,7 +19,10 @@ package com.gitee.starblues.loader.classloader.resource.storage;
 import com.gitee.starblues.loader.classloader.resource.loader.DefaultResource;
 import com.gitee.starblues.loader.classloader.resource.Resource;
 import com.gitee.starblues.loader.classloader.resource.ResourceByteGetter;
+import com.gitee.starblues.loader.utils.Assert;
 import com.gitee.starblues.loader.utils.IOUtils;
+import com.gitee.starblues.loader.utils.ObjectUtils;
+import com.gitee.starblues.loader.utils.ResourceUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,40 +39,61 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author starBlues
  * @version 3.0.0
  */
-public class DefaultResourceStorage implements ResourceStorage{
+public class DefaultResourceStorage extends SameRootResourceStorage{
 
     protected final Map<String, Resource> resourceStorage = new ConcurrentHashMap<>();
 
+    public DefaultResourceStorage(URL baseUrl) {
+        super(baseUrl);
+    }
+
     @Override
-    public void add(String name, URL baseUrl, URL url, ResourceByteGetter byteGetter) throws Exception{
+    public void add(String name, URL url, ResourceByteGetter byteGetter) throws Exception{
+        Assert.isNotEmpty(name, "name 不能为空");
+        Assert.isNotNull(url, "url 不能为空");
+        name = formatResourceName(name);
         if(resourceStorage.containsKey(name)){
             return;
         }
         DefaultResource defaultResource = new DefaultResource(name, baseUrl, url);
-        addResource(name, defaultResource);
+        resourceStorage.put(name, defaultResource);
     }
 
     @Override
-    public void add(String name, URL baseUrl, URL url) throws Exception{
-        this.add(name, baseUrl, url, null);
+    public void add(String name, URL url) throws Exception{
+        this.add(name, url, null);
     }
 
     @Override
     public boolean exist(String name) {
+        if(ObjectUtils.isEmpty(name)){
+            return false;
+        }
+        name = formatResourceName(name);
         return resourceStorage.containsKey(name);
     }
 
     protected void addResource(String name, Resource resource){
+        Assert.isNotEmpty(name, "name 不能为空");
+        Assert.isNotNull(resource, "resource 不能为空");
         resourceStorage.put(name, resource);
     }
 
     @Override
     public Resource get(String name) {
+        if(ObjectUtils.isEmpty(name)){
+            return null;
+        }
+        name = formatResourceName(name);
         return resourceStorage.get(name);
     }
 
     @Override
     public InputStream getInputStream(String name) {
+        if(ObjectUtils.isEmpty(name)){
+            return null;
+        }
+        name = formatResourceName(name);
         Resource resourceInfo = resourceStorage.get(name);
         if (resourceInfo != null) {
             try (InputStream inputStream = resourceInfo.getUrl().openStream();
@@ -102,4 +126,9 @@ public class DefaultResourceStorage implements ResourceStorage{
         }
         resourceStorage.clear();
     }
+
+    protected final String formatResourceName(String name) {
+        return ResourceUtils.formatStandardName(name);
+    }
+
 }

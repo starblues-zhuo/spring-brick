@@ -79,7 +79,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
                 if(includeResource.include(jarEntry)){
                     String name = resolveName(jarEntry.getName());
                     URL url = new URL(baseUrl.toString() + name);
-                    resourceStorage.add(name, baseUrl, url, ()->{
+                    resourceStorage.add(name, url, ()->{
                         return getClassBytes(name, jarInputStream, false);
                     });
                     jarInputStream.closeEntry();

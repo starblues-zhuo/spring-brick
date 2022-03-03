@@ -73,7 +73,7 @@ public class NestedPluginJarResourceLoader extends AbstractResourceLoader {
             }
             String realName = jarEntry.getName().replace(classesPath, "");
             URL url = new URL(baseUrl.toString() + jarEntry.getName());
-            resourceStorage.add(realName, baseUrl, url, ()->{
+            resourceStorage.add(realName, url, ()->{
                 return getClassBytes(realName, jarFile.getInputStream(jarEntry), true);
             });
         }

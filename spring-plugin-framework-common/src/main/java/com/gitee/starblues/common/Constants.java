@@ -41,5 +41,9 @@ public abstract class Constants {
      */
     public final static String LOAD_TO_MAIN_SIGN = "@LOAD_TO_MAIN";
 
+    /**
+     * 相对路径符号标志
+     */
+    public final static String RELATIVE_SIGN = "~";
 
 }

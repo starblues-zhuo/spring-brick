@@ -86,7 +86,7 @@ public class ClassPathLoader extends AbstractResourceLoader {
     }
 
     private void addResource(ResourceStorage resourceStorage, File file, String packageName) throws Exception {
-        resourceStorage.add(packageName, url, new URL(url.toString() + packageName), ()->{
+        resourceStorage.add(packageName, new URL(url.toString() + packageName), ()->{
             if(file.exists() && file.isFile()){
                 return getClassBytes(file.getPath(), new FileInputStream(file), true);
             } else {

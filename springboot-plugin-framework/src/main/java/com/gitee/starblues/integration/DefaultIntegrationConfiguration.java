@@ -16,9 +16,7 @@
 
 package com.gitee.starblues.integration;
 
-import com.gitee.starblues.core.RuntimeMode;
 import com.gitee.starblues.utils.Assert;
-import org.springframework.http.CacheControl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +41,7 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     @Override
     public List<String> pluginPath() {
         List<String> pluginPath = new ArrayList<>(1);
-        if(environment() == RuntimeMode.DEV){
-            pluginPath.add("plugins");
-        } else if(environment() == RuntimeMode.PROD){
-            pluginPath.add("./plugins/");
-        }
+        pluginPath.add("~/plugins/");
         return pluginPath;
     }
 

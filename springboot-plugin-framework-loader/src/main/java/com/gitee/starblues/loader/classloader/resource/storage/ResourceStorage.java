@@ -34,19 +34,19 @@ public interface ResourceStorage extends AutoCloseable{
     /**
      * 添加资源
      * @param name 资源名称
-     * @param baseUrl 资源根URL
      * @param url 资源url
      * @param byteGetter 资源字节获取者
+     * @throws Exception 添加资源异常
      */
-    void add(String name, URL baseUrl, URL url, ResourceByteGetter byteGetter) throws Exception;
+    void add(String name, URL url, ResourceByteGetter byteGetter) throws Exception;
 
     /**
      * 添加资源
      * @param name 资源名称
-     * @param baseUrl 资源根URL
      * @param url 资源url
+     * @throws Exception 添加资源异常
      */
-    void add(String name, URL baseUrl, URL url) throws Exception;
+    void add(String name, URL url) throws Exception;
 
     /**
      * 存在资源

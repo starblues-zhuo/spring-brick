@@ -34,8 +34,13 @@ public class CacheResourceStorage extends DefaultResourceStorage{
 
     protected final Map<String, Resource> resourceStorage = new ConcurrentHashMap<>();
 
+    public CacheResourceStorage(URL baseUrl) {
+        super(baseUrl);
+    }
+
     @Override
-    public void add(String name, URL baseUrl, URL url, ResourceByteGetter byteGetter) throws Exception{
+    public void add(String name, URL url, ResourceByteGetter byteGetter) throws Exception{
+        name = formatResourceName(name);
         if(resourceStorage.containsKey(name)){
             return;
         }

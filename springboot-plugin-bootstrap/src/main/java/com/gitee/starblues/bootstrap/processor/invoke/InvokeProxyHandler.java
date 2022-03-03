@@ -21,9 +21,13 @@ import com.gitee.starblues.annotation.Caller;
 import com.gitee.starblues.annotation.Supplier;
 import com.gitee.starblues.spring.invoke.InvokeSupperCache;
 import com.gitee.starblues.utils.ObjectUtils;
+import com.gitee.starblues.utils.ReflectionUtils;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -44,7 +48,7 @@ public class InvokeProxyHandler implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] callerArgs) throws Throwable {
         String pluginId = callerAnnotation.pluginId();
         Object supplierObject = invokeSupperCache.getSupperBean(pluginId, callerAnnotation.value());
         if (supplierObject == null) {
@@ -56,13 +60,13 @@ public class InvokeProxyHandler implements InvocationHandler {
             }
         }
         Caller.Method callerMethod = method.getAnnotation(Caller.Method.class);
-        if (args == null) {
-            args = new Object[]{};
+        if (callerArgs == null) {
+            callerArgs = new Object[]{};
         }
         if (callerMethod == null) {
-            return notAnnotationInvoke(method, supplierObject, args);
+            return notAnnotationInvoke(method, supplierObject, callerArgs);
         } else {
-            return annotationInvoke(method, callerMethod, supplierObject, args);
+            return annotationInvoke(method, callerMethod, supplierObject, callerArgs);
         }
     }
 
@@ -73,12 +77,12 @@ public class InvokeProxyHandler implements InvocationHandler {
      * @param method 调用接口的方法
      * @param callerMethod 调用者方法注解
      * @param supplierObject 调用者对象
-     * @param args 传入参数
+     * @param callerArgs 调用者参数
      * @return 返回值
      * @throws Throwable 异常
      */
     private Object annotationInvoke(Method method, Caller.Method callerMethod,
-                                    Object supplierObject, Object[] args) throws Throwable{
+                                    Object supplierObject, Object[] callerArgs) throws Throwable{
 
         String callerMethodName = callerMethod.value();
         Class<?> supplierClass = supplierObject.getClass();
@@ -96,26 +100,14 @@ public class InvokeProxyHandler implements InvocationHandler {
         }
         if(supplierMethod == null){
             // 如果为空, 说明没有找到被调用者的注解, 则走没有注解的代理调用。
-            return notAnnotationInvoke(method, supplierObject, args);
+            return notAnnotationInvoke(method, supplierObject, callerArgs);
         }
         Class<?>[] parameterTypes = supplierMethod.getParameterTypes();
-        if(parameterTypes.length != args.length){
+        if(parameterTypes.length != callerArgs.length){
             // 参数不匹配
-            return notAnnotationInvoke(method, supplierObject, args);
+            return notAnnotationInvoke(method, supplierObject, callerArgs);
         }
-        Object[] supplierArgs = new Object[args.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
-            Class<?> parameterType = parameterTypes[i];
-            Object arg = args[i];
-            if(parameterType == arg.getClass()){
-                supplierArgs[i] = arg;
-            } else {
-                // 类型不匹配, 尝试使用json序列化
-                String json = OBJECT_MAPPER.writeValueAsString(arg);
-                Object serializeObject = OBJECT_MAPPER.readValue(json, parameterType);
-                supplierArgs[i] = serializeObject;
-            }
-        }
+        Object[] supplierArgs = getSupplierArgs(callerArgs, supplierMethod);
         Object invokeReturn = supplierMethod.invoke(supplierObject, supplierArgs);
         return getReturnObject(invokeReturn, method);
     }
@@ -124,20 +116,57 @@ public class InvokeProxyHandler implements InvocationHandler {
      * 没有注解调用
      * @param method 调用接口的方法
      * @param supplierObject 提供者对象
-     * @param args 传入参数
+     * @param callerArgs 调用者参数
      * @return 返回值
      * @throws Throwable 异常
      */
-    private Object notAnnotationInvoke(Method method, Object supplierObject, Object[] args) throws Throwable{
+    private Object notAnnotationInvoke(Method method, Object supplierObject, Object[] callerArgs) throws Throwable{
         String name = method.getName();
-        Class<?>[] argClasses = new Class[args.length];
-        for (int i = 0; i < args.length; i++) {
-            argClasses[i] = args[i].getClass();
+        Class<?>[] supplierArgClasses = new Class[callerArgs.length];
+        ClassLoader classLoader = supplierObject.getClass().getClassLoader();
+        for (int i = 0; i < callerArgs.length; i++) {
+            Object callerArg = callerArgs[i];
+            try {
+                supplierArgClasses[i] = classLoader.loadClass(callerArg.getClass().getName());
+            } catch (Exception e){
+                supplierArgClasses[i] = callerArg.getClass();
+            }
         }
         Class<?> supplierClass = supplierObject.getClass();
-        Method supplierMethod = supplierClass.getMethod(name, argClasses);
-        Object invokeReturn = supplierMethod.invoke(supplierObject, args);
+        Method supplierMethod = null;
+        try {
+            supplierMethod = supplierClass.getMethod(name, supplierArgClasses);
+        } catch (Exception e){
+            supplierMethod = findSupplierMethod(supplierClass, name, supplierArgClasses);
+        }
+        if(supplierMethod == null){
+            throw ReflectionUtils.getNoSuchMethodException(supplierClass, name, supplierArgClasses);
+        }
+        Object[] supplierArgs = getSupplierArgs(callerArgs, supplierMethod);
+        Object invokeReturn = supplierMethod.invoke(supplierObject, supplierArgs);
         return getReturnObject(invokeReturn, method);
+    }
+
+    private Object[] getSupplierArgs(Object[] callerArgs, Method supplierMethod) throws Exception{
+        if(callerArgs == null || callerArgs.length == 0){
+            return new Class<?>[]{};
+        }
+        Class<?>[] supplierParameterTypes = supplierMethod.getParameterTypes();
+        Object[] supplierArgs = new Object[callerArgs.length];
+        for (int i = 0; i < supplierParameterTypes.length; i++) {
+            Class<?> supplierParameterType = supplierParameterTypes[i];
+            Object arg = callerArgs[i];
+            if(supplierParameterType.isAssignableFrom(arg.getClass())){
+                // 类型相同
+                supplierArgs[i] = arg;
+            } else {
+                // 类型不匹配, 尝试使用json序列化. 当前序列化针对大数据量下性能比较低, 建议将大数据量传输的参数定义到主程序中
+                String json = OBJECT_MAPPER.writeValueAsString(arg);
+                Object serializeObject = OBJECT_MAPPER.readValue(json, supplierParameterType);
+                supplierArgs[i] = serializeObject;
+            }
+        }
+        return supplierArgs;
     }
 
 
@@ -160,4 +189,22 @@ public class InvokeProxyHandler implements InvocationHandler {
             return OBJECT_MAPPER.readValue(json, OBJECT_MAPPER.getTypeFactory().constructType(method.getGenericReturnType()) );
         }
     }
+
+    private Method findSupplierMethod(Class<?> supplierClass, String methodName, Class<?>[] supplierArgClasses){
+        while (supplierClass != null){
+            Method[] methods = supplierClass.getMethods();
+            for (Method method : methods) {
+                String name = method.getName();
+                if(!Objects.equals(name, methodName)){
+                    continue;
+                }
+                if(method.getParameterTypes().length == supplierArgClasses.length){
+                    return method;
+                }
+            }
+            supplierClass = supplierClass.getSuperclass();
+        }
+        return null;
+    }
+
 }

@@ -17,18 +17,12 @@
 package com.gitee.starblues.loader.classloader.resource.loader;
 
 
-import com.gitee.starblues.loader.classloader.resource.Resource;
-import com.gitee.starblues.loader.classloader.resource.storage.DefaultResourceStorage;
 import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
-import com.gitee.starblues.loader.utils.Assert;
 import com.gitee.starblues.loader.utils.IOUtils;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 抽象的资源加载者
@@ -63,7 +57,7 @@ public abstract class AbstractResourceLoader implements ResourceLoader{
         }
         try {
             // 添加root 路径
-            resourceStorage.add("/", baseUrl, baseUrl);
+            resourceStorage.add("/", baseUrl);
             loadOfChild(resourceStorage);
         } finally {
             loaded = true;

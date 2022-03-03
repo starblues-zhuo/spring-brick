@@ -55,13 +55,13 @@ public interface PluginInfo {
      * 启动时间. 只有启动状态 {@link PluginState#STARTED} 才有值。
      * @return Date
      */
-    Date startTime();
+    Date getStartTime();
 
     /**
      * 停止时间. 只有停止状态 {@link PluginState#STOPPED} 才有值。
      * @return Date
      */
-    Date stopTime();
+    Date getStopTime();
 
 
     /**

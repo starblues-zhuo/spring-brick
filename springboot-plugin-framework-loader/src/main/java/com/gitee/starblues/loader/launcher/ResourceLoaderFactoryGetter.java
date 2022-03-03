@@ -18,11 +18,9 @@ package com.gitee.starblues.loader.launcher;
 
 import com.gitee.starblues.loader.classloader.resource.loader.DefaultResourceLoaderFactory;
 import com.gitee.starblues.loader.classloader.resource.loader.ResourceLoaderFactory;
-import com.gitee.starblues.loader.classloader.resource.storage.CacheResourceStorage;
-import com.gitee.starblues.loader.classloader.resource.storage.DefaultResourceStorage;
-import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
-import com.gitee.starblues.loader.classloader.resource.storage.ShareResourceStorage;
+import com.gitee.starblues.loader.classloader.resource.storage.*;
 
+import java.net.URL;
 import java.util.Objects;
 
 /**
@@ -80,14 +78,14 @@ public class ResourceLoaderFactoryGetter {
         return null;
     }
 
-    public static ResourceStorage getResourceStorage(String key){
-        ResourceStorage resourceStorage = null;
+    public static SameRootResourceStorage getResourceStorage(String key, URL baseUrl){
+        SameRootResourceStorage resourceStorage = null;
         if(Objects.equals(resourceMode, RESOURCE_MODE_NO_CACHE)){
-            resourceStorage = new DefaultResourceStorage();
+            resourceStorage = new DefaultResourceStorage(baseUrl);
         } else if(Objects.equals(resourceMode, RESOURCE_MODE_CACHE_SHARE)){
-            resourceStorage = new ShareResourceStorage(key);
+            resourceStorage = new ShareResourceStorage(key, baseUrl);
         } else {
-            resourceStorage = new CacheResourceStorage();
+            resourceStorage = new CacheResourceStorage(baseUrl);
         }
         return resourceStorage;
     }

@@ -16,14 +16,12 @@
 
 package com.gitee.starblues.loader.classloader;
 
-
 import com.gitee.starblues.loader.classloader.resource.Resource;
 import com.gitee.starblues.loader.classloader.resource.loader.ResourceLoader;
 import com.gitee.starblues.loader.classloader.resource.loader.ResourceLoaderFactory;
-import com.gitee.starblues.loader.classloader.resource.loader.ResourceLoaderGetter;
 import com.gitee.starblues.loader.utils.Assert;
 import com.gitee.starblues.loader.utils.IOUtils;
-import com.gitee.starblues.loader.utils.ObjectUtils;
+import com.gitee.starblues.loader.utils.ResourceUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -32,7 +30,6 @@ import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -111,7 +108,7 @@ public class GenericClassLoader extends URLClassLoader {
         if (loadedClass != null) {
             return loadedClass;
         }
-        throw new ClassNotFoundException(className);
+        throw new ClassNotFoundException("ClassLoader[" + name  +"]:" + className);
     }
 
     protected Class<?> findClassFromParent(String className) throws ClassNotFoundException{
@@ -174,10 +171,10 @@ public class GenericClassLoader extends URLClassLoader {
 
     @Override
     public URL[] getURLs() {
-        List<Resource> resources = resourceLoaderFactory.getResources();
-        URL[] urls = new URL[resources.size()];
-        for (int i = 0; i < resources.size(); i++) {
-            urls[i] = resources.get(i).getUrl();
+        List<URL> urlList = resourceLoaderFactory.getUrls();
+        URL[] urls = new URL[urlList.size()];
+        for (int i = 0; i < urlList.size(); i++) {
+            urls[i] = urlList.get(i);
         }
         return urls;
     }
@@ -232,21 +229,29 @@ public class GenericClassLoader extends URLClassLoader {
     public Enumeration<URL> getResources(String name) throws IOException {
         name = formatResourceName(name);
         Enumeration<URL> parentResources = findResourcesFromParent(name);
-        Vector<URL> vector = new Vector<>();
-        if(parentResources != null){
-            while (parentResources.hasMoreElements()){
-                URL url = parentResources.nextElement();
-                vector.add(url);
-            }
-        }
         Enumeration<URL> localResources = findResourcesFromLocal(name);
-        if(localResources != null){
-            while (localResources.hasMoreElements()){
-                URL url = localResources.nextElement();
-                vector.add(url);
+        return new Enumeration<URL>() {
+
+            private int index = 0;
+
+            @Override
+            public boolean hasMoreElements() {
+                if(parentResources != null && parentResources.hasMoreElements()){
+                    return true;
+                }
+                index = 1;
+                return localResources.hasMoreElements();
             }
-        }
-        return vector.elements();
+
+            @Override
+            public URL nextElement() {
+                if(index == 0){
+                    return parentResources.nextElement();
+                } else {
+                    return localResources.nextElement();
+                }
+            }
+        };
     }
 
     protected Enumeration<URL> findResourcesFromParent(String name) throws IOException{
@@ -257,48 +262,19 @@ public class GenericClassLoader extends URLClassLoader {
     }
 
     protected Enumeration<URL> findResourcesFromLocal(String name) throws IOException{
-        List<Resource> resourceList = resourceLoaderFactory.findResources(name);
-        if(resourceList != null && !resourceList.isEmpty()){
-            Vector<URL> vector = new Vector<>();
-            for (Resource resource : resourceList) {
-                vector.add(resource.getUrl());
+        Enumeration<Resource> enumeration = resourceLoaderFactory.findResources(name);
+        return new Enumeration<URL>() {
+            @Override
+            public boolean hasMoreElements() {
+                return enumeration.hasMoreElements();
             }
-            return vector.elements();
-        }
-        return null;
-    }
 
-    private String formatClassName(String className) {
-        className = className.replace( '/', '~' );
-        className = className.replace( '.', '/' ) + ".class";
-        className = className.replace( '~', '/' );
-        return className;
-    }
-
-    private String formatResourceName(String resourceName){
-        if(ObjectUtils.isEmpty(resourceName)) {
-            return Resource.PACKAGE_SPLIT;
-        }
-        String[] split = resourceName.split("/");
-        StringBuilder newPath = new StringBuilder();
-        for (int i = 0; i < split.length; i++) {
-            String s = split[i];
-            if("".equals(s)){
-                continue;
+            @Override
+            public URL nextElement() {
+                return enumeration.nextElement().getUrl();
             }
-            if(i == 0){
-                newPath = new StringBuilder(s);
-            } else {
-                newPath.append(Resource.PACKAGE_SPLIT).append(s);
-            }
-        }
-        if(resourceName.endsWith(Resource.PACKAGE_SPLIT)){
-            newPath.append(Resource.PACKAGE_SPLIT);
-        }
-        return newPath.toString();
+        };
     }
-
-
 
     @Override
     public void close() throws IOException {
@@ -306,6 +282,17 @@ public class GenericClassLoader extends URLClassLoader {
             pluginClassCache.clear();
             IOUtils.closeQuietly(resourceLoaderFactory);
         }
+    }
+
+    private String formatResourceName(String name) {
+        return ResourceUtils.formatStandardName(name);
+    }
+
+    private String formatClassName(String className) {
+        className = className.replace( '/', '~' );
+        className = className.replace( '.', '/' ) + ".class";
+        className = className.replace( '~', '/' );
+        return className;
     }
 
 

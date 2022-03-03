@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
  * 注解工具
  *
  * @author starBlues
- * @version 1.0
+ * @version 3.0.0
  */
 public class AnnotationsUtils {
 

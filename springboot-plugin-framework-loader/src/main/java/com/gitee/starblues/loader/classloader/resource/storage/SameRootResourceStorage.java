@@ -14,19 +14,31 @@
  * limitations under the License.
  */
 
-package com.gitee.starblues.loader.classloader.resource.loader;
+package com.gitee.starblues.loader.classloader.resource.storage;
 
-import com.gitee.starblues.loader.classloader.resource.storage.ResourceStorage;
+import java.net.URL;
 
 /**
- * 资源加载获取者
+ * 抽象的资源存储
  *
  * @author starBlues
  * @version 3.0.0
  */
-@FunctionalInterface
-public interface ResourceLoaderGetter {
+public abstract class SameRootResourceStorage implements ResourceStorage {
 
-    ResourceLoader get(ResourceStorage resourceStorage) throws Exception;
+    protected final URL baseUrl;
+
+    public SameRootResourceStorage(URL baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    /**
+     * 获取 base url
+     * @return URL
+     */
+    public URL getBaseUrl() {
+        return baseUrl;
+    }
+
 
 }

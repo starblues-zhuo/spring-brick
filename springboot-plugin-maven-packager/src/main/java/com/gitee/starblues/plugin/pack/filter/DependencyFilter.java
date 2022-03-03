@@ -16,7 +16,6 @@
 
 package com.gitee.starblues.plugin.pack.filter;
 
-import com.gitee.starblues.plugin.pack.utils.CommonUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactsFilter;

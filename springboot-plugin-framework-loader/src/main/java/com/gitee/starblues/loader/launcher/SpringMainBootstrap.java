@@ -20,6 +20,7 @@ import com.gitee.starblues.loader.jar.JarFile;
 import com.gitee.starblues.loader.launcher.runner.MainMethodRunner;
 import com.gitee.starblues.loader.launcher.runner.MethodRunner;
 
+import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
