@@ -43,7 +43,7 @@
 
 ### 文档地址
 
-- [https://www.yuque.com/starblues/iuyk4y/ypurcw](https://www.yuque.com/starblues/iuyk4y/ypurcw)
+- [https://www.yuque.com/starblues/springboot-plugin-framework-v3.0.0](https://www.yuque.com/starblues/springboot-plugin-framework-v3.0.0)
 
 ### 衍生产品
 #### 携带前后端插件功能的后台管理系统
