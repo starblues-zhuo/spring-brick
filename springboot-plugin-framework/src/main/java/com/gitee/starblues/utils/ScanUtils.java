@@ -1,7 +1,23 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.gitee.starblues.utils;
 
 
-import org.pf4j.PluginWrapper;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.util.ClassUtils;
 
 import java.io.File;
@@ -43,6 +59,22 @@ public class ScanUtils {
             // unix or linux
             return scanClassPackageNameOfOther(basePackage, baseClass);
         }
+    }
+
+    /**
+     * 得到扫描的包
+     * @param pluginClass 插件入口class
+     * @return 包集合
+     */
+    public static String[] getScanBasePackages(Class<?> pluginClass){
+        SpringBootApplication springBootApplication = pluginClass.getAnnotation(SpringBootApplication.class);
+        if(springBootApplication != null){
+            String[] scanBasePackages = springBootApplication.scanBasePackages();
+            if(scanBasePackages.length > 0){
+                return scanBasePackages;
+            }
+        }
+        return new String[]{ pluginClass.getPackage().getName() };
     }
 
     /**
@@ -113,32 +145,5 @@ public class ScanUtils {
                     return fileName.endsWith(".class");
                 });
     }
-
-
-    /**
-     * 扫描jar包中的类。
-     *
-     * @param basePackage 包名
-     * @param pluginWrapper jar的PluginWrapper
-     * @return 类全路径
-     * @throws IOException 扫描异常
-     */
-    public static Set<String> scanClassPackageName(String basePackage, PluginWrapper pluginWrapper) throws IOException {
-        String pluginPath = pluginWrapper.getPluginPath().toString();
-        Set<String> classPackageNames = new HashSet<>();
-        try (JarFile jarFile = new JarFile(pluginPath)) {
-            Enumeration<JarEntry> jarEntries = jarFile.entries();
-            while (jarEntries.hasMoreElements()) {
-                JarEntry entry = jarEntries.nextElement();
-                String jarEntryName = entry.getName();
-                if (jarEntryName.contains(".class") && jarEntryName.replaceAll("/", ".").startsWith(basePackage)) {
-                    String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replace("/", ".");
-                    classPackageNames.add(className);
-                }
-            }
-        }
-        return classPackageNames;
-    }
-
 
 }

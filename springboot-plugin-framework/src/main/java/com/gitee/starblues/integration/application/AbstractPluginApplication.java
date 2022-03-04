@@ -1,12 +1,24 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.gitee.starblues.integration.application;
 
-import com.gitee.starblues.extension.AbstractExtension;
-import com.gitee.starblues.extension.ExtensionFactory;
 import com.gitee.starblues.integration.IntegrationConfiguration;
 import com.gitee.starblues.integration.listener.PluginListener;
 import com.gitee.starblues.integration.listener.PluginListenerFactory;
-import com.gitee.starblues.integration.listener.PluginStateListenerFactory;
-import org.pf4j.PluginStateListener;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 
@@ -16,62 +28,9 @@ import java.util.List;
  * 公用的的插件应用
  *
  * @author starBlues
- * @version 2.4.4
+ * @version 3.0.0
  */
 public abstract class AbstractPluginApplication implements PluginApplication {
-
-    protected final PluginListenerFactory listenerFactory = new PluginListenerFactory();
-    protected final PluginStateListenerFactory pluginStateListenerFactory = new PluginStateListenerFactory();
-
-    @Override
-    public PluginApplication addExtension(AbstractExtension extension) {
-        if(extension == null){
-            return this;
-        }
-        extension.setPluginApplication(this);
-        ExtensionFactory.addExtension(extension);
-        return this;
-    }
-
-    @Override
-    public void addListener(PluginListener pluginListener) {
-        this.listenerFactory.addPluginListener(pluginListener);
-    }
-
-    @Override
-    public <T extends PluginListener> void addListener(Class<T> pluginListenerClass) {
-        listenerFactory.addPluginListener(pluginListenerClass);
-    }
-
-    @Override
-    public void addListener(List<PluginListener> pluginListeners) {
-        if(pluginListeners == null || pluginListeners.isEmpty()){
-            return;
-        }
-        for (PluginListener pluginListener : pluginListeners) {
-            this.listenerFactory.addPluginListener(pluginListener);
-        }
-    }
-
-    @Override
-    public void addPf4jStateListener(PluginStateListener pluginListener) {
-        pluginStateListenerFactory.addStateListener(pluginListener);
-    }
-
-    @Override
-    public <T extends PluginStateListener> void addPf4jStateListener(Class<T> pluginListenerClass) {
-        pluginStateListenerFactory.addStateListener(pluginListenerClass);
-    }
-
-    @Override
-    public void addPf4jStateListener(List<PluginStateListener> pluginListeners) {
-        if(pluginListeners == null || pluginListeners.isEmpty()){
-            return;
-        }
-        for (PluginStateListener pluginListener : pluginListeners) {
-            this.pluginStateListenerFactory.addStateListener(pluginListener);
-        }
-    }
 
     /**
      * 子类可通过Application 获取插件定义的配置
@@ -86,8 +45,8 @@ public abstract class AbstractPluginApplication implements PluginApplication {
             // no show exception
         }
         if(configuration == null){
-            throw new BeanCreationException("Not Found IntegrationConfiguration, Please define " +
-                    "IntegrationConfiguration to Spring Bean.");
+            throw new BeanCreationException("没有发现 <IntegrationConfiguration> Bean, " +
+                    "请在 Spring 容器中将 <IntegrationConfiguration> 定义为Bean");
         }
         return configuration;
     }

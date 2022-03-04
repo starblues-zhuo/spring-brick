@@ -1,6 +1,26 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.gitee.starblues.integration;
 
-import org.pf4j.RuntimeMode;
+
+import com.gitee.starblues.common.Constants;
+import com.gitee.starblues.core.RuntimeMode;
+import com.gitee.starblues.utils.ObjectUtils;
+import org.springframework.http.CacheControl;
 
 import java.util.List;
 import java.util.Set;
@@ -9,15 +29,27 @@ import java.util.Set;
 /**
  * 插件集成时的配置接口。插件集成的配置接口
  * @author starBlues
- * @version 2.4.4
+ * @version 3.0.0
  */
 public interface IntegrationConfiguration {
 
     /**
-     * 运行环境。运行项目时的模式。分为开发环境(DEVELOPMENT)、生产环境(DEPLOYMENT)
-     * @return RuntimeMode.DEVELOPMENT、RuntimeMode.DEPLOYMENT
+     * 是否启用该插件框架
+     * @return true 启用, false 禁用
+     */
+    boolean enable();
+
+    /**
+     * 运行环境。运行项目时的模式。分为开发环境(Dev)、生产环境(Prod)
+     * @return RuntimeMode.DEV、RuntimeMode.PROD
      */
     RuntimeMode environment();
+
+    /**
+     * 主程序包名
+     * @return String
+     */
+    String mainPackage();
 
     /**
      * 插件的路径。可设置多个插件路径
@@ -25,14 +57,6 @@ public interface IntegrationConfiguration {
      * @return 插件的路径
      */
     List<String> pluginPath();
-
-    /**
-     * 插件文件的配置路径。在生产环境下, 插件的配置文件路径。
-     *  在生产环境下， 请将所有插件使用到的配置文件统一放到该路径下管理。
-     *  在开发环境下，配置为空串。程序会自动从 resources 获取配置文件， 所以请确保编译后的target 下存在该配置文件
-     * @return 插件文件的配置路径
-     */
-    String pluginConfigFilePath();
 
     /**
      * 上传插件包存储的临时路径。默认 temp(相对于主程序jar路径)。
@@ -60,13 +84,6 @@ public interface IntegrationConfiguration {
      */
     boolean enablePluginIdRestPathPrefix();
 
-
-    /**
-     * 是否启用该插件框架
-     * @return true 启用, false 禁用
-     */
-    boolean enable();
-
     /**
      * 启用的插件id
      * @return Set
@@ -81,12 +98,6 @@ public interface IntegrationConfiguration {
     Set<String> disablePluginIds();
 
     /**
-     * 是否启用Swagger刷新机制
-     * @return 启用返回true, 不启用返回 false
-     */
-    boolean enableSwaggerRefresh();
-
-    /**
      * 设置初始化时插件启动的顺序.
      * @return 有顺序的插件id
      */
@@ -95,7 +106,7 @@ public interface IntegrationConfiguration {
     /**
      * 当前主程序的版本号, 用于校验插件是否可安装.
      * 插件中可通过插件配置信息 requires 来指定可安装的主程序版本
-     * @return 系统版本号, 如果为: 0.0.0 的话, 表示不校验
+     * @return 系统版本号, 如果为为空或者 0.0.0 表示不校验
      */
     String version();
 
@@ -105,18 +116,61 @@ public interface IntegrationConfiguration {
      * 默认为false
      * @return true or false
      */
-    boolean exactVersionAllowed();
+    boolean exactVersion();
+
 
     /**
-     * 是否启用webSocket功能. 如需启用, 则需要引入springboot支持的WebSocket依赖
-     * @return 启用返回true,不启用返回false
+     * 检查配置
      */
-    boolean enableWebSocket();
+    default void checkConfig(){};
+
 
     /**
-     * 停止插件时, 是否停止依赖的插件
-     * @return 停止返回true,不停止返回false
+     * 是否是开发环境
+     * @return boolean
      */
-    boolean stopDependents();
+    default boolean isDev(){
+        return environment() == RuntimeMode.DEV;
+    }
+
+    /**
+     * 是否是生产环境
+     * @return boolean
+     */
+    default boolean isProd(){
+        return environment() == RuntimeMode.PROD;
+    }
+
+
+    /**
+     * 是否被启动
+     * @param pluginId 插件id
+     * @return true: 启用, false: 未启用
+     */
+    default boolean isEnable(String pluginId){
+        if(ObjectUtils.isEmpty(enablePluginIds())){
+            return true;
+        }
+        if(isDisabled(pluginId)){
+            return false;
+        }
+        return enablePluginIds().contains(pluginId);
+    }
+
+
+    /**
+     * 是否被禁用
+     * @param pluginId 插件id
+     * @return true: 禁用, false: 未禁用
+     */
+    default boolean isDisabled(String pluginId){
+        if(ObjectUtils.isEmpty(disablePluginIds())){
+            return false;
+        }
+        if(disablePluginIds().contains(Constants.DISABLED_ALL_PLUGIN)){
+            return true;
+        }
+        return disablePluginIds().contains(pluginId);
+    }
 
 }
