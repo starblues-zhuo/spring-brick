@@ -23,7 +23,6 @@
         <module>springboot-plugin-framework</module>
         <module>springboot-plugin-bootstrap</module>
         <module>springboot-plugin-maven-packager</module>
-        <module>springboot-plugin-framework-example</module>
     </modules>
 
     <properties>
