@@ -28,6 +28,7 @@ public class ResourceUtils {
     public static final String URL_PROTOCOL_FILE = "file";
     public static final String URL_PROTOCOL_JAR_FILE = "jar";
     public static final String JAR_FILE_EXTENSION = ".jar";
+    public static final String ZIP_FILE_EXTENSION = ".zip";
 
     public static final String URL_PROTOCOL_VFSFILE = "vfsfile";
     public static final String URL_PROTOCOL_VFS = "vfs";
@@ -46,6 +47,17 @@ public class ResourceUtils {
         boolean extensionIsJar = url.getPath().toLowerCase().endsWith(JAR_FILE_EXTENSION);
         return (URL_PROTOCOL_FILE.equals(protocol) && extensionIsJar)
                 || (URL_PROTOCOL_JAR_FILE.equals(protocol) || extensionIsJar);
+    }
+
+    /**
+     * 是否为zip文件
+     * @param url url
+     * @return boolean
+     */
+    public static boolean isZipFileUrl(URL url) {
+        String protocol = url.getProtocol();
+        boolean extensionIsZip = url.getPath().toLowerCase().endsWith(ZIP_FILE_EXTENSION);
+        return (URL_PROTOCOL_FILE.equals(protocol) && extensionIsZip);
     }
 
     /**

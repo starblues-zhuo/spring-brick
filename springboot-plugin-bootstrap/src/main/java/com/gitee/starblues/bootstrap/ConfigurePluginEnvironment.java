@@ -20,11 +20,13 @@ import com.gitee.starblues.bootstrap.processor.ProcessorContext;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.integration.AutoIntegrationConfiguration;
 import com.gitee.starblues.utils.Assert;
+import com.gitee.starblues.utils.FilesUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.PluginFileUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +67,7 @@ class ConfigurePluginEnvironment {
         }
         String configFileLocation = pluginDescriptor.getConfigFileLocation();
         if(!ObjectUtils.isEmpty(configFileLocation)){
-            env.put(SPRING_CONFIG_LOCATION, configFileLocation);
+            env.put(SPRING_CONFIG_LOCATION, getConfigFileLocation(configFileLocation));
         }
         env.put(AutoIntegrationConfiguration.ENABLE_STARTER_KEY, false);
         env.put(SPRING_JMX_UNIQUE_NAMES, true);
@@ -78,6 +80,15 @@ class ConfigurePluginEnvironment {
             ConfigureMainPluginEnvironment configureMainPluginEnvironment =
                     new ConfigureMainPluginEnvironment(processorContext);
             configureMainPluginEnvironment.configureEnvironment(environment, args);
+        }
+    }
+
+    private String getConfigFileLocation(String configFileLocation){
+        String s = FilesUtils.resolveRelativePath(new File("").getAbsolutePath(), configFileLocation);
+        if(s.endsWith("/") || s.endsWith(File.separator)){
+            return s;
+        } else {
+            return s + File.separator;
         }
     }
 

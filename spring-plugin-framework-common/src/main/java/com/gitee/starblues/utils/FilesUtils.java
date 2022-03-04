@@ -19,6 +19,7 @@ package com.gitee.starblues.utils;
 import com.gitee.starblues.common.Constants;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.function.Supplier;
 
 /**
@@ -131,6 +132,25 @@ public class FilesUtils {
 
         return stringBuilder.toString();
     }
+
+    public static File createFile(String path) throws IOException {
+        try {
+            File file = new File(path);
+            File parentFile = file.getParentFile();
+            if(!parentFile.exists()){
+                if(!parentFile.mkdirs()){
+                    throw new IOException("Create " + parentFile + " dir error");
+                }
+            }
+            if(file.createNewFile()){
+                return file;
+            }
+            throw new IOException("Create " + path + " file error");
+        } catch (Exception e){
+            throw new IOException("Create " + path + " file error");
+        }
+    }
+
 
     /**
      * 解决相对路径

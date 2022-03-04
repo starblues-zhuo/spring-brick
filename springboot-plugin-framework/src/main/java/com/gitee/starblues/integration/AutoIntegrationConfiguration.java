@@ -86,12 +86,6 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
     private String pluginRestPathPrefix;
 
     /**
-     * 是否启用插件的 rest controller 接口注册. 默认启用
-     */
-    @Value("${enablePluginRestController:true}")
-    private Boolean enablePluginRestController;
-
-    /**
      * 是否启用插件id作为rest接口前缀, 默认为启用.
      * 如果为启用, 则地址为 /pluginRestPathPrefix/pluginId
      * pluginRestPathPrefix: 为pluginRestPathPrefix的配置值
@@ -173,7 +167,7 @@ public class AutoIntegrationConfiguration extends DefaultIntegrationConfiguratio
 
     @Override
     public String pluginRestPathPrefix() {
-        if(ObjectUtils.isEmpty(pluginRestPathPrefix)){
+        if(pluginRestPathPrefix == null){
             return super.pluginRestPathPrefix();
         } else {
             return pluginRestPathPrefix;

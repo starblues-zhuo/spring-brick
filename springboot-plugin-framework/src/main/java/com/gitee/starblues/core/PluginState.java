@@ -39,9 +39,19 @@ public enum PluginState {
     STARTED("STARTED"),
 
     /**
+     * 启动失败状态
+     */
+    STARTED_FAILURE("STARTED_FAILURE"),
+
+    /**
      * 停止状态
      */
-    STOPPED("STOPPED");
+    STOPPED("STOPPED"),
+
+    /**
+     * 停止失败状态
+     */
+    STOPPED_FAILURE("STOPPED_FAILURE");
 
 
     private final String status;

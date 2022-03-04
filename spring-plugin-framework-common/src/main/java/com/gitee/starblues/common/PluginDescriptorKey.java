@@ -24,26 +24,25 @@ package com.gitee.starblues.common;
  */
 public class PluginDescriptorKey {
 
-    public static final String MAIN_CLASS = "Main-Class";
 
     /** Must configure prop **/
-    public static final String PLUGIN_ID = "Plugin-Id";
-    public static final String PLUGIN_BOOTSTRAP_CLASS = "Plugin-Bootstrap-Class";
-    public static final String PLUGIN_VERSION = "Plugin-Version";
+    public static final String PLUGIN_ID = "plugin.id";
+    public static final String PLUGIN_BOOTSTRAP_CLASS = "plugin.bootstrapClass";
+    public static final String PLUGIN_VERSION = "plugin.version";
 
     /** Optional configure prop **/
-    public static final String PLUGIN_DESCRIPTION = "Plugin-Description";
-    public static final String PLUGIN_PROVIDER = "Plugin-Provider";
-    public static final String PLUGIN_DEPENDENCIES = "Plugin-Dependencies";
-    public static final String PLUGIN_REQUIRES = "Plugin-Requires";
-    public static final String PLUGIN_LICENSE = "Plugin-License";
-    public static final String PLUGIN_CONFIG_FILE_NAME = "Plugin-Config-Filename";
-    public static final String PLUGIN_CONFIG_FILE_LOCATION = "Plugin-Config-File-Location";
+    public static final String PLUGIN_DESCRIPTION = "plugin.description";
+    public static final String PLUGIN_PROVIDER = "plugin.provider";
+    public static final String PLUGIN_DEPENDENCIES = "plugin.dependencies";
+    public static final String PLUGIN_REQUIRES = "plugin.requires";
+    public static final String PLUGIN_LICENSE = "plugin.license";
+    public static final String PLUGIN_CONFIG_FILE_NAME = "plugin.configFileName";
+    public static final String PLUGIN_CONFIG_FILE_LOCATION = "plugin.configFileLocation";
+    public static final String PLUGIN_ARGS = "plugin.args";
 
     /** System create prop **/
-    public static final String PLUGIN_PATH = "Plugin-Path";
-    public static final String PLUGIN_RESOURCES_CONFIG = "Plugin-Resources-Config";
-    public static final String PLUGIN_PACKAGE_TYPE = "Plugin-Package-Type";
+    public static final String PLUGIN_PATH = "plugin.system.path";
+    public static final String PLUGIN_RESOURCES_CONFIG = "plugin.system.resourcesConfig";
 
 
 }

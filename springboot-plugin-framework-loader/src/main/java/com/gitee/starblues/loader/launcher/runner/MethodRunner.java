@@ -32,7 +32,7 @@ public class MethodRunner {
     protected final String className;
     protected final String runMethodName;
 
-    protected final String[] args;
+    protected String[] args;
 
     public MethodRunner(String className, String runMethodName, String[] args) {
         this.className = checkEmpty(className, "className 不能为空");

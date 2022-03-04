@@ -49,6 +49,8 @@ public abstract class PackageStructure {
 
     public static final String MANIFEST = "MANIFEST.MF";
 
+    public static final String PLUGIN_META_NAME = "PLUGIN.META";
+
     public static final String RESOURCES_DEFINE_NAME = "RESOURCES.CONF";
 
     public static final String RESOURCES_DEFINE_DEPENDENCIES = "dependencies.index";
@@ -58,6 +60,8 @@ public abstract class PackageStructure {
     public static final String PROD_MANIFEST_PATH = META_INF_NAME + SEPARATOR + MANIFEST;
 
     public static final String PROD_RESOURCES_DEFINE_PATH = META_INF_NAME + SEPARATOR + RESOURCES_DEFINE_NAME;
+
+    public static final String PROD_PLUGIN_META_PATH = META_INF_NAME + SEPARATOR + PLUGIN_META_NAME;
 
     public static final String PROD_CLASSES_PATH = CLASSES_NAME + SEPARATOR;
 

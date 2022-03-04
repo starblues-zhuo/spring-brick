@@ -16,6 +16,7 @@
 
 package com.gitee.starblues.plugin.pack.prod;
 
+import com.gitee.starblues.common.ManifestKey;
 import com.gitee.starblues.common.PackageType;
 import com.gitee.starblues.common.PluginDescriptorKey;
 import com.gitee.starblues.plugin.pack.RepackageMojo;
@@ -44,7 +45,7 @@ public class JarOuterProdRepackager extends ZipOuterProdRepackager {
     @Override
     protected Manifest getManifest() throws Exception {
         Manifest manifest = super.getManifest();
-        manifest.getMainAttributes().putValue(PluginDescriptorKey.PLUGIN_PACKAGE_TYPE,
+        manifest.getMainAttributes().putValue(ManifestKey.PLUGIN_PACKAGE_TYPE,
                 PackageType.PLUGIN_PACKAGE_TYPE_JAR_OUTER);
         return manifest;
     }

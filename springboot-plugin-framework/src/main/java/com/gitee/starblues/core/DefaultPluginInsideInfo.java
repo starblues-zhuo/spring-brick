@@ -93,10 +93,10 @@ public class DefaultPluginInsideInfo implements PluginInsideInfo {
     }
 
     private void resolveTime(PluginState pluginState){
-        if(pluginState == PluginState.STARTED){
+        if(pluginState == PluginState.STARTED || pluginState == PluginState.STARTED_FAILURE){
             startTime = new Date();
             stopTime = null;
-        } else if(pluginState == PluginState.STOPPED){
+        } else if(pluginState == PluginState.STOPPED || pluginState == PluginState.STOPPED_FAILURE){
             stopTime = new Date();
             startTime = null;
         } else {

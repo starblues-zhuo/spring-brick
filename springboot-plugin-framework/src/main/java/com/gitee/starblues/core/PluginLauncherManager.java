@@ -102,7 +102,7 @@ public class PluginLauncherManager extends DefaultPluginManager{
             registryInfo.put(pluginDescriptor.getPluginId(), registryPluginInfo);
         } catch (Exception e){
             // 启动失败, 进行停止
-            super.stop(pluginInsideInfo);
+            pluginInsideInfo.setPluginState(PluginState.STARTED_FAILURE);
             throw e;
         }
     }
@@ -115,12 +115,17 @@ public class PluginLauncherManager extends DefaultPluginManager{
         if(registryPluginInfo == null){
             throw new PluginException("没有发现插件 '" + pluginId +  "' 信息");
         }
-        SpringPluginHook springPluginHook = registryPluginInfo.getSpringPluginHook();
-        springPluginHook.stopVerify();
-        springPluginHook.close();
-        invokeSupperCache.remove(pluginId);
-        registryInfo.remove(pluginId);
-        super.stop(pluginInsideInfo);
+        try {
+            SpringPluginHook springPluginHook = registryPluginInfo.getSpringPluginHook();
+            springPluginHook.stopVerify();
+            springPluginHook.close();
+            invokeSupperCache.remove(pluginId);
+            registryInfo.remove(pluginId);
+            super.stop(pluginInsideInfo);
+        } catch (Exception e){
+            pluginInsideInfo.setPluginState(PluginState.STOPPED_FAILURE);
+            throw e;
+        }
     }
 
     static class RegistryPluginInfo{

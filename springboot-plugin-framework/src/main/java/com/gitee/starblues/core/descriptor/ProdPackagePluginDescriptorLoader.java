@@ -17,18 +17,16 @@
 package com.gitee.starblues.core.descriptor;
 
 
+import com.gitee.starblues.common.ManifestKey;
 import com.gitee.starblues.common.PackageStructure;
-import com.gitee.starblues.common.PackageType;
-import com.gitee.starblues.common.PluginDescriptorKey;
-import com.gitee.starblues.core.exception.PluginException;
-import com.gitee.starblues.utils.ManifestUtils;
+import com.gitee.starblues.utils.PropertiesUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
+import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -45,41 +43,41 @@ import static com.gitee.starblues.common.PluginDescriptorKey.PLUGIN_RESOURCES_CO
  */
 public class ProdPackagePluginDescriptorLoader extends AbstractPluginDescriptorLoader{
 
-    private final PluginType type;
     private PluginResourcesConfig pluginResourcesConfig;
 
-    public ProdPackagePluginDescriptorLoader(PluginType type) {
-        this.type = type;
+    public ProdPackagePluginDescriptorLoader() {
     }
 
     @Override
-    protected Manifest getManifest(Path location) throws Exception {
+    protected PluginMeta getPluginMetaInfo(Path location) throws Exception {
         try (JarFile jarFile = new JarFile(location.toFile())){
             Manifest manifest = jarFile.getManifest();
-            pluginResourcesConfig = getPluginResourcesConfig(jarFile, manifest);
-            return manifest;
+            Attributes attributes = manifest.getMainAttributes();
+            String packageType = ManifestKey.getValue(attributes, ManifestKey.PLUGIN_PACKAGE_TYPE);
+            String pluginMetaPath = ManifestKey.getValue(attributes, ManifestKey.PLUGIN_META_PATH);
+            if(packageType == null || pluginMetaPath == null){
+                return null;
+            }
+            JarEntry jarEntry = jarFile.getJarEntry(pluginMetaPath);
+            if(jarEntry == null){
+                return null;
+            }
+            Properties properties = super.getProperties(jarFile.getInputStream(jarEntry));
+            if(properties.isEmpty()){
+                return null;
+            }
+            pluginResourcesConfig = getPluginResourcesConfig(jarFile, properties);
+            return new PluginMeta(packageType, properties);
         }
     }
 
     @Override
-    protected PluginResourcesConfig getPluginResourcesConfig(Path path, Attributes attributes) throws Exception {
+    protected PluginResourcesConfig getPluginResourcesConfig(Path path, Properties properties) throws Exception {
         return pluginResourcesConfig;
     }
 
-    @Override
-    protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception {
-        DefaultInsidePluginDescriptor descriptor = super.create(manifest, path);
-        PluginType manifestPluginType = descriptor.getType();
-        if(manifestPluginType == null){
-            descriptor.setType(type);
-            return descriptor;
-        }
-        return descriptor;
-    }
-
-    protected PluginResourcesConfig getPluginResourcesConfig(JarFile jarFile, Manifest manifest) throws Exception {
-        Attributes attributes = manifest.getMainAttributes();
-        String pluginResourcesConf = ManifestUtils.getValue(attributes, PLUGIN_RESOURCES_CONFIG);
+    protected PluginResourcesConfig getPluginResourcesConfig(JarFile jarFile, Properties properties) throws Exception {
+        String pluginResourcesConf = PropertiesUtils.getValue(properties, PLUGIN_RESOURCES_CONFIG);
         if(ObjectUtils.isEmpty(pluginResourcesConf)){
             return new PluginResourcesConfig();
         }
@@ -91,5 +89,6 @@ public class ProdPackagePluginDescriptorLoader extends AbstractPluginDescriptorL
         List<String> lines = IOUtils.readLines(jarFileInputStream, PackageStructure.CHARSET_NAME);
         return PluginResourcesConfig.parse(lines);
     }
+
 
 }

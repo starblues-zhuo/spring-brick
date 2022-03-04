@@ -24,6 +24,8 @@ package com.gitee.starblues.common;
  */
 public class PackageType {
 
+    public static final String PLUGIN_PACKAGE_TYPE_DEV = "dev";
+
     public static final String PLUGIN_PACKAGE_TYPE_JAR = "jar";
     public static final String PLUGIN_PACKAGE_TYPE_JAR_OUTER = "jar-outer";
     public static final String PLUGIN_PACKAGE_TYPE_ZIP = "zip";

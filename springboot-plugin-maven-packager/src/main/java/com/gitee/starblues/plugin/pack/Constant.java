@@ -32,6 +32,8 @@ public class Constant {
     public static final String MODE_DEV = "dev";
     public static final String MODE_PROD = "prod";
 
+    public static final String PLUGIN_METE_COMMENTS = "plugin meta configuration";
+
     public static boolean isPom(String packageType){
         return PACKAGING_POM.equalsIgnoreCase(packageType);
     }

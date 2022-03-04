@@ -58,6 +58,11 @@ public class PluginInfo {
     private String configFileLocation;
 
     /**
+     * 插件启动入口参数配置
+     */
+    private String args;
+
+    /**
      * 插件描述
      */
     private String description;

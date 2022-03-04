@@ -91,6 +91,8 @@ public class DefaultResourceLoaderFactory implements ResourceLoaderFactory{
             } else {
                 resourceLoader = new JarResourceLoader(Paths.get(url.toURI()).toFile());
             }
+        } else if(ResourceUtils.isZipFileUrl(url)){
+            resourceLoader = new JarResourceLoader(Paths.get(url.toURI()).toFile());
         } else if(ResourceUtils.isFileUrl(url)){
             resourceLoader = new ClassPathLoader(url);
         }

@@ -193,7 +193,7 @@ public class PluginControllerProcessor implements SpringPluginProcessor {
     private static class ChangeRestPathPostProcessor implements BeanPostProcessor {
 
         private final static Logger LOG = LoggerFactory.getLogger(ChangeRestPathPostProcessor.class);
-        private final static String COMMON_ERROR = "无法统一处理该 Controller 统一请求路径前缀";
+        private final static String COMMON_ERROR = "无法统一处理该Controller请求路径前缀";
 
         private final ProcessorContext processorContext;
 

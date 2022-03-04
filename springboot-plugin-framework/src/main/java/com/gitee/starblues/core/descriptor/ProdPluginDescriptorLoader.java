@@ -37,9 +37,9 @@ public class ProdPluginDescriptorLoader implements PluginDescriptorLoader{
     @Override
     public InsidePluginDescriptor load(Path location) throws PluginException {
         if(ResourceUtils.isJarFile(location)){
-            target = new ProdPackagePluginDescriptorLoader(PluginType.JAR);
+            target = new ProdPackagePluginDescriptorLoader();
         } else if(ResourceUtils.isZipFile(location)){
-            target = new ProdPackagePluginDescriptorLoader(PluginType.ZIP);
+            target = new ProdPackagePluginDescriptorLoader();
         } else if(ResourceUtils.isDirFile(location)){
             target = new ProdDirPluginDescriptorLoader();
         } else {

@@ -18,6 +18,7 @@ package com.gitee.starblues.core.launcher.plugin;
 
 import com.gitee.starblues.core.RuntimeMode;
 import com.gitee.starblues.loader.launcher.runner.MethodRunner;
+import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,10 @@ public class PluginMethodRunner extends MethodRunner {
     public PluginMethodRunner(PluginInteractive pluginInteractive) {
         super(pluginInteractive.getPluginDescriptor().getPluginBootstrapClass(), PLUGIN_RUN_METHOD_NAME, new String[]{});
         this.pluginInteractive = pluginInteractive;
+        String args = pluginInteractive.getPluginDescriptor().getArgs();
+        if(!ObjectUtils.isEmpty(args)){
+            super.args = args.split(" ");
+        }
     }
 
     @Override

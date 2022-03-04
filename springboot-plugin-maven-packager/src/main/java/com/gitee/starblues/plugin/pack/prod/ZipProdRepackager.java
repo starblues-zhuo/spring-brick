@@ -16,6 +16,7 @@
 
 package com.gitee.starblues.plugin.pack.prod;
 
+import com.gitee.starblues.common.ManifestKey;
 import com.gitee.starblues.common.PackageType;
 import com.gitee.starblues.common.PluginDescriptorKey;
 import com.gitee.starblues.plugin.pack.Constant;
@@ -34,10 +35,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.jar.Attributes;
@@ -127,15 +125,30 @@ public class ZipProdRepackager extends DevRepackager {
     protected Manifest getManifest() throws Exception {
         Manifest manifest = super.getManifest();
         Attributes attributes = manifest.getMainAttributes();
-        attributes.putValue(PluginDescriptorKey.PLUGIN_PATH, PROD_CLASSES_PATH);
-        attributes.putValue(PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG, PROD_RESOURCES_DEFINE_PATH);
-        attributes.putValue(PluginDescriptorKey.PLUGIN_PACKAGE_TYPE, PackageType.PLUGIN_PACKAGE_TYPE_ZIP);
+        attributes.putValue(ManifestKey.PLUGIN_META_PATH, PROD_PLUGIN_META_PATH);
+        attributes.putValue(ManifestKey.PLUGIN_PACKAGE_TYPE, PackageType.PLUGIN_PACKAGE_TYPE_ZIP);
         return manifest;
+    }
+
+    @Override
+    protected Properties createPluginMetaInfo() throws Exception {
+        Properties properties = super.createPluginMetaInfo();
+        properties.put(PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG, PROD_RESOURCES_DEFINE_PATH);
+        return properties;
     }
 
     @Override
     protected void writeManifest(Manifest manifest) throws Exception {
         packageZip.writeManifest(manifest);
+    }
+
+    @Override
+    protected String writePluginMetaInfo(Properties properties) throws Exception {
+        packageZip.write(PROD_PLUGIN_META_PATH, outputStream->{
+            properties.store(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8),
+                    Constant.PLUGIN_METE_COMMENTS);
+        });
+        return PROD_PLUGIN_META_PATH;
     }
 
     protected void resolveResourcesDefine() throws Exception{

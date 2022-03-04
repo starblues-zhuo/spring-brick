@@ -16,7 +16,7 @@
 
 package com.gitee.starblues.utils;
 
-import java.util.jar.Attributes;
+import java.util.Properties;
 
 /**
  * 操作 Manifest 工具类
@@ -24,34 +24,34 @@ import java.util.jar.Attributes;
  * @author starBlues
  * @version 3.0.0
  */
-public abstract class ManifestUtils {
+public abstract class PropertiesUtils {
 
-    private ManifestUtils(){}
+    private PropertiesUtils(){}
 
     /**
      * 获取值
      *
-     * @param attributes attributes
+     * @param properties properties
      * @param key 获取的key
      * @return 获取的值或者null
      */
-    public static String getValue(Attributes attributes, String key){
-        return getValue(attributes, key, true);
+    public static String getValue(Properties properties, String key){
+        return getValue(properties, key, true);
     }
 
     /**
      * 获取值
      *
-     * @param attributes attributes
+     * @param properties properties
      * @param key 获取的key
      * @param notExitsThrowException 如果不存在是否抛出异常
      * @return 获取的值
      */
-    public static String getValue(Attributes attributes, String key, boolean notExitsThrowException){
+    public static String getValue(Properties properties, String key, boolean notExitsThrowException){
         boolean throwException = false;
         String value = null;
         try {
-            value = attributes.getValue(key);
+            value = properties.getProperty(key);
             if(value == null && notExitsThrowException){
                 throwException = true;
             }
@@ -60,7 +60,7 @@ public abstract class ManifestUtils {
             throwException = true;
         }
         if(throwException){
-            throw new IllegalStateException("Not found '" + key + "' from " + attributes.getClass().getName());
+            throw new IllegalStateException("Not found '" + key + "' config!");
         }
         return value;
     }

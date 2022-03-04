@@ -41,13 +41,18 @@ public class DefaultInitializerListener implements PluginInitializerListener{
 
     @Override
     public void complete() {
+        refresh();
+    }
+
+    @Override
+    public void failure(Throwable throwable) {
+        refresh();
+    }
+
+    private void refresh(){
         if(swaggerListener != null){
             swaggerListener.refresh();
         }
     }
 
-    @Override
-    public void failure(Throwable throwable) {
-
-    }
 }

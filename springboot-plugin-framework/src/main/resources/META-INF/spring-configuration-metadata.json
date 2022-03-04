@@ -40,7 +40,7 @@
       "type": "java.lang.String",
       "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
       "description": "插件的路径. 开发环境下配置为插件模块上级目录; 生产环境下配置到插件jar包存放目录。建议配置绝对路径",
-      "defaultValue": "/plugins"
+      "defaultValue": "~/plugins/"
     },
     {
       "name": "plugin.backupPath",
@@ -62,7 +62,7 @@
       "defaultValue": "/plugins"
     },
     {
-      "name": "plugin.pluginRestPathPrefix",
+      "name": "plugin.enablePluginIdRestPathPrefix",
       "type": "java.lang.Boolean",
       "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
       "description": "是否启用插件id作为rest接口前缀",

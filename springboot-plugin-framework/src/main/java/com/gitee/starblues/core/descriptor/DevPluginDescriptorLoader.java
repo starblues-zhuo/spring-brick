@@ -17,11 +17,13 @@
 package com.gitee.starblues.core.descriptor;
 
 import com.gitee.starblues.common.PackageStructure;
+import com.gitee.starblues.common.PackageType;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 import java.util.jar.Manifest;
 
 /**
@@ -31,30 +33,26 @@ import java.util.jar.Manifest;
  */
 public class DevPluginDescriptorLoader extends AbstractPluginDescriptorLoader{
 
-
     @Override
-    protected Manifest getManifest(Path location) throws Exception {
-        String manifestPath = location.toString() + File.separator + PackageStructure.MANIFEST;
-        File file = new File(manifestPath);
+    protected PluginMeta getPluginMetaInfo(Path location) throws Exception {
+        String pluginMetaPath = location.toString() + File.separator + PackageStructure.PLUGIN_META_NAME;
+        File file = new File(pluginMetaPath);
         if(!file.exists()){
             return null;
         }
-        Path path = Paths.get(manifestPath);
-        try {
-            return super.getManifest(Files.newInputStream(path));
-        } finally {
-            try {
-                path.getFileSystem().close();
-            } catch (Exception e) {
-                // 忽略
-            }
+        Path path = Paths.get(pluginMetaPath);
+        Properties properties = super.getProperties(Files.newInputStream(path));
+        if(properties.isEmpty()){
+            return null;
         }
+        return new PluginMeta(PackageType.PLUGIN_PACKAGE_TYPE_DEV, properties);
     }
 
     @Override
-    protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception {
-        final DefaultInsidePluginDescriptor descriptor = super.create(manifest, path);
+    protected DefaultInsidePluginDescriptor create(PluginMeta pluginMeta, Path path) throws Exception {
+        final DefaultInsidePluginDescriptor descriptor = super.create(pluginMeta, path);
         descriptor.setType(PluginType.DEV);
         return descriptor;
     }
+
 }

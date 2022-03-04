@@ -16,8 +16,10 @@
 
 package com.gitee.starblues.core.descriptor;
 
+import com.gitee.starblues.common.ManifestKey;
+import com.gitee.starblues.common.PackageType;
 import com.gitee.starblues.common.PluginDescriptorKey;
-import com.gitee.starblues.utils.ManifestUtils;
+import com.gitee.starblues.utils.PropertiesUtils;
 import com.gitee.starblues.utils.FilesUtils;
 import com.gitee.starblues.utils.ObjectUtils;
 import org.apache.commons.io.FileUtils;
@@ -29,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -45,21 +48,38 @@ import static com.gitee.starblues.common.PackageStructure.*;
 public class ProdDirPluginDescriptorLoader extends AbstractPluginDescriptorLoader{
 
     @Override
-    protected Manifest getManifest(Path location) throws Exception {
+    protected PluginMeta getPluginMetaInfo(Path location) throws Exception {
         File file = new File(FilesUtils.joiningFilePath(location.toString(), resolvePath(PROD_MANIFEST_PATH)));
         if(!file.exists()){
             return null;
         }
         Manifest manifest = new Manifest();
+        String packageType = null;
+        String pluginMetaPath = null;
         try (FileInputStream fileInputStream = new FileInputStream(file)){
             manifest.read(fileInputStream);
-            return manifest;
+            Attributes attributes = manifest.getMainAttributes();
+            packageType = ManifestKey.getValue(attributes, ManifestKey.PLUGIN_PACKAGE_TYPE);
+            pluginMetaPath = ManifestKey.getValue(attributes, ManifestKey.PLUGIN_META_PATH);
         }
+        if(packageType == null || pluginMetaPath == null){
+            return null;
+        }
+
+        File pluginMetaFile = new File(FilesUtils.joiningFilePath(location.toString(), pluginMetaPath));
+        if(!pluginMetaFile.exists()){
+            return null;
+        }
+        Properties properties = super.getProperties(new FileInputStream(pluginMetaFile));
+        if(properties.isEmpty()){
+            return null;
+        }
+        return new PluginMeta(packageType, properties);
     }
 
     @Override
-    protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception {
-        DefaultInsidePluginDescriptor descriptor = super.create(manifest, path);
+    protected DefaultInsidePluginDescriptor create(PluginMeta pluginMeta, Path path) throws Exception {
+        DefaultInsidePluginDescriptor descriptor = super.create(pluginMeta, path);
         String pathStr = path.toFile().getPath();
         descriptor.setPluginClassPath(FilesUtils.joiningFilePath(
                 pathStr, descriptor.getPluginClassPath()
@@ -68,10 +88,10 @@ public class ProdDirPluginDescriptorLoader extends AbstractPluginDescriptorLoade
     }
 
     @Override
-    protected PluginResourcesConfig getPluginResourcesConfig(Path path, Attributes attributes) throws Exception {
+    protected PluginResourcesConfig getPluginResourcesConfig(Path path, Properties properties) throws Exception {
         String pathStr = path.toFile().getPath();
         String libIndexFile = getExistResourcesConfFile(
-                pathStr, ManifestUtils.getValue(attributes, PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG)
+                pathStr, PropertiesUtils.getValue(properties, PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG)
         );
 
         if(libIndexFile == null){

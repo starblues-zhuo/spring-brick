@@ -16,6 +16,8 @@
 
 package com.gitee.starblues.common;
 
+import java.util.jar.Attributes;
+
 /**
  * Manifest-Key
  *
@@ -33,6 +35,16 @@ public class ManifestKey {
      * Manifest-version: 1.0
      */
     public static final String MANIFEST_VERSION_1_0 = "1.0";
+
+    /**
+     * plugin meta path
+     */
+    public static final String PLUGIN_META_PATH = "Plugin-Meta-Path";
+
+    /**
+     * plugin package type
+     */
+    public static final String PLUGIN_PACKAGE_TYPE = "Plugin-Package-Type";
 
 
     /**
@@ -54,5 +66,24 @@ public class ManifestKey {
      * jar class path
      */
     public static final String CLASS_PATH = "Class-Path";
+
+
+
+    /**
+     * 获取值
+     *
+     * @param attributes attributes
+     * @param key 获取的key
+     * @return 获取的值
+     */
+    public static String getValue(Attributes attributes, String key){
+        try {
+            return attributes.getValue(key);
+        } catch (Throwable e){
+            // 忽略
+            return null;
+        }
+    }
+
 
 }

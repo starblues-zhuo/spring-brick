@@ -399,7 +399,7 @@ public class DefaultPluginManager implements PluginManager{
         }
         PluginInsideInfo pluginInsideInfo = loadFromPath(pluginPath);
         if(pluginInsideInfo == null){
-            throw new PluginException("路径中未发现合法插件");
+            return null;
         }
         String pluginId = pluginInsideInfo.getPluginId();
         if(resolvedPlugins.containsKey(pluginId)){
@@ -422,7 +422,7 @@ public class DefaultPluginManager implements PluginManager{
         try (PluginDescriptorLoader pluginDescriptorLoader = provider.getPluginDescriptorLoader()){
             InsidePluginDescriptor pluginDescriptor = pluginDescriptorLoader.load(pluginPath);
             if(pluginDescriptor == null){
-                throw new PluginException("非法插件包: " + pluginPath);
+                return null;
             }
             String pluginId = pluginDescriptor.getPluginId();
             PluginInsideInfo pluginInsideInfo = new DefaultPluginInsideInfo(pluginDescriptor);

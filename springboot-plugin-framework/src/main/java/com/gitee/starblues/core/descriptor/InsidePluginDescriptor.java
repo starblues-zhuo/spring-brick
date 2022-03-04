@@ -17,6 +17,7 @@
 package com.gitee.starblues.core.descriptor;
 
 import java.nio.file.Path;
+import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Manifest;
 
@@ -28,10 +29,10 @@ import java.util.jar.Manifest;
 public interface InsidePluginDescriptor extends PluginDescriptor{
 
     /**
-     * 得到插件的 Manifest 文件
-     * @return Manifest
+     * 得到插件的 Properties 配置
+     * @return Properties
      */
-    Manifest getManifest();
+    Properties getProperties();
 
     /**
      * 获取插件配置文件名称。
@@ -46,6 +47,12 @@ public interface InsidePluginDescriptor extends PluginDescriptor{
      * @return String
      */
     String getConfigFileLocation();
+
+    /**
+     * 得到插件启动时参数
+     * @return String
+     */
+    String getArgs();
 
     /**
      * 得到内部的插件路径

@@ -19,6 +19,7 @@ package com.gitee.starblues.core.descriptor;
 import lombok.Setter;
 
 import java.nio.file.Path;
+import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Manifest;
 
@@ -35,11 +36,13 @@ public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor imple
     @Setter
     private String pluginClassPath;
     @Setter
-    private Manifest manifest;
+    private Properties properties;
     @Setter
     private String configFileName;
     @Setter
     private String configFileLocation;
+    @Setter
+    private String args;
     @Setter
     private Set<PluginLibInfo> pluginLibInfo;
     @Setter
@@ -85,6 +88,11 @@ public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor imple
     }
 
     @Override
+    public String getArgs() {
+        return args;
+    }
+
+    @Override
     public Path getInsidePluginPath() {
         return pluginPath;
     }
@@ -95,8 +103,8 @@ public class DefaultInsidePluginDescriptor extends DefaultPluginDescriptor imple
     }
 
     @Override
-    public Manifest getManifest() {
-        return manifest;
+    public Properties getProperties() {
+        return properties;
     }
 
     @Override

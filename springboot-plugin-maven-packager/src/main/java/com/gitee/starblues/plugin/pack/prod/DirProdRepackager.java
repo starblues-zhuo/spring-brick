@@ -16,6 +16,7 @@
 
 package com.gitee.starblues.plugin.pack.prod;
 
+import com.gitee.starblues.common.ManifestKey;
 import com.gitee.starblues.common.PackageStructure;
 import com.gitee.starblues.common.PackageType;
 import com.gitee.starblues.common.PluginDescriptorKey;
@@ -31,6 +32,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -92,6 +94,11 @@ public class DirProdRepackager extends DevRepackager {
     }
 
     @Override
+    protected String getRelativePluginMetaPath() {
+        return FilesUtils.joiningFilePath(META_INF_NAME, PLUGIN_META_NAME);
+    }
+
+    @Override
     protected String getRelativeResourcesDefinePath() {
         return FilesUtils.joiningFilePath(META_INF_NAME, RESOURCES_DEFINE_NAME);
     }
@@ -100,10 +107,17 @@ public class DirProdRepackager extends DevRepackager {
     protected Manifest getManifest() throws Exception {
         Manifest manifest = super.getManifest();
         Attributes attributes = manifest.getMainAttributes();
-        attributes.putValue(PluginDescriptorKey.PLUGIN_PATH, CLASSES_NAME);
-        attributes.putValue(PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG, PROD_RESOURCES_DEFINE_PATH);
-        attributes.putValue(PluginDescriptorKey.PLUGIN_PACKAGE_TYPE, PackageType.PLUGIN_PACKAGE_TYPE_DIR);
+        attributes.putValue(ManifestKey.PLUGIN_META_PATH, PROD_PLUGIN_META_PATH);
+        attributes.putValue(ManifestKey.PLUGIN_PACKAGE_TYPE, PackageType.PLUGIN_PACKAGE_TYPE_ZIP_OUTER);
         return manifest;
+    }
+
+    @Override
+    protected Properties createPluginMetaInfo() throws Exception {
+        Properties properties = super.createPluginMetaInfo();
+        properties.put(PluginDescriptorKey.PLUGIN_PATH, CLASSES_NAME);
+        properties.put(PluginDescriptorKey.PLUGIN_RESOURCES_CONFIG, PROD_RESOURCES_DEFINE_PATH);
+        return properties;
     }
 
     protected void resolveClasses() throws Exception {

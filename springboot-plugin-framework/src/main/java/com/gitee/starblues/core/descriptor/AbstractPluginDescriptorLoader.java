@@ -20,14 +20,18 @@ package com.gitee.starblues.core.descriptor;
 import com.gitee.starblues.common.*;
 import com.gitee.starblues.core.exception.PluginException;
 import com.gitee.starblues.utils.FilesUtils;
-import com.gitee.starblues.utils.ManifestUtils;
+import com.gitee.starblues.utils.PropertiesUtils;
 import com.gitee.starblues.utils.ObjectUtils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -36,7 +40,7 @@ import java.util.jar.Manifest;
 
 import static com.gitee.starblues.common.PackageStructure.MANIFEST;
 import static com.gitee.starblues.common.PluginDescriptorKey.*;
-import static com.gitee.starblues.utils.ManifestUtils.getValue;
+import static com.gitee.starblues.utils.PropertiesUtils.getValue;
 
 /**
  * 抽象的 PluginDescriptorLoader
@@ -50,16 +54,15 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
 
     @Override
     public InsidePluginDescriptor load(Path location) throws PluginException {
-        Manifest manifest = null;
+        PluginMeta pluginMeta = null;
         try {
-            manifest = getManifest(location);
-            if(manifest == null){
-                logger.debug("路径[{}]没有发现[{}]", location, MANIFEST);
+            pluginMeta = getPluginMetaInfo(location);
+            if(pluginMeta == null || pluginMeta.getPluginMetaInfo() == null){
+                logger.debug("路径[{}]没有发现插件配置信息", location);
                 return null;
             }
-            return create(manifest, location);
+            return create(pluginMeta, location);
         } catch (Exception e) {
-            logger.error("路径[{}]中存在非法[{}]: {}", location, MANIFEST, e.getMessage());
             return null;
         }
     }
@@ -70,72 +73,58 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
     }
 
     /**
-     * 子类获取 Properties
-     * @param location properties 路径
+     * 子类获取插件信息
+     * @param location 路径
      * @return Properties
      * @throws Exception 异常
      */
-    protected abstract Manifest getManifest(Path location) throws Exception;
+    protected abstract PluginMeta getPluginMetaInfo(Path location) throws Exception;
 
-    protected DefaultInsidePluginDescriptor create(Manifest manifest, Path path) throws Exception{
-        Attributes attributes = manifest.getMainAttributes();
+    protected DefaultInsidePluginDescriptor create(PluginMeta pluginMeta, Path path) throws Exception{
+        Properties properties = pluginMeta.getPluginMetaInfo();
         DefaultInsidePluginDescriptor descriptor = new DefaultInsidePluginDescriptor(
-                getValue(attributes, PLUGIN_ID),
-                getValue(attributes, PLUGIN_VERSION),
-                getValue(attributes, PLUGIN_BOOTSTRAP_CLASS),
+                getValue(properties, PLUGIN_ID),
+                getValue(properties, PLUGIN_VERSION),
+                getValue(properties, PLUGIN_BOOTSTRAP_CLASS),
                 path
         );
-        PluginResourcesConfig pluginResourcesConfig = getPluginResourcesConfig(path, attributes);
+        descriptor.setType(PluginType.byName(pluginMeta.getPackageType()));
+
+        PluginResourcesConfig pluginResourcesConfig = getPluginResourcesConfig(path, properties);
 
         descriptor.setPluginLibInfo(getPluginLibInfo(pluginResourcesConfig.getDependenciesIndex()));
         descriptor.setIncludeMainResourcePatterns(pluginResourcesConfig.getLoadMainResourceIncludes());
         descriptor.setExcludeMainResourcePatterns(pluginResourcesConfig.getLoadMainResourceExcludes());
 
-        descriptor.setManifest(manifest);
-        descriptor.setPluginClassPath(getValue(attributes, PLUGIN_PATH, false));
-        descriptor.setDescription(getValue(attributes, PLUGIN_DESCRIPTION, false));
-        descriptor.setRequires(getValue(attributes, PLUGIN_REQUIRES, false));
-        descriptor.setProvider(getValue(attributes, PLUGIN_PROVIDER, false));
-        descriptor.setLicense(getValue(attributes, PLUGIN_LICENSE, false));
-        descriptor.setConfigFileName(getValue(attributes, PLUGIN_CONFIG_FILE_NAME, false));
-        descriptor.setConfigFileLocation(getValue(attributes, PLUGIN_CONFIG_FILE_LOCATION, false));
+        descriptor.setProperties(properties);
+        descriptor.setPluginClassPath(getValue(properties, PLUGIN_PATH, false));
+        descriptor.setDescription(getValue(properties, PLUGIN_DESCRIPTION, false));
+        descriptor.setRequires(getValue(properties, PLUGIN_REQUIRES, false));
+        descriptor.setProvider(getValue(properties, PLUGIN_PROVIDER, false));
+        descriptor.setLicense(getValue(properties, PLUGIN_LICENSE, false));
+        descriptor.setConfigFileName(getValue(properties, PLUGIN_CONFIG_FILE_NAME, false));
+        descriptor.setConfigFileLocation(getValue(properties, PLUGIN_CONFIG_FILE_LOCATION, false));
+        descriptor.setArgs(getValue(properties, PLUGIN_ARGS, false));
 
-        descriptor.setType(getPluginType(attributes));
-
-        descriptor.setDependencyPlugins(getPluginDependency(attributes));
+        descriptor.setDependencyPlugins(getPluginDependency(properties));
         return descriptor;
     }
 
-    protected PluginType getPluginType(Attributes attributes){
-        String packageType = ManifestUtils.getValue(attributes, PluginDescriptorKey.PLUGIN_PACKAGE_TYPE, false);
-        if(Objects.equals(packageType, PackageType.PLUGIN_PACKAGE_TYPE_JAR)){
-            return PluginType.JAR;
-        } else if(Objects.equals(packageType, PackageType.PLUGIN_PACKAGE_TYPE_JAR_OUTER)){
-            return PluginType.JAR_OUTER;
-        } else if(Objects.equals(packageType, PackageType.PLUGIN_PACKAGE_TYPE_ZIP)){
-            return PluginType.ZIP;
-        } else if(Objects.equals(packageType, PackageType.PLUGIN_PACKAGE_TYPE_ZIP_OUTER)){
-            return PluginType.ZIP_OUTER;
-        } else {
-            return null;
-        }
-    }
 
-    protected List<DependencyPlugin> getPluginDependency(Attributes attributes){
-        return AbstractDependencyPlugin.toList(getValue(attributes, PLUGIN_DEPENDENCIES, false),
+    protected List<DependencyPlugin> getPluginDependency(Properties properties){
+        return AbstractDependencyPlugin.toList(getValue(properties, PLUGIN_DEPENDENCIES, false),
                 DefaultDependencyPlugin::new);
     }
 
-
-    protected PluginResourcesConfig getPluginResourcesConfig(Path path, Attributes attributes) throws Exception{
-        String libIndex = getValue(attributes, PLUGIN_RESOURCES_CONFIG);
+    protected PluginResourcesConfig getPluginResourcesConfig(Path path, Properties properties) throws Exception{
+        String libIndex = getValue(properties, PLUGIN_RESOURCES_CONFIG);
         if(ObjectUtils.isEmpty(libIndex)){
             return new PluginResourcesConfig();
         }
         File file = new File(libIndex);
         if(!file.exists()){
             // 如果绝对路径不存在, 则判断相对路径
-            String pluginPath = getValue(attributes, PLUGIN_PATH);
+            String pluginPath = getValue(properties, PLUGIN_PATH);
             file = new File(FilesUtils.joiningFilePath(pluginPath, libIndex));
         }
         if(!file.exists()){
@@ -180,6 +169,21 @@ public abstract class AbstractPluginDescriptorLoader implements PluginDescriptor
         } finally {
             inputStream.close();
         }
+    }
+
+    protected Properties getProperties(InputStream inputStream) throws Exception{
+        Properties properties = new Properties();
+        try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);){
+            properties.load(reader);
+            return properties;
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class PluginMeta{
+        private final String packageType;
+        private final Properties pluginMetaInfo;
     }
 
 }

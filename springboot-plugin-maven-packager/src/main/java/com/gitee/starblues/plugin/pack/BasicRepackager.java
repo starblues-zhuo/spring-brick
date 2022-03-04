@@ -19,6 +19,7 @@ package com.gitee.starblues.plugin.pack;
 import com.gitee.starblues.common.AbstractDependencyPlugin;
 import com.gitee.starblues.common.ManifestKey;
 import com.gitee.starblues.common.PackageStructure;
+import com.gitee.starblues.common.PackageType;
 import com.gitee.starblues.plugin.pack.dev.DevConfig;
 import com.gitee.starblues.plugin.pack.utils.CommonUtils;
 import com.gitee.starblues.utils.FilesUtils;
@@ -32,10 +33,9 @@ import org.apache.maven.plugin.MojoFailureException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -52,6 +52,7 @@ public class BasicRepackager implements Repackager{
     @Getter
     private String rootDir;
     private String relativeManifestPath;
+    private String relativePluginMetaPath;
     private String relativeResourcesDefinePath;
 
     protected File resourcesDefineFile;
@@ -67,6 +68,7 @@ public class BasicRepackager implements Repackager{
         checkPluginInfo();
         rootDir = createRootDir();
         relativeManifestPath = getRelativeManifestPath();
+        relativePluginMetaPath = getRelativePluginMetaPath();
         relativeResourcesDefinePath = getRelativeResourcesDefinePath();
         try {
             Manifest manifest = getManifest();
@@ -113,6 +115,10 @@ public class BasicRepackager implements Repackager{
         return RESOURCES_DEFINE_NAME;
     }
 
+    protected String getRelativePluginMetaPath(){
+        return PLUGIN_META_NAME;
+    }
+
     protected String createRootDir() throws MojoFailureException {
         String rootDirPath = getBasicRootDir();
         File rootDir = new File(rootDirPath);
@@ -150,48 +156,74 @@ public class BasicRepackager implements Repackager{
     }
 
     protected Manifest getManifest() throws Exception{
-        PluginInfo pluginInfo = repackageMojo.getPluginInfo();
         Manifest manifest = new Manifest();
         Attributes attributes = manifest.getMainAttributes();
         attributes.putValue(ManifestKey.MANIFEST_VERSION, ManifestKey.MANIFEST_VERSION_1_0);
-        attributes.putValue(PLUGIN_ID, pluginInfo.getId());
-        attributes.putValue(PLUGIN_BOOTSTRAP_CLASS, pluginInfo.getBootstrapClass());
-        attributes.putValue(PLUGIN_VERSION, pluginInfo.getVersion());
-        attributes.putValue(PLUGIN_PATH, getPluginPath());
+        attributes.putValue(ManifestKey.PLUGIN_META_PATH, getPluginMetaInfoPath());
+        attributes.putValue(ManifestKey.PLUGIN_PACKAGE_TYPE, PackageType.PLUGIN_PACKAGE_TYPE_DEV);
+        return manifest;
+    }
+
+    /**
+     * 得到插件信息存储文件路径
+     * @return 插件信息存储文件路径
+     * @throws Exception Exception
+     */
+    protected String getPluginMetaInfoPath() throws Exception {
+        Properties pluginMetaInfo = createPluginMetaInfo();
+        return writePluginMetaInfo(pluginMetaInfo);
+    }
+
+    /**
+     * 创建插件信息
+     * @return Properties
+     * @throws Exception Exception
+     */
+    protected Properties createPluginMetaInfo() throws Exception {
+        Properties properties = new Properties();
+        PluginInfo pluginInfo = repackageMojo.getPluginInfo();
+        properties.put(PLUGIN_ID, pluginInfo.getId());
+        properties.put(PLUGIN_BOOTSTRAP_CLASS, pluginInfo.getBootstrapClass());
+        properties.put(PLUGIN_VERSION, pluginInfo.getVersion());
+        properties.put(PLUGIN_PATH, getPluginPath());
 
         String resourcesDefineFilePath = writeResourcesDefineFile();
         if(!ObjectUtils.isEmpty(resourcesDefineFilePath)){
-            attributes.putValue(PLUGIN_RESOURCES_CONFIG, resourcesDefineFilePath);
+            properties.put(PLUGIN_RESOURCES_CONFIG, resourcesDefineFilePath);
         }
         String configFileName = pluginInfo.getConfigFileName();
         if(!ObjectUtils.isEmpty(configFileName)){
-            attributes.putValue(PLUGIN_CONFIG_FILE_NAME, configFileName);
+            properties.put(PLUGIN_CONFIG_FILE_NAME, configFileName);
         }
         String configFileLocation = pluginInfo.getConfigFileLocation();
         if(!ObjectUtils.isEmpty(configFileLocation)){
-            attributes.putValue(PLUGIN_CONFIG_FILE_LOCATION, configFileLocation);
+            properties.put(PLUGIN_CONFIG_FILE_LOCATION, configFileLocation);
+        }
+        String args = pluginInfo.getArgs();
+        if(!ObjectUtils.isEmpty(args)){
+            properties.put(PLUGIN_ARGS, args);
         }
         String provider = pluginInfo.getProvider();
         if(!ObjectUtils.isEmpty(provider)){
-            attributes.putValue(PLUGIN_PROVIDER, provider);
+            properties.put(PLUGIN_PROVIDER, provider);
         }
         String requires = pluginInfo.getRequires();
         if(!ObjectUtils.isEmpty(requires)){
-            attributes.putValue(PLUGIN_REQUIRES, requires);
+            properties.put(PLUGIN_REQUIRES, requires);
         }
         String dependencyPlugins = getDependencyPlugin(pluginInfo);
         if(!ObjectUtils.isEmpty(dependencyPlugins)){
-            attributes.putValue(PLUGIN_DEPENDENCIES, dependencyPlugins);
+            properties.put(PLUGIN_DEPENDENCIES, dependencyPlugins);
         }
         String description = pluginInfo.getDescription();
         if(!ObjectUtils.isEmpty(description)){
-            attributes.putValue(PLUGIN_DESCRIPTION, description);
+            properties.put(PLUGIN_DESCRIPTION, description);
         }
         String license = pluginInfo.getLicense();
         if(!ObjectUtils.isEmpty(license)){
-            attributes.putValue(PLUGIN_LICENSE, license);
+            properties.put(PLUGIN_LICENSE, license);
         }
-        return manifest;
+        return properties;
     }
 
     protected String getDependencyPlugin(PluginInfo pluginInfo){
@@ -199,6 +231,35 @@ public class BasicRepackager implements Repackager{
         return AbstractDependencyPlugin.toStr(dependencyPlugins);
     }
 
+    /**
+     * 写入插件信息
+     * @param properties properties
+     * @return String
+     * @throws IOException IOException
+     */
+    protected String writePluginMetaInfo(Properties properties) throws Exception {
+        File pluginMetaFile = createPluginMetaFile();
+        try (OutputStreamWriter writer = new OutputStreamWriter(
+                new FileOutputStream(pluginMetaFile), StandardCharsets.UTF_8)){
+            properties.store(writer, Constant.PLUGIN_METE_COMMENTS);
+            return pluginMetaFile.getPath();
+        }
+    }
+
+    /**
+     * 创建插件信息存储文件
+     * @return File
+     * @throws IOException 创建文件异常
+     */
+    protected File createPluginMetaFile() throws IOException {
+        String path = FilesUtils.joiningFilePath(rootDir, resolvePath(relativePluginMetaPath));
+        return FilesUtils.createFile(path);
+    }
+
+    /**
+     * 获取插件路径
+     * @return 插件路径
+     */
     protected String getPluginPath(){
         return repackageMojo.getProject().getBuild().getOutputDirectory();
     }
@@ -212,16 +273,7 @@ public class BasicRepackager implements Repackager{
 
     protected File createResourcesDefineFile() throws IOException {
         String path = FilesUtils.joiningFilePath(rootDir, resolvePath(relativeResourcesDefinePath));
-        try {
-            File file = new File(path);
-            FileUtils.forceMkdirParent(file);
-            if(file.createNewFile()){
-                return file;
-            }
-            throw new IOException("Create " + path + " file error");
-        } catch (Exception e){
-            throw new IOException("Create " + path + " file error");
-        }
+        return FilesUtils.createFile(path);
     }
 
     protected void writeDependenciesIndex() throws Exception {

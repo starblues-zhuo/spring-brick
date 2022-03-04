@@ -16,6 +16,7 @@
 
 package com.gitee.starblues.plugin.pack.prod;
 
+import com.gitee.starblues.common.ManifestKey;
 import com.gitee.starblues.common.PackageType;
 import com.gitee.starblues.common.PluginDescriptorKey;
 import com.gitee.starblues.plugin.pack.RepackageMojo;
@@ -30,12 +31,12 @@ import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import static com.gitee.starblues.common.PackageStructure.CLASSES_NAME;
-import static com.gitee.starblues.common.PackageStructure.PROD_RESOURCES_DEFINE_PATH;
+import static com.gitee.starblues.common.PackageStructure.*;
 
 /**
  * zip-outer 包生成
@@ -88,9 +89,15 @@ public class ZipOuterProdRepackager extends DirProdRepackager {
     protected Manifest getManifest() throws Exception {
         Manifest manifest = super.getManifest();
         Attributes attributes = manifest.getMainAttributes();
-        attributes.putValue(PluginDescriptorKey.PLUGIN_PACKAGE_TYPE, PackageType.PLUGIN_PACKAGE_TYPE_ZIP_OUTER);
-        attributes.putValue(PluginDescriptorKey.PLUGIN_PATH, packageZip.getFileName());
+        attributes.putValue(ManifestKey.PLUGIN_META_PATH, PROD_PLUGIN_META_PATH);
+        attributes.putValue(ManifestKey.PLUGIN_PACKAGE_TYPE, PackageType.PLUGIN_PACKAGE_TYPE_ZIP_OUTER);
         return manifest;
     }
 
+    @Override
+    protected Properties createPluginMetaInfo() throws Exception {
+        Properties properties = super.createPluginMetaInfo();
+        properties.put(PluginDescriptorKey.PLUGIN_PATH, packageZip.getFileName());
+        return properties;
+    }
 }
