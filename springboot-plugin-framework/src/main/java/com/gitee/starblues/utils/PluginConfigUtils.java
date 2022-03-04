@@ -1,13 +1,28 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.gitee.starblues.utils;
 
-import com.gitee.starblues.annotation.ConfigDefinition;
-import org.pf4j.RuntimeMode;
-import org.pf4j.util.StringUtils;
+import com.gitee.starblues.core.RuntimeMode;
+import com.gitee.starblues.integration.IntegrationConfiguration;
 
 /**
  * 插件配置工具类
  * @author starBlues
- * @version 2.4.3
+ * @version 3.0.0
  */
 public class PluginConfigUtils {
 
@@ -27,14 +42,14 @@ public class PluginConfigUtils {
                                                  String prodSuffix,
                                                  String devSuffix,
                                                  RuntimeMode runtimeMode){
-        if(StringUtils.isNullOrEmpty(fileName)){
+        if(ObjectUtils.isEmpty(fileName)){
             return null;
         }
         String suffix = "";
-        if(runtimeMode == RuntimeMode.DEPLOYMENT){
+        if(runtimeMode == RuntimeMode.PROD){
             // 生产环境
             suffix = prodSuffix;
-        } else if(runtimeMode == RuntimeMode.DEVELOPMENT){
+        } else if(runtimeMode == RuntimeMode.DEV){
             // 开发环境
             suffix = devSuffix;
         }
@@ -50,7 +65,7 @@ public class PluginConfigUtils {
     }
 
     public static String joinConfigFileName(String fileName, String suffix){
-        if(StringUtils.isNullOrEmpty(fileName)){
+        if(ObjectUtils.isEmpty(fileName)){
             return null;
         }
         String fileNamePrefix;
@@ -67,12 +82,35 @@ public class PluginConfigUtils {
         if(suffix == null){
             suffix = "";
         }
-        if(StringUtils.isNotNullOrEmpty(suffix) && !suffix.startsWith(DO)){
+        if(ObjectUtils.isEmpty(suffix) && !suffix.startsWith(DO)){
             suffix = DO + suffix;
         }
         return fileNamePrefix + suffix + fileNamePrefixSuffix;
     }
 
+    /**
+     * 得到插件接口前缀
+     * @param configuration 配置
+     * @param pluginId 插件id
+     * @return 接口前缀
+     */
+    public static String getPluginRestPrefix(IntegrationConfiguration configuration, String pluginId){
+        String pathPrefix = configuration.pluginRestPathPrefix();
+        if(configuration.enablePluginIdRestPathPrefix()){
+            if(pathPrefix != null && !"".equals(pathPrefix)){
+                pathPrefix = FilesUtils.restJoiningPath(pathPrefix, pluginId);
+            } else {
+                pathPrefix = pluginId;
+            }
+            return pathPrefix;
+        } else {
+            if(pathPrefix == null || "".equals(pathPrefix)){
+                // 不启用插件id作为路径前缀, 并且路径前缀为空, 则直接返回。
+                return null;
+            }
+        }
+        return pathPrefix;
+    }
 
     public static class FileNamePack {
         private final String sourceFileName;

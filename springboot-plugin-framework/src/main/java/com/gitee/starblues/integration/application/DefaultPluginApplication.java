@@ -1,24 +1,41 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.gitee.starblues.integration.application;
 
-import com.gitee.starblues.integration.operator.PluginOperatorWrapper;
-import com.gitee.starblues.integration.pf4j.DefaultPf4jFactory;
+import com.gitee.starblues.annotation.Extract;
 import com.gitee.starblues.integration.IntegrationConfiguration;
-import com.gitee.starblues.integration.pf4j.Pf4jFactory;
 import com.gitee.starblues.integration.listener.PluginInitializerListener;
-import com.gitee.starblues.integration.operator.DefaultPluginOperator;
 import com.gitee.starblues.integration.operator.PluginOperator;
-import com.gitee.starblues.integration.user.DefaultPluginUser;
+import com.gitee.starblues.integration.operator.PluginOperatorWrapper;
 import com.gitee.starblues.integration.user.PluginUser;
-import org.pf4j.PluginManager;
-import org.pf4j.PluginStateListener;
+import com.gitee.starblues.spring.extract.DefaultExtractFactory;
+import com.gitee.starblues.spring.extract.DefaultOpExtractFactory;
+import com.gitee.starblues.spring.extract.ExtractFactory;
+import com.gitee.starblues.spring.extract.OpExtractFactory;
+import com.gitee.starblues.utils.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.util.ObjectUtils;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,13 +43,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 默认的插件 PluginApplication
  * @author starBlues
- * @version 2.4.4
+ * @version 3.0.0
  */
 public class DefaultPluginApplication extends AbstractPluginApplication {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    protected Pf4jFactory integrationFactory;
+    private final static Logger LOG = LoggerFactory.getLogger(DefaultPluginApplication.class);
 
     private PluginUser pluginUser;
     private PluginOperator pluginOperator;
@@ -42,11 +57,6 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
     public DefaultPluginApplication() {
     }
 
-    public DefaultPluginApplication(Pf4jFactory integrationFactory){
-        this.integrationFactory = integrationFactory;
-    }
-
-
     @Override
     public synchronized void initialize(ApplicationContext applicationContext,
                                         PluginInitializerListener listener) {
@@ -54,53 +64,47 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
         if(beInitialized.get()){
             throw new RuntimeException("Plugin has been initialized");
         }
+        // 获取Configuration
         IntegrationConfiguration configuration = getConfiguration(applicationContext);
-        if(integrationFactory == null){
-            integrationFactory = new DefaultPf4jFactory(configuration);
-        }
-        PluginManager pluginManager = integrationFactory.getPluginManager();
-        addPf4jStateListener(pluginManager, applicationContext);
-        pluginUser = createPluginUser(applicationContext, pluginManager);
-        pluginOperator = createPluginOperator(applicationContext, pluginManager, configuration);
+        // 检查配置
+        configuration.checkConfig();
+        createPluginUser(applicationContext);
+        createPluginOperator(applicationContext);
         try {
-            setBeanFactory(applicationContext);
+            if(!(pluginOperator instanceof PluginOperatorWrapper)){
+                pluginOperator = new PluginOperatorWrapper(pluginOperator, configuration);
+            }
+            GenericApplicationContext genericApplicationContext = (GenericApplicationContext) applicationContext;
+            setBeanFactory(genericApplicationContext);
+            initExtractFactory(genericApplicationContext);
             pluginOperator.initPlugins(listener);
             beInitialized.set(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("初始化插件异常." + e.getMessage());
         }
     }
 
     /**
      * 创建插件使用者。子类可扩展
      * @param applicationContext Spring ApplicationContext
-     * @param pluginManager 插件管理器
-     * @return PluginUser
      */
-    protected PluginUser createPluginUser(ApplicationContext applicationContext,
-                                          PluginManager pluginManager){
-        return new DefaultPluginUser(applicationContext, pluginManager);
+    protected synchronized PluginUser createPluginUser(ApplicationContext applicationContext){
+        if(pluginUser == null){
+            pluginUser = applicationContext.getBean(PluginUser.class);
+        }
+        return pluginUser;
     }
 
     /**
      * 创建插件操作者。子类可扩展
      * @param applicationContext Spring ApplicationContext
-     * @param pluginManager 插件管理器
-     * @param configuration 当前集成的配置
-     * @return PluginOperator
      */
-    protected PluginOperator createPluginOperator(ApplicationContext applicationContext,
-                                                  PluginManager pluginManager,
-                                                  IntegrationConfiguration configuration){
-        PluginOperator pluginOperator = new DefaultPluginOperator(
-                applicationContext,
-                configuration,
-                pluginManager,
-                this.listenerFactory
-        );
-        return new PluginOperatorWrapper(pluginOperator, configuration);
+    protected synchronized PluginOperator createPluginOperator(ApplicationContext applicationContext){
+        if(pluginOperator == null){
+            pluginOperator = applicationContext.getBean(PluginOperator.class);
+        }
+        return  pluginOperator;
     }
-
 
     @Override
     public PluginOperator getPluginOperator() {
@@ -115,29 +119,38 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
     }
 
     /**
-     * 将pf4j中的监听器加入
-     * @param pluginManager pluginManager
-     * @param applicationContext ApplicationContext
+     * 初始化扩展工厂
+     * @param applicationContext applicationContext
      */
-    private void addPf4jStateListener(PluginManager pluginManager, ApplicationContext applicationContext){
-        List<PluginStateListener> pluginStateListeners = pluginStateListenerFactory
-                .buildListenerClass((GenericApplicationContext) applicationContext);
-        if(ObjectUtils.isEmpty(pluginStateListeners)){
-            return;
-        }
-        for (PluginStateListener pluginStateListener : pluginStateListeners) {
-            pluginManager.addPluginStateListener(pluginStateListener);
-        }
+    private void initExtractFactory(GenericApplicationContext applicationContext){
+        ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+        DefaultExtractFactory defaultExtractFactory = (DefaultExtractFactory)ExtractFactory.getInstant();
+        initMainExtract((OpExtractFactory)defaultExtractFactory.getTarget(), beanFactory);
     }
 
+    /**
+     * 初始化主程序中的扩展
+     * @param opExtractFactory opExtractFactory
+     * @param beanFactory beanFactory
+     */
+    private void initMainExtract(OpExtractFactory opExtractFactory, ListableBeanFactory beanFactory){
+        // 获取主程序的扩展
+        Map<String, Object> extractMap = beanFactory.getBeansWithAnnotation(Extract.class);
+        if(ObjectUtils.isEmpty(extractMap)){
+            return;
+        }
+        for (Object extract : extractMap.values()) {
+            opExtractFactory.addOfMain(extract);
+        }
+    }
 
     /**
      * 直接将 PluginOperator 和 PluginUser 注入到ApplicationContext容器中
      * @param applicationContext ApplicationContext
      */
-    private void setBeanFactory(ApplicationContext applicationContext){
-        GenericApplicationContext genericApplicationContext = (GenericApplicationContext) applicationContext;
-        DefaultListableBeanFactory defaultListableBeanFactory = genericApplicationContext.getDefaultListableBeanFactory();
+    @Deprecated
+    private void setBeanFactory(GenericApplicationContext applicationContext){
+        DefaultListableBeanFactory defaultListableBeanFactory = applicationContext.getDefaultListableBeanFactory();
         defaultListableBeanFactory.registerSingleton(pluginOperator.getClass().getName(), pluginOperator);
         defaultListableBeanFactory.registerSingleton(pluginUser.getClass().getName(), pluginUser);
     }

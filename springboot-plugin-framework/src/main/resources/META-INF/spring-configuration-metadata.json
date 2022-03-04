@@ -8,13 +8,6 @@
   ],
   "properties": [
     {
-      "name": "plugin.runMode",
-      "type": "java.lang.String",
-      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
-      "description": "运行模式. 开发环境: development、dev; 生产/部署 环境: deployment、prod",
-      "defaultValue": "dev"
-    },
-    {
       "name": "plugin.enable",
       "type": "java.lang.Boolean",
       "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
@@ -22,39 +15,32 @@
       "defaultValue": true
     },
     {
+      "name": "plugin.enableStarter",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
+      "description": "是否启用starter自动装配功能",
+      "defaultValue": true
+    },
+    {
+      "name": "plugin.runMode",
+      "type": "java.lang.String",
+      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
+      "description": "运行模式. 开发环境: dev; 生产/部署 环境: prod",
+      "defaultValue": "dev"
+    },
+    {
+      "name": "plugin.mainPackage",
+      "type": "java.lang.String",
+      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
+          "description": "主程序包名, 包名建议设置到范围最大级别, 主要用于插件依赖主程序时的类时, 进行包名匹配",
+      "defaultValue": true
+    },
+    {
       "name": "plugin.pluginPath",
       "type": "java.lang.String",
       "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
       "description": "插件的路径. 开发环境下配置为插件模块上级目录; 生产环境下配置到插件jar包存放目录。建议配置绝对路径",
-      "defaultValue": "/plugins"
-    },
-    {
-      "name": "plugin.pluginConfigFilePath",
-      "type": "java.lang.String",
-      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
-      "description": "插件对应的配置文件存放目录, 只作用于生产环境下",
-      "defaultValue": "/plugin-config"
-    },
-    {
-      "name": "plugin.pluginRestPathPrefix",
-      "type": "java.lang.String",
-      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
-      "description": "统一配置访问插件rest接口前缀",
-      "defaultValue": "/plugins"
-    },
-    {
-      "name": "plugin.pluginRestPathPrefix",
-      "type": "java.lang.Boolean",
-      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
-      "description": "是否启用插件id作为rest接口前缀",
-      "defaultValue": true
-    },
-    {
-      "name": "plugin.enableSwaggerRefresh",
-      "type": "java.lang.Boolean",
-      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
-      "description": "是否启用Swagger刷新机制",
-      "defaultValue": true
+      "defaultValue": "~/plugins/"
     },
     {
       "name": "plugin.backupPath",
@@ -69,25 +55,18 @@
       "description": "上传的插件所存储的临时目录"
     },
     {
-      "name": "plugin.version",
+      "name": "plugin.pluginRestPathPrefix",
       "type": "java.lang.String",
       "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
-      "description": "当前主程序的版本号, 用于校验插件是否可安装。插件中可通过插件配置信息 requires 来指定可安装的主程序版本。如果为: 0.0.0 的话, 表示不校验",
-      "defaultValue": "0.0.0"
+      "description": "统一配置访问插件rest接口前缀",
+      "defaultValue": "/plugins"
     },
     {
-      "name": "plugin.exactVersionAllowed",
-      "type": "java.lang.String",
+      "name": "plugin.enablePluginIdRestPathPrefix",
+      "type": "java.lang.Boolean",
       "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
-      "description": "是否完全匹配版本。设置为true表示插件设置的requires的版本号完全匹配version版本号才可允许插件安装, 即: requires=x.y.z; 设置为false表示插件设置的requires的版本号小于等于version值, 插件就可安装, 即requires<=x.y.z",
-      "defaultValue": false
-    },
-    {
-      "name": "plugin.stopDependents",
-      "type": "java.lang.String",
-      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
-      "description": "停止插件时, 是否停止当前插件依赖的插件",
-      "defaultValue": false
+      "description": "是否启用插件id作为rest接口前缀",
+      "defaultValue": true
     },
     {
       "name": "plugin.enablePluginIds",
@@ -108,10 +87,17 @@
       "description": "设置初始化时插件启动的顺序"
     },
     {
-      "name": "plugin.enableWebSocket",
-      "type": "java.lang.Boolean",
+      "name": "plugin.version",
+      "type": "java.lang.String",
       "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
-      "description": "是否启用webSocket的功能. 默认禁用",
+      "description": "当前主程序的版本号, 用于校验插件是否可安装。插件中可通过插件配置信息 requires 来指定可安装的主程序版本。如果为: 0.0.0 的话, 表示不校验",
+      "defaultValue": "0.0.0"
+    },
+    {
+      "name": "plugin.exactVersion",
+      "type": "java.lang.String",
+      "sourceType": "com.gitee.starblues.integration.AutoIntegrationConfiguration",
+      "description": "是否完全匹配版本。设置为true表示插件设置的requires的版本号完全匹配version版本号才可允许插件安装, 即: requires=x.y.z; 设置为false表示插件设置的requires的版本号小于等于version值, 插件就可安装, 即requires<=x.y.z",
       "defaultValue": false
     }
   ]

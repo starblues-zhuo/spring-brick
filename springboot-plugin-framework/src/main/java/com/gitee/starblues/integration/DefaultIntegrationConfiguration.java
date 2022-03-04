@@ -1,6 +1,22 @@
+/**
+ * Copyright [2019-2022] [starBlues]
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.gitee.starblues.integration;
 
-import org.pf4j.RuntimeMode;
+import com.gitee.starblues.utils.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,24 +26,23 @@ import java.util.Set;
  * 默认的插件集成配置。给非必须配置设置了默认值
  *
  * @author starBlues
- * @version 2.4.4
+ * @version 3.0.0
  */
 public abstract class DefaultIntegrationConfiguration implements IntegrationConfiguration{
 
-    @Override
-    public List<String> pluginPath() {
-        List<String> pluginPath = new ArrayList<>(1);
-        if(environment() == RuntimeMode.DEPLOYMENT){
-            pluginPath.add("plugins");
-        } else if(environment() == RuntimeMode.DEVELOPMENT){
-            pluginPath.add("./plugins/");
-        }
-        return pluginPath;
-    }
+    public static final String DEFAULT_PLUGIN_REST_PATH_PREFIX = "plugins";
+    public static final boolean DEFAULT_ENABLE_PLUGIN_ID_REST_PATH_PREFIX = true;
 
     @Override
     public boolean enable() {
         return true;
+    }
+
+    @Override
+    public List<String> pluginPath() {
+        List<String> pluginPath = new ArrayList<>(1);
+        pluginPath.add("~/plugins/");
+        return pluginPath;
     }
 
     @Override
@@ -42,12 +57,12 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
 
     @Override
     public String pluginRestPathPrefix(){
-        return "/plugins";
+        return DEFAULT_PLUGIN_REST_PATH_PREFIX;
     }
 
     @Override
     public boolean enablePluginIdRestPathPrefix() {
-        return true;
+        return DEFAULT_ENABLE_PLUGIN_ID_REST_PATH_PREFIX;
     }
 
     @Override
@@ -61,11 +76,6 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     }
 
     @Override
-    public boolean enableSwaggerRefresh() {
-        return true;
-    }
-
-    @Override
     public List<String> sortInitPluginIds() {
         return null;
     }
@@ -76,17 +86,16 @@ public abstract class DefaultIntegrationConfiguration implements IntegrationConf
     }
 
     @Override
-    public boolean exactVersionAllowed() {
+    public boolean exactVersion() {
         return false;
     }
 
+    /**
+     * 检查配置
+     */
     @Override
-    public boolean enableWebSocket() {
-        return false;
+    public void checkConfig(){
+        Assert.isNotEmpty(mainPackage(), "插件配置: mainPackage 不能为空");
     }
 
-    @Override
-    public boolean stopDependents() {
-        return false;
-    }
 }

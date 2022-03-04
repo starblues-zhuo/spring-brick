@@ -1,53 +1,29 @@
 # SpringBoot Plugin Development Framework
 
+- A new `3.0.0' version is available, a framework for dynamically extending the system.
+
 ### Introduce
-This framework can develop plugins for extension projects on the `SpringBoot` project, 
-and can define extension functions such as interface, static file and `Mybatis-xml` separately in the plugin module.
+The framework can be developed in the `SpringBoot` project plugin, plugin can be used in exactly the same way as `SpringBoot`. Using this framework you can achieve the following requirements:
 
-### Core
-- Based on `Pf4j` development.
-- Plugin configuration plug in SpringBoot project.
-- Plugin development can be carried out on springboot with strong expansibility. 
-Different plugins can be developed for different projects and different plugin jar packages can be deployed.
-- You can specify whether to enable or disable plugins through the configuration file, and you can specify the order in which plugins are started.
-- It supports uploading plugins and plugin configuration files to the server, and dynamically deploying and updating plugins without restarting the main program.
-- It supports viewing plugin operation status and plugin installation location.
-- Without restarting the main program, dynamically install, uninstall, enable, stop, backup and delete plugins through the interface.
-- On the plugin application module, `spring annotations` can be used to define components for dependency injection.
-- Supports the development of `Http-Restful` interfaces in plugins
-- Support to define persistence layer access and other requirements separately in the plugin.
-- You can follow the plugin interface provided by the main program to develop any extended functions.
-- It supports annotation for any business scenario extension, and uses defined coordinates for scenario hit.
-- Plugin can customize independent configuration files according to the production and development environment. Currently only `YML files` are supported.
-- It supports user-defined extension development interface, and users can extend additional functions on the reserved interface.
-- Supports method calls between plugins.
-- Supporting plugin http interface documentation: `Swagger`、`SpringDoc`。
-- The plugin supports custom development of the 'Spring-MVC interceptor`.
-- The plugin supports 'Spring-Aop'.
-
-### Expansion pack
-#### `SpringBoot-Mybatis` Expansion
-
-1. Supports customizing the `mapper` interface, `mapper XML` and the corresponding entity `Bean` in the plugin
-2. Support integration `Mybatis`、`Mybatis-Plus`、`Tk-Mybatis`
-3. Supports independent configuration of `DataSources` in plugin
-
-- See details: [SpringBoot Mybatis Expansion](http://www.starblues.cn/extension-doc/Mybatis%E6%89%A9%E5%B1%95.html)
-
-#### `Static resource access` Extension
-
-1. Supports accessing static resources in plugins through HTTP
-2. Support `Thymeleaf` template engine for interface plugin development
-
-- See details: [Static Resource Access Extension](http://www.starblues.cn/extension-doc/%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E8%AE%BF%E9%97%AE%E6%89%A9%E5%B1%95.html)
-
-#### `Plugin Log` Extension
-
-1. The plugin can independently configure the integrated `logback` log
-2. The plugin can independently configure the integrated `log4j2` log
-
-- See details: [Plugin Log Extension](http://www.starblues.cn/extension-doc/Log%E6%89%A9%E5%B1%95.html)
-- Thank for [sousouki](https://gitee.com/caoshx_sousouki) development
+- In the plugin, you can develop as a mini `spring-boot` project, which is easy to use.
+- The extension of various function points in the system in plugin, for flexible system expansion, no longer need to use branches to deliver different requirements of the project.
+- Various frameworks and their various `spring-boot-XXX-starter` can be integrated in plugin.
+- Independent dependencies can now be defined in plugin, not in the main program.
+- Can perfectly solve the plugin package and plugin package, plugin package and the main program because of the same framework of different versions of the conflict problem. Individual plugin can define different versions of the framework for the same dependency.
+- Without the need to restart the main program, you can freely realize the dynamic installation and deployment of the plugin package, to dynamically expand the function of the system.
+- Plugin can also integrate microservice modules independently of the main program.
+- And so on, you can imagine what pressing needs and extensions this framework brings to you.
+### Features
+1. It simplifies the integration steps of the framework and makes it easier to get started.
+2. Plugin development is closer to `spring-boot` native development.
+3. Package plugin with `Maven` to support independent package compilation of plugins. Current support:
+- Dev packaging: Package the plugin as a development environment plugin (packaged only once).
+- Prod packaging: Package plug-ins into a `jar`, `zip`, `folder`, etc.
+4. Plugin support two modes of operation: 
+- Plugin mode: As a plugin, it is bootloaded by the main program.
+- Autonomous boot mode: Starts as a separate `SpringBoot` project。
+5. Self-developed class loader, support plugin definition of a variety of dependent 'jar' packages.
+6. Various frameworks and their various `spring-boot-XXX-starter` can be integrated in plugins, such as integration: `mybatis`、`mybatis-plus`、`spring-jpa` etc.
 
 ### Environment
 1. jdk1.8+d
@@ -60,7 +36,7 @@ Different plugins can be developed for different projects and different plugin j
 
 ### Doc
 
-- [http://www.starblues.cn/](http://www.starblues.cn/)
+- [https://www.yuque.com/starblues/iuyk4y/ypurcw](https://www.yuque.com/starblues/iuyk4y/ypurcw)
 
 ### Derivative products
 #### Background management system with front and rear plugin function
@@ -73,10 +49,5 @@ Different plugins can be developed for different projects and different plugin j
 
 ### Contact
 QQ: 859570617(**After you like the framework, you can enter the group. Please note the Gitee/GitHub nickname before entering the group**)
-
-### Framework maintenance
-**Welcome all development enthusiasts to participate in the maintenance and extension development of the framework**
-
-See for extended development documents: - [springboot-plugin-framework Extended](http://www.starblues.cn/extension-doc/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%A9%E5%B1%95.html)
 
 
