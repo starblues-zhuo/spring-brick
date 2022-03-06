@@ -42,7 +42,7 @@ public class PluginStaticResourceConfig {
     /**
      * 默认首页页面名称
      */
-    private String indexPageName =DEFAULT_INDEX_PAGE_NAME;
+    private String indexPageName = DEFAULT_INDEX_PAGE_NAME;
 
     /**
      * 页面是否缓存
