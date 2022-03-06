@@ -46,7 +46,7 @@ public class PluginStaticResourceWebMvcConfigurer implements WebMvcConfigurer {
         }
         resourceHandlerRegistration
                 .resourceChain(false)
-                .addResolver(new PluginStaticResourceResolver());
+                .addResolver(new PluginStaticResourceResolver(resourceConfig));
     }
 
 

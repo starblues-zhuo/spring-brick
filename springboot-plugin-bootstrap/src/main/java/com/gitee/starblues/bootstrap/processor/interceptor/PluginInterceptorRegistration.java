@@ -16,8 +16,8 @@
 
 package com.gitee.starblues.bootstrap.processor.interceptor;
 
-import com.gitee.starblues.utils.FilesUtils;
 import com.gitee.starblues.utils.ObjectUtils;
+import com.gitee.starblues.utils.UrlUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -87,7 +87,7 @@ public class PluginInterceptorRegistration {
             if(ObjectUtils.isEmpty(pattern)){
                 continue;
             }
-            this.includePatterns.add(FilesUtils.joiningUrlPath(pluginRestApiPrefix, pattern));
+            this.includePatterns.add(UrlUtils.joiningUrlPath(pluginRestApiPrefix, pattern));
         }
         return this;
     }
@@ -105,7 +105,7 @@ public class PluginInterceptorRegistration {
             if(ObjectUtils.isEmpty(pattern)){
                 continue;
             }
-            this.excludePatterns.add(FilesUtils.joiningUrlPath(pluginRestApiPrefix, pattern));
+            this.excludePatterns.add(UrlUtils.joiningUrlPath(pluginRestApiPrefix, pattern));
         }
         return this;
     }
@@ -153,7 +153,7 @@ public class PluginInterceptorRegistration {
     protected Object getInterceptor() {
         if(type == PluginInterceptorRegistry.Type.PLUGIN){
             if(this.includePatterns.isEmpty()){
-                this.includePatterns.add(FilesUtils.joiningUrlPath(pluginRestApiPrefix, "/**"));
+                this.includePatterns.add(UrlUtils.joiningUrlPath(pluginRestApiPrefix, "/**"));
             }
         }
         if (this.includePatterns.isEmpty() && this.excludePatterns.isEmpty()) {

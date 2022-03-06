@@ -98,7 +98,7 @@ public class PluginConfigUtils {
         String pathPrefix = configuration.pluginRestPathPrefix();
         if(configuration.enablePluginIdRestPathPrefix()){
             if(pathPrefix != null && !"".equals(pathPrefix)){
-                pathPrefix = FilesUtils.restJoiningPath(pathPrefix, pluginId);
+                pathPrefix = UrlUtils.restJoiningPath(pathPrefix, pluginId);
             } else {
                 pathPrefix = pluginId;
             }
