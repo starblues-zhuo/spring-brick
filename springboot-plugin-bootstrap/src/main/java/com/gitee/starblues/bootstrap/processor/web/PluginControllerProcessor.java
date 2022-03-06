@@ -241,7 +241,7 @@ public class PluginControllerProcessor implements SpringPluginProcessor {
                     if(definePath.contains(pathPrefix)){
                         newPath[i++] = definePath;
                     } else {
-                        newPath[i++] = FilesUtils.restJoiningPath(pathPrefix, definePath);
+                        newPath[i++] = UrlUtils.restJoiningPath(pathPrefix, definePath);
                     }
                 }
                 if(newPath.length == 0){

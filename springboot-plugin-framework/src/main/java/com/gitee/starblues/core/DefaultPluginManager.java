@@ -126,12 +126,17 @@ public class DefaultPluginManager implements PluginManager{
             }
             List<Path> scanPluginPaths = provider.getPluginScanner().scan(pluginRootDirs);
             if(ObjectUtils.isEmpty(scanPluginPaths)){
-                StringBuilder warn = new StringBuilder("\n\n路径 {} 中未发现插件.\n");
+                StringBuilder warn = new StringBuilder("以下路径未发现插件: \n");
+                for (int i = 0; i < pluginRootDirs.size(); i++) {
+                    warn.append(i + 1).append(". ").append(pluginRootDirs.get(i)).append("\n");
+                }
                 warn.append("请检查路径是否合适.\n");
                 if(provider.getRuntimeMode() == RuntimeMode.DEV){
                     warn.append("请检查插件包是否编译.\n");
+                } else {
+                    warn.append("请检查插件是否合法.\n");
                 }
-                log.warn(warn.toString(), pluginRootDirs);
+                log.warn(warn.toString());
                 return Collections.emptyList();
             }
             pluginListenerFactory = createPluginListenerFactory();

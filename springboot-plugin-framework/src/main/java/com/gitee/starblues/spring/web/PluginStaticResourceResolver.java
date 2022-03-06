@@ -20,6 +20,7 @@ import com.gitee.starblues.core.descriptor.PluginDescriptor;
 import com.gitee.starblues.spring.WebConfig;
 import com.gitee.starblues.utils.MsgUtils;
 import com.gitee.starblues.utils.ObjectUtils;
+import com.gitee.starblues.utils.UrlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileUrlResource;
@@ -51,7 +52,10 @@ public class PluginStaticResourceResolver extends AbstractResourceResolver {
 
     private final static Map<String, PluginStaticResource> PLUGIN_RESOURCE_MAP = new ConcurrentHashMap<>();
 
-    public PluginStaticResourceResolver() {
+    private final PluginStaticResourceConfig config;
+
+    public PluginStaticResourceResolver(PluginStaticResourceConfig config) {
+        this.config = config;
     }
 
 
@@ -59,42 +63,66 @@ public class PluginStaticResourceResolver extends AbstractResourceResolver {
     protected Resource resolveResourceInternal(HttpServletRequest request,
                                                String requestPath, List<? extends Resource> locations,
                                                ResourceResolverChain chain) {
+        if(request != null){
+            String requestUri = request.getRequestURI();
+            String formatUri = UrlUtils.format(requestUri);
+            requestPath = UrlUtils.format(formatUri.replace(config.getPathPrefix(), ""));
+        }
+        int startOffset = requestPath.indexOf("/");
+        String pluginId = null;
+        String partialPath = null;
+        if (startOffset == -1) {
+            pluginId = requestPath;
+            partialPath = config.getIndexPageName();
+        } else {
+            pluginId = requestPath.substring(0, startOffset);
+            partialPath = requestPath.substring(startOffset + 1);
+        }
 
-        int startOffset = (requestPath.startsWith("/") ? 1 : 0);
-        int endOffset = requestPath.indexOf('/', 1);
-        if (endOffset != -1) {
-            String pluginId = requestPath.substring(startOffset, endOffset);
-            String partialPath = requestPath.substring(endOffset + 1);
-            PluginStaticResource pluginResource = PLUGIN_RESOURCE_MAP.get(pluginId);
+        PluginStaticResource pluginResource = PLUGIN_RESOURCE_MAP.get(pluginId);
 
-            if(pluginResource == null){
+        if(pluginResource == null){
+            return chain.resolveResource(request, requestPath, locations);
+        }
+
+        String key = computeKey(request, requestPath);
+        // 先判断缓存中是否存在。
+        Resource resource = pluginResource.getCacheResource(key);
+        if(resource != null){
+            return resource;
+        }
+        resource = findResource(pluginResource, partialPath);
+        if(resource != null){
+            pluginResource.putCacheResource(key, resource);
+            return resource;
+        } else {
+            // 尝试获取首页页面
+            String indexPageName = config.getIndexPageName();
+            if(ObjectUtils.isEmpty(indexPageName)){
+                indexPageName = PluginStaticResourceConfig.DEFAULT_INDEX_PAGE_NAME;
+            }
+            if(partialPath.lastIndexOf(".") > -1){
+                // 存在后缀
                 return null;
             }
-
-            String key = computeKey(request, requestPath);
-            // 先判断缓存中是否存在。
-            Resource resource = pluginResource.getCacheResource(key);
-            if(resource != null){
-                return resource;
-            }
-
-            // 从classpath 获取资源
-            resource = resolveClassPath(pluginResource, partialPath);
-            if(resource != null){
-                pluginResource.putCacheResource(key, resource);
-                return resource;
-            }
-
-            // 从外置文件路径获取资源
-            resource = resolveFilePath(pluginResource, partialPath);
-            if(resource != null){
-                pluginResource.putCacheResource(key, resource);
-                return resource;
-            }
-            return null;
-
+            partialPath = UrlUtils.joiningUrlPath(partialPath, indexPageName);
+            return findResource(pluginResource, partialPath);
         }
-        return chain.resolveResource(request, requestPath, locations);
+    }
+
+    private Resource findResource(PluginStaticResource pluginResource, String partialPath){
+        // 从classpath 获取资源
+        Resource resource = resolveClassPath(pluginResource, partialPath);
+        if(resource != null){
+            return resource;
+        }
+
+        // 从外置文件路径获取资源
+        resource = resolveFilePath(pluginResource, partialPath);
+        if(resource != null){
+            return resource;
+        }
+        return resource;
     }
 
     /**
