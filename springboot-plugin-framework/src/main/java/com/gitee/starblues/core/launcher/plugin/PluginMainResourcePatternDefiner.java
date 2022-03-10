@@ -19,6 +19,7 @@ package com.gitee.starblues.core.launcher.plugin;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.core.launcher.JavaMainResourcePatternDefiner;
 import com.gitee.starblues.spring.MainApplicationContext;
+import com.gitee.starblues.utils.Assert;
 import com.gitee.starblues.utils.ObjectUtils;
 import com.gitee.starblues.utils.SpringBeanCustomUtils;
 
@@ -53,7 +54,7 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
         if(!ObjectUtils.isEmpty(includePatterns)){
             includeResourcePatterns.addAll(includePatterns);
         } else {
-            includeResourcePatterns.add(mainPackage);
+            includeResourcePatterns.add(ObjectUtils.changePackageToMatch(mainPackage));
         }
         includeResourcePatterns.add(FRAMEWORK);
         addWebIncludeResourcePatterns(includeResourcePatterns);
@@ -150,5 +151,7 @@ public class PluginMainResourcePatternDefiner extends JavaMainResourcePatternDef
             return definer;
         }
     }
+
+
 
 }

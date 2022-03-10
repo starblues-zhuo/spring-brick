@@ -17,6 +17,8 @@
 package com.gitee.starblues.core.launcher.plugin;
 
 import com.gitee.starblues.core.classloader.MainResourcePatternDefiner;
+import com.gitee.starblues.utils.Assert;
+import com.gitee.starblues.utils.ObjectUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,7 +33,7 @@ public class BasicMainResourcePatternDefiner implements MainResourcePatternDefin
     private final String mainPackageName;
 
     public BasicMainResourcePatternDefiner(String mainPackageName) {
-        this.mainPackageName = mainPackageName;
+        this.mainPackageName = ObjectUtils.changePackageToMatch(mainPackageName);
     }
 
     @Override

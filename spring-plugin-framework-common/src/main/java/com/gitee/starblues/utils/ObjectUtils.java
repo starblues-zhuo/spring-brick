@@ -423,6 +423,11 @@ public class ObjectUtils {
         return count;
     }
 
+    public static String changePackageToMatch(String packageName){
+        Assert.isNotEmpty(packageName, "参数 packageName 不能为空");
+        return packageName.replace(".", "/") + "/**";
+    }
+
     private static boolean containsText(CharSequence str) {
         int strLen = str.length();
         for (int i = 0; i < strLen; i++) {
