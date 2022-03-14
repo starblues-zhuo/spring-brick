@@ -79,8 +79,14 @@ public class PluginMethodRunner extends MethodRunner {
         } catch (Exception e){
             String error = "Invoke failure: "
                     + ReflectionUtils.methodToString(runClass, runMethodName, runMethod.getParameterTypes())
-                    + ". " + e.getMessage();
-            logger.error(error, e);
+                    + ". ";
+            String message = e.getMessage();
+            if(message != null){
+                error = error + message;
+                logger.error(error, e);
+            } else {
+                logger.error(error);
+            }
             throw new Exception(error);
         }
     }

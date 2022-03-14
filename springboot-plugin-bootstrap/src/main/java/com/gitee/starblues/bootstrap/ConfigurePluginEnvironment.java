@@ -73,8 +73,8 @@ class ConfigurePluginEnvironment {
         env.put(SPRING_JMX_UNIQUE_NAMES, true);
         env.put(SPRING_ADMIN_JMX_NAME, SPRING_ADMIN_JMX_VALUE + pluginId);
         env.put(REGISTER_SHUTDOWN_HOOK_PROPERTY, false);
-        env.put(MBEAN_DOMAIN_PROPERTY_NAME, null);
-        environment.getPropertySources().addLast(new MapPropertySource(PLUGIN_PROPERTY_NAME, env));
+        env.put(MBEAN_DOMAIN_PROPERTY_NAME, pluginId);
+        environment.getPropertySources().addFirst(new MapPropertySource(PLUGIN_PROPERTY_NAME, env));
 
         if(processorContext.runMode() == ProcessorContext.RunMode.ONESELF){
             ConfigureMainPluginEnvironment configureMainPluginEnvironment =
