@@ -16,11 +16,20 @@
 
 package com.gitee.starblues.spring;
 
+import java.util.Map;
+
 /**
  * 主程序 ApplicationContext 接口
  * @author starBlues
  * @version 3.0.0
  */
 public interface MainApplicationContext extends ApplicationContext {
+
+    /**
+     * 得到主程序所有配置的 env
+     *
+     * @return 主程序配置的 env 集合
+     */
+    Map<String, Map<String, Object>> getConfigurableEnvironment();
 
 }

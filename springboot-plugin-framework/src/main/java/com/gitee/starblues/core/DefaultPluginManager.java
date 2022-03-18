@@ -131,6 +131,7 @@ public class DefaultPluginManager implements PluginManager{
                     warn.append(i + 1).append(". ").append(pluginRootDirs.get(i)).append("\n");
                 }
                 warn.append("请检查路径是否合适.\n");
+                warn.append("请检查配置[plugin.runMode]是否合适.\n");
                 if(provider.getRuntimeMode() == RuntimeMode.DEV){
                     warn.append("请检查插件包是否编译.\n");
                 } else {

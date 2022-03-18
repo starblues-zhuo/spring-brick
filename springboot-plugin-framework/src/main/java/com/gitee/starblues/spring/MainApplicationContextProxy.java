@@ -16,6 +16,17 @@
 
 package com.gitee.starblues.spring;
 
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * 主程序 ApplicationContext 的实现
  * @author starBlues
@@ -23,11 +34,37 @@ package com.gitee.starblues.spring;
  */
 public class MainApplicationContextProxy extends ApplicationContextProxy implements MainApplicationContext{
 
-    public MainApplicationContextProxy(Object targetBeanFactory) {
-        super(targetBeanFactory);
+    private final GenericApplicationContext applicationContext;
+
+    public MainApplicationContextProxy(GenericApplicationContext applicationContext) {
+        super(applicationContext.getBeanFactory());
+        this.applicationContext = applicationContext;
     }
 
-    public MainApplicationContextProxy(Object targetBeanFactory, AutoCloseable autoCloseable) {
-        super(targetBeanFactory, autoCloseable);
+    public MainApplicationContextProxy(GenericApplicationContext applicationContext, AutoCloseable autoCloseable) {
+        super(applicationContext.getBeanFactory(), autoCloseable);
+        this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public Map<String, Map<String, Object>> getConfigurableEnvironment() {
+        ConfigurableEnvironment environment = applicationContext.getEnvironment();
+        MutablePropertySources propertySources = environment.getPropertySources();
+        Map<String, Map<String, Object>> environmentMap = new LinkedHashMap<>(propertySources.size());
+        for (PropertySource<?> propertySource : propertySources) {
+            if (!(propertySource instanceof EnumerablePropertySource)) {
+                continue;
+            }
+            EnumerablePropertySource<?> enumerablePropertySource = (EnumerablePropertySource<?>) propertySource;
+            String[] propertyNames = enumerablePropertySource.getPropertyNames();
+            Map<String, Object> values = new HashMap<>(propertyNames.length);
+            for (String propertyName : propertyNames) {
+                values.put(propertyName, enumerablePropertySource.getProperty(propertyName));
+            }
+            if (!values.isEmpty()) {
+                environmentMap.put(propertySource.getName(), values);
+            }
+        }
+        return environmentMap;
     }
 }

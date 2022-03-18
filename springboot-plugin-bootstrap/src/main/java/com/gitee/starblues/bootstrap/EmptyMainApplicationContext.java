@@ -24,6 +24,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.ResolvableType;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,5 +45,10 @@ public class EmptyMainApplicationContext implements MainApplicationContext {
     @Override
     public void close() throws Exception {
 
+    }
+
+    @Override
+    public Map<String, Map<String, Object>> getConfigurableEnvironment() {
+        return Collections.emptyMap();
     }
 }

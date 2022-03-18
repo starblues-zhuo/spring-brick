@@ -17,6 +17,9 @@
 package com.gitee.starblues.bootstrap.processor;
 
 
+import com.gitee.starblues.bootstrap.realize.DefaultMainEnvironmentProvider;
+import com.gitee.starblues.bootstrap.realize.EmptyMainEnvironmentProvider;
+import com.gitee.starblues.bootstrap.realize.MainEnvironmentProvider;
 import com.gitee.starblues.core.descriptor.InsidePluginDescriptor;
 import com.gitee.starblues.integration.AutoIntegrationConfiguration;
 import com.gitee.starblues.integration.ExtendPointConfiguration;
@@ -36,11 +39,17 @@ public class FrameDefineBeanProcessor implements SpringPluginProcessor {
         InsidePluginDescriptor pluginDescriptor = context.getPluginDescriptor();
         ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
         beanFactory.registerSingleton("pluginDescriptor", pluginDescriptor.toPluginDescriptor());
+        beanFactory.registerSingleton("mainApplicationContext", context.getMainApplicationContext());
 
+        MainEnvironmentProvider mainEnvironmentProvider = null;
         if(context.runMode() == ProcessorContext.RunMode.ONESELF){
             beanFactory.registerSingleton("integrationConfiguration", new AutoIntegrationConfiguration());
             applicationContext.registerBean(ExtendPointConfiguration.class);
+            mainEnvironmentProvider = new EmptyMainEnvironmentProvider();
+        } else {
+            mainEnvironmentProvider = new DefaultMainEnvironmentProvider(context.getMainApplicationContext());
         }
+        beanFactory.registerSingleton("mainEnvironmentProvider", mainEnvironmentProvider);
     }
 
     @Override
