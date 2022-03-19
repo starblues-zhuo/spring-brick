@@ -13,7 +13,7 @@
     <groupId>com.gitee.starblues</groupId>
     <artifactId>springboot-plugin-framework-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0-alpha</version>
+    <version>3.0.0</version>
 
     <description>spring boot 插件开发集成包</description>
 

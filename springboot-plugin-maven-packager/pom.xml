@@ -4,9 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.gitee.starblues</groupId>
+    <parent>
+        <artifactId>springboot-plugin-framework-parent</artifactId>
+        <groupId>com.gitee.starblues</groupId>
+        <version>3.0.0</version>
+    </parent>
+
     <artifactId>springboot-plugin-maven-packager</artifactId>
-    <version>3.0.0-alpha</version>
+    <packaging>jar</packaging>
+
+    <description>打包插件</description>
 
     <properties>
         <java.version>8</java.version>

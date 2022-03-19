@@ -92,7 +92,7 @@ public class SpringBeanUtils {
      * 通过注解获取bean
      * @param applicationContext applicationContext
      * @param annotationType 注解类型
-     * @return List<Object>
+     * @return List
      */
     public static List<Object> getBeansWithAnnotation(ApplicationContext applicationContext,
                                                       Class<? extends Annotation> annotationType){

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>springboot-plugin-framework-parent</artifactId>
         <groupId>com.gitee.starblues</groupId>
-        <version>3.0.0-alpha</version>
+        <version>3.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

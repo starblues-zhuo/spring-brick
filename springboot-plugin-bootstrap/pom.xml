@@ -2,14 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <artifactId>springboot-plugin-framework-parent</artifactId>
         <groupId>com.gitee.starblues</groupId>
-        <version>3.0.0-alpha</version>
+        <version>3.0.0</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>springboot-plugin-bootstrap</artifactId>
+    <packaging>jar</packaging>
+
     <description>插件引导模块</description>
 
     <properties>
@@ -17,7 +20,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 
-        <springboot-plugin-framework>3.0.0-alpha</springboot-plugin-framework>
+        <springboot-plugin-framework>3.0.0</springboot-plugin-framework>
 
         <aspectj.version>1.9.6</aspectj.version>
         <slf4j.version>1.7.7</slf4j.version>
@@ -81,19 +84,5 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

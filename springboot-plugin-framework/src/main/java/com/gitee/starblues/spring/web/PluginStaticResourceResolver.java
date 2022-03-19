@@ -231,6 +231,7 @@ public class PluginStaticResourceResolver extends AbstractResourceResolver {
     /**
      * 每新增一个插件, 都需要调用该方法，来解析该插件的 StaticResourceConfig 配置。并将其保存到 StaticResourceConfig bean 中。
      * @param pluginDescriptor 插件信息
+     * @param pluginClassLoader 插件classloader
      * @param webConfig web配置
      */
     public static synchronized void parse(PluginDescriptor pluginDescriptor,

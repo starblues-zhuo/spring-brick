@@ -7,12 +7,11 @@
     <parent>
         <artifactId>springboot-plugin-framework-parent</artifactId>
         <groupId>com.gitee.starblues</groupId>
-        <version>3.0.0-alpha</version>
+        <version>3.0.0</version>
     </parent>
 
     <artifactId>springboot-plugin-framework</artifactId>
     <packaging>jar</packaging>
-    <version>3.0.0-alpha</version>
 
     <description>spring boot 插件式开发集成包</description>
 

@@ -35,6 +35,7 @@ public interface RegistryInfo {
     /**
      * 得到注册信息
      * @param key 注册信息key
+     * @param <T> 返回类型泛型
      * @return 注册信息的值
      */
     <T> T getRegistryInfo(String key);
@@ -43,6 +44,7 @@ public interface RegistryInfo {
      * 得到注册信息
      * @param key 注册信息key
      * @param notExistCreate 不存在的话, 进行创建操作
+     * @param <T> 返回类型泛型
      * @return 注册信息的值
      */
     <T> T getRegistryInfo(String key, Supplier<T> notExistCreate);

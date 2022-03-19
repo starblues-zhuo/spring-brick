@@ -39,9 +39,12 @@ public class PluginDisabledException extends PluginException {
                 + (!ObjectUtils.isEmpty(opType) ? opType : "操作"));
     }
 
+
     /**
      * 检查插件是否被禁用
-     * @param pluginInsideInfo PluginInfo
+     * @param pluginInsideInfo 插件信息
+     * @param configuration 集成配置
+     * @param opType  操作类型
      */
     public static void checkDisabled(PluginInfo pluginInsideInfo, IntegrationConfiguration configuration, String opType){
         if(pluginInsideInfo.getPluginState() == PluginState.DISABLED

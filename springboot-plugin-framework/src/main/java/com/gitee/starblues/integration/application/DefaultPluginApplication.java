@@ -87,6 +87,7 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
     /**
      * 创建插件使用者。子类可扩展
      * @param applicationContext Spring ApplicationContext
+     * @return pluginUser
      */
     protected synchronized PluginUser createPluginUser(ApplicationContext applicationContext){
         if(pluginUser == null){
@@ -98,6 +99,7 @@ public class DefaultPluginApplication extends AbstractPluginApplication {
     /**
      * 创建插件操作者。子类可扩展
      * @param applicationContext Spring ApplicationContext
+     * @return pluginOperator
      */
     protected synchronized PluginOperator createPluginOperator(ApplicationContext applicationContext){
         if(pluginOperator == null){
