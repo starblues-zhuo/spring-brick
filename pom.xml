@@ -4,17 +4,154 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.gitee.starblues</groupId>
-    <artifactId>springboot-plugin-framework-parent</artifactId>
-    <packaging>pom</packaging>
-    <version>2.4.6-RELEASE</version>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
-    <description>spring boot 插件开发集成包</description>
+    <groupId>com.gitee.starblues</groupId>
+    <artifactId>spring-brick-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>3.0.0</version>
 
     <modules>
-        <module>springboot-plugin-framework</module>
-        <module>springboot-plugin-framework-extension</module>
+        <module>spring-brick-common</module>
+        <module>spring-brick-loader</module>
+        <module>spring-brick</module>
+        <module>spring-brick-bootstrap</module>
+        <module>spring-brick-maven-packager</module>
     </modules>
-	
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+
+        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+        <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+    </properties>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://gitee.com/starblues/springboot-plugin-framework-parent</url>
+        <connection>scm:https://gitee.com/starblues/springboot-plugin-framework-parent.git</connection>
+        <developerConnection>scm:https://gitee.com/starblues/springboot-plugin-framework-parent.git</developerConnection>
+        <tag>1.0</tag>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>oss Snapshots Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>oss Staging Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <developers>
+        <developer>
+            <name>StarBlues</name>
+            <email>starblues@foxmail.com</email>
+            <url>https://gitee.com/starblues/</url>
+        </developer>
+    </developers>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <configuration>
+                    <skip>${plugin.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin.version}</version>
+                <configuration>
+                    <skip>${plugin.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <plugin.skip>true</plugin.skip>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>release</id>
+            <properties>
+                <plugin.skip>false</plugin.skip>
+            </properties>
+        </profile>
+    </profiles>
+
 
 </project>
