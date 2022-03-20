@@ -36,7 +36,7 @@ The framework can be developed in the `SpringBoot` project plugin, plugin can be
 
 ### Doc
 
-- [https://www.yuque.com/starblues/iuyk4y/ypurcw](https://www.yuque.com/starblues/iuyk4y/ypurcw)
+- [https://www.yuque.com/starblues/spring-brick-3.0.0](https://www.yuque.com/starblues/spring-brick-3.0.0)
 
 ### Derivative products
 #### Background management system with front and rear plugin function
@@ -45,7 +45,7 @@ The framework can be developed in the `SpringBoot` project plugin, plugin can be
 - [Rope](https://gitee.com/starblues/rope)
 
 ### Example
-- [springboot-plugin-framework-example](https://gitee.com/starblues/springboot-plugin-framework-example)
+- [spring-brick-example](https://gitee.com/starblues/springboot-plugin-framework-example)
 
 ### Contact
 QQ: 859570617(**After you like the framework, you can enter the group. Please note the Gitee/GitHub nickname before entering the group**)
