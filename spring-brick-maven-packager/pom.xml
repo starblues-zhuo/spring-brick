@@ -27,7 +27,7 @@
         <maven-plugin-api.version>3.8.4</maven-plugin-api.version>
         <maven-plugin-annotations.version>3.6.2</maven-plugin-annotations.version>
         <maven-common-artifact-filters.version>3.2.0</maven-common-artifact-filters.version>
-        <commons-compress.version>1.21</commons-compress.version>
+        <commons-compress.version>1.26.0</commons-compress.version>
         <commons-io.version>2.11.0</commons-io.version>
         <lombok.version>1.18.20</lombok.version>
         <junit.version>3.8.1</junit.version>
